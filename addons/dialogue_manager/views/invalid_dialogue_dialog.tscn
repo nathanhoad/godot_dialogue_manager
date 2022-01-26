@@ -1,0 +1,7 @@
+[gd_scene format=2]
+
+[node name="InvalidDialogueDialog" type="AcceptDialog"]
+margin_right = 83.0
+margin_bottom = 58.0
+window_title = ""
+dialog_text = "That is not a DialogueResource."

@@ -1,0 +1,76 @@
+[gd_scene load_steps=3 format=2]
+
+[ext_resource path="res://addons/dialogue_manager/components/title_list.tscn" type="PackedScene" id=1]
+[ext_resource path="res://addons/dialogue_manager/views/choose_title_dialog.gd" type="Script" id=2]
+
+[node name="ChooseTitleDialog" type="WindowDialog"]
+anchor_right = 0.5
+anchor_bottom = 0.5
+rect_min_size = Vector2( 500, 400 )
+window_title = "Choose a node"
+script = ExtResource( 2 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Margin" type="MarginContainer" parent="."]
+anchor_right = 1.0
+anchor_bottom = 1.0
+custom_constants/margin_right = 10
+custom_constants/margin_top = 10
+custom_constants/margin_left = 10
+custom_constants/margin_bottom = 10
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="VBox" type="VBoxContainer" parent="Margin"]
+margin_left = 10.0
+margin_top = 10.0
+margin_right = 502.0
+margin_bottom = 390.0
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="TitleList" parent="Margin/VBox" instance=ExtResource( 1 )]
+anchor_right = 0.0
+anchor_bottom = 0.0
+margin_right = 480.0
+margin_bottom = 356.0
+include_end_conversation = true
+
+[node name="Actions" type="CenterContainer" parent="Margin/VBox"]
+margin_top = 360.0
+margin_right = 480.0
+margin_bottom = 380.0
+
+[node name="HBox" type="HBoxContainer" parent="Margin/VBox/Actions"]
+margin_left = 154.0
+margin_right = 326.0
+margin_bottom = 20.0
+
+[node name="ChooseButton" type="Button" parent="Margin/VBox/Actions/HBox"]
+margin_right = 95.0
+margin_bottom = 20.0
+text = "Choose node"
+
+[node name="Control" type="Control" parent="Margin/VBox/Actions/HBox"]
+margin_left = 99.0
+margin_right = 114.0
+margin_bottom = 20.0
+rect_min_size = Vector2( 15, 0 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="CancelButton" type="Button" parent="Margin/VBox/Actions/HBox"]
+margin_left = 118.0
+margin_right = 172.0
+margin_bottom = 20.0
+text = "Cancel"
+
+[connection signal="title_clicked" from="Margin/VBox/TitleList" to="." method="_on_TitleList_title_clicked"]
+[connection signal="title_dbl_clicked" from="Margin/VBox/TitleList" to="." method="_on_TitleList_title_dbl_clicked"]
+[connection signal="pressed" from="Margin/VBox/Actions/HBox/ChooseButton" to="." method="_on_ChooseButton_pressed"]
+[connection signal="pressed" from="Margin/VBox/Actions/HBox/CancelButton" to="." method="_on_CancelButton_pressed"]

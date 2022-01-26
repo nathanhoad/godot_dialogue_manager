@@ -1,0 +1,97 @@
+[gd_scene load_steps=10 format=2]
+
+[ext_resource path="res://addons/dialogue_manager/example_balloon/balloon.gd" type="Script" id=1]
+[ext_resource path="res://addons/dialogue_manager/example_balloon/menu.tscn" type="PackedScene" id=2]
+[ext_resource path="res://addons/dialogue_manager/example_balloon/pointer.svg" type="Texture" id=3]
+[ext_resource path="res://addons/dialogue_manager/example_balloon/Open_Sans/OpenSans-Regular.ttf" type="DynamicFontData" id=4]
+[ext_resource path="res://addons/dialogue_manager/example_balloon/Open_Sans/OpenSans-Bold.ttf" type="DynamicFontData" id=5]
+[ext_resource path="res://addons/dialogue_manager/example_balloon/Open_Sans/OpenSans-Italic.ttf" type="DynamicFontData" id=6]
+
+[sub_resource type="DynamicFont" id=1]
+size = 20
+font_data = ExtResource( 4 )
+
+[sub_resource type="DynamicFont" id=3]
+font_data = ExtResource( 6 )
+
+[sub_resource type="DynamicFont" id=4]
+font_data = ExtResource( 5 )
+
+[node name="Balloon" type="Control"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+script = ExtResource( 1 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Tween" type="Tween" parent="."]
+
+[node name="Background" type="ColorRect" parent="."]
+anchor_right = 1.0
+anchor_bottom = 1.0
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Margin" type="MarginContainer" parent="."]
+anchor_right = 1.0
+custom_constants/margin_right = 40
+custom_constants/margin_top = 10
+custom_constants/margin_left = 40
+custom_constants/margin_bottom = 10
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="VBox" type="VBoxContainer" parent="Margin"]
+margin_left = 40.0
+margin_top = 10.0
+margin_right = 1880.0
+margin_bottom = 77.0
+
+[node name="Character" type="RichTextLabel" parent="Margin/VBox"]
+modulate = Color( 1, 1, 1, 0.470588 )
+margin_right = 1840.0
+margin_bottom = 30.0
+rect_min_size = Vector2( 0, 30 )
+custom_colors/default_color = Color( 0, 0, 0, 1 )
+custom_fonts/normal_font = SubResource( 1 )
+bbcode_enabled = true
+scroll_active = false
+
+[node name="Dialogue" type="RichTextLabel" parent="Margin/VBox"]
+margin_top = 34.0
+margin_right = 1840.0
+margin_bottom = 63.0
+custom_colors/default_color = Color( 0, 0, 0, 1 )
+custom_fonts/italics_font = SubResource( 3 )
+custom_fonts/bold_font = SubResource( 4 )
+custom_fonts/normal_font = SubResource( 1 )
+bbcode_enabled = true
+bbcode_text = "This is a bunch of dialogue!"
+text = "This is a bunch of dialogue!"
+fit_content_height = true
+scroll_active = false
+
+[node name="Responses" type="MarginContainer" parent="Margin/VBox"]
+margin_top = 67.0
+margin_right = 1840.0
+margin_bottom = 67.0
+custom_constants/margin_left = 40
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Menu" parent="Margin/VBox/Responses" instance=ExtResource( 2 )]
+margin_right = 1840.0
+margin_bottom = 0.0
+_pointer = NodePath("../Pointer")
+
+[node name="Pointer" type="Sprite" parent="Margin/VBox/Responses"]
+position = Vector2( 29.6, 13 )
+texture = ExtResource( 3 )
+centered = false
+offset = Vector2( -20, -10 )
+
+[connection signal="visibility_changed" from="Margin/VBox/Responses/Menu" to="." method="_on_Menu_visibility_changed"]

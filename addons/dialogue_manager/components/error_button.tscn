@@ -1,0 +1,19 @@
+[gd_scene load_steps=2 format=2]
+
+[ext_resource path="res://addons/dialogue_manager/components/error_button_style.tres" type="StyleBox" id=1]
+
+[node name="ToolButton" type="Button"]
+margin_right = 128.0
+margin_bottom = 24.0
+rect_min_size = Vector2( 0, 24 )
+custom_colors/font_color = Color( 1, 1, 1, 1 )
+custom_colors/font_color_hover = Color( 1, 1, 1, 1 )
+custom_styles/hover = ExtResource( 1 )
+custom_styles/pressed = ExtResource( 1 )
+custom_styles/focus = ExtResource( 1 )
+custom_styles/normal = ExtResource( 1 )
+text = "Line 10: Something"
+align = 0
+__meta__ = {
+"_edit_use_anchors_": false
+}

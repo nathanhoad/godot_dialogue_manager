@@ -1,0 +1,9 @@
+[gd_scene load_steps=2 format=2]
+
+[ext_resource path="res://addons/dialogue_manager/components/update_checker.gd" type="Script" id=1]
+
+[node name="UpdateChecker" type="HTTPRequest"]
+use_threads = true
+script = ExtResource( 1 )
+
+[connection signal="request_completed" from="." to="." method="_on_UpdateChecker_request_completed"]

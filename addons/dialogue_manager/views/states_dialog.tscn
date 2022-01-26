@@ -1,0 +1,119 @@
+[gd_scene load_steps=2 format=2]
+
+[sub_resource type="GDScript" id=1]
+script/source = "tool
+extends WindowDialog
+
+
+const Constants = preload(\"res://addons/dialogue_manager/constants.gd\")
+
+
+onready var globals_list := $Margin/VBox/GlobalsList
+
+var dialogue_manager_config := ConfigFile.new()
+var all_globals: Dictionary = {}
+var enabled_globals: Array = []
+
+
+func _on_StatesDialog_about_to_show():
+	var project = ConfigFile.new()
+	var err = project.load(\"res://project.godot\")
+	assert(err == OK, \"Could not find the project file\")
+	
+	all_globals.clear()
+	if project.has_section(\"autoload\"):
+		for key in project.get_section_keys(\"autoload\"):
+			all_globals[key] = project.get_value(\"autoload\", key)
+	
+	dialogue_manager_config = ConfigFile.new()
+	dialogue_manager_config.load(Constants.CONFIG_PATH)
+	enabled_globals.clear()
+	if dialogue_manager_config.has_section(\"runtime\"):
+		enabled_globals = dialogue_manager_config.get_value(\"runtime\", \"states\", [])
+		
+	globals_list.clear()
+	var root = globals_list.create_item()
+	for name in all_globals.keys():
+		var item = globals_list.create_item(root)
+		item.set_cell_mode(0, TreeItem.CELL_MODE_CHECK)
+		item.set_checked(0, name in enabled_globals)
+		item.set_text(0, name)
+		item.set_text(1, all_globals.get(name).replace(\"*res://\", \"res://\"))
+
+
+func _on_DoneButton_pressed():
+	hide()
+
+
+func _on_GlobalsList_item_selected():
+	var item = globals_list.get_selected()
+	var is_checked = !item.is_checked(0)
+	item.set_checked(0, is_checked)
+	
+	if is_checked:
+		enabled_globals.append(item.get_text(0))
+	dialogue_manager_config.set_value(\"runtime\", \"states\", enabled_globals)
+	dialogue_manager_config.save(Constants.CONFIG_PATH)
+"
+
+[node name="StatesDialog" type="WindowDialog"]
+visible = true
+margin_right = 48.0
+margin_bottom = 40.0
+rect_min_size = Vector2( 600, 500 )
+resizable = true
+script = SubResource( 1 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Margin" type="MarginContainer" parent="."]
+anchor_right = 1.0
+anchor_bottom = 1.0
+size_flags_horizontal = 3
+size_flags_vertical = 3
+custom_constants/margin_right = 10
+custom_constants/margin_top = 10
+custom_constants/margin_left = 10
+custom_constants/margin_bottom = 10
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="VBox" type="VBoxContainer" parent="Margin"]
+margin_left = 10.0
+margin_top = 10.0
+margin_right = 590.0
+margin_bottom = 490.0
+custom_constants/separation = 10
+
+[node name="Message" type="Label" parent="Margin/VBox"]
+margin_right = 580.0
+margin_bottom = 14.0
+text = "Choose which globals contain game state or methods that your dialogue needs."
+
+[node name="GlobalsList" type="Tree" parent="Margin/VBox"]
+margin_top = 24.0
+margin_right = 580.0
+margin_bottom = 450.0
+size_flags_horizontal = 3
+size_flags_vertical = 3
+columns = 2
+hide_folding = true
+hide_root = true
+select_mode = 1
+
+[node name="Actions" type="CenterContainer" parent="Margin/VBox"]
+margin_top = 460.0
+margin_right = 580.0
+margin_bottom = 480.0
+
+[node name="DoneButton" type="Button" parent="Margin/VBox/Actions"]
+margin_left = 267.0
+margin_right = 313.0
+margin_bottom = 20.0
+text = "Done"
+
+[connection signal="about_to_show" from="." to="." method="_on_StatesDialog_about_to_show"]
+[connection signal="item_selected" from="Margin/VBox/GlobalsList" to="." method="_on_GlobalsList_item_selected"]
+[connection signal="pressed" from="Margin/VBox/Actions/DoneButton" to="." method="_on_DoneButton_pressed"]

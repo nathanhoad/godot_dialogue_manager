@@ -1,0 +1,14 @@
+[gd_scene load_steps=2 format=2]
+
+[ext_resource path="res://addons/dialogue_manager/example_balloon/menu.gd" type="Script" id=1]
+
+[node name="Menu" type="VBoxContainer"]
+margin_left = 40.0
+margin_right = 944.0
+margin_bottom = 98.0
+script = ExtResource( 1 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[connection signal="visibility_changed" from="." to="." method="_on_Menu_visibility_changed"]

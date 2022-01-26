@@ -1,0 +1,11 @@
+[gd_scene format=2]
+
+[node name="SaveTranslationsDialog" type="FileDialog"]
+anchor_right = 0.5
+anchor_bottom = 0.5
+rect_min_size = Vector2( 600, 500 )
+window_title = "Save translations"
+filters = PoolStringArray( "*.csv ; Translations" )
+__meta__ = {
+"_edit_use_anchors_": false
+}

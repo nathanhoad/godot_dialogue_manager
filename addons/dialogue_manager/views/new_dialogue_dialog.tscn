@@ -1,0 +1,15 @@
+[gd_scene format=2]
+
+[node name="NewDialogueDialog" type="FileDialog"]
+anchor_right = 0.5
+anchor_bottom = 0.6
+rect_min_size = Vector2( 600, 500 )
+window_title = "Create a new dialogue"
+resizable = true
+filters = PoolStringArray( "*.tres ; Resources" )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[connection signal="confirmed" from="." to="." method="_on_NewDialogueDialog_confirmed"]
+[connection signal="file_selected" from="." to="." method="_on_NewDialogueDialog_file_selected"]
