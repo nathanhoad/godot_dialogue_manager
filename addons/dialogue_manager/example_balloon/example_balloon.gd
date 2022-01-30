@@ -7,10 +7,11 @@ signal actioned(next_id)
 const Line = preload("res://addons/dialogue_manager/dialogue_line.gd")
 const MenuItem = preload("res://addons/dialogue_manager/example_balloon/menu_item.tscn")
 
+const SECONDS_PER_CHARACTER = 0.02
+
 
 onready var balloon := $Balloon
 onready var margin := $Balloon/Margin
-onready var tween := $Tween
 onready var character_label := $Balloon/Margin/VBox/Character
 onready var dialogue_label := $Balloon/Margin/VBox/Dialogue
 onready var responses_menu := $Balloon/Margin/VBox/Responses/Menu
@@ -33,6 +34,7 @@ func _ready() -> void:
 		character_label.visible = false
 	
 	dialogue_label.bbcode_text = dialogue.dialogue
+	dialogue_label.visible_characters = 0
 	
 	# Show any responses we have
 	responses_menu.is_active = false
@@ -60,9 +62,17 @@ func _ready() -> void:
 	balloon.visible = true
 	
 	# Type out text
-	tween.interpolate_property(dialogue_label, "percent_visible", 0, 1, dialogue_label.get_total_character_count() * 0.01)
-	tween.start()
-	yield(tween, "tween_all_completed")
+	while true:
+		if Input.is_action_pressed("ui_cancel"):
+			dialogue_label.visible_characters = dialogue_label.get_total_character_count()
+			yield(get_tree(), "idle_frame")
+			break
+			
+		dialogue_label.visible_characters += 1
+		if dialogue_label.visible_characters >= dialogue_label.get_total_character_count():
+			break
+		else:
+			yield(get_tree().create_timer(SECONDS_PER_CHARACTER), "timeout")
 	
 	# Wait for input
 	var next_id: String = ""
