@@ -1,7 +1,7 @@
 extends Node
 
 
-const CONFIG_PATH = "res://dialogue.config"
+const CONFIG_PATH = "res://dialogue.cfg"
 
 
 const TYPE_UNKNOWN = "unknown"

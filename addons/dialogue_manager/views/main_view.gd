@@ -11,6 +11,7 @@ onready var parser := $Parser
 onready var parse_timeout := $ParseTimeout
 onready var update_checker := $UpdateChecker
 onready var file_label := $Margin/VBox/Toolbar/FileLabel
+onready var open_button := $Margin/VBox/Toolbar/OpenButton
 onready var content := $Margin/VBox/Content
 onready var title_list := $Margin/VBox/Content/VBox/TitleList
 onready var error_list := $Margin/VBox/Content/VBox/ErrorList
@@ -27,12 +28,14 @@ onready var run_node_button := $Margin/VBox/Toolbar/RunButton
 
 
 var plugin
-var current_resource: DialogueResource setget set_current_resource
+var current_resource: DialogueResource
+var has_changed: bool = false
+var recent_resources: Array
 
 
 func _ready() -> void:
 	# Hide the editor until we open something
-	self.current_resource = null
+	set_resource(null)
 	
 	# Check for updates
 	update_checker.check_for_updates()
@@ -42,8 +45,8 @@ func _ready() -> void:
 	# Set up the button icons
 	$Margin/VBox/Toolbar/NewButton.text = ""
 	$Margin/VBox/Toolbar/NewButton.icon = get_icon("New", "EditorIcons")
-	$Margin/VBox/Toolbar/OpenButton.text = ""
-	$Margin/VBox/Toolbar/OpenButton.icon = get_icon("Load", "EditorIcons")
+	open_button.text = ""
+	open_button.icon = get_icon("Load", "EditorIcons")
 	$Margin/VBox/Toolbar/SettingsButton.text = ""
 	$Margin/VBox/Toolbar/SettingsButton.icon = get_icon("Tools", "EditorIcons")
 	$Margin/VBox/Toolbar/ErrorButton.text = ""
@@ -65,10 +68,37 @@ func _ready() -> void:
 	file_label.icon = get_icon("Filesystem", "EditorIcons")
 	
 	translations_menu.get_popup().connect("id_pressed", self, "_on_translation_menu_id_pressed")
+	
+	if settings.has_editor_value("recent_resources"):
+		recent_resources = settings.get_editor_value("recent_resources")
+	build_open_menu()
 
 
-func set_current_resource(next_current_resource: DialogueResource) -> void:
-	current_resource = next_current_resource
+### Helpers
+
+
+func build_open_menu() -> void:
+	var menu = open_button.get_popup()
+	menu.clear()
+	menu.add_icon_item(get_icon("Load", "EditorIcons"), "Open...")
+	menu.add_separator()
+	
+	if recent_resources.size() == 0:
+		menu.add_item("No recent files")
+		menu.set_item_disabled(2, true)
+	else:
+		for path in recent_resources:
+			menu.add_icon_item(get_icon("File", "EditorIcons"), path)
+			
+	menu.add_separator()
+	menu.add_item("Clear recent files")
+	if menu.is_connected("index_pressed", self, "_on_open_menu_index_pressed"):
+		menu.disconnect("index_pressed", self, "_on_open_menu_index_pressed")
+	menu.connect("index_pressed", self, "_on_open_menu_index_pressed")
+
+
+func set_resource(value: DialogueResource) -> void:
+	current_resource = value
 	if current_resource:
 		file_label.text = get_nice_file(current_resource.resource_path)
 		file_label.visible = true
@@ -77,17 +107,14 @@ func set_current_resource(next_current_resource: DialogueResource) -> void:
 		error_button.disabled = false
 		run_node_button.disabled = false
 		translations_menu.disabled = false
-		
 		_on_CodeEditor_text_changed()
+		has_changed = false
 	else:
 		content.visible = false
 		file_label.visible = false
 		error_button.disabled = true
 		run_node_button.disabled = true
 		translations_menu.disabled = true
-
-
-### Helpers
 
 
 func get_nice_file(file: String) -> String:
@@ -102,19 +129,28 @@ func open_resource(path: String) -> void:
 	parse()
 	var resource = load(path)
 	if resource is DialogueResource:
-		self.current_resource = resource
+		set_resource(resource)
+		# Add this to our list of recent resources
+		if path in recent_resources:
+			recent_resources.erase(path)
+		recent_resources.insert(0, path)
+		settings.set_editor_value("recent_resources", recent_resources)
+		build_open_menu()
 	else:
 		invalid_dialogue_dialog.popup_centered()
 
 
 func parse(force_show_errors: bool = false) -> void:
 	if not current_resource: return
+	if not has_changed and not force_show_errors: return
 	
 	var result = parser.parse(editor.text)
 	
 	current_resource.titles = result.get("titles")
 	current_resource.lines = result.get("lines")
 	current_resource.errors = result.get("errors")
+	
+	has_changed = false
 	
 	if force_show_errors or settings.get_editor_value("check_for_errors") or error_list.errors.size() > 0:
 		error_list.errors = current_resource.errors
@@ -247,6 +283,19 @@ func save_translations(path: String) -> void:
 ### Signals
 
 
+func _on_open_menu_index_pressed(index):
+	var item = open_button.get_popup().get_item_text(index)
+	match item:
+		"Open...":
+			open_dialogue_dialog.popup_centered()
+		"Clear recent files":
+			recent_resources.clear()
+			settings.set_editor_value("recent_resources", recent_resources)
+			build_open_menu()
+		_:
+			open_resource(item)
+
+
 func _on_translation_menu_id_pressed(id):
 	match id:
 		0:
@@ -257,6 +306,7 @@ func _on_translation_menu_id_pressed(id):
 
 
 func _on_CodeEditor_text_changed():
+	has_changed = true
 	current_resource.raw_text = editor.text
 	title_list.titles = editor.get_titles()
 	parse_timeout.start(1)
@@ -271,7 +321,7 @@ func _on_NewDialogueDialog_file_selected(path):
 	ResourceSaver.save(path, resource)
 	if resource.resource_path == "":
 		resource.resource_path = path
-	self.current_resource = resource
+	set_resource(resource)
 
 
 func _on_FileLabel_pressed():
@@ -296,10 +346,6 @@ func _on_ParseTimeout_timeout():
 
 func _on_TitleList_title_clicked(title):
 	editor.go_to_title(title)
-
-
-func _on_OpenButton_pressed():
-	open_dialogue_dialog.popup_centered()
 
 
 func _on_OpenDialogueDialog_file_selected(path):

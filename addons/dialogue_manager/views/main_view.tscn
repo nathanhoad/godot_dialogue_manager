@@ -118,7 +118,7 @@ margin_bottom = 24.0
 hint_tooltip = "Make a new dialogue file"
 icon = SubResource( 2 )
 
-[node name="OpenButton" type="ToolButton" parent="Margin/VBox/Toolbar"]
+[node name="OpenButton" type="MenuButton" parent="Margin/VBox/Toolbar"]
 margin_left = 758.0
 margin_right = 786.0
 margin_bottom = 24.0
@@ -262,7 +262,6 @@ _settings = NodePath("../Settings")
 [connection signal="timeout" from="ParseTimeout" to="." method="_on_ParseTimeout_timeout"]
 [connection signal="pressed" from="Margin/VBox/Toolbar/FileLabel" to="." method="_on_FileLabel_pressed"]
 [connection signal="pressed" from="Margin/VBox/Toolbar/NewButton" to="." method="_on_NewButton_pressed"]
-[connection signal="pressed" from="Margin/VBox/Toolbar/OpenButton" to="." method="_on_OpenButton_pressed"]
 [connection signal="pressed" from="Margin/VBox/Toolbar/SettingsButton" to="." method="_on_SettingsButton_pressed"]
 [connection signal="pressed" from="Margin/VBox/Toolbar/ErrorButton" to="." method="_on_ErrorButton_pressed"]
 [connection signal="pressed" from="Margin/VBox/Toolbar/RunButton" to="." method="_on_RunButton_pressed"]
