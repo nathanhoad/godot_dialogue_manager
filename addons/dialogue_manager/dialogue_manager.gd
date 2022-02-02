@@ -364,12 +364,12 @@ func get_state_value(arg, type_hint = null):
 	elif arg.to_lower() == "false" or arg.to_lower() == "no":
 		return false
 	
-	elif str(int(arg)) == arg:
-		# An integer
-		return int(arg)
-	elif str(float(arg)) == arg:
+	elif str(arg.to_float()) == arg:
 		# A float
-		return float(arg)
+		return arg.to_float()
+	elif str(arg.to_int()) == arg:
+		# An integer
+		return arg.to_int()
 		
 	else:
 		# It's a variable

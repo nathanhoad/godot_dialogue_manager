@@ -126,7 +126,7 @@ func get_nice_file(file: String) -> String:
 
 
 func open_resource(path: String) -> void:
-	parse()
+	parse(true)
 	var resource = load(path)
 	if resource is DialogueResource:
 		set_resource(resource)
@@ -136,6 +136,7 @@ func open_resource(path: String) -> void:
 		recent_resources.insert(0, path)
 		settings.set_editor_value("recent_resources", recent_resources)
 		build_open_menu()
+		parse(true)
 	else:
 		invalid_dialogue_dialog.popup_centered()
 

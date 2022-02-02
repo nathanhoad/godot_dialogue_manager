@@ -7,8 +7,6 @@ signal actioned(next_id)
 const Line = preload("res://addons/dialogue_manager/dialogue_line.gd")
 const MenuItem = preload("res://addons/dialogue_manager/example_balloon/menu_item.tscn")
 
-const SECONDS_PER_CHARACTER = 0.02
-
 
 onready var balloon := $Balloon
 onready var margin := $Balloon/Margin
@@ -33,8 +31,7 @@ func _ready() -> void:
 	else:
 		character_label.visible = false
 	
-	dialogue_label.bbcode_text = dialogue.dialogue
-	dialogue_label.visible_characters = 0
+	dialogue_label.dialogue = dialogue
 	
 	# Show any responses we have
 	responses_menu.is_active = false
@@ -61,18 +58,8 @@ func _ready() -> void:
 	# Show our box
 	balloon.visible = true
 	
-	# Type out text
-	while true:
-		if Input.is_action_pressed("ui_cancel"):
-			dialogue_label.visible_characters = dialogue_label.get_total_character_count()
-			yield(get_tree(), "idle_frame")
-			break
-			
-		dialogue_label.visible_characters += 1
-		if dialogue_label.visible_characters >= dialogue_label.get_total_character_count():
-			break
-		else:
-			yield(get_tree().create_timer(SECONDS_PER_CHARACTER), "timeout")
+	dialogue_label.type_out()
+	yield(dialogue_label, "finished")
 	
 	# Wait for input
 	var next_id: String = ""

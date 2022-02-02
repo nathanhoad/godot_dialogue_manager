@@ -3,7 +3,7 @@
 [ext_resource path="res://addons/dialogue_manager/example_balloon/Open_Sans/OpenSans-Regular.ttf" type="DynamicFontData" id=1]
 
 [sub_resource type="DynamicFont" id=2]
-size = 20
+size = 25
 font_data = ExtResource( 1 )
 
 [node name="Item" type="RichTextLabel"]

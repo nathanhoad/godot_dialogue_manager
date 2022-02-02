@@ -14,6 +14,7 @@ var main_view
 
 
 func _enter_tree() -> void:
+	add_custom_type("DialogueLabel", "RichTextLabel", preload("res://addons/dialogue_manager/dialogue_label.gd"), get_plugin_icon())
 	add_autoload_singleton("DialogueManager", "res://addons/dialogue_manager/dialogue_manager.gd")
 	
 	if Engine.editor_hint:
@@ -26,6 +27,7 @@ func _enter_tree() -> void:
 
 
 func _exit_tree() -> void:
+	remove_custom_type("DialogueLabel")
 	remove_autoload_singleton("DialogueManager")
 	
 	if is_instance_valid(main_view):
@@ -60,4 +62,4 @@ func handles(object) -> bool:
 
 
 func edit(object) -> void:
-	main_view.current_resource = object
+	main_view.open_resource(object)

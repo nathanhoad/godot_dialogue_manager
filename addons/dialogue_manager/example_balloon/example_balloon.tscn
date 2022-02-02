@@ -1,4 +1,4 @@
-[gd_scene load_steps=10 format=2]
+[gd_scene load_steps=12 format=2]
 
 [ext_resource path="res://addons/dialogue_manager/example_balloon/example_balloon.gd" type="Script" id=1]
 [ext_resource path="res://addons/dialogue_manager/example_balloon/menu.tscn" type="PackedScene" id=2]
@@ -6,16 +6,23 @@
 [ext_resource path="res://addons/dialogue_manager/example_balloon/Open_Sans/OpenSans-Regular.ttf" type="DynamicFontData" id=4]
 [ext_resource path="res://addons/dialogue_manager/example_balloon/Open_Sans/OpenSans-Bold.ttf" type="DynamicFontData" id=5]
 [ext_resource path="res://addons/dialogue_manager/example_balloon/Open_Sans/OpenSans-Italic.ttf" type="DynamicFontData" id=6]
+[ext_resource path="res://addons/dialogue_manager/dialogue_label.tscn" type="PackedScene" id=7]
 
 [sub_resource type="DynamicFont" id=1]
-size = 20
+size = 25
 font_data = ExtResource( 4 )
 
-[sub_resource type="DynamicFont" id=3]
+[sub_resource type="DynamicFont" id=5]
+size = 25
 font_data = ExtResource( 6 )
 
-[sub_resource type="DynamicFont" id=4]
+[sub_resource type="DynamicFont" id=6]
+size = 25
 font_data = ExtResource( 5 )
+
+[sub_resource type="DynamicFont" id=7]
+size = 25
+font_data = ExtResource( 4 )
 
 [node name="ExampleBalloon" type="CanvasLayer"]
 layer = 128
@@ -49,7 +56,7 @@ __meta__ = {
 margin_left = 40.0
 margin_top = 10.0
 margin_right = 1880.0
-margin_bottom = 77.0
+margin_bottom = 84.0
 
 [node name="Character" type="RichTextLabel" parent="Balloon/Margin/VBox"]
 modulate = Color( 1, 1, 1, 0.470588 )
@@ -61,24 +68,21 @@ custom_fonts/normal_font = SubResource( 1 )
 bbcode_enabled = true
 scroll_active = false
 
-[node name="Dialogue" type="RichTextLabel" parent="Balloon/Margin/VBox"]
+[node name="Dialogue" parent="Balloon/Margin/VBox" instance=ExtResource( 7 )]
 margin_top = 34.0
 margin_right = 1840.0
-margin_bottom = 63.0
+margin_bottom = 70.0
 custom_colors/default_color = Color( 0, 0, 0, 1 )
-custom_fonts/italics_font = SubResource( 3 )
-custom_fonts/bold_font = SubResource( 4 )
-custom_fonts/normal_font = SubResource( 1 )
-bbcode_enabled = true
+custom_fonts/italics_font = SubResource( 5 )
+custom_fonts/bold_font = SubResource( 6 )
+custom_fonts/normal_font = SubResource( 7 )
 bbcode_text = "This is a bunch of dialogue!"
 text = "This is a bunch of dialogue!"
-fit_content_height = true
-scroll_active = false
 
 [node name="Responses" type="MarginContainer" parent="Balloon/Margin/VBox"]
-margin_top = 67.0
+margin_top = 74.0
 margin_right = 1840.0
-margin_bottom = 67.0
+margin_bottom = 74.0
 custom_constants/margin_left = 40
 __meta__ = {
 "_edit_use_anchors_": false

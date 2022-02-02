@@ -1,0 +1,17 @@
+[gd_scene load_steps=2 format=2]
+
+[ext_resource path="res://addons/dialogue_manager/dialogue_label.gd" type="Script" id=1]
+
+[node name="DialogueLabel" type="RichTextLabel"]
+margin_right = 40.0
+margin_bottom = 40.0
+size_flags_horizontal = 3
+size_flags_vertical = 4
+bbcode_enabled = true
+meta_underlined = false
+fit_content_height = true
+scroll_active = false
+script = ExtResource( 1 )
+__meta__ = {
+"_edit_use_anchors_": false
+}

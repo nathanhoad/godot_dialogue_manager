@@ -13,6 +13,9 @@ var replacements: Array
 
 var responses: Array = []
 
+var pauses: Dictionary = {}
+var speeds: Array = []
+
 
 func _init(data: Dictionary, should_translate: bool = true) -> void:
 	type = data.get("type")
@@ -23,6 +26,21 @@ func _init(data: Dictionary, should_translate: bool = true) -> void:
 			character = data.get("character")
 			dialogue = tr(data.get("text")) if should_translate else data.get("text")
 			replacements = data.get("replacements", [])
+			pauses = data.get("pauses", {})
+			speeds = data.get("speeds", [])
 			
 		Constants.TYPE_MUTATION:
 			mutation = data.get("mutation")
+
+
+func get_pause(index: int) -> float:
+	return pauses.get(index, 0)
+
+
+func get_speed(index: int) -> float:
+	var speed = 1
+	for s in speeds:
+		if s[0] > index:
+			return speed
+		speed = s[1]
+	return speed

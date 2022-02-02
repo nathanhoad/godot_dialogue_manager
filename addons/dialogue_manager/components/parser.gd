@@ -19,6 +19,8 @@ var CONDITION_PARTS_REGEX := RegEx.new()
 var REPLACEMENTS_REGEX := RegEx.new()
 var GOTO_REGEX := RegEx.new()
 var FUNCTION_REGEX := RegEx.new()
+var BB_CODE_REGEX := RegEx.new()
+var MARKER_CODE_REGEX := RegEx.new()
 
 
 func _ready() -> void:
@@ -30,6 +32,8 @@ func _ready() -> void:
 	REPLACEMENTS_REGEX.compile("{{(.*?)}}")
 	GOTO_REGEX.compile("goto # (?<jump_to_title>.*)")
 	FUNCTION_REGEX.compile("(?<function>[a-zA-Z_]+[a-zA-Z_0-9]*)\\((?<args>.*)\\)")
+	BB_CODE_REGEX.compile("\\[[^\\]]+\\]")
+	MARKER_CODE_REGEX.compile("\\[(?<code>wait|\\/?speed)(?<args>[^\\]]+)?\\]")
 
 
 func parse(content: String) -> Dictionary:
@@ -116,7 +120,7 @@ func parse(content: String) -> Dictionary:
 			if not line.has("next_id") or line.get("next_id") == Constants.ID_NULL:
 				var next_nonempty_line_id = get_next_nonempty_line_id(id, raw_lines)
 				if next_nonempty_line_id != Constants.ID_NULL:
-					if get_indent(raw_lines[int(next_nonempty_line_id)]) <= indent_size:
+					if get_indent(raw_lines[next_nonempty_line_id.to_int()]) <= indent_size:
 						line["next_id"] = line.get("next_id_after")
 					else:
 						line["next_id"] = next_nonempty_line_id
@@ -168,9 +172,15 @@ func parse(content: String) -> Dictionary:
 				line["character"] = ""
 				line["text"] = raw_line
 			
-			line["replacements"] = extract_dialogue_replacements(line["text"])
+			line["replacements"] = extract_dialogue_replacements(line.get("text"))
 			if line.get("replacements").size() > 0 and line.get("replacements")[0].get("type") == Constants.TYPE_ERROR:
 				errors.append(error(id, "Invalid expression"))
+			
+			# Extract any BB style codes out of the text
+			var markers = extract_markers(line.get("text"))
+			line["text"] = markers.get("text")
+			line["pauses"] = markers.get("pauses")
+			line["speeds"] = markers.get("speeds")
 		
 		# Work out where to go after this line
 		if line.get("next_id") == Constants.ID_NULL:
@@ -178,9 +188,9 @@ func parse(content: String) -> Dictionary:
 			# it comes next
 			var next_nonempty_line_id = get_next_nonempty_line_id(id, raw_lines)
 			if next_nonempty_line_id != Constants.ID_NULL \
-				and indent_size <= get_indent(raw_lines[int(next_nonempty_line_id)]):
+				and indent_size <= get_indent(raw_lines[next_nonempty_line_id.to_int()]):
 				# The next line is a title so we can end here
-				if raw_lines[int(next_nonempty_line_id)].strip_edges().begins_with("# "):
+				if raw_lines[next_nonempty_line_id.to_int()].strip_edges().begins_with("# "):
 					line["next_id"] = Constants.ID_END_CONVERSATION
 				# Otherwise it's a normal line
 				else:
@@ -214,14 +224,14 @@ func parse(content: String) -> Dictionary:
 		
 		# Line after condition isn't indented once to the right
 		if line.get("type") == Constants.TYPE_CONDITION and is_valid_id(line.get("next_id")):
-			var next_line = raw_lines[int(line.get("next_id"))]
+			var next_line = raw_lines[line.get("next_id").to_int()]
 			if next_line != null and get_indent(next_line) != indent_size + 1:
-				errors.append(error(int(line.get("next_id")), "Invalid indentation"))
+				errors.append(error(line.get("next_id").to_int(), "Invalid indentation"))
 		# Line after normal line is indented to the right
 		elif line.get("type") in [Constants.TYPE_TITLE, Constants.TYPE_DIALOGUE, Constants.TYPE_MUTATION, Constants.TYPE_GOTO] and is_valid_id(line.get("next_id")):
-			var next_line = raw_lines[int(line.get("next_id"))]
+			var next_line = raw_lines[line.get("next_id").to_int()]
 			if next_line != null and get_indent(next_line) > indent_size:
-				errors.append(error(int(line.get("next_id")), "Invalid indentation"))
+				errors.append(error(line.get("next_id").to_int(), "Invalid indentation"))
 		
 		# Parsing condition failed
 		if line.has("condition"):
@@ -599,7 +609,76 @@ func extract_goto(line: String, titles: Dictionary) -> String:
 		return titles.get(title)
 	else:
 		return Constants.ID_ERROR
+
+
+func extract_markers(line: String) -> Dictionary:
+	var text = line
+	var pauses = {}
+	var speeds = []
+	var bb_codes = []
+	var index_map = {}
 	
+	# Extract all of the BB codes so that we know the actual text (we could do this easier with
+	# a RichTextLabel but then we'd need to await idle_frame which is annoying)
+	var founds = BB_CODE_REGEX.search_all(text)
+	if founds:
+		for found in founds:
+			var code = found.strings[0]
+			# Ignore our own markers
+			if code.begins_with("[wait") or code.begins_with("[speed") or code.begins_with("[/speed"):
+				continue
+			bb_codes.append([found.get_start(), code])
+
+	for i in range(bb_codes.size() - 1, -1, -1):
+		text.erase(bb_codes[i][0], bb_codes[i][1].length())
+	
+	var found = MARKER_CODE_REGEX.search(text)
+	var limit = 0
+	while found and limit < 1000:
+		limit += 1
+		var index = text.find(found.strings[0])
+		var code = found.strings[found.names.get("code")]
+		var raw_args = ""
+		var args = {}
+		if found.names.has("args"):
+			# Could be something like:
+			# 	"=1.0"
+			# 	" rate=20 level=10"
+			raw_args = found.strings[found.names.get("args")]
+			if raw_args[0] == "=":
+				raw_args = "value" + raw_args
+			for pair in raw_args.strip_edges().split(" "):
+				var bits = pair.split("=")
+				args[bits[0]] = bits[1]
+			
+		match code:
+			"wait":
+				pauses[index] = args.get("value").to_float()
+			"speed":
+				speeds.append([index, args.get("value").to_float()])
+			"/speed":
+				speeds.append([index, 1.0])
+		
+		var length = found.strings[0].length()
+		
+		# Find any BB codes that are after this index and remove the length from their start
+		for bb_code in bb_codes:
+			if bb_code[0] > length:
+				bb_code[0] -= length
+		
+		text.erase(index, length)
+		found = MARKER_CODE_REGEX.search(text)
+	
+	# Put the BB Codes back in
+	for bb_code in bb_codes:
+		text = text.insert(bb_code[0], bb_code[1])
+	
+	return {
+		"text": text,
+		"pauses": pauses,
+		"speeds": speeds
+	}
+
 
 func tokenise(input: String) -> Array:
 	var tokens = []
