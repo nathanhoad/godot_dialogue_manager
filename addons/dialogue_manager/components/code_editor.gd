@@ -28,13 +28,13 @@ func _ready() -> void:
 	menu.connect("index_pressed", self, "_on_menu_index_pressed")
 	menu.add_separator()
 	
-	menu.add_icon_item(get_icon("VisualScriptComment", "EditorIcons"), "Go to # " + current_goto_title, 101,  KEY_MASK_CTRL | KEY_MASK_SHIFT | KEY_G)
+	menu.add_item("Go to ~ " + current_goto_title, 101,  KEY_MASK_CTRL | KEY_MASK_SHIFT | KEY_G)
 	GOTO_ITEM_INDEX = menu.get_item_index(101)
 	
-	menu.add_icon_item(get_icon("VisualScriptComment", "EditorIcons"), "Create # " + current_goto_title, 102, KEY_MASK_CTRL | KEY_MASK_SHIFT | KEY_C)
+	menu.add_item("Create ~ " + current_goto_title, 102, KEY_MASK_CTRL | KEY_MASK_SHIFT | KEY_C)
 	CREATE_ITEM_INDEX = menu.get_item_index(102)
 	
-	menu.add_icon_item(get_icon("Search", "EditorIcons"), "Choose a goto node...", 103,  KEY_MASK_CTRL | KEY_MASK_SHIFT | KEY_SPACE)
+	menu.add_icon_item(get_icon("Search", "EditorIcons"), "Choose a jump target...", 103,  KEY_MASK_CTRL | KEY_MASK_SHIFT | KEY_SPACE)
 	PICK_ITEM_INDEX = menu.get_item_index(103)
 	
 	# Set up choose title dialog
@@ -52,10 +52,10 @@ func _ready() -> void:
 	var dialogue_color = get_color("mono_color", "Editor")
 	
 	# Title
-	add_color_region("#", "#", title_color, true)
+	add_color_region("~", "~", title_color, true)
 	
 	# Comments
-	add_color_region("//", "//", comment_color, true)
+	add_color_region("#", "##", comment_color, true)
 	
 	# Conditions
 	add_keyword_color("if", condition_color)
@@ -78,7 +78,7 @@ func _ready() -> void:
 	add_color_override("function_color", mutation_color)
 	
 	# Jumps
-	add_keyword_color("goto", goto_color)
+	add_color_region("=>", "<=", goto_color, true)
 	
 	# Dialogue
 	add_color_region(": ", "::", dialogue_color, true)
@@ -112,7 +112,7 @@ func get_titles() -> Array:
 	var titles = PoolStringArray([])
 	var lines = text.split("\n")
 	for line in lines:
-		if line.begins_with("# "):
+		if line.begins_with("~ "):
 			titles.append(line.substr(2).strip_edges())
 	return titles
 
@@ -120,13 +120,13 @@ func get_titles() -> Array:
 func go_to_title(title: String) -> void:
 	var lines = text.split("\n")
 	for i in range(0, lines.size()):
-		if lines[i].strip_edges() == "# " + title:
+		if lines[i].strip_edges() == "~ " + title:
 			cursor_set_line(i)
 			center_viewport_to_cursor()
 
 
 func create_title(title: String) -> void:
-	text = text + "\n\n# " + title + "\n\nCharacter: This is a new node."
+	text = text + "\n\n~ " + title + "\n\nCharacter: This is a new node."
 	emit_signal("text_changed")
 	cursor_set_line(get_line_count() - 1)
 
@@ -136,8 +136,8 @@ func check_active_title() -> void:
 	var lines = text.split("\n")
 	# Look at each line above this one to find the next title line
 	for i in range(line_number, -1, -1):
-		if lines[i].begins_with("# "):
-			emit_signal("active_title_changed", lines[i].replace("# ", ""))
+		if lines[i].begins_with("~ "):
+			emit_signal("active_title_changed", lines[i].replace("~ ", ""))
 			active_title_id = i
 			break
 
@@ -148,13 +148,13 @@ func update_current_goto_title() -> void:
 	
 	# If we are on a goto line then make a note of the title and the line
 	# of the target title (if it exists)
-	if "goto #" in current_line:
-		current_goto_title = current_line.substr(current_line.find("goto #") + 7)
+	if "=> " in current_line:
+		current_goto_title = current_line.substr(current_line.find("=> ") + 3).strip_edges()
 		# Check if title exists
 		current_goto_line = -1
 		var lines = text.split("\n")
 		for i in range(0, lines.size()):
-			if lines[i].strip_edges() == "# " + current_goto_title:
+			if lines[i].strip_edges() == "~ " + current_goto_title:
 				current_goto_line = i
 				break
 	
@@ -183,9 +183,9 @@ func _on_menu_about_to_show():
 		# Otherwise we can either go to the title or create it if it doesn't
 		# exist.
 		else:
-			menu.set_item_text(GOTO_ITEM_INDEX, "Jump to # " + current_goto_title)
+			menu.set_item_text(GOTO_ITEM_INDEX, "Jump to ~ " + current_goto_title)
 			menu.set_item_disabled(GOTO_ITEM_INDEX, current_goto_line == -1)
-			menu.set_item_text(CREATE_ITEM_INDEX, "Create # " + current_goto_title)
+			menu.set_item_text(CREATE_ITEM_INDEX, "Create ~ " + current_goto_title)
 			menu.set_item_disabled(CREATE_ITEM_INDEX, current_goto_line > -1)
 		menu.set_item_disabled(PICK_ITEM_INDEX, false)
 		
@@ -213,7 +213,7 @@ func _on_menu_index_pressed(index):
 func _on_title_chosen(title):
 	var cursor_line = cursor_get_line()
 	var line: String = get_line(cursor_line)
-	line = line.substr(0, line.find("goto #") + 6)
+	line = line.substr(0, line.find("=> ") + 2)
 	
 	set_line(cursor_line, line + " " + title)
 	current_goto_title = title

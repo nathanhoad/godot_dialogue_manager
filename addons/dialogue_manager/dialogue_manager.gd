@@ -48,10 +48,15 @@ func _ready() -> void:
 func get_next_dialogue_line(key: String, override_resource: DialogueResource = null) -> Line:
 	cleanup()
 	
+	# Fix up any keys that have spaces in them
+	key = key.replace(" ", "_").strip_edges()
+	
 	# You have to provide a dialogue resource
 	assert(resource != null or override_resource != null, "No dialogue resource provided")
 	
 	var local_resource: DialogueResource = (override_resource if override_resource != null else resource)
+	
+	assert(local_resource.syntax_version == Constants.SYNTAX_VERSION, "This dialogue resource is older than the runtime expects.")
 	
 	if local_resource.errors.size() > 0:
 		# Store in a local var for debugger convenience
@@ -419,12 +424,17 @@ func resolve(tokens: Array):
 				
 	if limit >= 1000:
 		assert(false, "Something went wrong")
-		
+	
 	return tokens[0].get("value")
 
 
 func compare(operator: String, first_value, second_value):
 	match operator:
+		"in":
+			if first_value == null or second_value == null:
+				return false
+			else:
+				return first_value in second_value
 		"<":
 			if first_value == null:
 				return true

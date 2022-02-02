@@ -9,6 +9,7 @@ export var _settings := NodePath()
 
 onready var settings = get_node(_settings)
 
+var VALID_TITLE_REGEX := RegEx.new()
 var TRANSLATION_REGEX := RegEx.new()
 var MUTATION_REGEX := RegEx.new()
 var CONDITION_REGEX := RegEx.new()
@@ -23,12 +24,13 @@ var TOKEN_DEFINITIONS: Dictionary = {}
 
 
 func _ready() -> void:
+	VALID_TITLE_REGEX.compile("^[a-zA-Z_0-9]+$")
 	TRANSLATION_REGEX.compile("\\[TR:(?<tr>.*?)\\]")
 	MUTATION_REGEX.compile("(do|set) ((?<lhs>[a-z_A-Z][a-z_A-Z0-9]+) ?(?<operator>\\+=|-=|\\*=\\/=|=) ? (?<rhs>.*)|(?<function>[a-z_A-Z][a-z_A-Z0-9]+)\\((?<args>.*)\\))")
 	WRAPPED_CONDITION_REGEX.compile("\\[if (?<condition>.*)\\]")
 	CONDITION_REGEX.compile("(if|elif) (?<condition>.*)")
 	REPLACEMENTS_REGEX.compile("{{(.*?)}}")
-	GOTO_REGEX.compile("goto # (?<jump_to_title>.*)")
+	GOTO_REGEX.compile("=> (?<jump_to_title>.*)")
 	BB_CODE_REGEX.compile("\\[[^\\]]+\\]")
 	MARKER_CODE_REGEX.compile("\\[(?<code>wait|\\/?speed)(?<args>[^\\]]+)?\\]")
 	
@@ -65,7 +67,7 @@ func parse(content: String) -> Dictionary:
 	
 	# Find all titles first
 	for id in range(0, raw_lines.size()):
-		if raw_lines[id].begins_with("# "):
+		if raw_lines[id].begins_with("~ "):
 			var title = raw_lines[id].substr(2).strip_edges()
 			if titles.has(title):
 				errors.append(error(id, "Duplicate title"))
@@ -116,7 +118,7 @@ func parse(content: String) -> Dictionary:
 			parent_stack.append(str(id))
 			if " [if " in raw_line:
 				line["condition"] = extract_condition(raw_line, true)
-			if " goto #" in raw_line:
+			if " => " in raw_line:
 				line["next_id"] = extract_goto(raw_line, titles)
 			line["text"] = extract_response(raw_line)
 			
@@ -146,9 +148,12 @@ func parse(content: String) -> Dictionary:
 				errors.append(error(id, "Invalid expression"))
 		
 		# Title
-		elif raw_line.begins_with("# "):
+		elif raw_line.begins_with("~ "):
 			line["type"] = Constants.TYPE_TITLE
-			line["text"] = raw_line.replace("# ", "")
+			line["text"] = raw_line.replace("~ ", "")
+			var valid_title = VALID_TITLE_REGEX.search(raw_line.substr(2).strip_edges())
+			if not valid_title:
+				errors.append(error(id, "Titles can only contain alphanumerics and underscores"))
 		
 		# Condition
 		elif raw_line.begins_with("if ") or raw_line.begins_with("elif "):
@@ -173,7 +178,7 @@ func parse(content: String) -> Dictionary:
 			line["mutation"] = extract_mutation(raw_line)
 		
 		# Goto
-		elif raw_line.begins_with("goto #"):
+		elif raw_line.begins_with("=> "):
 			line["type"] = Constants.TYPE_GOTO
 			line["next_id"] = extract_goto(raw_line, titles)
 		
@@ -206,7 +211,7 @@ func parse(content: String) -> Dictionary:
 			if next_nonempty_line_id != Constants.ID_NULL \
 				and indent_size <= get_indent(raw_lines[next_nonempty_line_id.to_int()]):
 				# The next line is a title so we can end here
-				if raw_lines[next_nonempty_line_id.to_int()].strip_edges().begins_with("# "):
+				if raw_lines[next_nonempty_line_id.to_int()].strip_edges().begins_with("~ "):
 					line["next_id"] = Constants.ID_END_CONVERSATION
 				# Otherwise it's a normal line
 				else:
@@ -287,7 +292,7 @@ func is_line_empty(line: String) -> bool:
 	
 	if line == "": return true
 	if line == "endif": return true
-	if line.begins_with("//"): return true
+	if line.begins_with("# "): return true
 	
 	return false
 
@@ -336,7 +341,7 @@ func find_next_condition_sibling(line_number: int, all_lines: Array) -> String:
 		if is_line_empty(line): continue
 		
 		var l = line.strip_edges()
-		if l.begins_with("# "):
+		if l.begins_with("~ "):
 			return Constants.ID_END_CONVERSATION
 			
 		elif get_indent(line) < expected_indent:
@@ -369,7 +374,7 @@ func find_next_line_after_conditions(line_number: int, all_lines: Array, dialogu
 		var line_indent = get_indent(line)
 		line = line.strip_edges()
 		
-		if line.begins_with("# "):
+		if line.begins_with("~ "):
 			return Constants.ID_END_CONVERSATION
 			
 		elif line_indent > expected_indent:
@@ -406,7 +411,7 @@ func find_next_line_after_responses(line_number: int, all_lines: Array) -> Strin
 		line = line.strip_edges()
 		
 		# We hit a title so the next line is the end of the conversation
-		if line.begins_with("# "):
+		if line.begins_with("~ "):
 			return Constants.ID_END_CONVERSATION
 		
 		# Another option so we continue
@@ -438,8 +443,8 @@ func extract_response(line: String) -> String:
 	line = line.replace("- ", "")
 	if " [if " in line:
 		line = line.substr(0, line.find(" [if "))
-	if " goto #" in line:
-		line = line.substr(0, line.find(" goto #"))
+	if " =>" in line:
+		line = line.substr(0, line.find(" =>"))
 	
 	return line.strip_edges()
 
@@ -526,7 +531,7 @@ func extract_goto(line: String, titles: Dictionary) -> String:
 	
 	if found == null: return Constants.ID_ERROR
 	
-	var title = found.strings[found.names.get("jump_to_title")]
+	var title = found.strings[found.names.get("jump_to_title")].strip_edges()
 	
 	# "goto # END" means end the conversation
 	if title == "END": 
@@ -713,7 +718,10 @@ func tokens_to_function_args(tokens: Array) -> Array:
 			current_arg = []
 		else:
 			current_arg.append(token)
-	args.append(current_arg)
+			
+	if current_arg.size() > 0:
+		args.append(current_arg)
+		
 	return args
 
 

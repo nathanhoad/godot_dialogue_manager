@@ -1,6 +1,7 @@
 extends Node
 
 
+const SYNTAX_VERSION = 2
 const CONFIG_PATH = "res://dialogue.cfg"
 
 # Token types

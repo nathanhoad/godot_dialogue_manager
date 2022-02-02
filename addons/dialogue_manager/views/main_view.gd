@@ -127,6 +127,7 @@ func get_nice_file(file: String) -> String:
 
 func open_resource(resource: DialogueResource) -> void:
 	parse(true)
+	apply_upgrades(resource)
 	set_resource(resource)
 	# Add this to our list of recent resources
 	if resource.resource_path in recent_resources:
@@ -146,12 +147,29 @@ func open_resource_from_path(path: String) -> void:
 		invalid_dialogue_dialog.popup_centered()
 
 
+func apply_upgrades(resource: DialogueResource) -> void:
+	var lines = resource.raw_text.split("\n")
+	for i in range(0, lines.size()):
+		var line: String = lines[i]
+		if resource.syntax_version == 0:
+			if line.begins_with("# "):
+				line = "~ " + line.substr(2).replace(" ", "_")
+			line = line.replace("// ", "# ")
+			if "goto #" in line:
+				var index = line.find("goto # ")
+				line = line.substr(0, index) + "=> " + line.substr(index + 7).replace(" ", "_")
+		lines[i] = line
+	
+	resource.raw_text = lines.join("\n")
+	
+
 func parse(force_show_errors: bool = false) -> void:
 	if not current_resource: return
 	if not has_changed and not force_show_errors: return
 	
 	var result = parser.parse(editor.text)
 	
+	current_resource.syntax_version = Constants.SYNTAX_VERSION
 	current_resource.titles = result.get("titles")
 	current_resource.lines = result.get("lines")
 	current_resource.errors = result.get("errors")
