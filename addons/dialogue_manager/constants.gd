@@ -3,6 +3,24 @@ extends Node
 
 const CONFIG_PATH = "res://dialogue.cfg"
 
+# Token types
+
+const TOKEN_FUNCTION = "function"
+const TOKEN_GROUP = "group"
+const TOKEN_BRACKET_OPEN = "bracket_open"
+const TOKEN_BRACKET_CLOSE = "bracket_close"
+const TOKEN_COMPARISON = "comparison"
+const TOKEN_OPERATOR = "operator"
+const TOKEN_COMMA = "comma"
+const TOKEN_BOOL = "bool"
+const TOKEN_AND_OR = "and_or"
+const TOKEN_STRING = "string"
+const TOKEN_NUMBER = "number"
+const TOKEN_VARIABLE = "variable"
+
+const TOKEN_ERROR = "error"
+
+# Line types
 
 const TYPE_UNKNOWN = "unknown"
 const TYPE_RESPONSE = "response"
@@ -13,10 +31,9 @@ const TYPE_GOTO = "goto"
 const TYPE_DIALOGUE = "dialogue"
 const TYPE_ERROR = "error"
 
-const TYPE_FUNCTION = "function"
-const TYPE_EXPRESSION = "expression"
-
 const TYPE_ELSE = "else"
+
+# Line IDs
 
 const ID_NULL = ""
 const ID_ERROR = "error"

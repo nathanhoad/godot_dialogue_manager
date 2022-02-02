@@ -124,6 +124,7 @@ margin_right = 786.0
 margin_bottom = 24.0
 hint_tooltip = "Open a dialogue file"
 icon = SubResource( 2 )
+items = [ "Open...", SubResource( 2 ), 0, false, false, 0, 0, null, "", false, "", null, 0, false, false, -1, 0, null, "", true, "res://test_dialogue.tres", SubResource( 2 ), 0, false, false, 2, 0, null, "", false, "res://assets/dialogue/town.tres", SubResource( 2 ), 0, false, false, 3, 0, null, "", false, "", null, 0, false, false, -1, 0, null, "", true, "Clear recent files", null, 0, false, false, 5, 0, null, "", false ]
 
 [node name="VSeparator" type="VSeparator" parent="Margin/VBox/Toolbar"]
 margin_left = 790.0
@@ -270,7 +271,6 @@ _settings = NodePath("../Settings")
 [connection signal="title_clicked" from="Margin/VBox/Content/VBox/TitleList" to="." method="_on_TitleList_title_clicked"]
 [connection signal="error_pressed" from="Margin/VBox/Content/VBox/ErrorList" to="." method="_on_ErrorList_error_pressed"]
 [connection signal="active_title_changed" from="Margin/VBox/Content/CodeEditor" to="." method="_on_CodeEditor_active_title_changed"]
-[connection signal="focus_exited" from="Margin/VBox/Content/CodeEditor" to="." method="_on_CodeEditor_focus_exited"]
 [connection signal="text_changed" from="Margin/VBox/Content/CodeEditor" to="." method="_on_CodeEditor_text_changed"]
 [connection signal="file_selected" from="NewDialogueDialog" to="." method="_on_NewDialogueDialog_file_selected"]
 [connection signal="confirmed" from="OpenDialogueDialog" to="." method="_on_OpenDialogueDialog_confirmed"]

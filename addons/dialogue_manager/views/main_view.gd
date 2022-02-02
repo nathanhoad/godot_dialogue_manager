@@ -125,18 +125,23 @@ func get_nice_file(file: String) -> String:
 		return "%s/%s" % [bits[bits.size() - 2], bits[bits.size() - 1]]
 
 
-func open_resource(path: String) -> void:
+func open_resource(resource: DialogueResource) -> void:
 	parse(true)
+	set_resource(resource)
+	# Add this to our list of recent resources
+	if resource.resource_path in recent_resources:
+		recent_resources.erase(resource.resource_path)
+	recent_resources.insert(0, resource.resource_path)
+	settings.set_editor_value("recent_resources", recent_resources)
+	build_open_menu()
+	parse(true)
+
+
+
+func open_resource_from_path(path: String) -> void:
 	var resource = load(path)
 	if resource is DialogueResource:
-		set_resource(resource)
-		# Add this to our list of recent resources
-		if path in recent_resources:
-			recent_resources.erase(path)
-		recent_resources.insert(0, path)
-		settings.set_editor_value("recent_resources", recent_resources)
-		build_open_menu()
-		parse(true)
+		open_resource(resource)
 	else:
 		invalid_dialogue_dialog.popup_centered()
 
@@ -294,7 +299,7 @@ func _on_open_menu_index_pressed(index):
 			settings.set_editor_value("recent_resources", recent_resources)
 			build_open_menu()
 		_:
-			open_resource(item)
+			open_resource_from_path(item)
 
 
 func _on_translation_menu_id_pressed(id):
@@ -322,7 +327,7 @@ func _on_NewDialogueDialog_file_selected(path):
 	ResourceSaver.save(path, resource)
 	if resource.resource_path == "":
 		resource.resource_path = path
-	set_resource(resource)
+	open_resource(resource)
 
 
 func _on_FileLabel_pressed():
@@ -350,11 +355,11 @@ func _on_TitleList_title_clicked(title):
 
 
 func _on_OpenDialogueDialog_file_selected(path):
-	open_resource(path)
+	open_resource_from_path(path)
 
 
 func _on_OpenDialogueDialog_confirmed():
-	open_resource(open_dialogue_dialog.current_path)
+	open_resource_from_path(open_dialogue_dialog.current_path)
 
 
 func _on_SettingsDialog_popup_hide():
@@ -380,10 +385,6 @@ func _on_UpdateChecker_has_update(version, url):
 
 func _on_UpdateButton_pressed():
 	OS.shell_open(update_checker.plugin_url)
-
-
-func _on_CodeEditor_focus_exited():
-	parse()
 
 
 func _on_ErrorButton_pressed():

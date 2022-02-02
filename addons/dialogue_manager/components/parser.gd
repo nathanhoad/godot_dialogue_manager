@@ -4,8 +4,6 @@ extends Node
 
 const Constants = preload("res://addons/dialogue_manager/constants.gd")
 
-const FUNCTION_VARIABLE_NUMBER_OR_STRING = "([a-zA-Z_][a-zA-Z_0-9]+\\(.*\\)|[a-zA-Z_][a-zA-Z_0-9]+|[\\-0-9\\.]+|\".+?\")"
-
 
 export var _settings := NodePath()
 
@@ -18,22 +16,40 @@ var WRAPPED_CONDITION_REGEX := RegEx.new()
 var CONDITION_PARTS_REGEX := RegEx.new()
 var REPLACEMENTS_REGEX := RegEx.new()
 var GOTO_REGEX := RegEx.new()
-var FUNCTION_REGEX := RegEx.new()
 var BB_CODE_REGEX := RegEx.new()
 var MARKER_CODE_REGEX := RegEx.new()
+
+var TOKEN_DEFINITIONS: Dictionary = {}
 
 
 func _ready() -> void:
 	TRANSLATION_REGEX.compile("\\[TR:(?<tr>.*?)\\]")
-	MUTATION_REGEX.compile("(do|set) (?<lhs>" + FUNCTION_VARIABLE_NUMBER_OR_STRING + ") ?(?<operator>=|\\+=|-=|\\*=|\\/=)? ?(?<rhs>.+)?")
+	MUTATION_REGEX.compile("(do|set) ((?<lhs>[a-z_A-Z][a-z_A-Z0-9]+) ?(?<operator>\\+=|-=|\\*=\\/=|=) ? (?<rhs>.*)|(?<function>[a-z_A-Z][a-z_A-Z0-9]+)\\((?<args>.*)\\))")
 	WRAPPED_CONDITION_REGEX.compile("\\[if (?<condition>.*)\\]")
 	CONDITION_REGEX.compile("(if|elif) (?<condition>.*)")
-	CONDITION_PARTS_REGEX.compile("(?<lhs>" + FUNCTION_VARIABLE_NUMBER_OR_STRING + ") ?(?<operator>==|<=|>=|<|>|!=|<>|in)? ?(?<rhs>.+)?")
 	REPLACEMENTS_REGEX.compile("{{(.*?)}}")
 	GOTO_REGEX.compile("goto # (?<jump_to_title>.*)")
-	FUNCTION_REGEX.compile("(?<function>[a-zA-Z_]+[a-zA-Z_0-9]*)\\((?<args>.*)\\)")
 	BB_CODE_REGEX.compile("\\[[^\\]]+\\]")
 	MARKER_CODE_REGEX.compile("\\[(?<code>wait|\\/?speed)(?<args>[^\\]]+)?\\]")
+	
+	# Build our list of tokeniser tokens
+	var tokens = {
+		Constants.TOKEN_FUNCTION: "^[a-zA-Z_][a-zA-Z_0-9]+\\(",
+		Constants.TOKEN_BRACKET_OPEN: "^\\(",
+		Constants.TOKEN_BRACKET_CLOSE: "^\\)",
+		Constants.TOKEN_COMPARISON: "^(==|<=|>=|<|>|!=|in )",
+		Constants.TOKEN_OPERATOR: "^(\\+|-|\\*|/)",
+		Constants.TOKEN_COMMA: "^,",
+		Constants.TOKEN_BOOL: "^(true|false)",
+		Constants.TOKEN_AND_OR: "^(and|or)( |$)",
+		Constants.TOKEN_STRING: "^\".*?\"",
+		Constants.TOKEN_NUMBER: "^\\-?\\d+(\\.\\d+)?",
+		Constants.TOKEN_VARIABLE: "^[a-zA-Z_][a-zA-Z_0-9]+",
+	}
+	for key in tokens.keys():
+		var regex = RegEx.new()
+		regex.compile(tokens.get(key))
+		TOKEN_DEFINITIONS[key] = regex
 
 
 func parse(content: String) -> Dictionary:
@@ -126,7 +142,7 @@ func parse(content: String) -> Dictionary:
 						line["next_id"] = next_nonempty_line_id
 				
 			line["replacements"] = extract_dialogue_replacements(line.get("text"))
-			if line.get("replacements").size() > 0 and line.get("replacements")[0].get("type") == Constants.TYPE_ERROR:
+			if line.get("replacements").size() > 0 and line.get("replacements")[0].has("error"):
 				errors.append(error(id, "Invalid expression"))
 		
 		# Title
@@ -173,7 +189,7 @@ func parse(content: String) -> Dictionary:
 				line["text"] = raw_line
 			
 			line["replacements"] = extract_dialogue_replacements(line.get("text"))
-			if line.get("replacements").size() > 0 and line.get("replacements")[0].get("type") == Constants.TYPE_ERROR:
+			if line.get("replacements").size() > 0 and line.get("replacements")[0].has("error"):
 				errors.append(error(id, "Invalid expression"))
 			
 			# Extract any BB style codes out of the text
@@ -234,18 +250,12 @@ func parse(content: String) -> Dictionary:
 				errors.append(error(line.get("next_id").to_int(), "Invalid indentation"))
 		
 		# Parsing condition failed
-		if line.has("condition"):
-			if line.get("condition").has("lhs_error"):
-				errors.append(error(id, line.get("condition").get("lhs_error")))
-			if line.get("condition").has("rhs_error"):
-				errors.append(error(id, line.get("condition").get("rhs_error")))
+		if line.has("condition") and line.get("condition").has("error"):
+			errors.append(error(id, line.get("condition").get("error")))
 			
 		# Parsing mutation failed
-		elif line.has("mutation"):
-			if line.get("mutation").has("lhs_error"):
-				errors.append(error(id, line.get("mutation").get("lhs_error")))
-			if line.get("mutation").has("rhs_error"):
-				errors.append(error(id, line.get("mutation").get("rhs_error")))
+		elif line.has("mutation") and line.get("mutation").has("error"):
+			errors.append(error(id, line.get("mutation").get("error")))
 		
 		# Line failed to parse at all
 		if line.get("type") == Constants.TYPE_UNKNOWN:
@@ -435,64 +445,37 @@ func extract_response(line: String) -> String:
 
 
 func extract_mutation(line: String) -> Dictionary:
-	var mutation := {}
-	
 	var found = MUTATION_REGEX.search(line)
 	
 	if not found:
-		mutation["lhs_type"] = Constants.TYPE_ERROR
-		mutation["lhs_error"] = "Invalid mutation"
-		return mutation
+		return { "error": "Invalid mutation" }
 	
-	var lhs = found.strings[found.names.get("lhs")]
-	if "(" in lhs:
-		# Cannot assign to a function
-		if found.names.has("operator") or found.names.has("rhs"):
-			mutation["lhs_type"] = Constants.TYPE_ERROR
-			return mutation
+	# If the mutation starts with a function then grab it and and parse
+	# the args as expressions
+	if found.names.has("function"):
+		var expression = tokenise(found.strings[found.names.get("args")])
+		if expression.size() > 0 and expression[0].get("type") == Constants.TYPE_ERROR:
+			return { "error": "Invalid function arguments" }
+
+		return {
+			"function": found.strings[found.names.get("function")],
+			"args": tokens_to_function_args(expression)
+		}
+	
+	# Otherwise we are setting a variable so expressionise its new value
+	elif found.names.has("lhs"):
+		var expression = tokenise(found.strings[found.names.get("rhs")])
+		if expression[0].get("type") == Constants.TYPE_ERROR:
+			return { "error": "Invalid expression for value" }
 		
-		var function = extract_function(lhs)
-		if function.get("name") == "":
-			mutation["lhs_type"] = Constants.TYPE_ERROR
-			mutation["lhs_error"] = "Invalid function"
-			return mutation
-		mutation["lhs_type"] = Constants.TYPE_FUNCTION
-		mutation["lhs_function"] = function.get("name")
-		mutation["lhs_args"] = function.get("args")
+		return {
+			"variable": found.strings[found.names.get("lhs")],
+			"operator": found.strings[found.names.get("operator")],
+			"expression": expression
+		}
+	
 	else:
-		mutation["lhs_type"] = Constants.TYPE_EXPRESSION
-		mutation["lhs"] = lhs.strip_edges()
-	
-	# Bad right hand side or missing operator
-	if (found.names.has("operator") and not found.names.has("rhs")) \
-		or (found.names.has("rhs") and not found.names.has("operator")):
-		mutation["rhs_type"] = Constants.TYPE_ERROR
-		return mutation
-	
-	# We have a valid operator and rhs
-	if found.names.has("operator") and found.names.has("rhs"):
-		mutation["operator"] = found.strings[found.names.get("operator")]
-		var rhs = found.strings[found.names.get("rhs")]
-		var rhs_function = extract_function(rhs)
-		if rhs_function.get("name") != "":
-			mutation["rhs_type"] = Constants.TYPE_FUNCTION
-			mutation["rhs_function"] = rhs_function.get("name")
-			mutation["rhs_args"] = rhs_function.get("args")
-		else:
-			mutation["rhs_type"] = Constants.TYPE_EXPRESSION
-			var tokens = tokenise(rhs)
-			if tokens[0].get("type") == Constants.TYPE_ERROR:
-				mutation["rhs_type"] = Constants.TYPE_ERROR
-				mutation["rhs_error"] = tokens[0].get("value")
-			else:
-				mutation["rhs"] = tokens
-	
-	# Error checking
-	if mutation["lhs_type"] == Constants.TYPE_EXPRESSION and mutation["operator"] == "":
-		mutation["rhs_type"] = Constants.TYPE_ERROR
-		mutation["rhs_error"] = "Missing value"
-	
-	return mutation
+		return { "error": "Invalid mutation" }
 
 
 func extract_condition(raw_line: String, is_wrapped: bool = false) -> Dictionary:
@@ -502,66 +485,17 @@ func extract_condition(raw_line: String, is_wrapped: bool = false) -> Dictionary
 	var found = regex.search(raw_line)
 	
 	if found == null:
-		condition["lhs_type"] = Constants.TYPE_ERROR
-		condition["lhs_error"] = "Incomplete condition"
-		return condition
+		return { "error": "Incomplete condition" }
 	
 	var raw_condition = found.strings[found.names.get("condition")]
+	var expression = tokenise(raw_condition)
 	
-	# Split it into parts first
-	found = CONDITION_PARTS_REGEX.search(raw_condition)
+	if expression[0].get("type") == Constants.TYPE_ERROR:
+		return { "error": expression[0].get("value") }
 	
-	var lhs = found.strings[found.names.get("lhs")]
-	var lhs_function = extract_function(lhs)
-	if lhs_function["name"] != "":
-		condition["lhs_type"] = Constants.TYPE_FUNCTION
-		condition["lhs_function"] = lhs_function.get("name")
-		condition["lhs_args"] = lhs_function.get("args")
-	else:
-		condition["lhs_type"] = Constants.TYPE_EXPRESSION
-		condition["lhs"] = lhs.strip_edges()
-	
-	# Bad right hand side or missing operator
-	if (found.names.has("operator") and not found.names.has("rhs")) \
-		or (found.names.has("rhs") and not found.names.has("operator")):
-		condition["rhs_type"] = Constants.TYPE_ERROR
-		condition["rhs_error"] = "Invalid comparison condition"
-		return condition
-	
-	# We have a valid operator and rhs
-	if found.names.has("operator") and found.names.has("rhs"):
-		condition["operator"] = found.strings[found.names.get("operator")]
-		var rhs = found.strings[found.names.get("rhs")]
-		var rhs_function = extract_function(rhs)
-		if rhs_function["name"]:
-			condition["rhs_type"] = Constants.TYPE_FUNCTION
-			condition["rhs_function"] = rhs_function.get("name")
-			condition["rhs_args"] = rhs_function.get("args")
-		else:
-			condition["rhs_type"] = Constants.TYPE_EXPRESSION
-			var tokens = tokenise(rhs)
-			if tokens[0].get("type") == Constants.TYPE_ERROR:
-				condition["rhs_type"] = Constants.TYPE_ERROR
-				condition["rhs_error"] = tokens[0].get("value")
-			else:
-				condition["rhs"] = tokens
-	
-	return condition
-
-
-func extract_function(string: String) -> Dictionary:
-	var found = FUNCTION_REGEX.search(string)
-	if not found:
-		return {
-			"name": "",
-			"args": []
-		}
-	else:
-		var args = found.strings[found.names.get("args")]
-		return {
-			"name": found.strings[found.names.get("function")],
-			"args": [] if args == "" else args.split(", ")
-		}
+	return {
+		"expression": expression
+	}
 
 
 func extract_dialogue_replacements(text: String) -> Array:
@@ -572,24 +506,16 @@ func extract_dialogue_replacements(text: String) -> Array:
 	
 	var replacements: Array = []
 	for found in founds:
+		var replacement: Dictionary = {}
 		var value_in_text = found.strings[1]
-		var replacement := {
-			"value_in_text": "{{%s}}" % value_in_text
-		}
-		var function = extract_function(value_in_text)
-		if function.get("name") != "":
-			replacement["type"] = Constants.TYPE_FUNCTION
-			replacement["function"] = function.get("name")
-			replacement["args"] = function.get("args")
+		var expression = tokenise(value_in_text)
+		if expression[0].get("type") == Constants.TYPE_ERROR:
+			replacement = { "error": expression[0].get("value") }
 		else:
-			replacement["type"] = Constants.TYPE_EXPRESSION
-			var tokens = tokenise(value_in_text)
-			if tokens[0].get("type") == Constants.TYPE_ERROR:
-				replacement["type"] = Constants.TYPE_ERROR
-				return [replacement]
-			else:
-				replacement["value"] = tokens
-		
+			replacement = {
+				"value_in_text": "{{%s}}" % value_in_text,
+				"expression": expression
+			}
 		replacements.append(replacement)
 	
 	return replacements
@@ -680,55 +606,152 @@ func extract_markers(line: String) -> Dictionary:
 	}
 
 
-func tokenise(input: String) -> Array:
+func tokenise(text: String) -> Array:
 	var tokens = []
-
-	var values = RegEx.new()
-	values.compile("[a-zA-Z_\\.0-9\" ]+")
-
-	var brackets = RegEx.new()
-	brackets.compile("\\(.*\\)")
-
-	var operators = RegEx.new()
-	operators.compile("(==|\\+=|\\-=|\\*=|\\/=|>=|>|<=|<|!=|<>| in |=|\\+|\\-|\\*|\\/)")
-
-	var iterations = 0
-	while input.length() > 0 and iterations < 1000:
-		var first_char = input[0]
-		
-		if first_char == " ":
-			input = input.substr(1)
-
-		elif first_char == "(":
-			var found_group = brackets.search(input)
-			if found_group != null:
-				var group = found_group.strings[0]
-				tokens.append({ "type": "group", "value": tokenise(group.substr(1, group.length() - 2))})
-				input = input.substr(group.length())
-			else:
-				return [{ "type": Constants.TYPE_ERROR, "value": "Unmatched braces"}]
-
-		elif operators.search(first_char):
-			tokens.append({ "type": "operator", "value": first_char })
-			input = input.substr(1)
-
+	var limit = 0
+	while text.strip_edges() != "" and limit < 1000:
+		limit += 1
+		var found = find_match(text)
+		if found.size() > 0:
+			tokens.append({
+				"type": found.get("type"),
+				"value": found.get("value")
+			})
+			text = found.get("remaining_text")
+		elif text.begins_with(" "):
+			text = text.substr(1)
 		else:
-			var found_value = values.search(input)
-			if found_value != null:
-				var value = found_value.strings[0].strip_edges()
-				tokens.append({ "type": "value", "value": value })
-				input = input.substr(value.length())
-			else:
-				return [{ "type": Constants.TYPE_ERROR, "value": "Invalid value"}]
-
-		iterations += 1
+			return [{ "type": "error", "value": "Invalid expression" }]
 	
-	# If the first token is a minus sign then add a 0 to the front
-	if tokens[0].get("type") == "operator" and tokens[0].get("value") == "-":
-		tokens = [{ "type": "value", "value": "0" }] + tokens
+	return build_token_tree(tokens)[0]
+	
 
-	# You can't end an expression with an operator
-	if tokens[tokens.size() - 1].get("type") == "operator":
-		return [{ "type": Constants.TYPE_ERROR, "value": "Incomplete expression"}]
+func build_token_tree_error(message: String) -> Array:
+	return [{ "type": Constants.TOKEN_ERROR, "value": message}]
 
-	return tokens
+
+func build_token_tree(tokens: Array, expecting_closing_bracket: bool = false) -> Array:
+	var tree = []
+	var limit = 0
+	while tokens.size() > 0 and limit < 1000:
+		limit += 1
+		var token = tokens.pop_front()
+		match token.type:
+			Constants.TOKEN_FUNCTION:
+				var sub_tree = build_token_tree(tokens, true)
+				
+				if sub_tree[0].size() > 0 and  sub_tree[0][0].get("type") == Constants.TOKEN_ERROR:
+					return [build_token_tree_error(sub_tree[0][0].get("value")), tokens]
+				
+				tree.append({
+					"type": Constants.TOKEN_FUNCTION,
+					# Consume the trailing "("
+					"function": token.get("value").substr(0, token.get("value").length() - 1),
+					"value": tokens_to_function_args(sub_tree[0])
+				})
+				tokens = sub_tree[1]
+
+			Constants.TOKEN_BRACKET_OPEN:
+				var sub_tree = build_token_tree(tokens, true)
+				
+				if sub_tree[0][0].get("type") == Constants.TOKEN_ERROR:
+					return [build_token_tree_error(sub_tree[0][0].get("value")), tokens]
+				
+				tree.append({
+					"type": Constants.TOKEN_GROUP,
+					"value": sub_tree[0]
+				})
+				tokens = sub_tree[1]
+
+			Constants.TOKEN_BRACKET_CLOSE:
+				return [get_tree_with_better_operators(tree), tokens]
+			
+			Constants.TOKEN_COMMA:
+				tree.append({
+					"type": Constants.TOKEN_COMMA
+				})
+			
+			Constants.TOKEN_COMPARISON, \
+			Constants.TOKEN_OPERATOR, \
+			Constants.TOKEN_AND_OR, \
+			Constants.TOKEN_VARIABLE: \
+				tree.append({
+					"type": token.get("type"),
+					"value": token.get("value").strip_edges()
+				})
+			
+			Constants.TOKEN_STRING:
+				tree.append({
+					"type": token.get("type"),
+					"value": token.get("value").substr(1, token.get("value").length() - 2)
+				})
+			
+			Constants.TOKEN_BOOL:
+				tree.append({
+					"type": token.get("type"),
+					"value": token.get("value").to_lower() == "true"
+				})
+			
+			Constants.TOKEN_NUMBER:
+				tree.append({
+					"type": token.get("type"),
+					"value": token.get("value").to_float() if "." in token.get("value") else token.get("value").to_int()
+				})
+
+	if expecting_closing_bracket:
+		return [build_token_tree_error("Missing a closing bracket"), tokens]
+
+	return [get_tree_with_better_operators(tree), tokens]
+
+
+func tokens_to_function_args(tokens: Array) -> Array:
+	var args = []
+	var current_arg = []
+	for token in tokens:
+		if token.get("type") == Constants.TOKEN_COMMA:
+			args.append(current_arg)
+			current_arg = []
+		else:
+			current_arg.append(token)
+	args.append(current_arg)
+	return args
+
+
+func get_tree_with_better_operators(tree: Array) -> Array:
+	if tree.size() == 0: return tree
+	
+	# You can't end with an operator
+	if tree[tree.size() - 1].get("type") == Constants.TOKEN_OPERATOR:
+		return [{ "type": Constants.TOKEN_ERROR, "value": "Incomplete expression"}]
+	
+	# You can't start with an operator
+	if tree[0].get("type") == Constants.TOKEN_OPERATOR:
+		if tree[0].get("value") in ["-", "+"]:
+			tree = [{ "type": "value", "value": "0" }] + tree
+		else:
+			return [{ "type": Constants.TOKEN_ERROR, "value": "Incomplete expression"}]
+			
+	# You can't double up operators
+	for i in range(1, tree.size()):
+		if tree[i-1].get("type") == Constants.TOKEN_OPERATOR and tree[i].get("type") == Constants.TOKEN_OPERATOR:
+			return [{ "type": Constants.TOKEN_ERROR, "value": "Invalid expression"}]
+	
+	# You can't start or end with "or"/"and"
+	if tree[0].get("type") == Constants.TOKEN_AND_OR or tree[tree.size() - 1].get("type") == Constants.TOKEN_AND_OR:
+		return [{ "type": Constants.TOKEN_ERROR, "value": "Incomplete expression" }]
+
+	return tree
+
+
+func find_match(input: String) -> Dictionary:
+	for key in TOKEN_DEFINITIONS.keys():
+		var regex = TOKEN_DEFINITIONS.get(key)
+		var found = regex.search(input)
+		if found:
+			return {
+				"type": key,
+				"remaining_text": input.substr(found.strings[0].length()),
+				"value": found.strings[0]
+			}
+	
+	return {}
