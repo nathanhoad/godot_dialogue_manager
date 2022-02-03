@@ -15,6 +15,7 @@ var responses: Array = []
 
 var pauses: Dictionary = {}
 var speeds: Array = []
+var inline_mutations: Array = []
 
 
 func _init(data: Dictionary, should_translate: bool = true) -> void:
@@ -28,6 +29,7 @@ func _init(data: Dictionary, should_translate: bool = true) -> void:
 			replacements = data.get("replacements", [])
 			pauses = data.get("pauses", {})
 			speeds = data.get("speeds", [])
+			inline_mutations = data.get("inline_mutations", [])
 			
 		Constants.TYPE_MUTATION:
 			mutation = data.get("mutation")
@@ -44,3 +46,13 @@ func get_speed(index: int) -> float:
 			return speed
 		speed = s[1]
 	return speed
+
+
+func get_inline_mutations(index: int) -> Array:
+	var mutations = []
+	for inline_mutation in inline_mutations:
+		if inline_mutation[0] > index:
+			return mutations
+		if inline_mutation[0] == index:
+			mutations.append(inline_mutation[1])
+	return mutations

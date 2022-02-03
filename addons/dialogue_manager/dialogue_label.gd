@@ -15,6 +15,7 @@ var dialogue: Line
 var index: int = 0
 var percent_per_index: float = 0
 var last_wait_index: int = -1
+var last_mutation_index: int = -1
 var waiting_seconds: float = 0
 var is_typing: bool = false
 var has_finished: bool = false
@@ -41,10 +42,15 @@ func _process(delta: float) -> void:
 
 
 func type_next(delta: float, seconds_needed: float) -> void:
+	if last_mutation_index != index:
+		last_mutation_index = index
+		for mutation in dialogue.get_inline_mutations(index):
+			DialogueManager.mutate(mutation)
+	
 	if last_wait_index != index and dialogue.get_pause(index) > 0:
+		last_wait_index = index
 		emit_signal("paused", dialogue.get_pause(index))
 		waiting_seconds += dialogue.get_pause(index)
-		last_wait_index = index
 	else:
 		percent_visible += percent_per_index
 		index += 1

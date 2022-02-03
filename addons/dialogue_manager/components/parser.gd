@@ -32,7 +32,7 @@ func _ready() -> void:
 	REPLACEMENTS_REGEX.compile("{{(.*?)}}")
 	GOTO_REGEX.compile("=> (?<jump_to_title>.*)")
 	BB_CODE_REGEX.compile("\\[[^\\]]+\\]")
-	MARKER_CODE_REGEX.compile("\\[(?<code>wait|\\/?speed)(?<args>[^\\]]+)?\\]")
+	MARKER_CODE_REGEX.compile("\\[(?<code>wait|\\/?speed|do |set )(?<args>[^\\]]+)?\\]")
 	
 	# Build our list of tokeniser tokens
 	var tokens = {
@@ -202,6 +202,7 @@ func parse(content: String) -> Dictionary:
 			line["text"] = markers.get("text")
 			line["pauses"] = markers.get("pauses")
 			line["speeds"] = markers.get("speeds")
+			line["inline_mutations"] = markers.get("mutations")
 		
 		# Work out where to go after this line
 		if line.get("next_id") == Constants.ID_NULL:
@@ -546,6 +547,7 @@ func extract_markers(line: String) -> Dictionary:
 	var text = line
 	var pauses = {}
 	var speeds = []
+	var mutations = []
 	var bb_codes = []
 	var index_map = {}
 	
@@ -556,7 +558,7 @@ func extract_markers(line: String) -> Dictionary:
 		for found in founds:
 			var code = found.strings[0]
 			# Ignore our own markers
-			if code.begins_with("[wait") or code.begins_with("[speed") or code.begins_with("[/speed"):
+			if MARKER_CODE_REGEX.search(code):
 				continue
 			bb_codes.append([found.get_start(), code])
 
@@ -568,19 +570,22 @@ func extract_markers(line: String) -> Dictionary:
 	while found and limit < 1000:
 		limit += 1
 		var index = text.find(found.strings[0])
-		var code = found.strings[found.names.get("code")]
+		var code = found.strings[found.names.get("code")].strip_edges()
 		var raw_args = ""
 		var args = {}
 		if found.names.has("args"):
-			# Could be something like:
-			# 	"=1.0"
-			# 	" rate=20 level=10"
 			raw_args = found.strings[found.names.get("args")]
-			if raw_args[0] == "=":
-				raw_args = "value" + raw_args
-			for pair in raw_args.strip_edges().split(" "):
-				var bits = pair.split("=")
-				args[bits[0]] = bits[1]
+			if code in ["do", "set"]:
+				args["value"] = extract_mutation("%s %s" % [code, raw_args])
+			else:
+				# Could be something like:
+				# 	"=1.0"
+				# 	" rate=20 level=10"
+				if raw_args[0] == "=":
+					raw_args = "value" + raw_args
+				for pair in raw_args.strip_edges().split(" "):
+					var bits = pair.split("=")
+					args[bits[0]] = bits[1]
 			
 		match code:
 			"wait":
@@ -589,6 +594,8 @@ func extract_markers(line: String) -> Dictionary:
 				speeds.append([index, args.get("value").to_float()])
 			"/speed":
 				speeds.append([index, 1.0])
+			"do":
+				mutations.append([index, args.get("value")])
 		
 		var length = found.strings[0].length()
 		
@@ -607,9 +614,10 @@ func extract_markers(line: String) -> Dictionary:
 	return {
 		"text": text,
 		"pauses": pauses,
-		"speeds": speeds
+		"speeds": speeds,
+		"mutations": mutations
 	}
-
+		
 
 func tokenise(text: String) -> Array:
 	var tokens = []

@@ -124,7 +124,7 @@ margin_right = 786.0
 margin_bottom = 24.0
 hint_tooltip = "Open a dialogue file"
 icon = SubResource( 2 )
-items = [ "Open...", SubResource( 2 ), 0, false, false, 0, 0, null, "", false, "", null, 0, false, false, -1, 0, null, "", true, "res://test_dialogue.tres", SubResource( 2 ), 0, false, false, 2, 0, null, "", false, "res://assets/dialogue/town.tres", SubResource( 2 ), 0, false, false, 3, 0, null, "", false, "", null, 0, false, false, -1, 0, null, "", true, "Clear recent files", null, 0, false, false, 5, 0, null, "", false ]
+items = [ "Open...", SubResource( 2 ), 0, false, false, 0, 0, null, "", false, "", null, 0, false, false, -1, 0, null, "", true, "res://test.tres", SubResource( 2 ), 0, false, false, 2, 0, null, "", false, "res://test2.tres", SubResource( 2 ), 0, false, false, 3, 0, null, "", false, "", null, 0, false, false, -1, 0, null, "", true, "Clear recent files", null, 0, false, false, 5, 0, null, "", false ]
 
 [node name="VSeparator" type="VSeparator" parent="Margin/VBox/Toolbar"]
 margin_left = 790.0

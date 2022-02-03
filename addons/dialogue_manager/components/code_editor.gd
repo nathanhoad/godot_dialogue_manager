@@ -28,10 +28,10 @@ func _ready() -> void:
 	menu.connect("index_pressed", self, "_on_menu_index_pressed")
 	menu.add_separator()
 	
-	menu.add_item("Go to ~ " + current_goto_title, 101,  KEY_MASK_CTRL | KEY_MASK_SHIFT | KEY_G)
+	menu.add_item("Go to " + current_goto_title, 101,  KEY_MASK_CTRL | KEY_MASK_SHIFT | KEY_G)
 	GOTO_ITEM_INDEX = menu.get_item_index(101)
 	
-	menu.add_item("Create ~ " + current_goto_title, 102, KEY_MASK_CTRL | KEY_MASK_SHIFT | KEY_C)
+	menu.add_item("Create " + current_goto_title, 102, KEY_MASK_CTRL | KEY_MASK_SHIFT | KEY_C)
 	CREATE_ITEM_INDEX = menu.get_item_index(102)
 	
 	menu.add_icon_item(get_icon("Search", "EditorIcons"), "Choose a jump target...", 103,  KEY_MASK_CTRL | KEY_MASK_SHIFT | KEY_SPACE)
@@ -183,9 +183,9 @@ func _on_menu_about_to_show():
 		# Otherwise we can either go to the title or create it if it doesn't
 		# exist.
 		else:
-			menu.set_item_text(GOTO_ITEM_INDEX, "Jump to ~ " + current_goto_title)
+			menu.set_item_text(GOTO_ITEM_INDEX, "Jump to " + current_goto_title)
 			menu.set_item_disabled(GOTO_ITEM_INDEX, current_goto_line == -1)
-			menu.set_item_text(CREATE_ITEM_INDEX, "Create ~ " + current_goto_title)
+			menu.set_item_text(CREATE_ITEM_INDEX, "Create " + current_goto_title)
 			menu.set_item_disabled(CREATE_ITEM_INDEX, current_goto_line > -1)
 		menu.set_item_disabled(PICK_ITEM_INDEX, false)
 		
