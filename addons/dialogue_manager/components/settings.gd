@@ -10,6 +10,11 @@ var config := ConfigFile.new()
 
 func _ready() -> void:
 	config.load(Constants.CONFIG_PATH)
+	if not config.has_section("editor"):
+		config.set_value("editor", "check_for_errors", true)
+		config.set_value("editor", "missing_translations_are_errors", false)
+	if not config.has_section("runtime"):
+		config.set_value("runtime", "states", [])
 
 
 func reset_config() -> void:

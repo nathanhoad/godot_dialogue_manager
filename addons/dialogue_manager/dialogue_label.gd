@@ -12,6 +12,7 @@ export var seconds_per_step: float = 0.02
 
 
 var dialogue: Line
+
 var index: int = 0
 var percent_per_index: float = 0
 var last_wait_index: int = -1
@@ -44,13 +45,12 @@ func _process(delta: float) -> void:
 func type_next(delta: float, seconds_needed: float) -> void:
 	if last_mutation_index != index:
 		last_mutation_index = index
-		for mutation in dialogue.get_inline_mutations(index):
-			DialogueManager.mutate(mutation)
+		dialogue.mutate_inline_mutations(index)
 	
 	if last_wait_index != index and dialogue.get_pause(index) > 0:
 		last_wait_index = index
-		emit_signal("paused", dialogue.get_pause(index))
 		waiting_seconds += dialogue.get_pause(index)
+		emit_signal("paused", dialogue.get_pause(index))
 	else:
 		percent_visible += percent_per_index
 		index += 1

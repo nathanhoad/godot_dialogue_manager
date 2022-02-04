@@ -34,7 +34,8 @@ func _on_SettingsDialog_about_to_show():
 	all_globals.clear()
 	if project.has_section("autoload"):
 		for key in project.get_section_keys("autoload"):
-			all_globals[key] = project.get_value("autoload", key)
+			if key != "DialogueManager":
+				all_globals[key] = project.get_value("autoload", key)
 	
 	enabled_globals = settings.get_runtime_value("states", [])
 	globals_list.clear()

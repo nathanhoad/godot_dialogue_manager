@@ -148,6 +148,7 @@ func get_line(key: String, local_resource: DialogueResource) -> Line:
 	
 	# Set up a line object
 	var line = Line.new(data, auto_translate)
+	line.dialogue_manager = self
 	
 	# No dialogue and only one node is the same as an early exit
 	if data.get("type") == Constants.TYPE_RESPONSE:

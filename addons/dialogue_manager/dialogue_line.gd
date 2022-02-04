@@ -2,6 +2,8 @@ extends Node
 
 const Constants = preload("res://addons/dialogue_manager/constants.gd")
 
+var dialogue_manager
+
 var type: String = Constants.TYPE_DIALOGUE
 var next_id: String
 
@@ -48,11 +50,9 @@ func get_speed(index: int) -> float:
 	return speed
 
 
-func get_inline_mutations(index: int) -> Array:
-	var mutations = []
+func mutate_inline_mutations(index: int) -> void:
 	for inline_mutation in inline_mutations:
 		if inline_mutation[0] > index:
-			return mutations
+			return
 		if inline_mutation[0] == index:
-			mutations.append(inline_mutation[1])
-	return mutations
+			dialogue_manager.mutate(inline_mutations[0])

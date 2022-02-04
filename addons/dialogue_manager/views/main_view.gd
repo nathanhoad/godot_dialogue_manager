@@ -173,6 +173,7 @@ func parse(force_show_errors: bool = false) -> void:
 	current_resource.titles = result.get("titles")
 	current_resource.lines = result.get("lines")
 	current_resource.errors = result.get("errors")
+	ResourceSaver.save(current_resource.resource_path, current_resource)
 	
 	has_changed = false
 	
@@ -332,6 +333,7 @@ func _on_translation_menu_id_pressed(id):
 func _on_CodeEditor_text_changed():
 	has_changed = true
 	current_resource.raw_text = editor.text
+	ResourceSaver.save(current_resource.resource_path, current_resource)
 	title_list.titles = editor.get_titles()
 	parse_timeout.start(1)
 
@@ -342,9 +344,11 @@ func _on_NewButton_pressed():
 
 func _on_NewDialogueDialog_file_selected(path):
 	var resource = DialogueResource.new()
-	ResourceSaver.save(path, resource)
 	if resource.resource_path == "":
 		resource.resource_path = path
+	resource.raw_text = "~ this_is_a_node_title\n\nNathan: This is some dialogue.\nNathan: Here are some choices.\n- First one\n\tNathan: You picked the first one.\n- Second one\n\tNathan You picked the second one.\n- Start again => this_is_a_node_title\n- End the conversation => END\nNathan: For more information about conditional dialogue, mutations, and all the fun stuff, see the online documentation."
+	resource.syntax_version = Constants.SYNTAX_VERSION
+	ResourceSaver.save(path, resource)
 	open_resource(resource)
 
 

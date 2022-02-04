@@ -40,12 +40,12 @@ func _ready() -> void:
 		Constants.TOKEN_BRACKET_OPEN: "^\\(",
 		Constants.TOKEN_BRACKET_CLOSE: "^\\)",
 		Constants.TOKEN_COMPARISON: "^(==|<=|>=|<|>|!=|in )",
+		Constants.TOKEN_NUMBER: "^\\-?\\d+(\\.\\d+)?",
 		Constants.TOKEN_OPERATOR: "^(\\+|-|\\*|/)",
 		Constants.TOKEN_COMMA: "^,",
 		Constants.TOKEN_BOOL: "^(true|false)",
 		Constants.TOKEN_AND_OR: "^(and|or)( |$)",
 		Constants.TOKEN_STRING: "^\".*?\"",
-		Constants.TOKEN_NUMBER: "^\\-?\\d+(\\.\\d+)?",
 		Constants.TOKEN_VARIABLE: "^[a-zA-Z_][a-zA-Z_0-9]+",
 	}
 	for key in tokens.keys():
@@ -454,7 +454,7 @@ func extract_mutation(line: String) -> Dictionary:
 	var found = MUTATION_REGEX.search(line)
 	
 	if not found:
-		return { "error": "Invalid mutation" }
+		return { "error": "Incomplete expression" }
 	
 	# If the mutation starts with a function then grab it and and parse
 	# the args as expressions
@@ -481,7 +481,7 @@ func extract_mutation(line: String) -> Dictionary:
 		}
 	
 	else:
-		return { "error": "Invalid mutation" }
+		return { "error": "Incomplete expression" }
 
 
 func extract_condition(raw_line: String, is_wrapped: bool = false) -> Dictionary:
@@ -643,15 +643,20 @@ func build_token_tree_error(message: String) -> Array:
 	return [{ "type": Constants.TOKEN_ERROR, "value": message}]
 
 
-func build_token_tree(tokens: Array, expecting_closing_bracket: bool = false) -> Array:
+func build_token_tree(tokens: Array) -> Array:
 	var tree = []
 	var limit = 0
 	while tokens.size() > 0 and limit < 1000:
 		limit += 1
 		var token = tokens.pop_front()
+		
+		var error = check_next_token(token, tokens)
+		if error != "":
+			return [build_token_tree_error(error), tokens]
+		
 		match token.type:
 			Constants.TOKEN_FUNCTION:
-				var sub_tree = build_token_tree(tokens, true)
+				var sub_tree = build_token_tree(tokens)
 				
 				if sub_tree[0].size() > 0 and  sub_tree[0][0].get("type") == Constants.TOKEN_ERROR:
 					return [build_token_tree_error(sub_tree[0][0].get("value")), tokens]
@@ -665,7 +670,7 @@ func build_token_tree(tokens: Array, expecting_closing_bracket: bool = false) ->
 				tokens = sub_tree[1]
 
 			Constants.TOKEN_BRACKET_OPEN:
-				var sub_tree = build_token_tree(tokens, true)
+				var sub_tree = build_token_tree(tokens)
 				
 				if sub_tree[0][0].get("type") == Constants.TOKEN_ERROR:
 					return [build_token_tree_error(sub_tree[0][0].get("value")), tokens]
@@ -677,7 +682,7 @@ func build_token_tree(tokens: Array, expecting_closing_bracket: bool = false) ->
 				tokens = sub_tree[1]
 
 			Constants.TOKEN_BRACKET_CLOSE:
-				return [get_tree_with_better_operators(tree), tokens]
+				return [tree, tokens]
 			
 			Constants.TOKEN_COMMA:
 				tree.append({
@@ -711,10 +716,67 @@ func build_token_tree(tokens: Array, expecting_closing_bracket: bool = false) ->
 					"value": token.get("value").to_float() if "." in token.get("value") else token.get("value").to_int()
 				})
 
-	if expecting_closing_bracket:
-		return [build_token_tree_error("Missing a closing bracket"), tokens]
+	return [tree, tokens]
 
-	return [get_tree_with_better_operators(tree), tokens]
+
+func check_next_token(token: Dictionary, next_tokens: Array) -> String:
+	var next_token_type = null
+	if next_tokens.size() > 0:
+		next_token_type = next_tokens.front().get("type")
+ 
+	var unexpected_token_types = []
+	match token.get("type"):
+		Constants.TOKEN_FUNCTION, \
+		Constants.TOKEN_BRACKET_OPEN:
+			unexpected_token_types = [null, Constants.TOKEN_COMMA, Constants.TOKEN_COMPARISON, Constants.TOKEN_OPERATOR, Constants.TOKEN_AND_OR]
+
+		Constants.TOKEN_BRACKET_CLOSE:
+			unexpected_token_types = [Constants.TOKEN_BOOL, Constants.TOKEN_STRING, Constants.TOKEN_NUMBER, Constants.TOKEN_VARIABLE]
+
+		Constants.TOKEN_COMPARISON, \
+		Constants.TOKEN_OPERATOR, \
+		Constants.TOKEN_COMMA, \
+		Constants.TOKEN_AND_OR:
+			unexpected_token_types = [null, Constants.TOKEN_COMMA, Constants.TOKEN_COMPARISON, Constants.TOKEN_OPERATOR, Constants.TOKEN_AND_OR, Constants.TOKEN_BRACKET_CLOSE]
+
+		Constants.TOKEN_BOOL, \
+		Constants.TOKEN_STRING, \
+		Constants.TOKEN_NUMBER, \
+		Constants.TOKEN_VARIABLE:
+			unexpected_token_types = [Constants.TOKEN_BOOL, Constants.TOKEN_STRING, Constants.TOKEN_NUMBER, Constants.TOKEN_VARIABLE, Constants.TOKEN_FUNCTION, Constants.TOKEN_BRACKET_OPEN]
+
+	if next_token_type in unexpected_token_types:
+		match next_token_type:
+			null:
+				return "Unexpected end of expression"
+
+			Constants.TOKEN_FUNCTION:
+				return "Unexpected function"
+
+			Constants.TOKEN_BRACKET_OPEN, \
+			Constants.TOKEN_BRACKET_CLOSE:
+				return "Unexpected bracket"
+
+			Constants.TOKEN_COMPARISON, \
+			Constants.TOKEN_OPERATOR, \
+			Constants.TOKEN_COMMA, \
+			Constants.TOKEN_AND_OR:
+				return "Unexpected operator"
+
+			Constants.TOKEN_BOOL:
+				return "Unexpected boolean"
+			Constants.TOKEN_STRING:
+				return "Unexpected string"
+			Constants.TOKEN_NUMBER:
+				return "Unexpected number"
+			Constants.TOKEN_VARIABLE:
+				return "Unexpected variable"
+
+			_:
+				return "Invalid expression"
+
+	return ""
+
 
 
 func tokens_to_function_args(tokens: Array) -> Array:
@@ -731,32 +793,6 @@ func tokens_to_function_args(tokens: Array) -> Array:
 		args.append(current_arg)
 		
 	return args
-
-
-func get_tree_with_better_operators(tree: Array) -> Array:
-	if tree.size() == 0: return tree
-	
-	# You can't end with an operator
-	if tree[tree.size() - 1].get("type") == Constants.TOKEN_OPERATOR:
-		return [{ "type": Constants.TOKEN_ERROR, "value": "Incomplete expression"}]
-	
-	# You can't start with an operator
-	if tree[0].get("type") == Constants.TOKEN_OPERATOR:
-		if tree[0].get("value") in ["-", "+"]:
-			tree = [{ "type": "value", "value": "0" }] + tree
-		else:
-			return [{ "type": Constants.TOKEN_ERROR, "value": "Incomplete expression"}]
-			
-	# You can't double up operators
-	for i in range(1, tree.size()):
-		if tree[i-1].get("type") == Constants.TOKEN_OPERATOR and tree[i].get("type") == Constants.TOKEN_OPERATOR:
-			return [{ "type": Constants.TOKEN_ERROR, "value": "Invalid expression"}]
-	
-	# You can't start or end with "or"/"and"
-	if tree[0].get("type") == Constants.TOKEN_AND_OR or tree[tree.size() - 1].get("type") == Constants.TOKEN_AND_OR:
-		return [{ "type": Constants.TOKEN_ERROR, "value": "Incomplete expression" }]
-
-	return tree
 
 
 func find_match(input: String) -> Dictionary:
