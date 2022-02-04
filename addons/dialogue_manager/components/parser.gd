@@ -185,13 +185,14 @@ func parse(content: String) -> Dictionary:
 		# Dialogue
 		else:
 			line["type"] = Constants.TYPE_DIALOGUE
-			if ": " in raw_line:
-				var bits = raw_line.strip_edges().split(": ")
-				line["character"] = bits[0]
-				line["text"] = bits[1]
+			var l = raw_line.replace("\\:", "!ESCAPED_COLON!")
+			if ": " in l:
+				var bits = Array(l.strip_edges().split(": "))
+				line["character"] = bits.pop_front()
+				line["text"] = PoolStringArray(bits).join(": ").replace("!ESCAPED_COLON!", ":")
 			else:
 				line["character"] = ""
-				line["text"] = raw_line
+				line["text"] = l.replace("!ESCAPED_COLON!", ":")
 			
 			line["replacements"] = extract_dialogue_replacements(line.get("text"))
 			if line.get("replacements").size() > 0 and line.get("replacements")[0].has("error"):
