@@ -217,11 +217,11 @@ func generate_translations_keys() -> void:
 		var line = lines[i]
 		var l = line.strip_edges()
 		
-		if l == "" or l.begins_with("//"): continue
+		if l == "" or l.begins_with("# "): continue
 		if l.begins_with("if ") or l.begins_with("elif ") or l.begins_with("else") or l.begins_with("endif"): continue
-		if l.begins_with("# "): continue
+		if l.begins_with("~ "): continue
 		if l.begins_with("do ") or l.begins_with("set "): continue
-		if l.begins_with("goto #"): continue
+		if l.begins_with("=>"): continue
 		
 		if "[TR:" in line: continue
 		
@@ -344,8 +344,7 @@ func _on_NewButton_pressed():
 
 func _on_NewDialogueDialog_file_selected(path):
 	var resource = DialogueResource.new()
-	if resource.resource_path == "":
-		resource.resource_path = path
+	resource.take_over_path(path)
 	resource.raw_text = "~ this_is_a_node_title\n\nNathan: This is some dialogue.\nNathan: Here are some choices.\n- First one\n\tNathan: You picked the first one.\n- Second one\n\tNathan You picked the second one.\n- Start again => this_is_a_node_title\n- End the conversation => END\nNathan: For more information about conditional dialogue, mutations, and all the fun stuff, see the online documentation."
 	resource.syntax_version = Constants.SYNTAX_VERSION
 	ResourceSaver.save(path, resource)
