@@ -381,7 +381,10 @@ func resolve(tokens: Array):
 			
 		elif token.get("type") == Constants.TOKEN_VARIABLE:
 			token["type"] = "value"
-			token["value"] = get_state_value(token.get("value"))
+			if token.get("value") == "null":
+				token["value"] = null
+			else:
+				token["value"] = get_state_value(token.get("value"))
 	
 	# Then groups
 	for token in tokens:
@@ -496,13 +499,19 @@ func compare(operator: String, first_value, second_value):
 			else:
 				return first_value >= second_value
 		"==":
-			if first_value == null or second_value == null:
-				return false
+			if first_value == null:
+				if typeof(second_value) == TYPE_BOOL:
+					return second_value == false
+				else:
+					return false
 			else:
 				return first_value == second_value
 		"!=":
-			if first_value == null or second_value == null:
-				return false
+			if first_value == null:
+				if typeof(second_value) == TYPE_BOOL:
+					return second_value == true
+				else:
+					return false
 			else:
 				return first_value != second_value
 
