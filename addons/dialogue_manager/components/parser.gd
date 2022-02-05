@@ -37,8 +37,14 @@ func _ready() -> void:
 	# Build our list of tokeniser tokens
 	var tokens = {
 		Constants.TOKEN_FUNCTION: "^[a-zA-Z_][a-zA-Z_0-9]+\\(",
-		Constants.TOKEN_BRACKET_OPEN: "^\\(",
-		Constants.TOKEN_BRACKET_CLOSE: "^\\)",
+		Constants.TOKEN_DICTIONARY_REFERENCE: "^[a-zA-Z_][a-zA-Z_0-9]+\\[",
+		Constants.TOKEN_PARENS_OPEN: "^\\(",
+		Constants.TOKEN_PARENS_CLOSE: "^\\)",
+		Constants.TOKEN_BRACKET_OPEN: "^\\[",
+		Constants.TOKEN_BRACKET_CLOSE: "^\\]",
+		Constants.TOKEN_BRACE_OPEN: "^\\{",
+		Constants.TOKEN_BRACE_CLOSE: "^\\}",
+		Constants.TOKEN_COLON: "^:",
 		Constants.TOKEN_COMPARISON: "^(==|<=|>=|<|>|!=|in )",
 		Constants.TOKEN_NUMBER: "^\\-?\\d+(\\.\\d+)?",
 		Constants.TOKEN_OPERATOR: "^(\\+|-|\\*|/)",
@@ -462,11 +468,11 @@ func extract_mutation(line: String) -> Dictionary:
 	if found.names.has("function"):
 		var expression = tokenise(found.strings[found.names.get("args")])
 		if expression.size() > 0 and expression[0].get("type") == Constants.TYPE_ERROR:
-			return { "error": "Invalid function arguments" }
+			return { "error": expression[0].get("value") }
 
 		return {
 			"function": found.strings[found.names.get("function")],
-			"args": tokens_to_function_args(expression)
+			"args": tokens_to_list(expression)
 		}
 	
 	# Otherwise we are setting a variable so expressionise its new value
@@ -644,7 +650,7 @@ func build_token_tree_error(message: String) -> Array:
 	return [{ "type": Constants.TOKEN_ERROR, "value": message}]
 
 
-func build_token_tree(tokens: Array) -> Array:
+func build_token_tree(tokens: Array, expected_close_token: String = "") -> Array:
 	var tree = []
 	var limit = 0
 	while tokens.size() > 0 and limit < 1000:
@@ -657,21 +663,63 @@ func build_token_tree(tokens: Array) -> Array:
 		
 		match token.type:
 			Constants.TOKEN_FUNCTION:
-				var sub_tree = build_token_tree(tokens)
+				var sub_tree = build_token_tree(tokens, Constants.TOKEN_PARENS_CLOSE)
 				
-				if sub_tree[0].size() > 0 and  sub_tree[0][0].get("type") == Constants.TOKEN_ERROR:
+				if sub_tree[0].size() > 0 and sub_tree[0][0].get("type") == Constants.TOKEN_ERROR:
 					return [build_token_tree_error(sub_tree[0][0].get("value")), tokens]
 				
 				tree.append({
 					"type": Constants.TOKEN_FUNCTION,
 					# Consume the trailing "("
 					"function": token.get("value").substr(0, token.get("value").length() - 1),
-					"value": tokens_to_function_args(sub_tree[0])
+					"value": tokens_to_list(sub_tree[0])
+				})
+				tokens = sub_tree[1]
+			
+			Constants.TOKEN_DICTIONARY_REFERENCE:
+				var sub_tree = build_token_tree(tokens, Constants.TOKEN_BRACKET_CLOSE)
+				
+				if sub_tree[0].size() > 0 and sub_tree[0][0].get("type") == Constants.TOKEN_ERROR:
+					return [build_token_tree_error(sub_tree[0][0].get("value")), tokens]
+				
+				var args = tokens_to_list(sub_tree[0])
+				if args.size() != 1:
+					return [build_token_tree_error("Invalid index"), tokens]
+				
+				tree.append({
+					"type": Constants.TOKEN_DICTIONARY_REFERENCE,
+					# Consume the trailing "["
+					"variable": token.get("value").substr(0, token.get("value").length() - 1),
+					"value": args[0]
+				})
+				tokens = sub_tree[1]
+			
+			Constants.TOKEN_BRACE_OPEN:
+				var sub_tree = build_token_tree(tokens, Constants.TOKEN_BRACE_CLOSE)
+				
+				if sub_tree[0].size() > 0 and sub_tree[0][0].get("type") == Constants.TOKEN_ERROR:
+					return [build_token_tree_error(sub_tree[0][0].get("value")), tokens]
+				
+				tree.append({
+					"type": Constants.TOKEN_DICTIONARY,
+					"value": tokens_to_dictionary(sub_tree[0])
+				})
+				tokens = sub_tree[1]
+			
+			Constants.TOKEN_BRACKET_OPEN:
+				var sub_tree = build_token_tree(tokens, Constants.TOKEN_BRACKET_CLOSE)
+				
+				if sub_tree[0].size() > 0 and sub_tree[0][0].get("type") == Constants.TOKEN_ERROR:
+					return [build_token_tree_error(sub_tree[0][0].get("value")), tokens]
+				
+				tree.append({
+					"type": Constants.TOKEN_ARRAY,
+					"value": tokens_to_list(sub_tree[0])
 				})
 				tokens = sub_tree[1]
 
-			Constants.TOKEN_BRACKET_OPEN:
-				var sub_tree = build_token_tree(tokens)
+			Constants.TOKEN_PARENS_OPEN:
+				var sub_tree = build_token_tree(tokens, Constants.TOKEN_PARENS_CLOSE)
 				
 				if sub_tree[0][0].get("type") == Constants.TOKEN_ERROR:
 					return [build_token_tree_error(sub_tree[0][0].get("value")), tokens]
@@ -682,12 +730,18 @@ func build_token_tree(tokens: Array) -> Array:
 				})
 				tokens = sub_tree[1]
 
+			Constants.TOKEN_PARENS_CLOSE, \
+			Constants.TOKEN_BRACE_CLOSE, \
 			Constants.TOKEN_BRACKET_CLOSE:
+				if token.get("type") != expected_close_token:
+					return [build_token_tree_error("Unexpected closing bracket"), tokens]
+				
 				return [tree, tokens]
 			
-			Constants.TOKEN_COMMA:
+			Constants.TOKEN_COMMA, \
+			Constants.TOKEN_COLON:
 				tree.append({
-					"type": Constants.TOKEN_COMMA
+					"type": token.get("type")
 				})
 			
 			Constants.TOKEN_COMPARISON, \
@@ -716,6 +770,9 @@ func build_token_tree(tokens: Array) -> Array:
 					"type": token.get("type"),
 					"value": token.get("value").to_float() if "." in token.get("value") else token.get("value").to_int()
 				})
+	
+	if expected_close_token != "":
+		return [build_token_tree_error("Missing closing bracket"), tokens] 
 
 	return [tree, tokens]
 
@@ -728,23 +785,27 @@ func check_next_token(token: Dictionary, next_tokens: Array) -> String:
 	var unexpected_token_types = []
 	match token.get("type"):
 		Constants.TOKEN_FUNCTION, \
-		Constants.TOKEN_BRACKET_OPEN:
-			unexpected_token_types = [null, Constants.TOKEN_COMMA, Constants.TOKEN_COMPARISON, Constants.TOKEN_OPERATOR, Constants.TOKEN_AND_OR]
-
+		Constants.TOKEN_PARENS_OPEN:
+			unexpected_token_types = [null, Constants.TOKEN_COMMA, Constants.TOKEN_COLON, Constants.TOKEN_COMPARISON, Constants.TOKEN_OPERATOR, Constants.TOKEN_AND_OR]
+		
+		Constants.TOKEN_PARENS_CLOSE, \
+		Constants.TOKEN_BRACE_CLOSE, \
 		Constants.TOKEN_BRACKET_CLOSE:
 			unexpected_token_types = [Constants.TOKEN_BOOL, Constants.TOKEN_STRING, Constants.TOKEN_NUMBER, Constants.TOKEN_VARIABLE]
 
 		Constants.TOKEN_COMPARISON, \
 		Constants.TOKEN_OPERATOR, \
 		Constants.TOKEN_COMMA, \
-		Constants.TOKEN_AND_OR:
-			unexpected_token_types = [null, Constants.TOKEN_COMMA, Constants.TOKEN_COMPARISON, Constants.TOKEN_OPERATOR, Constants.TOKEN_AND_OR, Constants.TOKEN_BRACKET_CLOSE]
+		Constants.TOKEN_COLON, \
+		Constants.TOKEN_AND_OR, \
+		Constants.TOKEN_DICTIONARY_REFERENCE:
+			unexpected_token_types = [null, Constants.TOKEN_COMMA, Constants.TOKEN_COLON, Constants.TOKEN_COMPARISON, Constants.TOKEN_OPERATOR, Constants.TOKEN_AND_OR, Constants.TOKEN_PARENS_CLOSE, Constants.TOKEN_BRACE_CLOSE, Constants.TOKEN_BRACKET_CLOSE]
 
 		Constants.TOKEN_BOOL, \
 		Constants.TOKEN_STRING, \
 		Constants.TOKEN_NUMBER, \
 		Constants.TOKEN_VARIABLE:
-			unexpected_token_types = [Constants.TOKEN_BOOL, Constants.TOKEN_STRING, Constants.TOKEN_NUMBER, Constants.TOKEN_VARIABLE, Constants.TOKEN_FUNCTION, Constants.TOKEN_BRACKET_OPEN]
+			unexpected_token_types = [Constants.TOKEN_BOOL, Constants.TOKEN_STRING, Constants.TOKEN_NUMBER, Constants.TOKEN_VARIABLE, Constants.TOKEN_FUNCTION, Constants.TOKEN_PARENS_OPEN, Constants.TOKEN_BRACE_OPEN, Constants.TOKEN_BRACKET_OPEN]
 
 	if next_token_type in unexpected_token_types:
 		match next_token_type:
@@ -754,15 +815,19 @@ func check_next_token(token: Dictionary, next_tokens: Array) -> String:
 			Constants.TOKEN_FUNCTION:
 				return "Unexpected function"
 
-			Constants.TOKEN_BRACKET_OPEN, \
-			Constants.TOKEN_BRACKET_CLOSE:
+			Constants.TOKEN_PARENS_OPEN, \
+			Constants.TOKEN_PARENS_CLOSE:
 				return "Unexpected bracket"
 
 			Constants.TOKEN_COMPARISON, \
 			Constants.TOKEN_OPERATOR, \
-			Constants.TOKEN_COMMA, \
 			Constants.TOKEN_AND_OR:
 				return "Unexpected operator"
+			
+			Constants.TOKEN_COMMA:
+				return "Unexpected comma"
+			Constants.TOKEN_COLON:
+				return "Unexpected colon"
 
 			Constants.TOKEN_BOOL:
 				return "Unexpected boolean"
@@ -780,20 +845,29 @@ func check_next_token(token: Dictionary, next_tokens: Array) -> String:
 
 
 
-func tokens_to_function_args(tokens: Array) -> Array:
-	var args = []
-	var current_arg = []
+func tokens_to_list(tokens: Array) -> Array:
+	var list = []
+	var current_item = []
 	for token in tokens:
 		if token.get("type") == Constants.TOKEN_COMMA:
-			args.append(current_arg)
-			current_arg = []
+			list.append(current_item)
+			current_item = []
 		else:
-			current_arg.append(token)
+			current_item.append(token)
 			
-	if current_arg.size() > 0:
-		args.append(current_arg)
+	if current_item.size() > 0:
+		list.append(current_item)
 		
-	return args
+	return list
+
+
+func tokens_to_dictionary(tokens: Array) -> Dictionary:
+	var dictionary = {}
+	for i in range(0, tokens.size()):
+		if tokens[i].get("type") == Constants.TOKEN_COLON:
+			dictionary[tokens[i-1]] = tokens[i+1]
+	
+	return dictionary
 
 
 func find_match(input: String) -> Dictionary:

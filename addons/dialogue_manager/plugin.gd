@@ -15,7 +15,6 @@ var main_view
 
 func _enter_tree() -> void:
 	add_autoload_singleton("DialogueManager", "res://addons/dialogue_manager/dialogue_manager.gd")
-	yield(get_tree(), "idle_frame")
 	add_custom_type("DialogueLabel", "RichTextLabel", preload("res://addons/dialogue_manager/dialogue_label.gd"), get_plugin_icon())
 	
 	if Engine.editor_hint:

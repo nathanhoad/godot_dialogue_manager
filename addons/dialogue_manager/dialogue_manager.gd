@@ -122,7 +122,7 @@ func get_line(key: String, local_resource: DialogueResource) -> Line:
 		return null
 	
 	# See if it is a title
-	if key.begins_with("# "):
+	if key.begins_with("~ "):
 		key = key.substr(2)
 	if local_resource.titles.has(key):
 		key = local_resource.titles.get(key)
@@ -348,6 +348,37 @@ func resolve(tokens: Array):
 			else:
 				# Unknown functions in non-strict mode are falsey
 				token["value"] = false
+		
+		elif token.get("type") == Constants.TOKEN_DICTIONARY_REFERENCE:
+			token["type"] = "value"
+			var value = get_state_value(token.get("variable"))
+			var index = resolve(token.get("value"))
+			if typeof(value) == TYPE_DICTIONARY:
+				if value.has(index):
+					token["value"] = value[index]
+				else:
+					printerr("Key \"%s\" not found in dictionary \"%s\"" % [str(index), token.get("variable")])
+					assert(false, "Key not found in dictionary. See Output for details.")
+			elif typeof(value) == TYPE_ARRAY:
+				if index >= 0 and index < value.size():
+					token["value"] = value[index]
+				else:
+					printerr("Index %d out of bounds of array \"%s\"" % [index, token.get("variable")])
+					assert(false, "Index out of bounds of array. See Output for details.")
+		
+		elif token.get("type") == Constants.TOKEN_ARRAY:
+			token["type"] = "value"
+			token["value"] = resolve_each(token.get("value"))
+			
+		elif token.get("type") == Constants.TOKEN_DICTIONARY:
+			token["type"] = "value"
+			var dictionary = {}
+			for key in token.get("value").keys():
+				var resolved_key = resolve([key])
+				var resolved_value = resolve([token.get("value").get(key)])
+				dictionary[resolved_key] = resolved_value
+			token["value"] = dictionary
+			
 		elif token.get("type") == Constants.TOKEN_VARIABLE:
 			token["type"] = "value"
 			token["value"] = get_state_value(token.get("value"))
