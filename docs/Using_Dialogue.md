@@ -11,14 +11,16 @@ DialogueManager.game_states = [GameState, SessionState]
 
 Then you can get a line of dialogue by yielding to `get_next_dialogue_line` and providing a node title.
 
-So, assuming your dialogue file was `res://assets/dialogue/example.tres` and you had a node title in there of `# Some node title` then you could do this to get the first printable dialogue:
+So, assuming your dialogue file was `res://assets/dialogue/example.tres` and you had a node title in there of `~ Some node title` then you could do this to get the first printable dialogue:
 
 ```gdscript
 var dialogue_resource = preload("res://assets/dialogue/example.tres")
-var dialogue = yield(DialogueManager.get_next_dialogue_line("Some node title", dialogue_resource), "completed")
+var dialogue_line = yield(DialogueManager.get_next_dialogue_line("Some node title", dialogue_resource), "completed")
 ```
 
 This will find the line with the given title and then begin checking conditions and stepping over each line in the `next_id` sequence until we hit a line of dialogue that can be displayed (or the end of the conversation). Any mutations found along the way will be exectued as well.
+
+You need to `yield` this call because it can't gaurantee an immediate return. If there are any mutations it will need to allow for them to run before finding the next line.
 
 The returned line in dialogue is a `DialogueLine` and will have the following properties:
 
@@ -33,7 +35,15 @@ The returned line in dialogue is a `DialogueLine` and will have the following pr
   - **prompt**: String
   - **next_id**: String
 
-It's up to you to implement the actual dialogue rendering and input control but there are a couple of things included to get you started.
+Now that you have a line of dialogue you can find the next line after it with:
+
+```gdscript
+# If this line has no responses we can just use "next_id". If it does have responses you can use
+# the "next_id" of whichever response was chosen
+dialogue_line = yield(DialogueManager.get_next_dialogue_line(dialogue_line.next_id, dialogue_resource), "completed")
+```
+
+It's up to you to implement the actual dialogue rendering and input control but there are a couple of things included to get you started: `DialogueLabel` and the **Example Balloon**.
 
 ## DialogueLabel node
 
@@ -62,10 +72,12 @@ This will add a CanvasLayer and some UI to the bottom of the screen for an inter
 
 ![Example balloon instance](example-balloon.jpg)
 
+Make a copy of the example balloon directory to start customising it to fit your own game.
+
 Once you have your own balloon scene you can do something like this (This is what I have in my game):
 
 ```gdscript
-# Start some dialogue from a title
+# Start some dialogue from a title, then recursively step through further lines
 func show_dialogue(title: String, resource: DialogueResource) -> void:
 	var dialogue = yield(DialogueManager.get_next_dialogue_line(title, resource), "completed")
 	if dialogue != null:
@@ -73,8 +85,9 @@ func show_dialogue(title: String, resource: DialogueResource) -> void:
 		balloon.dialogue = dialogue
 		add_child(balloon)
 		# Dialogue might have response options so we have to wait and see
-		# what the player chose
-		show_dialogue(yield(balloon, "dialogue_actioned"), resource)
+		# what the player chose. "actioned" is emitted and passes the "next_id"
+		# once the player has made their choice.
+		show_dialogue(yield(balloon, "actioned"), resource)
 ```
 
 ![Real dialogue balloon example](real-example.jpg)
