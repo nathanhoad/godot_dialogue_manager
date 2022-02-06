@@ -345,7 +345,7 @@ func _on_NewButton_pressed():
 func _on_NewDialogueDialog_file_selected(path):
 	var resource = DialogueResource.new()
 	resource.take_over_path(path)
-	resource.raw_text = "~ this_is_a_node_title\n\nNathan: This is some dialogue.\nNathan: Here are some choices.\n- First one\n\tNathan: You picked the first one.\n- Second one\n\tNathan You picked the second one.\n- Start again => this_is_a_node_title\n- End the conversation => END\nNathan: For more information about conditional dialogue, mutations, and all the fun stuff, see the online documentation."
+	resource.raw_text = "~ this_is_a_node_title\n\nNathan: This is some dialogue.\nNathan: Here are some choices.\n- First one\n\tNathan: You picked the first one.\n- Second one\n\tNathan: You picked the second one.\n- Start again => this_is_a_node_title\n- End the conversation => END\nNathan: For more information about conditional dialogue, mutations, and all the fun stuff, see the online documentation."
 	resource.syntax_version = Constants.SYNTAX_VERSION
 	ResourceSaver.save(path, resource)
 	open_resource(resource)
