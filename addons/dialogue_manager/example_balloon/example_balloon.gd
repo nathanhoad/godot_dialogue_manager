@@ -36,6 +36,7 @@ func _ready() -> void:
 	
 	# For some reason, RichTextLabels within containers
 	# don't resize properly when their content changes
+	size_check_label.rect_size.x = dialogue_label.rect_size.x
 	size_check_label.bbcode_text = dialogue.dialogue
 	# Give the size check a chance to resize
 	yield(get_tree(), "idle_frame")
@@ -63,7 +64,7 @@ func _ready() -> void:
 	
 	balloon.rect_min_size = margin.rect_size
 	balloon.rect_size = Vector2(0, 0)
-	balloon.rect_global_position = Vector2(0,  balloon.get_viewport().size.y - balloon.rect_size.y)
+	balloon.rect_global_position = Vector2(0,  balloon.get_viewport_rect().size.y - balloon.rect_size.y)
 	
 	# Ok, we can hide it now. It will come back later if we have any responses
 	responses_menu.visible = false
