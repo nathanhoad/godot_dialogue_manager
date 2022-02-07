@@ -59,7 +59,7 @@ The label will emit a `paused` signal (along with the duration of the pause) whe
 
 There is an example implementation of a dialogue balloon you can use to get started (it's the same balloon that gets used when you run the test scene from the dialogue editor).
 
-Have a look at [addons/dialogue_manager/example_balloon](addons/dialogue_manager/example_balloon) to see how it's put together.
+Have a look at [/addons/dialogue_manager/example_balloon](../addons/dialogue_manager/example_balloon) to see how it's put together.
 
 You can give the balloon a go in your game by doing something like this:
 
