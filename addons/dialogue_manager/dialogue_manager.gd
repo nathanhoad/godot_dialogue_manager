@@ -15,12 +15,10 @@ const ExampleBalloon = preload("res://addons/dialogue_manager/example_balloon/ex
 
 var resource: DialogueResource
 var game_states: Array = []
-var is_strict: bool = true
 var auto_translate: bool = true
 
 var is_dialogue_running := false setget set_is_dialogue_running
 
-var _internal_state: Dictionary = {}
 var _node_properties: Array = []
 
 
@@ -238,7 +236,7 @@ func mutate(mutation: Dictionary) -> void:
 						var result = state.callv(function_name, args)
 						if result is GDScriptFunctionState and result.is_valid():
 							yield(result, "completed")
-				if not found and is_strict:
+				if not found:
 					printerr("'" + function_name + "' is not a method on the current scene (" + current_scene.name + ") or on any game states (" + str(game_states) + ").")
 					assert(false, "Missing function on current scene or game state. See Output for details.")
 		
@@ -306,11 +304,8 @@ func get_state_value(property: String):
 		if has_property(state, property):
 			return state.get(property)
 
-	if is_strict:
-		printerr("'" + property + "' is not a property on the current scene (" + current_scene.name + ") or on any game states (" + str(game_states) + ").")
-		assert(false, "Missing property on current scene or game state. See Output for details.")
-	else:
-		return _internal_state.get(property, null)
+	printerr("'" + property + "' is not a property on the current scene (" + current_scene.name + ") or on any game states (" + str(game_states) + ").")
+	assert(false, "Missing property on current scene or game state. See Output for details.")
 
 
 # Set a value on the current scene or game state
@@ -322,11 +317,8 @@ func set_state_value(property: String, value) -> void:
 			state.set(property, value)
 			return
 	
-	if is_strict:
-		printerr("'" + property + "' is not a property on the current scene (" + current_scene.name + ") or on any game states (" + str(game_states) + ").")
-		assert(false, "Missing property on current scene or game state. See Output for details.")
-	else:
-		_internal_state[property] = value
+	printerr("'" + property + "' is not a property on the current scene (" + current_scene.name + ") or on any game states (" + str(game_states) + ").")
+	assert(false, "Missing property on current scene or game state. See Output for details.")
 
 
 # Collapse any expressions
@@ -342,12 +334,9 @@ func resolve(tokens: Array):
 				if state.has_method(function_name):
 					token["type"] = "value"
 					token["value"] = state.callv(function_name, args)
-			if is_strict:
-				printerr("'" + function_name + "' is not a method on the current scene (" + current_scene.name + ") or on any game states (" + str(game_states) + ").")
-				assert(false, "Missing function on current scene or game state. See Output for details.")
-			else:
-				# Unknown functions in non-strict mode are falsey
-				token["value"] = false
+			
+			printerr("'" + function_name + "' is not a method on the current scene (" + current_scene.name + ") or on any game states (" + str(game_states) + ").")
+			assert(false, "Missing function on current scene or game state. See Output for details.")
 		
 		elif token.get("type") == Constants.TOKEN_DICTIONARY_REFERENCE:
 			token["type"] = "value"
