@@ -17,6 +17,10 @@ Write your dialogue in a simple script-like way and run it in your game.
 - [Using dialogue in your game](docs/Using_Dialogue.md)
 - [Translations](docs/Translations.md)
 
+## Tutorial
+
+[![Tutorial video thumbnail](docs/tutorial.png)](https://youtu.be/08HHSQGXfgM)
+
 ## Contributors
 
 [Nathan Hoad](https://nathanhoad.net)
