@@ -300,7 +300,7 @@ func is_line_empty(line: String) -> bool:
 	
 	if line == "": return true
 	if line == "endif": return true
-	if line.begins_with("# "): return true
+	if line.begins_with("#"): return true
 	
 	return false
 
