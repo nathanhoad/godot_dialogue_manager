@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   width="60"
+   height="60"
+   viewBox="0 0 15.875 15.875001"
+   version="1.1"
+   id="svg291"
+   inkscape:version="1.1.1 (3bf5ae0d25, 2021-09-20)"
+   sodipodi:docname="background.svg"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <sodipodi:namedview
+     id="namedview293"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageshadow="2"
+     inkscape:pageopacity="0.0"
+     inkscape:pagecheckerboard="0"
+     inkscape:document-units="px"
+     showgrid="false"
+     width="1920px"
+     units="px"
+     borderlayer="true"
+     inkscape:showpageshadow="false"
+     inkscape:snap-global="false"
+     inkscape:zoom="9.2916666"
+     inkscape:cx="67.910314"
+     inkscape:cy="51.713005"
+     inkscape:window-width="2560"
+     inkscape:window-height="1377"
+     inkscape:window-x="2552"
+     inkscape:window-y="-8"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="layer1" />
+  <defs
+     id="defs288" />
+  <g
+     inkscape:label="Layer 1"
+     inkscape:groupmode="layer"
+     id="layer1">
+    <path
+       id="rect843"
+       style="fill:#ffffff;stroke:#515b83;stroke-width:1.08836;stroke-linecap:round;stroke-linejoin:round;paint-order:markers stroke fill;stroke-opacity:1"
+       d="m 3.9884577,0.5441795 h 7.8980843 c 1.908131,0 3.444279,1.5361481 3.444279,3.4442782 v 7.8980843 c 0,1.908131 -1.536148,3.444279 -3.444279,3.444279 H 3.9884577 c -1.9081301,0 -3.4442782,-1.536148 -3.4442782,-3.444279 V 3.9884577 c 0,-1.9081301 1.5361481,-3.4442782 3.4442782,-3.4442782 z" />
+    <path
+       id="rect1005"
+       style="fill:#ffffff;stroke:#d2e3f7;stroke-width:1.02979;stroke-linecap:round;stroke-linejoin:round;paint-order:markers stroke fill;stroke-opacity:1"
+       d="m 4.2009625,0.94202638 h 7.4730745 c 1.805451,0 3.258936,1.45348552 3.258936,3.25893612 v 7.4730745 c 0,1.805451 -1.453485,3.258936 -3.258936,3.258936 H 4.2009625 c -1.8054506,0 -3.25893612,-1.453485 -3.25893612,-3.258936 V 4.2009625 c 0,-1.8054506 1.45348552,-3.25893612 3.25893612,-3.25893612 z" />
+  </g>
+</svg>

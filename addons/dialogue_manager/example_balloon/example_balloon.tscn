@@ -1,4 +1,4 @@
-[gd_scene load_steps=15 format=2]
+[gd_scene load_steps=16 format=2]
 
 [ext_resource path="res://addons/dialogue_manager/example_balloon/example_balloon.gd" type="Script" id=1]
 [ext_resource path="res://addons/dialogue_manager/example_balloon/menu.tscn" type="PackedScene" id=2]
@@ -7,6 +7,7 @@
 [ext_resource path="res://addons/dialogue_manager/example_balloon/Open_Sans/OpenSans-Bold.ttf" type="DynamicFontData" id=5]
 [ext_resource path="res://addons/dialogue_manager/example_balloon/Open_Sans/OpenSans-Italic.ttf" type="DynamicFontData" id=6]
 [ext_resource path="res://addons/dialogue_manager/dialogue_label.tscn" type="PackedScene" id=7]
+[ext_resource path="res://addons/dialogue_manager/example_balloon/background.svg" type="Texture" id=8]
 
 [sub_resource type="DynamicFont" id=1]
 size = 25
@@ -41,14 +42,21 @@ layer = 128
 script = ExtResource( 1 )
 
 [node name="Balloon" type="Control" parent="."]
-anchor_right = 1.0
+anchor_left = 0.1
+anchor_right = 0.9
+margin_bottom = 120.0
 __meta__ = {
 "_edit_use_anchors_": false
 }
 
-[node name="Background" type="ColorRect" parent="Balloon"]
+[node name="Background" type="NinePatchRect" parent="Balloon"]
 anchor_right = 1.0
 anchor_bottom = 1.0
+texture = ExtResource( 8 )
+patch_margin_left = 25
+patch_margin_top = 25
+patch_margin_right = 25
+patch_margin_bottom = 25
 __meta__ = {
 "_edit_use_anchors_": false
 }
@@ -56,34 +64,36 @@ __meta__ = {
 [node name="Margin" type="MarginContainer" parent="Balloon"]
 anchor_right = 1.0
 anchor_bottom = 1.0
-custom_constants/margin_right = 40
-custom_constants/margin_top = 10
-custom_constants/margin_left = 40
-custom_constants/margin_bottom = 10
+custom_constants/margin_right = 30
+custom_constants/margin_top = 20
+custom_constants/margin_left = 30
+custom_constants/margin_bottom = 20
 __meta__ = {
 "_edit_use_anchors_": false
 }
 
 [node name="VBox" type="VBoxContainer" parent="Balloon/Margin"]
-margin_left = 40.0
-margin_top = 10.0
-margin_right = 984.0
-margin_bottom = 84.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+custom_constants/separation = 5
 
 [node name="Character" type="RichTextLabel" parent="Balloon/Margin/VBox"]
 modulate = Color( 1, 1, 1, 0.470588 )
-margin_right = 944.0
+anchor_right = 1.0
 margin_bottom = 30.0
 rect_min_size = Vector2( 0, 30 )
 custom_colors/default_color = Color( 0, 0, 0, 1 )
 custom_fonts/normal_font = SubResource( 1 )
 bbcode_enabled = true
+bbcode_text = "Character"
+text = "Character"
 scroll_active = false
 
 [node name="Dialogue" parent="Balloon/Margin/VBox" instance=ExtResource( 7 )]
-margin_top = 34.0
-margin_right = 944.0
-margin_bottom = 70.0
+anchor_right = 1.0
+margin_top = 35.0
+margin_right = 0.0
+margin_bottom = 71.0
 rect_clip_content = false
 custom_colors/default_color = Color( 0, 0, 0, 1 )
 custom_fonts/italics_font = SubResource( 5 )
@@ -93,15 +103,16 @@ bbcode_text = "This is a bunch of dialogue!"
 text = "This is a bunch of dialogue!"
 
 [node name="Responses" type="MarginContainer" parent="Balloon/Margin/VBox"]
-margin_top = 74.0
-margin_right = 944.0
-margin_bottom = 74.0
+anchor_right = 1.0
+margin_top = 76.0
+margin_bottom = 76.0
 custom_constants/margin_left = 40
 __meta__ = {
 "_edit_use_anchors_": false
 }
 
 [node name="Menu" parent="Balloon/Margin/VBox/Responses" instance=ExtResource( 2 )]
+margin_right = 1536.0
 margin_bottom = 0.0
 _pointer = NodePath("../Pointer")
 
