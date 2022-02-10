@@ -27,7 +27,7 @@ func _init(data: Dictionary, should_translate: bool = true) -> void:
 	match data.get("type"):
 		Constants.TYPE_DIALOGUE:
 			character = data.get("character")
-			dialogue = tr(data.get("text")) if should_translate else data.get("text")
+			dialogue = tr(data.get("translation_key")) if should_translate else data.get("text")
 			replacements = data.get("replacements", [])
 			pauses = data.get("pauses", {})
 			speeds = data.get("speeds", [])
