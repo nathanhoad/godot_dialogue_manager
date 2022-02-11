@@ -330,13 +330,16 @@ func resolve(tokens: Array):
 			var args = resolve_each(token.get("value"))
 			var current_scene = get_tree().current_scene
 			var states = [current_scene] + game_states
+			var found = false
 			for state in states:
 				if state.has_method(function_name):
 					token["type"] = "value"
 					token["value"] = state.callv(function_name, args)
+					found = true
 			
-			printerr("'" + function_name + "' is not a method on the current scene (" + current_scene.name + ") or on any game states (" + str(game_states) + ").")
-			assert(false, "Missing function on current scene or game state. See Output for details.")
+			if not found:
+				printerr("'" + function_name + "' is not a method on the current scene (" + current_scene.name + ") or on any game states (" + str(game_states) + ").")
+				assert(false, "Missing function on current scene or game state. See Output for details.")
 		
 		elif token.get("type") == Constants.TOKEN_DICTIONARY_REFERENCE:
 			token["type"] = "value"
