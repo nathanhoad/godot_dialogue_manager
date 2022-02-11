@@ -210,6 +210,9 @@ func parse(content: String) -> Dictionary:
 			line["pauses"] = markers.get("pauses")
 			line["speeds"] = markers.get("speeds")
 			line["inline_mutations"] = markers.get("mutations")
+			
+			# Unescape any newlines
+			line["text"] = line.get("text").replace("\\n", "\n")
 		
 		# Work out where to go after this line
 		if line.get("next_id") == Constants.ID_NULL:
