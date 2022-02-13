@@ -18,9 +18,9 @@ var dialogue_resource = preload("res://assets/dialogue/example.tres")
 var dialogue_line = yield(DialogueManager.get_next_dialogue_line("Some node title", dialogue_resource), "completed")
 ```
 
-This will find the line with the given title and then begin checking conditions and stepping over each line in the `next_id` sequence until we hit a line of dialogue that can be displayed (or the end of the conversation). Any mutations found along the way will be exectued as well.
+This will find the line with the given title and then begin checking conditions and stepping over each line in the `next_id` sequence until we hit a line of dialogue that can be displayed (or the end of the conversation). Any mutations found along the way will be executed as well.
 
-You need to `yield` this call because it can't gaurantee an immediate return. If there are any mutations it will need to allow for them to run before finding the next line.
+You need to `yield` this call because it can't guarantee an immediate return. If there are any mutations it will need to allow for them to run before finding the next line.
 
 The returned line in dialogue is a `DialogueLine` and will have the following properties:
 

@@ -61,7 +61,7 @@ You can modify state with either a "set" or a "do" line. Any variables or functi
 
 ![Mutations](mutations.jpg)
 
-In the example above, the dialogue manager would expect one of yoru game states to implement a method with the signature `func animate(string, string) -> void`
+In the example above, the dialogue manager would expect one of your game states to implement a method with the signature `func animate(string, string) -> void`
 
 ## Error checking
 
@@ -69,7 +69,7 @@ Running an error check should highlight any syntax or referential integrity issu
 
 ![Errors](errors.jpg)
 
-If a dialogue resource has any errors on it at runtime it will throw an assertian failure and tell you which file it is.
+If a dialogue resource has any errors on it at runtime it will throw an assertion failure and tell you which file it is.
 
 
 ## Running a test scene

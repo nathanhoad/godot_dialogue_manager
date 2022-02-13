@@ -6,9 +6,9 @@ You can turn this off by setting `DialogueManager.auto_translate = false` but be
 
 This might be useful for cases where you have audio dialogue files that match up with lines.
 
-## Static tranlsation keys in dialogue
+## Static translation keys in dialogue
 
-You can export tranlsations as CSV from the "Translations" menu in the dialogue editor. 
+You can export translations as CSV from the "Translations" menu in the dialogue editor. 
 
 This will find any unique dialogue lines or response prompts and add them to a list. If a static key is specified for the line (eg. `[TR:SOME_KEY]`) then that will be used as the translation key, otherwise the dialogue/prompt itself will be.
 
