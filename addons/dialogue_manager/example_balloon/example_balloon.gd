@@ -71,6 +71,7 @@ func _ready() -> void:
 	
 	# Show our box
 	balloon.visible = true
+	DialogueManager.emit_signal("balloon_visible")
 	
 	dialogue_label.type_out()
 	yield(dialogue_label, "finished")
@@ -91,5 +92,6 @@ func _ready() -> void:
 			yield(get_tree(), "idle_frame")
 	
 	# Send back input
-	emit_signal("actioned", next_id)
+	call_deferred("emit_signal", "actioned", next_id)
+	yield(DialogueManager, "balloon_visible")
 	queue_free()

@@ -3,6 +3,7 @@ extends Node
 
 signal dialogue_started
 signal dialogue_finished
+signal balloon_visible
 
 
 const DialogueResource = preload("res://addons/dialogue_manager/dialogue_resource.gd")
@@ -87,6 +88,7 @@ func get_next_dialogue_line(key: String, override_resource: DialogueResource = n
 			return get_next_dialogue_line(dialogue.next_id, local_resource)
 	else:
 		return dialogue
+	
 
 
 func replace_values(line_or_response) -> String:
@@ -106,9 +108,10 @@ func show_example_dialogue_balloon(title: String, resource: DialogueResource = n
 	if dialogue != null:
 		var balloon = preload("res://addons/dialogue_manager/example_balloon/example_balloon.tscn").instance()
 		balloon.dialogue = dialogue
-		get_tree().current_scene.add_child(balloon)
+		
+		get_tree().current_scene.call_deferred("add_child", balloon)
+		
 		show_example_dialogue_balloon(yield(balloon, "actioned"), resource)
-	
 
 ### Helpers
 
