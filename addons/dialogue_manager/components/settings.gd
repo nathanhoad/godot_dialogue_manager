@@ -15,6 +15,8 @@ func _ready() -> void:
 		config.set_value("editor", "missing_translations_are_errors", false)
 	if not config.has_section("runtime"):
 		config.set_value("runtime", "states", [])
+	if not config.has_section("input"):
+		config.set_value("input", "skip_typing", "ui_cancel")
 
 
 func reset_config() -> void:
@@ -46,3 +48,16 @@ func set_runtime_value(key: String, value) -> void:
 
 func get_runtime_value(key: String, default = null):
 	return config.get_value("runtime", key, default)
+
+
+func has_input_value(key: String) -> bool:
+	return config.has_section_key("input", key)
+
+
+func set_input_value(key: String, value) -> void:
+	config.set_value("input", key, value)
+	config.save(Constants.CONFIG_PATH)
+
+
+func get_input_value(key: String, default = null):
+	return config.get_value("input", key, default)

@@ -14,19 +14,19 @@ onready var settings: Settings = get_node(_settings)
 onready var errors_button := $Margin/VBox/Tabs/Editor/VBox/CheckForErrorsButton
 onready var missing_translations_button := $Margin/VBox/Tabs/Editor/VBox/MissingTranslationsButton
 onready var globals_list := $Margin/VBox/Tabs/Runtime/VBox/GlobalsList
+onready 	var skip_typing_option_button := $Margin/VBox/Tabs/Input/GridContainer/SkipTypingOptionButton
 
 var dialogue_manager_config := ConfigFile.new()
 var all_globals: Dictionary = {}
 var enabled_globals: Array = []
 
 
-### Signals
-
-
-func _on_SettingsDialog_about_to_show():
+func _initialize_editor_tab():
 	errors_button.pressed = settings.get_editor_value("check_for_errors", true)
 	missing_translations_button.pressed = settings.get_editor_value("missing_translations_are_errors", false)
 
+
+func _initialize_globals_tab():
 	var project = ConfigFile.new()
 	var err = project.load("res://project.godot")
 	assert(err == OK, "Could not find the project file")
@@ -58,6 +58,24 @@ func _on_SettingsDialog_about_to_show():
 	globals_list.set_column_title(2, "Path")
 
 
+func _initialize_input_tab():
+	var actions: Array = InputMap.get_actions()
+	for index in actions.size():
+		var action: String = actions[index]
+		skip_typing_option_button.add_item(action)
+		skip_typing_option_button.set_item_metadata(index, action)
+		if action == settings.get_input_value("skip_typing", "ui_cancel"):
+			skip_typing_option_button.selected = index
+
+
+### Signals
+
+
+func _on_SettingsDialog_about_to_show():
+	_initialize_editor_tab()
+	_initialize_globals_tab()
+	_initialize_input_tab()
+
 
 func _on_GlobalsList_item_selected():
 	var item = globals_list.get_selected()
@@ -87,3 +105,8 @@ func _on_DoneButton_pressed():
 func _on_GlobalsList_button_pressed(item, column, id):
 	hide()
 	emit_signal("script_button_pressed", item.get_text(2))
+
+
+func _on_SkipTypingOptionButton_item_selected(index: int) -> void:
+	var action: String = skip_typing_option_button.get_item_metadata(index)
+	settings.set_input_value("skip_typing", action)
