@@ -52,7 +52,8 @@ func get_speed(index: int) -> float:
 
 func mutate_inline_mutations(index: int) -> void:
 	for inline_mutation in inline_mutations:
+		# inline mutations are an array of arrays in the form of [character index, resolvable function]
 		if inline_mutation[0] > index:
 			return
 		if inline_mutation[0] == index:
-			dialogue_manager.mutate(inline_mutations[0])
+			dialogue_manager.mutate(inline_mutation[1])
