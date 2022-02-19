@@ -53,7 +53,7 @@ func _ready() -> void:
 	if dialogue.responses.size() > 0:
 		for response in dialogue.responses:
 			var item = MenuItem.instance()
-			item.bbcode_text = response.prompt
+			item.bbcode_text = tr(response.translation_key)
 			responses_menu.add_child(item)
 	
 	# Make sure our responses get included in the height reset
