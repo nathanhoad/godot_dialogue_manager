@@ -8,6 +8,7 @@ signal finished()
 
 const Line = preload("res://addons/dialogue_manager/dialogue_line.gd")
 
+export var skip_action: String = "ui_cancel"
 export var seconds_per_step: float = 0.02
 
 
@@ -27,7 +28,7 @@ func _process(delta: float) -> void:
 		# Type out text
 		if percent_visible < 1:
 			# If cancel is pressed then skip typing it out
-			if Input.is_action_pressed("ui_cancel"):
+			if Input.is_action_just_pressed(skip_action):
 				percent_visible = 1
 			
 			# Otherwise, keep typing
