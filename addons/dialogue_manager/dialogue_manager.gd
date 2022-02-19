@@ -148,7 +148,7 @@ func get_line(key: String, local_resource: DialogueResource) -> Line:
 	var line = Line.new(data, auto_translate)
 	line.dialogue_manager = self
 	
-	# No dialogue and only one node is the same as an early exit
+	# If we are the first of a list of responses then get the other ones
 	if data.get("type") == Constants.TYPE_RESPONSE:
 		line.responses = get_responses(data.get("responses"), local_resource)
 		return line
@@ -164,9 +164,6 @@ func get_line(key: String, local_resource: DialogueResource) -> Line:
 	var next_line = local_resource.lines.get(line.next_id)
 	if next_line != null and next_line.get("type") == Constants.TYPE_RESPONSE:
 		line.responses = get_responses(next_line.get("responses"), local_resource)
-		# If there is only one response then it has to point to the next node
-		if line.responses.size() == 1:
-			line.next_id = line.responses[0].next_id
 	
 	return line
 

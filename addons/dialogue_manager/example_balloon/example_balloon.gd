@@ -50,7 +50,7 @@ func _ready() -> void:
 	for item in responses_menu.get_children():
 		item.queue_free()
 	
-	if dialogue.responses.size() > 1:
+	if dialogue.responses.size() > 0:
 		for response in dialogue.responses:
 			var item = MenuItem.instance()
 			item.bbcode_text = response.prompt
@@ -77,7 +77,7 @@ func _ready() -> void:
 	
 	# Wait for input
 	var next_id: String = ""
-	if dialogue.responses.size() > 1:
+	if dialogue.responses.size() > 0:
 		responses_menu.is_active = true
 		responses_menu.visible = true
 		responses_menu.index = 0
