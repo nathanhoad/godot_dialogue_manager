@@ -30,7 +30,7 @@ If you use the `DialogueLabel` node then you can also make use of the `[wait=N]`
 
 ## Responses
 
-To give the player branching options you can start a line with "- " and then a prompt.
+To give the player branching options you can start a line with "- " and then a prompt. Like dialogue, prompts can also contain variables wrapped in `{{}}`.
 
 ![Empty prompts](empty-prompts.jpg)
 
@@ -61,7 +61,20 @@ You can modify state with either a "set" or a "do" line. Any variables or functi
 
 ![Mutations](mutations.jpg)
 
-In the example above, the dialogue manager would expect one of your game states to implement a method with the signature `func animate(string, string) -> void`
+In the example above, the dialogue manager would expect one of your game states to implement a method with the signature `func animate(string, string) -> void`.
+
+There are also a couple of special built-in mutations you can use:
+
+- `emit(...)` - emit a signal on your game states.
+- `wait(float)` - wait for `float` seconds (this has no effect when used inline).
+- `debug(...)` - print something to the Output window.
+
+Mutations can also be used inline. Inline mutations will be called as the typed out dialogue reaches that point in the text.
+
+![Inline mutations](inline-mutations.jpg)
+
+One thing to note is that inline mutations that use `yield` won't be awaited so the dialogue will continue right away.
+
 
 ## Error checking
 
