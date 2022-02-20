@@ -75,5 +75,9 @@ func type_out() -> void:
 	waiting_seconds = 0
 	# Text isn't calculated until the next frame
 	yield(get_tree(), "idle_frame")
+	if not get_total_character_count():
+		emit_signal("finished")
+		queue_free()
+		return
 	percent_per_index = 100.0 / float(get_total_character_count()) / 100.0
 	is_typing = true
