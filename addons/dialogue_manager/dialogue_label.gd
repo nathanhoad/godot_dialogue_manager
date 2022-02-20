@@ -30,6 +30,9 @@ func _process(delta: float) -> void:
 			# If cancel is pressed then skip typing it out
 			if Input.is_action_just_pressed(skip_action):
 				percent_visible = 1
+				# Run any inline mutations that haven't been run yet
+				for i in range(index, get_total_character_count()):
+					dialogue.mutate_inline_mutations(i)
 			
 			# Otherwise, keep typing
 			elif waiting_seconds > 0:
