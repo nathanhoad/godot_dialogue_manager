@@ -108,3 +108,21 @@ Mutations are for updating game state or running sequences (or both).
 If you have a mutation in the dialogue editor like `do some_variable = 1` then you will need a matching property on one of your `game_state`s or the current scene.
 
 If you have a mutation like `do animate("Character", "cheer")` then you will need a method on one of the `game_state`s or the current scene that matches the signature `func animate(character: String, animation: String) -> void:`. The argument `character` will be given `"Character"` and `animation` will be given `"cheer"`.
+
+## Generating Dialogue Resources at runtime
+
+If you need to construct a `DialogueResource` at runtime you can use `get_resource_from_text(string)`:
+
+```gdscript
+var resource = DialogueManager.get_resource_from_text("~ title\nCharacter: Hello!)
+```
+
+This will run the given text through the parser.
+
+If there were syntax errors they will be listed under `resource.errors`.
+
+If there were no errors then you can use this ephemeral resource like normal:
+
+```gdscript
+var dialogue = yield(DialogueManager.get_next_dialogue_line("title", resource), "completed")
+```

@@ -10,6 +10,8 @@ const Constants = preload("res://addons/dialogue_manager/constants.gd")
 const Line = preload("res://addons/dialogue_manager/dialogue_line.gd")
 const Response = preload("res://addons/dialogue_manager/dialogue_response.gd")
 
+const Parser = preload("res://addons/dialogue_manager/components/parser.gd")
+
 const ExampleBalloon = preload("res://addons/dialogue_manager/example_balloon/example_balloon.gd")
 
 
@@ -99,6 +101,21 @@ func replace_values(line_or_response) -> String:
 	else:
 		return ""
 
+
+func get_resource_from_text(text: String) -> DialogueResource:
+	var parser = Parser.new()
+	var resource = DialogueResource.new()
+	
+	var results = parser.parse(text)
+	parser.queue_free()
+	
+	resource.raw_text = text
+	resource.syntax_version = Constants.SYNTAX_VERSION
+	resource.titles = results.get("titles")
+	resource.lines = results.get("lines")
+	resource.errors = results.get("errors")
+	
+	return resource
 
 
 func show_example_dialogue_balloon(title: String, resource: DialogueResource = null) -> void:

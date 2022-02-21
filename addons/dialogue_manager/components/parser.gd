@@ -23,7 +23,7 @@ var MARKER_CODE_REGEX := RegEx.new()
 var TOKEN_DEFINITIONS: Dictionary = {}
 
 
-func _ready() -> void:
+func _init() -> void:
 	VALID_TITLE_REGEX.compile("^[^\\!\\@\\#\\$\\%\\^\\&\\*\\(\\)\\-\\=\\+\\{\\}\\[\\]\\;\\:\\\"\\'\\,\\.\\<\\>\\?\\/\\s]+$")
 	TRANSLATION_REGEX.compile("\\[TR:(?<tr>.*?)\\]")
 	MUTATION_REGEX.compile("(do|set) ((?<lhs>[a-z_A-Z][a-z_A-Z0-9]+) ?(?<operator>\\+=|-=|\\*=\\/=|=) ? (?<rhs>.*)|(?<function>[a-z_A-Z][a-z_A-Z0-9]+)\\((?<args>.*)\\))")
@@ -240,7 +240,7 @@ func parse(content: String) -> Dictionary:
 					known_translations[line.get("translation_key")] = line.get("text")
 			else:
 				# Default translations key
-				if settings.get_editor_value("missing_translations_are_errors", false):
+				if settings != null and settings.get_editor_value("missing_translations_are_errors", false):
 					errors.append(error(id, "Missing translation"))
 				else:
 					line["translation_key"] = line.get("text")
