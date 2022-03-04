@@ -20,11 +20,13 @@ A node will continue until another title is encountered or the end of the file.
 
 ## Dialogue
 
-A dialogue line is either just text or in the form of "Character: What they say". Dialogue lines can contain variables wrapped in "{{}}". Any variables you use must be a property or method on one of your provided game states (see down below under **Settings, Runtime**).
+A dialogue line is either just text or in the form of "Character: What they say". 
+
+Dialogue lines can contain **variables** wrapped in "{{}}". Any variables you use must be a property or method on one of your provided game states (see down below under **Settings, Runtime**).
 
 ![Dialogue lines](dialogue-lines.jpg)
 
-Dialogue lines can also contain `bb_code` for RichTextEffects (if you end up using a `RichTextLabel` or the `DialogueLabel` provided by this addon).
+Dialogue lines can also contain **bb_code** for RichTextEffects (if you end up using a `RichTextLabel` or the `DialogueLabel` provided by this addon).
 
 If you use the `DialogueLabel` node then you can also make use of the `[wait=N]` and `[speed=N]` codes. `wait` will pause the typing of the dialogue for `N` seconds (eg. `[wait=1.5]` will pause for 1.5 seconds). `speed` will change the typing speed of the current line of dialogue by that factor (eg `[speed=10]` will change the typing speed to be 10 times faster than normal).
 

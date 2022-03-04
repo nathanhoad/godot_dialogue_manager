@@ -92,6 +92,7 @@ func show_dialogue(title: String, resource: DialogueResource) -> void:
 
 ![Real dialogue balloon example](real-example.jpg)
 
+To achieve something similar to the above example (balloons that position themselves near characters) I'd suggest parenting your balloon control to a `Node2D` that you can then move to the character's `global_position`. Additionally, within each "talkable" character I have a `Position2D` node that is used to work out where the pin should be located.
 
 ## Conditions
 
