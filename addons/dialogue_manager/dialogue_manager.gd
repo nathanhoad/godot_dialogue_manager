@@ -195,6 +195,15 @@ func set_is_dialogue_running(value: bool) -> void:
 	is_dialogue_running = value
 
 
+func get_game_states() -> Array:
+	var current_scene = get_tree().current_scene
+	var unique_states = []
+	for state in [current_scene] + game_states:
+		if not unique_states.has(state):
+			unique_states.append(state)
+	return unique_states
+
+
 # Check if a condition is met
 func check(condition: Dictionary) -> bool:
 	if condition.size() == 0: return true
@@ -214,9 +223,7 @@ func mutate(mutation: Dictionary) -> void:
 			"wait":
 				yield(get_tree().create_timer(float(args[0])), "timeout")
 			"emit":
-				var current_scene = get_tree().current_scene
-				var states = [current_scene] + game_states
-				for state in states:
+				for state in get_game_states():
 					if state.has_signal(args[0]):
 						match args.size():
 							1:
@@ -241,22 +248,17 @@ func mutate(mutation: Dictionary) -> void:
 					printable[mutation.get("args")[i][0].get("value")] = args[i]
 				print(printable)
 			_:
-				var current_scene = get_tree().current_scene
-				var states = [current_scene] + game_states
-				var found = false
-				for state in states:
+				for state in get_game_states():
 					if state.has_method(function_name):
-						found = true
 						var result = state.callv(function_name, args)
 						if result is GDScriptFunctionState and result.is_valid():
 							yield(result, "completed")
-				if not found:
-					printerr("'" + function_name + "' is not a method on the current scene (" + current_scene.name + ") or on any game states (" + str(game_states) + ").")
-					assert(false, "Missing function on current scene or game state. See Output for details.")
-		
-		# Wait one frame to give the dialogue handler a chance to yield
-		yield(get_tree(), "idle_frame")
-		return
+						else:
+							yield(get_tree(), "idle_frame")
+						return
+				
+				printerr("'" + function_name + "' is not a method in any game states (" + str(get_game_states()) + ").")
+				assert(false, "Missing function on current scene or game state. See Output for details.")
 	
 	elif mutation.has("variable"):
 		var lhs = mutation.get("variable")
@@ -312,26 +314,22 @@ func get_responses(ids: Array, local_resource: DialogueResource) -> Array:
 # Get a value on the current scene or game state
 func get_state_value(property: String):
 	# It's a variable
-	var current_scene = get_tree().current_scene
-	var states = [current_scene] + game_states
-	for state in states:
+	for state in get_game_states():
 		if has_property(state, property):
 			return state.get(property)
 
-	printerr("'" + property + "' is not a property on the current scene (" + current_scene.name + ") or on any game states (" + str(game_states) + ").")
+	printerr("'" + property + "' is not a property on any game states (" + str(get_game_states()) + ").")
 	assert(false, "Missing property on current scene or game state. See Output for details.")
 
 
 # Set a value on the current scene or game state
 func set_state_value(property: String, value) -> void:
-	var current_scene = get_tree().current_scene
-	var states = [current_scene] + game_states
-	for state in states:
+	for state in get_game_states():
 		if has_property(state, property):
 			state.set(property, value)
 			return
 	
-	printerr("'" + property + "' is not a property on the current scene (" + current_scene.name + ") or on any game states (" + str(game_states) + ").")
+	printerr("'" + property + "' is not a property on any game states (" + str(get_game_states()) + ").")
 	assert(false, "Missing property on current scene or game state. See Output for details.")
 
 
@@ -342,17 +340,15 @@ func resolve(tokens: Array):
 		if token.get("type") == Constants.TOKEN_FUNCTION:
 			var function_name = token.get("function")
 			var args = resolve_each(token.get("value"))
-			var current_scene = get_tree().current_scene
-			var states = [current_scene] + game_states
 			var found = false
-			for state in states:
+			for state in get_game_states():
 				if state.has_method(function_name):
 					token["type"] = "value"
 					token["value"] = state.callv(function_name, args)
 					found = true
 			
 			if not found:
-				printerr("'" + function_name + "' is not a method on the current scene (" + current_scene.name + ") or on any game states (" + str(game_states) + ").")
+				printerr("'" + function_name + "' is not a method on any game states (" + str(get_game_states()) + ").")
 				assert(false, "Missing function on current scene or game state. See Output for details.")
 		
 		elif token.get("type") == Constants.TOKEN_DICTIONARY_REFERENCE:

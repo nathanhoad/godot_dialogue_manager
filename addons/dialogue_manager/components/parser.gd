@@ -138,7 +138,7 @@ func parse(content: String) -> Dictionary:
 				# No previous response so this is the first in the list
 				line["responses"] = PoolStringArray([str(id)])
 			
-			line["next_id_after"] = find_next_line_after_responses(id, raw_lines)
+			line["next_id_after"] = find_next_line_after_responses(id, raw_lines, dialogue)
 
 			# If this response has no body then the next id is the next id after
 			if not line.has("next_id") or line.get("next_id") == Constants.ID_NULL:
@@ -409,7 +409,7 @@ func find_next_line_after_conditions(line_number: int, all_lines: Array, dialogu
 	return Constants.ID_END_CONVERSATION
 
 
-func find_next_line_after_responses(line_number: int, all_lines: Array) -> String:
+func find_next_line_after_responses(line_number: int, all_lines: Array, dialogue: Dictionary) -> String:
 	var line = all_lines[line_number]
 	var expected_indent = get_indent(line)
 
@@ -429,6 +429,15 @@ func find_next_line_after_responses(line_number: int, all_lines: Array) -> Strin
 		# Another option so we continue
 		elif line.begins_with("- "):
 			continue
+		
+		# We're at the end of a conditional so jump back up to see what's after it
+		elif line.begins_with("elif ") or line.begins_with("else"):
+			for p in range(line_number - 1, -1, -1):
+				line = all_lines[p]
+				if is_line_empty(line): continue
+				var line_indent = get_indent(line)
+				if line_indent < expected_indent:
+					return dialogue[str(p)].next_id_after
 		
 		# Otherwise check the indent for an outdent
 		else:
