@@ -401,6 +401,7 @@ func find_next_line_after_conditions(line_number: int, all_lines: Array, dialogu
 			# We have to check the parent of this block
 			for p in range(line_number - 1, -1, -1):
 				line = all_lines[p]
+				if is_line_empty(line): continue
 				line_indent = get_indent(line)
 				if line_indent < expected_indent:
 					return dialogue[str(p)].next_id_after
