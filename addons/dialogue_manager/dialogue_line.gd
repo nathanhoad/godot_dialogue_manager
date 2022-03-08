@@ -10,6 +10,7 @@ var next_id: String
 var mutation: Dictionary
 
 var character: String
+var character_replacements: Array
 var dialogue: String
 var replacements: Array
 
@@ -27,6 +28,7 @@ func _init(data: Dictionary, should_translate: bool = true) -> void:
 	match data.get("type"):
 		Constants.TYPE_DIALOGUE:
 			character = data.get("character")
+			character_replacements = data.get("character_replacements", [])
 			dialogue = tr(data.get("translation_key")) if should_translate else data.get("text")
 			replacements = data.get("replacements", [])
 			pauses = data.get("pauses", {})

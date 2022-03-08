@@ -94,10 +94,10 @@ func get_next_dialogue_line(key: String, override_resource: DialogueResource = n
 func replace_values(line_or_response) -> String:
 	if line_or_response is Line:
 		var line: Line = line_or_response
-		return get_replacements(line.dialogue, line.replacements)
+		return get_with_replacements(line.dialogue, line.replacements)
 	elif line_or_response is Response:
 		var response: Response = line_or_response
-		return get_replacements(response.prompt, response.replacements)
+		return get_with_replacements(response.prompt, response.replacements)
 	else:
 		return ""
 
@@ -175,7 +175,8 @@ func get_line(key: String, local_resource: DialogueResource) -> Line:
 	
 	# Replace any variables in the dialogue text
 	if data.get("type") == Constants.TYPE_DIALOGUE and data.has("replacements"):
-		line.dialogue = replace_values(line)
+		line.character = get_with_replacements(line.character, line.character_replacements)
+		line.dialogue = get_with_replacements(line.dialogue, line.replacements)
 	
 	# Inject the next node's responses if they have any
 	var next_line = local_resource.lines.get(line.next_id)
@@ -288,7 +289,7 @@ func resolve_each(array: Array) -> Array:
 	
 
 # Replace any variables, etc in the dialogue with their state values
-func get_replacements(text: String, replacements: Array) -> String:
+func get_with_replacements(text: String, replacements: Array) -> String:
 	for replacement in replacements:
 		var value = resolve(replacement.get("expression").duplicate(true))
 		text = text.replace(replacement.get("value_in_text"), str(value))

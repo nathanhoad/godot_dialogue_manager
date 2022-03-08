@@ -195,6 +195,10 @@ func parse(content: String) -> Dictionary:
 			if ": " in l:
 				var bits = Array(l.strip_edges().split(": "))
 				line["character"] = bits.pop_front()
+				# You can use variables in the character's name
+				line["character_replacements"] = extract_dialogue_replacements(line.get("character"))
+				if line.get("character_replacements").size() > 0 and line.get("character_replacements")[0].has("error"):
+					errors.append(error(id, "Invalid expression in character name"))
 				line["text"] = PoolStringArray(bits).join(": ").replace("!ESCAPED_COLON!", ":")
 			else:
 				line["character"] = ""
