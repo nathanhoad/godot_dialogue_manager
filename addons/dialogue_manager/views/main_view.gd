@@ -74,6 +74,13 @@ func _ready() -> void:
 	build_open_menu()
 
 
+func apply_changes() -> void:
+	if is_instance_valid(editor):
+		current_resource.raw_text = editor.text
+		ResourceSaver.save(current_resource.resource_path, current_resource)
+		parse(true)
+
+
 ### Helpers
 
 
@@ -332,8 +339,6 @@ func _on_translation_menu_id_pressed(id):
 
 func _on_CodeEditor_text_changed():
 	has_changed = true
-	current_resource.raw_text = editor.text
-	ResourceSaver.save(current_resource.resource_path, current_resource)
 	title_list.titles = editor.get_titles()
 	parse_timeout.start(1)
 
