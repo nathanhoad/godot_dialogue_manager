@@ -26,6 +26,7 @@ The returned line in dialogue is a `DialogueLine` and will have the following pr
 
 - **character**: String
 - **dialogue**: String
+- **translation_key**: String
 - **replacements**: Dictionary of { text => expression } (expression is in AST format and can be manually resolved with `DialogueManager.replace_values()`)
 - **pauses**: Dictionary of { index => time }
 - **speeds**: Array of [index, speed]
@@ -33,6 +34,7 @@ The returned line in dialogue is a `DialogueLine` and will have the following pr
 - **next_id**: String
 - **responses**: Array of DialogueResponse:
   - **prompt**: String
+  - **translation_key**: String
   - **next_id**: String
 
 Now that you have a line of dialogue you can find the next line after it with:
