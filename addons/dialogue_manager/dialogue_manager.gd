@@ -223,6 +223,7 @@ func mutate(mutation: Dictionary) -> void:
 		match function_name:
 			"wait":
 				yield(get_tree().create_timer(float(args[0])), "timeout")
+				return
 			"emit":
 				for state in get_game_states():
 					if state.has_signal(args[0]):
@@ -277,8 +278,8 @@ func mutate(mutation: Dictionary) -> void:
 			"/=":
 				set_state_value(lhs, apply_operation("/", get_state_value(lhs), rhs))
 		
-		# Wait one frame to give the dialogue handler a chance to yield
-		yield(get_tree(), "idle_frame")
+	# Wait one frame to give the dialogue handler a chance to yield
+	yield(get_tree(), "idle_frame")
 
 
 func resolve_each(array: Array) -> Array:
