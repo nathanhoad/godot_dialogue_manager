@@ -6,6 +6,7 @@ var dialogue_manager
 
 var type: String = Constants.TYPE_DIALOGUE
 var next_id: String
+var translation_key: String
 
 var mutation: Dictionary
 
@@ -30,6 +31,7 @@ func _init(data: Dictionary, should_translate: bool = true) -> void:
 			character = data.get("character")
 			character_replacements = data.get("character_replacements", [])
 			dialogue = tr(data.get("translation_key")) if should_translate else data.get("text")
+			translation_key = data.get("translation_key")
 			replacements = data.get("replacements", [])
 			pauses = data.get("pauses", {})
 			speeds = data.get("speeds", [])
