@@ -69,9 +69,10 @@ func _ready() -> void:
 	
 	translations_menu.get_popup().connect("id_pressed", self, "_on_translation_menu_id_pressed")
 	
-	if settings.has_editor_value("recent_resources"):
-		recent_resources = settings.get_editor_value("recent_resources")
+	recent_resources = settings.get_editor_value("recent_resources", [])
 	build_open_menu()
+	
+	editor.wrap_enabled = settings.get_editor_value("wrap_lines", false)
 
 
 func apply_changes() -> void:
@@ -390,6 +391,8 @@ func _on_OpenDialogueDialog_confirmed():
 
 func _on_SettingsDialog_popup_hide():
 	parse()
+	editor.wrap_enabled = settings.get_editor_value("wrap_lines", false)
+	editor.grab_focus()
 
 
 func _on_ErrorList_error_pressed(error):

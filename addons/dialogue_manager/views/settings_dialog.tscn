@@ -94,9 +94,10 @@ text = "Treat missing static translation keys as errors"
 modulate = Color( 1, 1, 1, 0.470588 )
 margin_top = 106.0
 margin_right = 924.0
-margin_bottom = 120.0
+margin_bottom = 140.0
 custom_constants/margin_right = 80
 custom_constants/margin_left = 20
+custom_constants/margin_bottom = 20
 
 [node name="TranslationHelp" type="Label" parent="Margin/VBox/Tabs/Editor/VBox/Margin"]
 margin_left = 20.0
@@ -105,8 +106,26 @@ margin_bottom = 14.0
 text = "If you are using static translation keys then having this enabled will help you find any lines that you haven't added a key to yet."
 autowrap = true
 
+[node name="EditorTitle" type="Label" parent="Margin/VBox/Tabs/Editor/VBox"]
+margin_top = 144.0
+margin_right = 924.0
+margin_bottom = 158.0
+text = "Editor"
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="WrapButton" type="CheckButton" parent="Margin/VBox/Tabs/Editor/VBox"]
+margin_top = 162.0
+margin_right = 924.0
+margin_bottom = 202.0
+text = "Wrap long lines"
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
 [node name="Spacer" type="Control" parent="Margin/VBox/Tabs/Editor/VBox"]
-margin_top = 124.0
+margin_top = 206.0
 margin_right = 924.0
 margin_bottom = 446.0
 size_flags_horizontal = 3
@@ -173,6 +192,7 @@ text = "Done"
 [connection signal="about_to_show" from="." to="." method="_on_SettingsDialog_about_to_show"]
 [connection signal="toggled" from="Margin/VBox/Tabs/Editor/VBox/CheckForErrorsButton" to="." method="_on_CheckForErrorsButton_toggled"]
 [connection signal="toggled" from="Margin/VBox/Tabs/Editor/VBox/MissingTranslationsButton" to="." method="_on_MissingTranslationsButton_toggled"]
+[connection signal="toggled" from="Margin/VBox/Tabs/Editor/VBox/WrapButton" to="." method="_on_WrapButton_toggled"]
 [connection signal="button_pressed" from="Margin/VBox/Tabs/Runtime/VBox/GlobalsList" to="." method="_on_GlobalsList_button_pressed"]
 [connection signal="item_selected" from="Margin/VBox/Tabs/Runtime/VBox/GlobalsList" to="." method="_on_GlobalsList_item_selected"]
 [connection signal="pressed" from="Margin/VBox/Actions/DoneButton" to="." method="_on_DoneButton_pressed"]
