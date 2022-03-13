@@ -15,7 +15,8 @@ onready var open_button := $Margin/VBox/Toolbar/OpenButton
 onready var content := $Margin/VBox/Content
 onready var title_list := $Margin/VBox/Content/VBox/TitleList
 onready var error_list := $Margin/VBox/Content/VBox/ErrorList
-onready var editor := $Margin/VBox/Content/CodeEditor
+onready var search_toolbar := $Margin/VBox/Content/VBox2/SearchToolbar
+onready var editor := $Margin/VBox/Content/VBox2/CodeEditor
 onready var new_dialogue_dialog := $NewDialogueDialog
 onready var open_dialogue_dialog := $OpenDialogueDialog
 onready var invalid_dialogue_dialog := $InvalidDialogueDialog
@@ -25,6 +26,7 @@ onready var save_translations_dialog := $SaveTranslationsDialog
 onready var update_button := $Margin/VBox/Toolbar/UpdateButton
 onready var error_button := $Margin/VBox/Toolbar/ErrorButton
 onready var run_node_button := $Margin/VBox/Toolbar/RunButton
+onready var search_button := $Margin/VBox/Toolbar/SearchButton
 
 
 var plugin
@@ -49,15 +51,18 @@ func _ready() -> void:
 	open_button.icon = get_icon("Load", "EditorIcons")
 	$Margin/VBox/Toolbar/SettingsButton.text = ""
 	$Margin/VBox/Toolbar/SettingsButton.icon = get_icon("Tools", "EditorIcons")
-	$Margin/VBox/Toolbar/ErrorButton.text = ""
-	$Margin/VBox/Toolbar/ErrorButton.icon = get_icon("Debug", "EditorIcons")
-	$Margin/VBox/Toolbar/RunButton.text = ""
-	$Margin/VBox/Toolbar/RunButton.icon = get_icon("PlayScene", "EditorIcons")
+	error_button.text = ""
+	error_button.icon = get_icon("Debug", "EditorIcons")
+	run_node_button.text = ""
+	run_node_button.icon = get_icon("PlayScene", "EditorIcons")
+	search_button.icon = get_icon("Search", "EditorIcons")
 	$Margin/VBox/Toolbar/TranslationsMenu.icon = get_icon("Translation", "EditorIcons")
 	$Margin/VBox/Toolbar/HelpButton.icon = get_icon("Help", "EditorIcons")
 	var popup = translations_menu.get_popup()
 	popup.set_item_icon(0, get_icon("Translation", "EditorIcons"))
 	popup.set_item_icon(1, get_icon("FileList", "EditorIcons"))
+	
+	search_toolbar.visible = false
 	
 	# Get version number
 	var config = ConfigFile.new()
@@ -114,6 +119,7 @@ func set_resource(value: DialogueResource) -> void:
 		content.visible = true
 		error_button.disabled = false
 		run_node_button.disabled = false
+		search_button.disabled = false
 		translations_menu.disabled = false
 		_on_CodeEditor_text_changed()
 		has_changed = false
@@ -122,6 +128,7 @@ func set_resource(value: DialogueResource) -> void:
 		file_label.visible = false
 		error_button.disabled = true
 		run_node_button.disabled = true
+		search_button.disabled = true
 		translations_menu.disabled = true
 
 
@@ -428,3 +435,18 @@ func _on_RunButton_pressed():
 	if settings.has_editor_value("run_title"):
 		settings.set_editor_value("run_resource", current_resource.resource_path)
 		plugin.get_editor_interface().play_custom_scene("res://addons/dialogue_manager/views/test_scene.tscn")
+
+
+func _on_SearchButton_toggled(button_pressed):
+	search_toolbar.visible = button_pressed
+
+
+func _on_SearchToolbar_close_requested():
+	search_button.pressed = false
+	search_toolbar.visible = false
+	editor.grab_focus()
+
+
+func _on_SearchToolbar_open_requested():
+	search_button.pressed = true
+	search_toolbar.visible = true
