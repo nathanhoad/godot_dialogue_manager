@@ -623,6 +623,7 @@ func extract_markers(line: String) -> Dictionary:
 	
 	var found = MARKER_CODE_REGEX.search(text)
 	var limit = 0
+	var prev_codes_len = 0
 	while found and limit < 1000:
 		limit += 1
 		var index = text.find(found.strings[0])
@@ -655,9 +656,18 @@ func extract_markers(line: String) -> Dictionary:
 		
 		var length = found.strings[0].length()
 		
+		var start = found.get_start()
+		# Account for lengths of codes before this one
+		start += prev_codes_len
+		prev_codes_len += length
+		# Account for lengths of BB codes that are before this
+		for bb_code in bb_codes:
+			if bb_code[0] < start:
+				start += bb_code[1].length()
+				
 		# Find any BB codes that are after this index and remove the length from their start
 		for bb_code in bb_codes:
-			if bb_code[0] > length:
+			if bb_code[0] > start:
 				bb_code[0] -= length
 		
 		text.erase(index, length)
