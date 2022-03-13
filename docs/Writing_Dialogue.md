@@ -42,6 +42,26 @@ To branch, you can provide and indented body under a given prompt or add a `=> S
 
 ![Prompts](prompts.jpg)
 
+If a response prompt contains a character name then it will be treated as an actual line of dialogue when the player selects it.
+
+For example:
+
+```
+Someone: Here is a thing you can do.
+- That's good to hear!
+    Nathan: That's good to hear!
+- That's definitely news
+    Nathan: That's definitely news
+```
+
+...is the same as writing:
+
+```
+Someone: Here is a thing you can do
+- Nathan: That's good to hear!
+- Nathan: That's definitely news
+```
+
 
 ## Conditions
 

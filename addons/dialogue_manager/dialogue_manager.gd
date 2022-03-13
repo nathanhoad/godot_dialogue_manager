@@ -305,7 +305,8 @@ func get_responses(ids: Array, local_resource: DialogueResource) -> Array:
 		var data = local_resource.lines.get(id)
 		if data.get("condition") == null or check(data.get("condition")):
 			var response = Response.new(data, auto_translate)
-			response.prompt = replace_values(response)
+			response.character = get_with_replacements(response.character, response.character_replacements)
+			response.prompt = get_with_replacements(response.prompt, response.replacements)
 			# Add as a child so that it gets cleaned up automatically
 			add_child(response)
 			responses.append(response)

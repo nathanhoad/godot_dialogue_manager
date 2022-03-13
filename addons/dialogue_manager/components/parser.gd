@@ -89,7 +89,7 @@ func parse(content: String) -> Dictionary:
 		var raw_line = raw_lines[id]
 		
 		var line: Dictionary = {
-			"next_id": Constants.ID_NULL
+			next_id = Constants.ID_NULL
 		}
 		
 		# Ignore empty lines and comments
@@ -126,6 +126,7 @@ func parse(content: String) -> Dictionary:
 				line["condition"] = extract_condition(raw_line, true)
 			if " => " in raw_line:
 				line["next_id"] = extract_goto(raw_line, titles)
+				
 			line["text"] = extract_response(raw_line)
 			
 			var previous_response_id = find_previous_response_id(id, raw_lines)
@@ -152,6 +153,37 @@ func parse(content: String) -> Dictionary:
 			line["replacements"] = extract_dialogue_replacements(line.get("text"))
 			if line.get("replacements").size() > 0 and line.get("replacements")[0].has("error"):
 				errors.append(error(id, "Invalid expression"))
+			
+			# If this response has a character name in it then it will automatically be
+			# injected as a line of dialogue if the player selects it
+			var l = line.get("text").replace("\\:", "!ESCAPED_COLON!")
+			if ": " in l:
+				var first_child: Dictionary = { 
+					type = Constants.TYPE_DIALOGUE, 
+					next_id = line.get("next_id"),
+					next_id_after = line.get("next_id_after"),
+					replacements = line.get("replacements"),
+					translation_key = line.get("translation_key")
+				}
+				
+				var bits = Array(l.strip_edges().split(": "))
+				first_child["character"] = bits.pop_front()
+				# You can use variables in the character's name
+				first_child["character_replacements"] = extract_dialogue_replacements(first_child.get("character"))
+				if first_child.get("character_replacements").size() > 0 and first_child.get("character_replacements")[0].has("error"):
+					errors.append(error(id, "Invalid expression in character name"))
+				first_child["text"] = PoolStringArray(bits).join(": ").replace("!ESCAPED_COLON!", ":")
+				
+				line["character"] = first_child.get("character")
+				line["text"] = first_child.get("text")
+				
+				if first_child.get("translation_key") == null:
+					first_child["translation_key"] = first_child.get("text")
+				
+				dialogue[str(id) + ".1"] = first_child
+				line["next_id"] = str(id) + ".1"
+			else:
+				line["text"] = l.replace("!ESCAPED_COLON!", ":")
 		
 		# Title
 		elif raw_line.begins_with("~ "):
