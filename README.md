@@ -27,7 +27,7 @@ Write your dialogue in a simple script-like way and run it in your game.
 
 ## Contributors
 
-[Nathan Hoad](https://nathanhoad.net)
+Godot Dialogue Manager is made by [Nathan Hoad](https://nathanhoad.net) with help from [these cool people](https://github.com/nathanhoad/godot_dialogue_manager/graphs/contributors).
 
 ## License
 
