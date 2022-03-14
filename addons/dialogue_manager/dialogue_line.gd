@@ -21,6 +21,8 @@ var pauses: Dictionary = {}
 var speeds: Array = []
 var inline_mutations: Array = []
 
+var time = null
+
 
 func _init(data: Dictionary, should_translate: bool = true) -> void:
 	type = data.get("type")
@@ -36,6 +38,7 @@ func _init(data: Dictionary, should_translate: bool = true) -> void:
 			pauses = data.get("pauses", {})
 			speeds = data.get("speeds", [])
 			inline_mutations = data.get("inline_mutations", [])
+			time = data.get("time")
 			
 		Constants.TYPE_MUTATION:
 			mutation = data.get("mutation")

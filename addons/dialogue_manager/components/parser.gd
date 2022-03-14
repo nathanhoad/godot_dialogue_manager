@@ -32,7 +32,7 @@ func _init() -> void:
 	REPLACEMENTS_REGEX.compile("{{(.*?)}}")
 	GOTO_REGEX.compile("=> (?<jump_to_title>.*)")
 	BB_CODE_REGEX.compile("\\[[^\\]]+\\]")
-	MARKER_CODE_REGEX.compile("\\[(?<code>wait|\\/?speed|do |set )(?<args>[^\\]]+)?\\]")
+	MARKER_CODE_REGEX.compile("\\[(?<code>wait|\\/?speed|do |set |next)(?<args>[^\\]]+)?\\]")
 	
 	# Build our list of tokeniser tokens
 	var tokens = {
@@ -246,6 +246,7 @@ func parse(content: String) -> Dictionary:
 			line["pauses"] = markers.get("pauses")
 			line["speeds"] = markers.get("speeds")
 			line["inline_mutations"] = markers.get("mutations")
+			line["time"] = markers.get("time")
 			
 			# Unescape any newlines
 			line["text"] = line.get("text").replace("\\n", "\n")
@@ -606,6 +607,7 @@ func extract_markers(line: String) -> Dictionary:
 	var mutations = []
 	var bb_codes = []
 	var index_map = {}
+	var time = null
 	
 	# Extract all of the BB codes so that we know the actual text (we could do this easier with
 	# a RichTextLabel but then we'd need to await idle_frame which is annoying)
@@ -653,6 +655,8 @@ func extract_markers(line: String) -> Dictionary:
 				speeds.append([index, 1.0])
 			"do":
 				mutations.append([index, args.get("value")])
+			"next":
+				time = args.get("value") if args.has("value") else "0"
 		
 		var length = found.strings[0].length()
 		
@@ -681,7 +685,8 @@ func extract_markers(line: String) -> Dictionary:
 		"text": text,
 		"pauses": pauses,
 		"speeds": speeds,
-		"mutations": mutations
+		"mutations": mutations,
+		"time": time
 	}
 		
 

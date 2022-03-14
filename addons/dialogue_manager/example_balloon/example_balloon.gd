@@ -83,6 +83,10 @@ func _ready() -> void:
 		responses_menu.index = 0
 		var response = yield(responses_menu, "actioned")
 		next_id = dialogue.responses[response[0]].next_id
+	elif dialogue.time != null:
+		var time = dialogue.dialogue.length() * 0.02 if dialogue.time == "auto" else dialogue.time.to_float()
+		yield(get_tree().create_timer(time), "timeout")
+		next_id = dialogue.next_id
 	else:
 		while true:
 			if Input.is_action_just_pressed("ui_accept"):

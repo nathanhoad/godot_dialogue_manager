@@ -32,6 +32,7 @@ The returned line in dialogue is a `DialogueLine` and will have the following pr
 - **speeds**: Array of [index, speed]
 - **inline_mutations**: Array of [index, expression] (expression is in AST format and which can be manually resolved with `DialogueManager.mutate()`)
 - **next_id**: String
+- **time**: null or String ("auto" or a float-like string)
 - **responses**: Array of DialogueResponse:
   - **character**: String
   - **character_replacements**: Array { expression, value_in_text } Dictionaries (expression is in AST format and can be manually resolved with `DialogueManager.replace_values()`)
