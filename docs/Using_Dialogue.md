@@ -2,7 +2,7 @@
 
 A global called `DialogueManager` is available to provide lines of dialogue.
 
-If you haven't specified your game states mentioned above you can manually set them with something like:
+If you haven't specified your game states in [the editor](Settings.md) you can manually set them with something like:
 
 ```gdscript
 # Game state objects are globals that have properties and methods used by your dialogue
@@ -11,11 +11,18 @@ DialogueManager.game_states = [GameState, SessionState]
 
 Then you can get a line of dialogue by yielding to `get_next_dialogue_line` and providing a node title.
 
-So, assuming your dialogue file was `res://assets/dialogue/example.tres` and you had a node title in there of `~ Some node title` then you could do this to get the first printable dialogue:
+So, assuming your dialogue file was `res://assets/dialogue/example.tres` and you had a node title in there of `~ some_node_title` then you could do this to get the first printable dialogue:
 
 ```gdscript
 var dialogue_resource = preload("res://assets/dialogue/example.tres")
-var dialogue_line = yield(DialogueManager.get_next_dialogue_line("Some node title", dialogue_resource), "completed")
+var dialogue_line = yield(DialogueManager.get_next_dialogue_line("some_node_title", dialogue_resource), "completed")
+```
+
+You can also call `get_next_dialogue_line` on a resource directly (which is just a shortcut to calling the global):
+
+```gdscript
+var dialogue_resource = preload("res://assets/dialogue/example.tres")
+var dialogue_line = yield(dialogue_resource.get_next_dialogue_line("some_node_title"), "completed")
 ```
 
 This will find the line with the given title and then begin checking conditions and stepping over each line in the `next_id` sequence until we hit a line of dialogue that can be displayed (or the end of the conversation). Any mutations found along the way will be executed as well.
