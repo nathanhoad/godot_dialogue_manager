@@ -81,7 +81,7 @@ func _ready() -> void:
 
 
 func apply_changes() -> void:
-	if is_instance_valid(editor):
+	if is_instance_valid(editor) and current_resource != null:
 		current_resource.raw_text = editor.text
 		ResourceSaver.save(current_resource.resource_path, current_resource)
 		parse(true)
