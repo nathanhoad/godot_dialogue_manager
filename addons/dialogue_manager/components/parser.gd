@@ -139,7 +139,7 @@ func parse(content: String) -> Dictionary:
 				# No previous response so this is the first in the list
 				line["responses"] = PoolStringArray([str(id)])
 			
-			line["next_id_after"] = find_next_line_after_responses(id, raw_lines, dialogue)
+			line["next_id_after"] = find_next_line_after_responses(id, raw_lines, dialogue, parent_stack)
 
 			# If this response has no body then the next id is the next id after
 			if not line.has("next_id") or line.get("next_id") == Constants.ID_NULL:
@@ -368,7 +368,7 @@ func find_previous_response_id(line_number: int, all_lines: Array) -> String:
 		if is_line_empty(line): continue
 		
 		# If its a response at the same indent level then its a match
-		if get_indent(line) <= indent_size:
+		if get_indent(line) == indent_size:
 			if line.strip_edges().begins_with("- "):
 				last_found_response_id = str(i)
 			else:
@@ -446,7 +446,7 @@ func find_next_line_after_conditions(line_number: int, all_lines: Array, dialogu
 	return Constants.ID_END_CONVERSATION
 
 
-func find_next_line_after_responses(line_number: int, all_lines: Array, dialogue: Dictionary) -> String:
+func find_next_line_after_responses(line_number: int, all_lines: Array, dialogue: Dictionary, parent_stack: Array) -> String:
 	var line = all_lines[line_number]
 	var expected_indent = get_indent(line)
 
@@ -457,15 +457,23 @@ func find_next_line_after_responses(line_number: int, all_lines: Array, dialogue
 		
 		if is_line_empty(line): continue
 		
+		var indent = get_indent(line)
+		
 		line = line.strip_edges()
 		
 		# We hit a title so the next line is the end of the conversation
 		if line.begins_with("~ "):
 			return Constants.ID_END_CONVERSATION
 		
-		# Another option so we continue
+		# Another option
 		elif line.begins_with("- "):
-			continue
+			if indent == expected_indent:
+				# ...at the same level so we continue
+				continue
+			elif indent < expected_indent:
+				# ...outdented so check the previous parent
+				var previous_parent = parent_stack[parent_stack.size() - 2]
+				return dialogue[str(previous_parent)].next_id_after
 		
 		# We're at the end of a conditional so jump back up to see what's after it
 		elif line.begins_with("elif ") or line.begins_with("else"):
