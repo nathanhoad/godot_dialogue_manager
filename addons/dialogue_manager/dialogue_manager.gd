@@ -338,21 +338,48 @@ func set_state_value(property: String, value) -> void:
 
 # Collapse any expressions
 func resolve(tokens: Array):
-	# Handle functions and state values first
+	# Handle groups first
 	for token in tokens:
+		if token.get("type") == Constants.TOKEN_GROUP:
+			token["type"] = "value"
+			token["value"] = resolve(token.get("value"))
+	
+	# Then variables/methods
+	var i = 0
+	var limit = 0
+	while i < tokens.size() and limit < 1000:
+		var token = tokens[i]
+		
 		if token.get("type") == Constants.TOKEN_FUNCTION:
 			var function_name = token.get("function")
 			var args = resolve_each(token.get("value"))
-			var found = false
-			for state in get_game_states():
-				if state.has_method(function_name):
-					token["type"] = "value"
-					token["value"] = state.callv(function_name, args)
-					found = true
 			
-			if not found:
-				printerr("'" + function_name + "' is not a method on any game states (" + str(get_game_states()) + ").")
-				assert(false, "Missing function on current scene or game state. See Output for details.")
+			if function_name == "str":
+				token["type"] = "value"
+				token["value"] = str(args[0])
+			elif tokens[i - 1].get("type") == Constants.TOKEN_DOT:
+				# If we are calling a deeper function then we need to collapse the
+				# value into the thing we are calling the function on
+				var caller = tokens[i - 2]
+				if not caller.get("value").has_method(function_name):
+					printerr("'" + function_name + "' is not a callable method on '" + str(caller)  + "'")
+					assert(false, "Missing callable method on calling object. See Output for details.")
+				caller["type"] = "value"
+				caller["value"] = caller.get("value").callv(function_name, args)
+				tokens.remove(i)
+				tokens.remove(i-1)
+				i -= 2
+			else:
+				var found = false
+				for state in get_game_states():
+					if state.has_method(function_name):
+						token["type"] = "value"
+						token["value"] = state.callv(function_name, args)
+						found = true
+				
+				if not found:
+					printerr("'" + function_name + "' is not a method on any game states (" + str(get_game_states()) + ").")
+					assert(false, "Missing function on current scene or game state. See Output for details.")
 		
 		elif token.get("type") == Constants.TOKEN_DICTIONARY_REFERENCE:
 			token["type"] = "value"
@@ -388,18 +415,24 @@ func resolve(tokens: Array):
 			token["type"] = "value"
 			if token.get("value") == "null":
 				token["value"] = null
+			elif tokens[i - 1].get("type") == Constants.TOKEN_DOT:
+				# If we are requesting a deeper property then we need to collapse the
+				# value into the thing we are referencing from
+				var caller = tokens[i - 2]
+				var property = token.get("value")
+				caller["type"] = "value"
+				caller["value"] = caller.get("value").get(property)
+				tokens.remove(i)
+				tokens.remove(i-1)
+				i -= 2
 			else:
 				token["value"] = get_state_value(token.get("value"))
-	
-	# Then groups
-	for token in tokens:
-		if token.get("type") == Constants.TOKEN_GROUP:
-			token["type"] = "value"
-			token["value"] = resolve(token.get("value"))
+		
+		i += 1
 	
 	# Then multiply and divide
-	var i = 0
-	var limit = 0
+	i = 0
+	limit = 0
 	while i < tokens.size() and limit < 1000:
 		limit += 1
 		var token = tokens[i]

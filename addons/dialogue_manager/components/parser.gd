@@ -49,6 +49,7 @@ func _init() -> void:
 		Constants.TOKEN_NUMBER: "^\\-?\\d+(\\.\\d+)?",
 		Constants.TOKEN_OPERATOR: "^(\\+|-|\\*|/)",
 		Constants.TOKEN_COMMA: "^,",
+		Constants.TOKEN_DOT: "^\\.",
 		Constants.TOKEN_BOOL: "^(true|false)",
 		Constants.TOKEN_AND_OR: "^(and|or)( |$)",
 		Constants.TOKEN_STRING: "^\".*?\"",
@@ -811,7 +812,8 @@ func build_token_tree(tokens: Array, expected_close_token: String = "") -> Array
 				return [tree, tokens]
 			
 			Constants.TOKEN_COMMA, \
-			Constants.TOKEN_COLON:
+			Constants.TOKEN_COLON, \
+			Constants.TOKEN_DOT:
 				tree.append({
 					"type": token.get("type")
 				})
@@ -858,12 +860,25 @@ func check_next_token(token: Dictionary, next_tokens: Array) -> String:
 	match token.get("type"):
 		Constants.TOKEN_FUNCTION, \
 		Constants.TOKEN_PARENS_OPEN:
-			unexpected_token_types = [null, Constants.TOKEN_COMMA, Constants.TOKEN_COLON, Constants.TOKEN_COMPARISON, Constants.TOKEN_OPERATOR, Constants.TOKEN_AND_OR]
+			unexpected_token_types = [
+				null, 
+				Constants.TOKEN_COMMA, 
+				Constants.TOKEN_COLON, 
+				Constants.TOKEN_COMPARISON, 
+				Constants.TOKEN_OPERATOR, 
+				Constants.TOKEN_AND_OR,
+				Constants.TOKEN_DOT
+			]
 		
 		Constants.TOKEN_PARENS_CLOSE, \
 		Constants.TOKEN_BRACE_CLOSE, \
 		Constants.TOKEN_BRACKET_CLOSE:
-			unexpected_token_types = [Constants.TOKEN_BOOL, Constants.TOKEN_STRING, Constants.TOKEN_NUMBER, Constants.TOKEN_VARIABLE]
+			unexpected_token_types = [
+				Constants.TOKEN_BOOL, 
+				Constants.TOKEN_STRING, 
+				Constants.TOKEN_NUMBER, 
+				Constants.TOKEN_VARIABLE
+			]
 
 		Constants.TOKEN_COMPARISON, \
 		Constants.TOKEN_OPERATOR, \
@@ -871,13 +886,33 @@ func check_next_token(token: Dictionary, next_tokens: Array) -> String:
 		Constants.TOKEN_COLON, \
 		Constants.TOKEN_AND_OR, \
 		Constants.TOKEN_DICTIONARY_REFERENCE:
-			unexpected_token_types = [null, Constants.TOKEN_COMMA, Constants.TOKEN_COLON, Constants.TOKEN_COMPARISON, Constants.TOKEN_OPERATOR, Constants.TOKEN_AND_OR, Constants.TOKEN_PARENS_CLOSE, Constants.TOKEN_BRACE_CLOSE, Constants.TOKEN_BRACKET_CLOSE]
+			unexpected_token_types = [
+				null, 
+				Constants.TOKEN_COMMA, 
+				Constants.TOKEN_COLON, 
+				Constants.TOKEN_COMPARISON, 
+				Constants.TOKEN_OPERATOR, 
+				Constants.TOKEN_AND_OR, 
+				Constants.TOKEN_PARENS_CLOSE, 
+				Constants.TOKEN_BRACE_CLOSE, 
+				Constants.TOKEN_BRACKET_CLOSE,
+				Constants.TOKEN_DOT
+			]
 
 		Constants.TOKEN_BOOL, \
 		Constants.TOKEN_STRING, \
 		Constants.TOKEN_NUMBER, \
 		Constants.TOKEN_VARIABLE:
-			unexpected_token_types = [Constants.TOKEN_BOOL, Constants.TOKEN_STRING, Constants.TOKEN_NUMBER, Constants.TOKEN_VARIABLE, Constants.TOKEN_FUNCTION, Constants.TOKEN_PARENS_OPEN, Constants.TOKEN_BRACE_OPEN, Constants.TOKEN_BRACKET_OPEN]
+			unexpected_token_types = [
+				Constants.TOKEN_BOOL, 
+				Constants.TOKEN_STRING, 
+				Constants.TOKEN_NUMBER, 
+				Constants.TOKEN_VARIABLE, 
+				Constants.TOKEN_FUNCTION, 
+				Constants.TOKEN_PARENS_OPEN, 
+				Constants.TOKEN_BRACE_OPEN, 
+				Constants.TOKEN_BRACKET_OPEN
+			]
 
 	if next_token_type in unexpected_token_types:
 		match next_token_type:

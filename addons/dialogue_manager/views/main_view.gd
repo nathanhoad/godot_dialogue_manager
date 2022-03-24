@@ -141,7 +141,6 @@ func get_nice_file(file: String) -> String:
 
 
 func open_resource(resource: DialogueResource) -> void:
-	parse(true)
 	apply_upgrades(resource)
 	set_resource(resource)
 	# Add this to our list of recent resources
@@ -163,6 +162,8 @@ func open_resource_from_path(path: String) -> void:
 
 
 func apply_upgrades(resource: DialogueResource) -> void:
+	if resource == null: return
+	
 	var lines = resource.raw_text.split("\n")
 	for i in range(0, lines.size()):
 		var line: String = lines[i]
@@ -179,7 +180,7 @@ func apply_upgrades(resource: DialogueResource) -> void:
 	
 
 func parse(force_show_errors: bool = false) -> void:
-	if not current_resource: return
+	if current_resource == null: return
 	if not has_changed and not force_show_errors: return
 	
 	var result = parser.parse(editor.text)
@@ -358,8 +359,6 @@ func _on_NewButton_pressed():
 func _on_NewDialogueDialog_file_selected(path):
 	var resource = DialogueResource.new()
 	resource.take_over_path(path)
-	resource.raw_text = "~ this_is_a_node_title\n\nNathan: This is some dialogue.\nNathan: Here are some choices.\n- First one\n\tNathan: You picked the first one.\n- Second one\n\tNathan: You picked the second one.\n- Start again => this_is_a_node_title\n- End the conversation => END\nNathan: For more information about conditional dialogue, mutations, and all the fun stuff, see the online documentation."
-	resource.syntax_version = Constants.SYNTAX_VERSION
 	ResourceSaver.save(path, resource)
 	open_resource(resource)
 
