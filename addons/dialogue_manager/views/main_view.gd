@@ -21,6 +21,7 @@ onready var new_dialogue_dialog := $NewDialogueDialog
 onready var open_dialogue_dialog := $OpenDialogueDialog
 onready var invalid_dialogue_dialog := $InvalidDialogueDialog
 onready var settings_dialog := $SettingsDialog
+onready var insert_menu := $Margin/VBox/Toolbar/InsertMenu
 onready var translations_menu := $Margin/VBox/Toolbar/TranslationsMenu
 onready var save_translations_dialog := $SaveTranslationsDialog
 onready var update_button := $Margin/VBox/Toolbar/UpdateButton
@@ -58,7 +59,13 @@ func _ready() -> void:
 	search_button.icon = get_icon("Search", "EditorIcons")
 	$Margin/VBox/Toolbar/TranslationsMenu.icon = get_icon("Translation", "EditorIcons")
 	$Margin/VBox/Toolbar/HelpButton.icon = get_icon("Help", "EditorIcons")
-	var popup = translations_menu.get_popup()
+	
+	insert_menu.icon = get_icon("RichTextEffect", "EditorIcons")
+	var popup = insert_menu.get_popup()
+	popup.set_item_icon(0, get_icon("RichTextEffect", "EditorIcons"))
+	popup.set_item_icon(1, get_icon("RichTextEffect", "EditorIcons"))
+	
+	popup = translations_menu.get_popup()
 	popup.set_item_icon(0, get_icon("Translation", "EditorIcons"))
 	popup.set_item_icon(1, get_icon("FileList", "EditorIcons"))
 	
@@ -72,6 +79,7 @@ func _ready() -> void:
 	
 	file_label.icon = get_icon("Filesystem", "EditorIcons")
 	
+	insert_menu.get_popup().connect("id_pressed", self, "_on_insert_menu_id_pressed")
 	translations_menu.get_popup().connect("id_pressed", self, "_on_translation_menu_id_pressed")
 	
 	recent_resources = settings.get_editor_value("recent_resources", [])
@@ -120,6 +128,7 @@ func set_resource(value: DialogueResource) -> void:
 		error_button.disabled = false
 		run_node_button.disabled = false
 		search_button.disabled = false
+		insert_menu.disabled = false
 		translations_menu.disabled = false
 		_on_CodeEditor_text_changed()
 		has_changed = false
@@ -129,6 +138,7 @@ func set_resource(value: DialogueResource) -> void:
 		error_button.disabled = true
 		run_node_button.disabled = true
 		search_button.disabled = true
+		insert_menu.disabled = true
 		translations_menu.disabled = true
 
 
@@ -335,6 +345,14 @@ func _on_open_menu_index_pressed(index):
 			build_open_menu()
 		_:
 			open_resource_from_path(item)
+
+
+func _on_insert_menu_id_pressed(id):
+	match id:
+		0:
+			editor.insert_bbcode("[wave amp=25 freq=5]", "[/wave]")
+		1:
+			editor.insert_bbcode("[shake rate=20 level=10]", "[/shake]")
 
 
 func _on_translation_menu_id_pressed(id):
