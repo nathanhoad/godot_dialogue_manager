@@ -621,16 +621,22 @@ func extract_markers(line: String) -> Dictionary:
 	# Extract all of the BB codes so that we know the actual text (we could do this easier with
 	# a RichTextLabel but then we'd need to await idle_frame which is annoying)
 	var founds = BB_CODE_REGEX.search_all(text)
+	var accumulaive_length_offset = 0
 	if founds:
 		for found in founds:
 			var code = found.strings[0]
 			# Ignore our own markers
 			if MARKER_CODE_REGEX.search(code):
 				continue
-			bb_codes.append([found.get_start(), code])
+			bb_codes.append({
+				code = code,
+				start = found.get_start(),
+				offset_start = found.get_start() - accumulaive_length_offset
+			})
+			accumulaive_length_offset += code.length()
 
-	for i in range(bb_codes.size() - 1, -1, -1):
-		text.erase(bb_codes[i][0], bb_codes[i][1].length())
+	for bb_code in bb_codes:
+		text.erase(bb_code.offset_start, bb_code.code.length())
 	
 	var found = MARKER_CODE_REGEX.search(text)
 	var limit = 0
@@ -657,7 +663,10 @@ func extract_markers(line: String) -> Dictionary:
 			
 		match code:
 			"wait":
-				pauses[index] = args.get("value").to_float()
+				if pauses.has(index):
+					pauses[index] += args.get("value").to_float()
+				else:
+					pauses[index] = args.get("value").to_float()
 			"speed":
 				speeds.append([index, args.get("value").to_float()])
 			"/speed":
@@ -667,29 +676,20 @@ func extract_markers(line: String) -> Dictionary:
 			"next":
 				time = args.get("value") if args.has("value") else "0"
 		
-		var length = found.strings[0].length()
-		
-		var start = found.get_start()
-		# Account for lengths of codes before this one
-		start += prev_codes_len
-		prev_codes_len += length
-		# Account for lengths of BB codes that are before this
-		for bb_code in bb_codes:
-			if bb_code[0] < start:
-				start += bb_code[1].length()
-				
 		# Find any BB codes that are after this index and remove the length from their start
+		var length = found.strings[0].length()
 		for bb_code in bb_codes:
-			if bb_code[0] > start:
-				bb_code[0] -= length
+			if bb_code.offset_start >= found.get_start():
+				bb_code.offset_start -= length
+				bb_code.start -= length
 		
 		text.erase(index, length)
 		found = MARKER_CODE_REGEX.search(text)
 	
 	# Put the BB Codes back in
 	for bb_code in bb_codes:
-		text = text.insert(bb_code[0], bb_code[1])
-	
+		text = text.insert(bb_code.start, bb_code.code)
+
 	return {
 		"text": text,
 		"pauses": pauses,
