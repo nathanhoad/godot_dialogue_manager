@@ -64,6 +64,9 @@ func _ready() -> void:
 	var popup = insert_menu.get_popup()
 	popup.set_item_icon(0, get_icon("RichTextEffect", "EditorIcons"))
 	popup.set_item_icon(1, get_icon("RichTextEffect", "EditorIcons"))
+	popup.set_item_icon(3, get_icon("Time", "EditorIcons"))
+	popup.set_item_icon(4, get_icon("ViewportSpeed", "EditorIcons"))
+	popup.set_item_icon(5, get_icon("DebugNext", "EditorIcons"))
 	
 	popup = translations_menu.get_popup()
 	popup.set_item_icon(0, get_icon("Translation", "EditorIcons"))
@@ -353,6 +356,12 @@ func _on_insert_menu_id_pressed(id):
 			editor.insert_bbcode("[wave amp=25 freq=5]", "[/wave]")
 		1:
 			editor.insert_bbcode("[shake rate=20 level=10]", "[/shake]")
+		3:
+			editor.insert_bbcode("[wait=1]")
+		4:
+			editor.insert_bbcode("[speed=0.2]")
+		5:
+			editor.insert_bbcode("[next=auto]")
 
 
 func _on_translation_menu_id_pressed(id):

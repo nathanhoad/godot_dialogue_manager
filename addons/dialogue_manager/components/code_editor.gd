@@ -108,11 +108,15 @@ func _gui_input(event):
 			choose_title_dialog.choose_a_title(get_titles())
 
 
-func insert_bbcode(open_tag: String, close_tag: String) -> void:
-	var selected_text = get_selection_text()
-	insert_text_at_cursor("%s%s%s" % [open_tag, selected_text, close_tag])
-	grab_focus()
-	cursor_set_column(cursor_get_column() - close_tag.length())
+func insert_bbcode(open_tag: String, close_tag: String = "") -> void:
+	if close_tag == "":
+		insert_text_at_cursor(open_tag)
+		grab_focus()
+	else:
+		var selected_text = get_selection_text()
+		insert_text_at_cursor("%s%s%s" % [open_tag, selected_text, close_tag])
+		grab_focus()
+		cursor_set_column(cursor_get_column() - close_tag.length())
 
 
 func get_titles() -> Array:

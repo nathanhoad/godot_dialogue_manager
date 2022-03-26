@@ -179,7 +179,7 @@ margin_bottom = 24.0
 disabled = true
 text = "Insert"
 icon = SubResource( 2 )
-items = [ "Wave BBCode", null, 0, false, false, 0, 0, null, "", false, "Shake BBCode", null, 0, false, false, 1, 0, null, "", false ]
+items = [ "Wave BBCode", SubResource( 2 ), 0, false, false, 0, 0, null, "", false, "Shake BBCode", SubResource( 2 ), 0, false, false, 1, 0, null, "", false, "-", null, 0, false, true, 2, 0, null, "", true, "Typing pause", null, 0, false, false, 3, 0, null, "", false, "Typing speed change", null, 0, false, false, 4, 0, null, "", false, "Auto advance", null, 0, false, false, 5, 0, null, "", false ]
 
 [node name="TranslationsMenu" type="MenuButton" parent="Margin/VBox/Toolbar"]
 margin_left = 955.0
