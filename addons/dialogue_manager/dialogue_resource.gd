@@ -2,7 +2,8 @@ extends Resource
 class_name DialogueResource
 
 
-const Constants = preload("res://addons/dialogue_manager/constants.gd")
+const DialogueLine := preload("res://addons/dialogue_manager/dialogue_line.gd")
+const Constants := preload("res://addons/dialogue_manager/constants.gd")
 
 
 export(int) var syntax_version
@@ -20,7 +21,7 @@ func _init():
 	lines = {}
 
 
-func get_next_dialogue_line(title: String):
+func get_next_dialogue_line(title: String) -> DialogueLine:
 	# NOTE: For some reason get_singleton doesn't work here so we have to get creative
 	var tree: SceneTree = Engine.get_main_loop()
 	if tree:

@@ -93,7 +93,7 @@ func _ready() -> void:
 
 func apply_changes() -> void:
 	if is_instance_valid(editor) and current_resource != null:
-		current_resource.raw_text = editor.text
+		current_resource.set("raw_text", editor.text)
 		ResourceSaver.save(current_resource.resource_path, current_resource)
 		parse(true)
 
@@ -165,7 +165,6 @@ func open_resource(resource: DialogueResource) -> void:
 	parse(true)
 
 
-
 func open_resource_from_path(path: String) -> void:
 	var resource = load(path)
 	if resource is DialogueResource:
@@ -176,6 +175,7 @@ func open_resource_from_path(path: String) -> void:
 
 func apply_upgrades(resource: DialogueResource) -> void:
 	if resource == null: return
+	if not resource is DialogueResource: return
 	
 	var lines = resource.raw_text.split("\n")
 	for i in range(0, lines.size()):
@@ -189,7 +189,7 @@ func apply_upgrades(resource: DialogueResource) -> void:
 				line = line.substr(0, index) + "=> " + line.substr(index + 7).replace(" ", "_")
 		lines[i] = line
 	
-	resource.raw_text = lines.join("\n")
+	resource.set("raw_text", lines.join("\n"))
 	
 
 func parse(force_show_errors: bool = false) -> void:
@@ -197,11 +197,11 @@ func parse(force_show_errors: bool = false) -> void:
 	if not has_changed and not force_show_errors: return
 	
 	var result = parser.parse(editor.text)
-	
-	current_resource.syntax_version = Constants.SYNTAX_VERSION
-	current_resource.titles = result.get("titles")
-	current_resource.lines = result.get("lines")
-	current_resource.errors = result.get("errors")
+		
+	current_resource.set("syntax_version", Constants.SYNTAX_VERSION)
+	current_resource.set("titles", result.titles)
+	current_resource.set("lines", result.lines)
+	current_resource.set("errors", result.errors)
 	ResourceSaver.save(current_resource.resource_path, current_resource)
 	
 	has_changed = false
