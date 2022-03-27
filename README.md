@@ -21,9 +21,10 @@ Write your dialogue in a simple script-like way and run it in your game.
 
 [![Join the Discord](docs/discord.png)](https://discord.gg/zwBVQdJchX)
 
-## Tutorial
+## Tutorials
 
-[![Tutorial video thumbnail](docs/tutorial.png)](https://youtu.be/08HHSQGXfgM)
+[![Tutorial video](docs/tutorial.png)](https://youtu.be/08HHSQGXfgM)
+[![Advanced tutorial video](docs/tutorial2.png)](https://youtu.be/X02XHXQlhSo)
 
 ## Contributors
 
