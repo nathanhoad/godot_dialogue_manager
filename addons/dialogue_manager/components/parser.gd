@@ -26,13 +26,13 @@ var TOKEN_DEFINITIONS: Dictionary = {}
 func _init() -> void:
 	VALID_TITLE_REGEX.compile("^[^\\!\\@\\#\\$\\%\\^\\&\\*\\(\\)\\-\\=\\+\\{\\}\\[\\]\\;\\:\\\"\\'\\,\\.\\<\\>\\?\\/\\s]+$")
 	TRANSLATION_REGEX.compile("\\[TR:(?<tr>.*?)\\]")
-	MUTATION_REGEX.compile("(do|set) ((?<lhs>[a-z_A-Z][a-z_A-Z0-9]+) ?(?<operator>\\+=|-=|\\*=\\/=|=) ? (?<rhs>.*)|(?<function>[a-z_A-Z][a-z_A-Z0-9]+)\\((?<args>.*)\\))")
+	MUTATION_REGEX.compile("(do|set) ((?<mutation>[a-z_A-Z][a-z_A-Z0-9\\[\\]\"\\.]+ ?(\\+=|\\-=|\\*=|/=|=) ? .*)|(?<function>[a-z_A-Z][a-z_A-Z0-9]+)\\((?<args>.*)\\))")
 	WRAPPED_CONDITION_REGEX.compile("\\[if (?<condition>.*)\\]")
 	CONDITION_REGEX.compile("(if|elif) (?<condition>.*)")
 	REPLACEMENTS_REGEX.compile("{{(.*?)}}")
 	GOTO_REGEX.compile("=> (?<jump_to_title>.*)")
 	BB_CODE_REGEX.compile("\\[[^\\]]+\\]")
-	MARKER_CODE_REGEX.compile("\\[(?<code>wait|\\/?speed|do |set |next)(?<args>[^\\]]+)?\\]")
+	MARKER_CODE_REGEX.compile("\\[(?<code>wait|/?speed|do |set |next)(?<args>[^\\]]+)?\\]")
 	
 	# Build our list of tokeniser tokens
 	var tokens = {
@@ -46,8 +46,9 @@ func _init() -> void:
 		Constants.TOKEN_BRACE_CLOSE: "^\\}",
 		Constants.TOKEN_COLON: "^:",
 		Constants.TOKEN_COMPARISON: "^(==|<=|>=|<|>|!=|in )",
+		Constants.TOKEN_ASSIGNMENT: "^(\\+=|\\-=|\\*=|/=|=)",
 		Constants.TOKEN_NUMBER: "^\\-?\\d+(\\.\\d+)?",
-		Constants.TOKEN_OPERATOR: "^(\\+|-|\\*|/)",
+		Constants.TOKEN_OPERATOR: "^(\\+|\\-|\\*|/|%)",
 		Constants.TOKEN_COMMA: "^,",
 		Constants.TOKEN_DOT: "^\\.",
 		Constants.TOKEN_BOOL: "^(true|false)",
@@ -528,23 +529,19 @@ func extract_mutation(line: String) -> Dictionary:
 		var expression = tokenise(found.strings[found.names.get("args")])
 		if expression.size() > 0 and expression[0].get("type") == Constants.TYPE_ERROR:
 			return { "error": expression[0].get("value") }
-
-		return {
-			"function": found.strings[found.names.get("function")],
-			"args": tokens_to_list(expression)
-		}
+		else:
+			return {
+				"function": found.strings[found.names.get("function")],
+				"args": tokens_to_list(expression)
+			}
 	
 	# Otherwise we are setting a variable so expressionise its new value
-	elif found.names.has("lhs"):
-		var expression = tokenise(found.strings[found.names.get("rhs")])
+	elif found.names.has("mutation"):
+		var expression = tokenise(found.strings[found.names.get("mutation")])
 		if expression[0].get("type") == Constants.TYPE_ERROR:
 			return { "error": "Invalid expression for value" }
-		
-		return {
-			"variable": found.strings[found.names.get("lhs")],
-			"operator": found.strings[found.names.get("operator")],
-			"expression": expression
-		}
+		else:
+			return { "expression": expression }
 	
 	else:
 		return { "error": "Incomplete expression" }
@@ -564,10 +561,8 @@ func extract_condition(raw_line: String, is_wrapped: bool = false) -> Dictionary
 	
 	if expression[0].get("type") == Constants.TYPE_ERROR:
 		return { "error": expression[0].get("value") }
-	
-	return {
-		"expression": expression
-	}
+	else:
+		return { "expression": expression }
 
 
 func extract_dialogue_replacements(text: String) -> Array:
@@ -819,6 +814,7 @@ func build_token_tree(tokens: Array, expected_close_token: String = "") -> Array
 				})
 			
 			Constants.TOKEN_COMPARISON, \
+			Constants.TOKEN_ASSIGNMENT, \
 			Constants.TOKEN_OPERATOR, \
 			Constants.TOKEN_AND_OR, \
 			Constants.TOKEN_VARIABLE: \
@@ -865,15 +861,24 @@ func check_next_token(token: Dictionary, next_tokens: Array) -> String:
 				Constants.TOKEN_COMMA, 
 				Constants.TOKEN_COLON, 
 				Constants.TOKEN_COMPARISON, 
+				Constants.TOKEN_ASSIGNMENT,
 				Constants.TOKEN_OPERATOR, 
 				Constants.TOKEN_AND_OR,
 				Constants.TOKEN_DOT
 			]
 		
-		Constants.TOKEN_PARENS_CLOSE, \
-		Constants.TOKEN_BRACE_CLOSE, \
 		Constants.TOKEN_BRACKET_CLOSE:
 			unexpected_token_types = [
+				Constants.TOKEN_BOOL, 
+				Constants.TOKEN_STRING, 
+				Constants.TOKEN_NUMBER, 
+				Constants.TOKEN_VARIABLE
+			]
+		
+		Constants.TOKEN_PARENS_CLOSE, \
+		Constants.TOKEN_BRACE_CLOSE:
+			unexpected_token_types = [
+				Constants.TOKEN_ASSIGNMENT,
 				Constants.TOKEN_BOOL, 
 				Constants.TOKEN_STRING, 
 				Constants.TOKEN_NUMBER, 
@@ -884,6 +889,7 @@ func check_next_token(token: Dictionary, next_tokens: Array) -> String:
 		Constants.TOKEN_OPERATOR, \
 		Constants.TOKEN_COMMA, \
 		Constants.TOKEN_COLON, \
+		Constants.TOKEN_DOT, \
 		Constants.TOKEN_AND_OR, \
 		Constants.TOKEN_DICTIONARY_REFERENCE:
 			unexpected_token_types = [
@@ -891,6 +897,7 @@ func check_next_token(token: Dictionary, next_tokens: Array) -> String:
 				Constants.TOKEN_COMMA, 
 				Constants.TOKEN_COLON, 
 				Constants.TOKEN_COMPARISON, 
+				Constants.TOKEN_ASSIGNMENT,
 				Constants.TOKEN_OPERATOR, 
 				Constants.TOKEN_AND_OR, 
 				Constants.TOKEN_PARENS_CLOSE, 
@@ -901,7 +908,19 @@ func check_next_token(token: Dictionary, next_tokens: Array) -> String:
 
 		Constants.TOKEN_BOOL, \
 		Constants.TOKEN_STRING, \
-		Constants.TOKEN_NUMBER, \
+		Constants.TOKEN_NUMBER:
+			unexpected_token_types = [
+				Constants.TOKEN_ASSIGNMENT,
+				Constants.TOKEN_BOOL, 
+				Constants.TOKEN_STRING, 
+				Constants.TOKEN_NUMBER, 
+				Constants.TOKEN_VARIABLE, 
+				Constants.TOKEN_FUNCTION, 
+				Constants.TOKEN_PARENS_OPEN, 
+				Constants.TOKEN_BRACE_OPEN, 
+				Constants.TOKEN_BRACKET_OPEN
+			]
+			
 		Constants.TOKEN_VARIABLE:
 			unexpected_token_types = [
 				Constants.TOKEN_BOOL, 
@@ -927,6 +946,7 @@ func check_next_token(token: Dictionary, next_tokens: Array) -> String:
 				return "Unexpected bracket"
 
 			Constants.TOKEN_COMPARISON, \
+			Constants.TOKEN_ASSIGNMENT, \
 			Constants.TOKEN_OPERATOR, \
 			Constants.TOKEN_AND_OR:
 				return "Unexpected operator"
@@ -935,6 +955,8 @@ func check_next_token(token: Dictionary, next_tokens: Array) -> String:
 				return "Unexpected comma"
 			Constants.TOKEN_COLON:
 				return "Unexpected colon"
+			Constants.TOKEN_DOT:
+				return "Unexpected dot"
 
 			Constants.TOKEN_BOOL:
 				return "Unexpected boolean"

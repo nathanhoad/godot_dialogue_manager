@@ -262,21 +262,8 @@ func mutate(mutation: Dictionary) -> void:
 				printerr("'" + function_name + "' is not a method in any game states (" + str(get_game_states()) + ").")
 				assert(false, "Missing function on current scene or game state. See Output for details.")
 	
-	elif mutation.has("variable"):
-		var lhs = mutation.get("variable")
-		var rhs = resolve(mutation.get("expression").duplicate(true))
-	
-		match mutation.get("operator"):
-			"=":
-				set_state_value(lhs, rhs)
-			"+=":
-				set_state_value(lhs, apply_operation("+", get_state_value(lhs), rhs))
-			"-=":
-				set_state_value(lhs, apply_operation("-", get_state_value(lhs), rhs))
-			"*=":
-				set_state_value(lhs, apply_operation("*", get_state_value(lhs), rhs))
-			"/=":
-				set_state_value(lhs, apply_operation("/", get_state_value(lhs), rhs))
+	elif mutation.has("expression"):
+		resolve(mutation.get("expression").duplicate(true))
 		
 	# Wait one frame to give the dialogue handler a chance to yield
 	yield(get_tree(), "idle_frame")
@@ -353,7 +340,6 @@ func resolve(tokens: Array):
 		if token.get("type") == Constants.TOKEN_FUNCTION:
 			var function_name = token.get("function")
 			var args = resolve_each(token.get("value"))
-			
 			if function_name == "str":
 				token["type"] = "value"
 				token["value"] = str(args[0])
@@ -362,7 +348,7 @@ func resolve(tokens: Array):
 				# value into the thing we are calling the function on
 				var caller = tokens[i - 2]
 				if not caller.get("value").has_method(function_name):
-					printerr("'" + function_name + "' is not a callable method on '" + str(caller)  + "'")
+					printerr("\"%s\" is not a callable method on \"%s\"" % [function_name, str(caller)])
 					assert(false, "Missing callable method on calling object. See Output for details.")
 				caller["type"] = "value"
 				caller["value"] = caller.get("value").callv(function_name, args)
@@ -378,25 +364,40 @@ func resolve(tokens: Array):
 						found = true
 				
 				if not found:
-					printerr("'" + function_name + "' is not a method on any game states (" + str(get_game_states()) + ").")
+					printerr("\"%s\" is not a method on any game states (%s)" % [function_name, str(get_game_states())])
 					assert(false, "Missing function on current scene or game state. See Output for details.")
 		
 		elif token.get("type") == Constants.TOKEN_DICTIONARY_REFERENCE:
-			token["type"] = "value"
 			var value = get_state_value(token.get("variable"))
 			var index = resolve(token.get("value"))
 			if typeof(value) == TYPE_DICTIONARY:
-				if value.has(index):
-					token["value"] = value[index]
+				if tokens.size() > i + 1 and tokens[i + 1].get("type") == Constants.TOKEN_ASSIGNMENT:
+					# If the next token is an assignment then we need to leave this as a reference
+					# so that it can be resolved once everything ahead of it has been resolved
+					token["type"] = "dictionary"
+					token["value"] = value
+					token["key"] = index
 				else:
-					printerr("Key \"%s\" not found in dictionary \"%s\"" % [str(index), token.get("variable")])
-					assert(false, "Key not found in dictionary. See Output for details.")
+					if value.has(index):
+						token["type"] = "value"
+						token["value"] = value[index]
+					else:
+						printerr("Key \"%s\" not found in dictionary \"%s\"" % [str(index), token.get("variable")])
+						assert(false, "Key not found in dictionary. See Output for details.")
 			elif typeof(value) == TYPE_ARRAY:
-				if index >= 0 and index < value.size():
-					token["value"] = value[index]
+				if tokens.size() > i + 1 and tokens[i + 1].get("type") == Constants.TOKEN_ASSIGNMENT:
+					# If the next token is an assignment then we need to leave this as a reference
+					# so that it can be resolved once everything ahead of it has been resolved
+					token["type"] = "array"
+					token["value"] = value
+					token["key"] = index
 				else:
-					printerr("Index %d out of bounds of array \"%s\"" % [index, token.get("variable")])
-					assert(false, "Index out of bounds of array. See Output for details.")
+					if index >= 0 and index < value.size():
+						token["type"] = "value"
+						token["value"] = value[index]
+					else:
+						printerr("Index %d out of bounds of array \"%s\"" % [index, token.get("variable")])
+						assert(false, "Index out of bounds of array. See Output for details.")
 		
 		elif token.get("type") == Constants.TOKEN_ARRAY:
 			token["type"] = "value"
@@ -412,20 +413,31 @@ func resolve(tokens: Array):
 			token["value"] = dictionary
 			
 		elif token.get("type") == Constants.TOKEN_VARIABLE:
-			token["type"] = "value"
 			if token.get("value") == "null":
+				token["type"] = "value"
 				token["value"] = null
 			elif tokens[i - 1].get("type") == Constants.TOKEN_DOT:
-				# If we are requesting a deeper property then we need to collapse the
-				# value into the thing we are referencing from
 				var caller = tokens[i - 2]
 				var property = token.get("value")
-				caller["type"] = "value"
-				caller["value"] = caller.get("value").get(property)
+				if tokens.size() > i + 1 and tokens[i + 1].get("type") == Constants.TOKEN_ASSIGNMENT:
+					# If the next token is an assignment then we need to leave this as a reference
+					# so that it can be resolved once everything ahead of it has been resolved
+					caller["type"] = "property"
+					caller["property"] = property
+				else:
+					# If we are requesting a deeper property then we need to collapse the
+					# value into the thing we are referencing from
+					caller["type"] = "value"
+					caller["value"] = caller.get("value").get(property)
 				tokens.remove(i)
 				tokens.remove(i-1)
 				i -= 2
+			elif tokens.size() > i + 1 and tokens[i + 1].get("type") == Constants.TOKEN_ASSIGNMENT:
+				# It's a normal variable but we will be assigning to it so don't resolve
+				# it until everything after it has been resolved
+				token["type"] = "variable"
 			else:
+				token["type"] = "value"
 				token["value"] = get_state_value(token.get("value"))
 		
 		i += 1
@@ -436,7 +448,7 @@ func resolve(tokens: Array):
 	while i < tokens.size() and limit < 1000:
 		limit += 1
 		var token = tokens[i]
-		if token.get("type") == Constants.TOKEN_OPERATOR and token.get("value") in ["*", "/"]:
+		if token.get("type") == Constants.TOKEN_OPERATOR and token.get("value") in ["*", "/", "%"]:
 			token["type"] = "value"
 			token["value"] = apply_operation(token.get("value"), tokens[i-1].get("value"), tokens[i+1].get("value"))
 			tokens.remove(i+1)
@@ -495,6 +507,39 @@ func resolve(tokens: Array):
 			i -= 1
 		i += 1
 				
+	if limit >= 1000:
+		assert(false, "Something went wrong")
+	
+	# Lastly, resolve any assignments
+	i = 0
+	limit = 0
+	while i < tokens.size() and limit < 1000:
+		limit += 1
+		var token = tokens[i]
+		if token.get("type") == Constants.TOKEN_ASSIGNMENT:
+			var lhs = tokens[i - 1]
+			var value
+			
+			match lhs.get("type"):
+				"variable":
+					value = apply_operation(token.get("value"), get_state_value(lhs.get("value")), tokens[i+1].get("value"))
+					set_state_value(lhs.get("value"), value)
+				"property":
+					value = apply_operation(token.get("value"), lhs.get("value").get(lhs.get("property")), tokens[i+1].get("value"))
+					lhs.get("value").set(lhs.get("property"), value)
+				"dictionary", "array":
+					value = apply_operation(token.get("value"), lhs.get("value")[lhs.get("key")], tokens[i+1].get("value"))
+					lhs.get("value")[lhs.get("key")] = value
+				_:
+					assert(false, "Unknown assignment target")
+			
+			token["type"] = "value"
+			token["value"] = value
+			tokens.remove(i+1)
+			tokens.remove(i-1)
+			i -= 1
+		i += 1
+	
 	if limit >= 1000:
 		assert(false, "Something went wrong")
 	
@@ -567,18 +612,24 @@ func apply_operation(operator: String, first_value, second_value):
 			return first_value
 	
 	match operator:
-		"+":
+		"=":
+			return second_value
+		"+", "+=":
 			return first_value + second_value
-		"-":
+		"-", "-=":
 			return first_value - second_value
-		"/":
+		"/", "/=":
 			return first_value / second_value
-		"*":
+		"*", "*=":
 			return first_value * second_value
+		"%":
+			return first_value % second_value
 		"and":
 			return first_value and second_value
 		"or":
 			return first_value or second_value
+		_:
+			assert(false, "Unknown operator")
 
 
 # Check if a dialogue line contains meaninful information
