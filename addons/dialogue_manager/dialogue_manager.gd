@@ -10,6 +10,7 @@ const Constants = preload("res://addons/dialogue_manager/constants.gd")
 const Line = preload("res://addons/dialogue_manager/dialogue_line.gd")
 const Response = preload("res://addons/dialogue_manager/dialogue_response.gd")
 
+const Settings = preload("res://addons/dialogue_manager/components/settings.gd")
 const Parser = preload("res://addons/dialogue_manager/components/parser.gd")
 
 const ExampleBalloon = preload("res://addons/dialogue_manager/example_balloon/example_balloon.gd")
@@ -18,10 +19,12 @@ const ExampleBalloon = preload("res://addons/dialogue_manager/example_balloon/ex
 var resource: DialogueResource
 var game_states: Array = []
 var auto_translate: bool = true
+var settings: Settings = Settings.new()
 
 var is_dialogue_running := false setget set_is_dialogue_running
 
 var _node_properties: Array = []
+var _resource_cache: Array = []
 
 
 func _ready() -> void:
@@ -33,14 +36,11 @@ func _ready() -> void:
 	temp_node.free()
 	
 	# Load the config file (if there is one) so we can set up any global state objects
-	var config = ConfigFile.new()
-	var success = config.load(Constants.CONFIG_PATH)
-	if success == OK:
-		var states = config.get_value("runtime", "states", [])
-		for node_name in states:
-			var state = get_node("/root/" + node_name)
-			if state:
-				game_states.append(state)
+	add_child(settings)
+	for node_name in settings.get_runtime_value("states", []):
+		var state = get_node("/root/" + node_name)
+		if state:
+			game_states.append(state)
 
 
 # Step through lines and run any mutations until we either 
@@ -58,10 +58,15 @@ func get_next_dialogue_line(key: String, override_resource: DialogueResource = n
 	
 	assert(local_resource.syntax_version == Constants.SYNTAX_VERSION, "This dialogue resource is older than the runtime expects.")
 	
+	var resource_path = local_resource.resource_path
+	if local_resource.lines.size() == 0:
+		# We probably have pre-baking turned off so we need to compile on the fly
+		local_resource = compile_resource(local_resource)
+	
 	if local_resource.errors.size() > 0:
 		# Store in a local var for debugger convenience
 		var errors = local_resource.errors
-		printerr("There are %d error(s) in %s" % [errors.size(), local_resource.resource_path])
+		printerr("There are %d error(s) in %s" % [errors.size(), resource_path])
 		for error in errors:
 			printerr("\tLine %s: %s" % [error.get("line"), error.get("message")])
 		assert(false, "The provided DialogueResource contains errors. See Output for details.")
@@ -128,6 +133,23 @@ func show_example_dialogue_balloon(title: String, resource: DialogueResource = n
 	
 
 ### Helpers
+
+
+func compile_resource(resource: DialogueResource) -> DialogueResource:
+	# See if we have this cached, first
+	for item in _resource_cache:
+		if item[0] == resource.resource_path:
+			return item[1]
+	
+	# Otherwise, compile it and then cache it
+	var next_resource = get_resource_from_text(resource.raw_text)
+	_resource_cache.insert(0, [resource.resource_path, next_resource])
+	
+	# Only keep recent stuff in the cache
+	if _resource_cache.size() > 5:
+		_resource_cache.remove(5)
+	
+	return next_resource
 
 
 # Get a line by its ID

@@ -73,10 +73,13 @@ margin_bottom = 450.0
 size_flags_horizontal = 3
 size_flags_vertical = 3
 
-[node name="ErrorsTitle" type="Label" parent="Margin/VBox/Tabs/Editor/VBox"]
+[node name="CompilerTitle" type="Label" parent="Margin/VBox/Tabs/Editor/VBox"]
 margin_right = 924.0
 margin_bottom = 14.0
-text = "Errors"
+text = "Compiler"
+__meta__ = {
+"_edit_use_anchors_": false
+}
 
 [node name="CheckForErrorsButton" type="CheckButton" parent="Margin/VBox/Tabs/Editor/VBox"]
 margin_top = 18.0
@@ -84,17 +87,24 @@ margin_right = 924.0
 margin_bottom = 58.0
 text = "Check for errors while you type"
 
-[node name="MissingTranslationsButton" type="CheckButton" parent="Margin/VBox/Tabs/Editor/VBox"]
+[node name="StoreCompileResultsButton" type="CheckButton" parent="Margin/VBox/Tabs/Editor/VBox"]
 margin_top = 62.0
 margin_right = 924.0
 margin_bottom = 102.0
+hint_tooltip = "Enabling this will pre-bake your dialogue, saving precious cycles when running your game."
+text = "Store compile results in resource"
+
+[node name="MissingTranslationsButton" type="CheckButton" parent="Margin/VBox/Tabs/Editor/VBox"]
+margin_top = 106.0
+margin_right = 924.0
+margin_bottom = 146.0
 text = "Treat missing static translation keys as errors"
 
 [node name="Margin" type="MarginContainer" parent="Margin/VBox/Tabs/Editor/VBox"]
 modulate = Color( 1, 1, 1, 0.470588 )
-margin_top = 106.0
+margin_top = 150.0
 margin_right = 924.0
-margin_bottom = 140.0
+margin_bottom = 184.0
 custom_constants/margin_right = 80
 custom_constants/margin_left = 20
 custom_constants/margin_bottom = 20
@@ -107,25 +117,25 @@ text = "If you are using static translation keys then having this enabled will h
 autowrap = true
 
 [node name="EditorTitle" type="Label" parent="Margin/VBox/Tabs/Editor/VBox"]
-margin_top = 144.0
+margin_top = 188.0
 margin_right = 924.0
-margin_bottom = 158.0
+margin_bottom = 202.0
 text = "Editor"
 __meta__ = {
 "_edit_use_anchors_": false
 }
 
 [node name="WrapButton" type="CheckButton" parent="Margin/VBox/Tabs/Editor/VBox"]
-margin_top = 162.0
+margin_top = 206.0
 margin_right = 924.0
-margin_bottom = 202.0
+margin_bottom = 246.0
 text = "Wrap long lines"
 __meta__ = {
 "_edit_use_anchors_": false
 }
 
 [node name="Spacer" type="Control" parent="Margin/VBox/Tabs/Editor/VBox"]
-margin_top = 206.0
+margin_top = 250.0
 margin_right = 924.0
 margin_bottom = 446.0
 size_flags_horizontal = 3
@@ -191,6 +201,7 @@ text = "Done"
 
 [connection signal="about_to_show" from="." to="." method="_on_SettingsDialog_about_to_show"]
 [connection signal="toggled" from="Margin/VBox/Tabs/Editor/VBox/CheckForErrorsButton" to="." method="_on_CheckForErrorsButton_toggled"]
+[connection signal="toggled" from="Margin/VBox/Tabs/Editor/VBox/StoreCompileResultsButton" to="." method="_on_StoreCompileResultsButton_toggled"]
 [connection signal="toggled" from="Margin/VBox/Tabs/Editor/VBox/MissingTranslationsButton" to="." method="_on_MissingTranslationsButton_toggled"]
 [connection signal="toggled" from="Margin/VBox/Tabs/Editor/VBox/WrapButton" to="." method="_on_WrapButton_toggled"]
 [connection signal="button_pressed" from="Margin/VBox/Tabs/Runtime/VBox/GlobalsList" to="." method="_on_GlobalsList_button_pressed"]

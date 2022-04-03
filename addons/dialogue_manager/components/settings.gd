@@ -13,6 +13,7 @@ func _ready() -> void:
 	if not config.has_section("editor"):
 		config.set_value("editor", "check_for_errors", true)
 		config.set_value("editor", "missing_translations_are_errors", false)
+		config.set_value("editor", "store_compiler_results", true)
 	if not config.has_section("runtime"):
 		config.set_value("runtime", "states", [])
 

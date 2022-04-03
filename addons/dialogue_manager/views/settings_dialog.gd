@@ -12,6 +12,7 @@ export var _settings := NodePath()
 
 onready var settings: Settings = get_node(_settings)
 onready var errors_button := $Margin/VBox/Tabs/Editor/VBox/CheckForErrorsButton
+onready var store_compile_results_button := $Margin/VBox/Tabs/Editor/VBox/StoreCompileResultsButton
 onready var missing_translations_button := $Margin/VBox/Tabs/Editor/VBox/MissingTranslationsButton
 onready var wrap_button := $Margin/VBox/Tabs/Editor/VBox/WrapButton
 onready var globals_list := $Margin/VBox/Tabs/Runtime/VBox/GlobalsList
@@ -26,6 +27,7 @@ var enabled_globals: Array = []
 
 func _on_SettingsDialog_about_to_show():
 	errors_button.pressed = settings.get_editor_value("check_for_errors", true)
+	store_compile_results_button.pressed = settings.get_editor_value("store_compiler_results", true)
 	missing_translations_button.pressed = settings.get_editor_value("missing_translations_are_errors", false)
 	wrap_button.pressed = settings.get_editor_value("wrap_lines", false)
 
@@ -82,6 +84,14 @@ func _on_MissingTranslationsButton_toggled(button_pressed):
 	settings.set_editor_value("missing_translations_are_errors", button_pressed)
 
 
+func _on_WrapButton_toggled(button_pressed):
+	settings.set_editor_value("wrap_lines", button_pressed)
+
+
+func _on_StoreCompileResultsButton_toggled(button_pressed):
+	settings.set_editor_value("store_compiler_results", button_pressed)
+
+
 func _on_DoneButton_pressed():
 	hide()
 
@@ -89,7 +99,3 @@ func _on_DoneButton_pressed():
 func _on_GlobalsList_button_pressed(item, column, id):
 	hide()
 	emit_signal("script_button_pressed", item.get_text(2))
-
-
-func _on_WrapButton_toggled(button_pressed):
-	settings.set_editor_value("wrap_lines", button_pressed)

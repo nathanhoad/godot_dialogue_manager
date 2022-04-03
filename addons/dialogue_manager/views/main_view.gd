@@ -189,6 +189,7 @@ func apply_upgrades(resource: DialogueResource) -> void:
 				line = line.substr(0, index) + "=> " + line.substr(index + 7).replace(" ", "_")
 		lines[i] = line
 	
+	resource.set("syntax_version", Constants.SYNTAX_VERSION)
 	resource.set("raw_text", lines.join("\n"))
 	
 
@@ -197,21 +198,25 @@ func parse(force_show_errors: bool = false) -> void:
 	if not has_changed and not force_show_errors: return
 	
 	var result = parser.parse(editor.text)
-		
-	current_resource.set("syntax_version", Constants.SYNTAX_VERSION)
-	current_resource.set("titles", result.titles)
-	current_resource.set("lines", result.lines)
-	current_resource.set("errors", result.errors)
+	
+	if settings.get_editor_value("store_compiler_results", true):
+		current_resource.set("titles", result.titles)
+		current_resource.set("lines", result.lines)
+		current_resource.set("errors", result.errors)
+	else:
+		current_resource.set("titles", {})
+		current_resource.set("lines", {})
+		current_resource.set("errors", [])
 	ResourceSaver.save(current_resource.resource_path, current_resource)
 	
 	has_changed = false
 	
 	if force_show_errors or settings.get_editor_value("check_for_errors") or error_list.errors.size() > 0:
-		error_list.errors = current_resource.errors
+		error_list.errors = result.errors
 		
 		for line_number in range(0, editor.get_line_count() - 1):
 			editor.set_line_as_bookmark(line_number, false)
-			for error in current_resource.errors:
+			for error in result.errors:
 				if error.get("line") == line_number:
 					editor.set_line_as_bookmark(line_number, true)
 
@@ -423,7 +428,7 @@ func _on_OpenDialogueDialog_confirmed():
 
 
 func _on_SettingsDialog_popup_hide():
-	parse()
+	parse(true)
 	editor.wrap_enabled = settings.get_editor_value("wrap_lines", false)
 	editor.grab_focus()
 

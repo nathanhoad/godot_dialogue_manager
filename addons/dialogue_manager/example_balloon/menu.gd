@@ -82,7 +82,10 @@ func set_index(next_index: int) -> void:
 
 func action_item(item_index: int) -> void:
 	is_active = false
-	emit_signal("actioned", item_index, get_child(index))
+	if get_child_count() < index:
+		emit_signal("actioned", item_index, get_child(index))
+	else:
+		emit_signal("actioned", item_index, null)
 
 
 ### SIGNAL
