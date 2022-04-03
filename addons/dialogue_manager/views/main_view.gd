@@ -374,7 +374,9 @@ func _on_translation_menu_id_pressed(id):
 		0:
 			generate_translations_keys()
 		1:
-			save_translations_dialog.current_path = current_resource.resource_path.replace(".tres", ".csv")
+			var filename = current_resource.resource_path.get_file().replace(".tres", ".csv")
+			var path = settings.get_editor_value("last_csv_path", current_resource.resource_path.get_base_dir()) + "/" + filename
+			save_translations_dialog.current_path = path
 			save_translations_dialog.popup_centered()
 
 
@@ -442,6 +444,7 @@ func _on_HelpButton_pressed():
 
 
 func _on_SaveTranslationsDialog_file_selected(path):
+	settings.set_editor_value("last_csv_path", path.get_base_dir())
 	save_translations(path)
 
 
