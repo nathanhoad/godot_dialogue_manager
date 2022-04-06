@@ -498,6 +498,22 @@ func resolve(tokens: Array):
 	if limit >= 1000:
 		assert(false, "Something went wrong")
 	
+	# Then negations
+	i = 0
+	limit = 0
+	while i < tokens.size() and limit < 1000:
+		limit += 1
+		var token = tokens[i]
+		if token.get("type") == Constants.TOKEN_NOT:
+			token["type"] = "value"
+			token["value"] = not tokens[i+1].get("value")
+			tokens.remove(i+1)
+			i -= 1
+		i += 1
+		
+	if limit >= 1000:
+		assert(false, "Something went wrong")
+	
 	# Then comparisons
 	i = 0
 	limit = 0

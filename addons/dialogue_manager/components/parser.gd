@@ -52,6 +52,7 @@ func _init() -> void:
 		Constants.TOKEN_COMMA: "^,",
 		Constants.TOKEN_DOT: "^\\.",
 		Constants.TOKEN_BOOL: "^(true|false)",
+		Constants.TOKEN_NOT: "^(not( |$)|!)",
 		Constants.TOKEN_AND_OR: "^(and|or)( |$)",
 		Constants.TOKEN_STRING: "^\".*?\"",
 		Constants.TOKEN_VARIABLE: "^[a-zA-Z_][a-zA-Z_0-9]+",
@@ -806,6 +807,15 @@ func build_token_tree(tokens: Array, expected_close_token: String = "") -> Array
 				
 				return [tree, tokens]
 			
+			Constants.TOKEN_NOT:
+				# Double nots negate each other
+				if tokens.size() > 0 and tokens.front().get("type") == Constants.TOKEN_NOT:
+					tokens.pop_front()
+				else:
+					tree.append({
+						"type": token.get("type")
+					})
+				
 			Constants.TOKEN_COMMA, \
 			Constants.TOKEN_COLON, \
 			Constants.TOKEN_DOT:
@@ -869,6 +879,7 @@ func check_next_token(token: Dictionary, next_tokens: Array) -> String:
 		
 		Constants.TOKEN_BRACKET_CLOSE:
 			unexpected_token_types = [
+				Constants.TOKEN_NOT,
 				Constants.TOKEN_BOOL, 
 				Constants.TOKEN_STRING, 
 				Constants.TOKEN_NUMBER, 
@@ -878,6 +889,7 @@ func check_next_token(token: Dictionary, next_tokens: Array) -> String:
 		Constants.TOKEN_PARENS_CLOSE, \
 		Constants.TOKEN_BRACE_CLOSE:
 			unexpected_token_types = [
+				Constants.TOKEN_NOT,
 				Constants.TOKEN_ASSIGNMENT,
 				Constants.TOKEN_BOOL, 
 				Constants.TOKEN_STRING, 
@@ -890,6 +902,7 @@ func check_next_token(token: Dictionary, next_tokens: Array) -> String:
 		Constants.TOKEN_COMMA, \
 		Constants.TOKEN_COLON, \
 		Constants.TOKEN_DOT, \
+		Constants.TOKEN_NOT, \
 		Constants.TOKEN_AND_OR, \
 		Constants.TOKEN_DICTIONARY_REFERENCE:
 			unexpected_token_types = [
@@ -910,6 +923,7 @@ func check_next_token(token: Dictionary, next_tokens: Array) -> String:
 		Constants.TOKEN_STRING, \
 		Constants.TOKEN_NUMBER:
 			unexpected_token_types = [
+				Constants.TOKEN_NOT,
 				Constants.TOKEN_ASSIGNMENT,
 				Constants.TOKEN_BOOL, 
 				Constants.TOKEN_STRING, 
@@ -923,6 +937,7 @@ func check_next_token(token: Dictionary, next_tokens: Array) -> String:
 			
 		Constants.TOKEN_VARIABLE:
 			unexpected_token_types = [
+				Constants.TOKEN_NOT,
 				Constants.TOKEN_BOOL, 
 				Constants.TOKEN_STRING, 
 				Constants.TOKEN_NUMBER, 
@@ -948,6 +963,7 @@ func check_next_token(token: Dictionary, next_tokens: Array) -> String:
 			Constants.TOKEN_COMPARISON, \
 			Constants.TOKEN_ASSIGNMENT, \
 			Constants.TOKEN_OPERATOR, \
+			Constants.TOKEN_NOT, \
 			Constants.TOKEN_AND_OR:
 				return "Unexpected operator"
 			

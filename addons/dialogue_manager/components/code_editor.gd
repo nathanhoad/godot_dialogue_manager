@@ -65,6 +65,7 @@ func _ready() -> void:
 	add_keyword_color("in", condition_color)
 	add_keyword_color("and", condition_color)
 	add_keyword_color("or", condition_color)
+	add_keyword_color("not", condition_color)
 	
 	# Values
 	add_keyword_color("true", value_color)
