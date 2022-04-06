@@ -15,6 +15,7 @@ onready var errors_button := $Margin/VBox/Tabs/Editor/VBox/CheckForErrorsButton
 onready var store_compile_results_button := $Margin/VBox/Tabs/Editor/VBox/StoreCompileResultsButton
 onready var missing_translations_button := $Margin/VBox/Tabs/Editor/VBox/MissingTranslationsButton
 onready var wrap_button := $Margin/VBox/Tabs/Editor/VBox/WrapButton
+onready var include_all_responses_button := $Margin/VBox/Tabs/Runtime/VBox/IncludeAllResponsesButton
 onready var globals_list := $Margin/VBox/Tabs/Runtime/VBox/GlobalsList
 
 var dialogue_manager_config := ConfigFile.new()
@@ -30,6 +31,7 @@ func _on_SettingsDialog_about_to_show():
 	store_compile_results_button.pressed = settings.get_editor_value("store_compiler_results", true)
 	missing_translations_button.pressed = settings.get_editor_value("missing_translations_are_errors", false)
 	wrap_button.pressed = settings.get_editor_value("wrap_lines", false)
+	include_all_responses_button.pressed = settings.get_runtime_value("include_all_responses", false)
 
 	var project = ConfigFile.new()
 	var err = project.load("res://project.godot")
@@ -90,6 +92,10 @@ func _on_WrapButton_toggled(button_pressed):
 
 func _on_StoreCompileResultsButton_toggled(button_pressed):
 	settings.set_editor_value("store_compiler_results", button_pressed)
+
+
+func _on_IncludeAllResponsesButton_toggled(button_pressed):
+	settings.set_runtime_value("include_all_responses", button_pressed)
 
 
 func _on_DoneButton_pressed():

@@ -44,6 +44,7 @@ The returned line in dialogue is a `DialogueLine` and will have the following pr
   - **character**: String
   - **character_replacements**: Array { expression, value_in_text } Dictionaries (expression is in AST format and can be manually resolved with `DialogueManager.replace_values()`)
   - **prompt**: String
+  - **is_allowed**: String
   - **replacements**: Array { expression, value_in_text } Dictionaries (expression is in AST format and can be manually resolved with `DialogueManager.replace_values()`)
   - **translation_key**: String
   - **next_id**: String

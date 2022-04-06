@@ -54,6 +54,7 @@ func _ready() -> void:
 		for response in dialogue.responses:
 			var item = MenuItem.instance()
 			item.bbcode_text = response.prompt
+			item.is_allowed = response.is_allowed
 			responses_menu.add_child(item)
 	
 	# Make sure our responses get included in the height reset

@@ -77,6 +77,7 @@ size_flags_vertical = 3
 margin_right = 924.0
 margin_bottom = 14.0
 text = "Compiler"
+uppercase = true
 __meta__ = {
 "_edit_use_anchors_": false
 }
@@ -121,6 +122,7 @@ margin_top = 188.0
 margin_right = 924.0
 margin_bottom = 202.0
 text = "Editor"
+uppercase = true
 __meta__ = {
 "_edit_use_anchors_": false
 }
@@ -168,14 +170,36 @@ size_flags_horizontal = 3
 size_flags_vertical = 3
 custom_constants/separation = 10
 
-[node name="Message" type="Label" parent="Margin/VBox/Tabs/Runtime/VBox"]
+[node name="ResponsesTitle" type="Label" parent="Margin/VBox/Tabs/Runtime/VBox"]
 margin_right = 924.0
 margin_bottom = 14.0
+text = "Responses"
+autowrap = true
+uppercase = true
+
+[node name="IncludeAllResponsesButton" type="CheckButton" parent="Margin/VBox/Tabs/Runtime/VBox"]
+margin_top = 24.0
+margin_right = 924.0
+margin_bottom = 64.0
+text = "Include responses with failed conditions"
+
+[node name="StatesTitle" type="Label" parent="Margin/VBox/Tabs/Runtime/VBox"]
+margin_top = 74.0
+margin_right = 924.0
+margin_bottom = 88.0
+text = "Game State"
+autowrap = true
+uppercase = true
+
+[node name="Message" type="Label" parent="Margin/VBox/Tabs/Runtime/VBox"]
+margin_top = 98.0
+margin_right = 924.0
+margin_bottom = 112.0
 text = "Choose which globals contain game state or methods that your dialogue needs."
 autowrap = true
 
 [node name="GlobalsList" type="Tree" parent="Margin/VBox/Tabs/Runtime/VBox"]
-margin_top = 24.0
+margin_top = 122.0
 margin_right = 924.0
 margin_bottom = 446.0
 size_flags_horizontal = 3
@@ -204,6 +228,7 @@ text = "Done"
 [connection signal="toggled" from="Margin/VBox/Tabs/Editor/VBox/StoreCompileResultsButton" to="." method="_on_StoreCompileResultsButton_toggled"]
 [connection signal="toggled" from="Margin/VBox/Tabs/Editor/VBox/MissingTranslationsButton" to="." method="_on_MissingTranslationsButton_toggled"]
 [connection signal="toggled" from="Margin/VBox/Tabs/Editor/VBox/WrapButton" to="." method="_on_WrapButton_toggled"]
+[connection signal="toggled" from="Margin/VBox/Tabs/Runtime/VBox/IncludeAllResponsesButton" to="." method="_on_IncludeAllResponsesButton_toggled"]
 [connection signal="button_pressed" from="Margin/VBox/Tabs/Runtime/VBox/GlobalsList" to="." method="_on_GlobalsList_button_pressed"]
 [connection signal="item_selected" from="Margin/VBox/Tabs/Runtime/VBox/GlobalsList" to="." method="_on_GlobalsList_item_selected"]
 [connection signal="pressed" from="Margin/VBox/Actions/DoneButton" to="." method="_on_DoneButton_pressed"]

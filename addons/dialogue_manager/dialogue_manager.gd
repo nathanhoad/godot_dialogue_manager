@@ -25,6 +25,7 @@ var is_dialogue_running := false setget set_is_dialogue_running
 
 var _node_properties: Array = []
 var _resource_cache: Array = []
+var _trash: Node = Node.new()
 
 
 func _ready() -> void:
@@ -41,6 +42,9 @@ func _ready() -> void:
 		var state = get_node("/root/" + node_name)
 		if state:
 			game_states.append(state)
+	
+	# Add a node for cleaning up
+	add_child(_trash)
 
 
 # Step through lines and run any mutations until we either 
@@ -193,7 +197,7 @@ func get_line(key: String, local_resource: DialogueResource) -> Line:
 		return line
 	
 	# Add as a child so that it gets cleaned up automatically
-	add_child(line)
+	_trash.add_child(line)
 	
 	# Replace any variables in the dialogue text
 	if data.get("type") == Constants.TYPE_DIALOGUE and data.has("replacements"):
@@ -312,12 +316,13 @@ func get_responses(ids: Array, local_resource: DialogueResource) -> Array:
 	var responses: Array = []
 	for id in ids:
 		var data = local_resource.lines.get(id)
-		if data.get("condition") == null or check(data.get("condition")):
+		if settings.get_runtime_value("include_all_responses", false) or data.get("condition") == null or check(data.get("condition")):
 			var response = Response.new(data, auto_translate)
 			response.character = get_with_replacements(response.character, response.character_replacements)
 			response.prompt = get_with_replacements(response.prompt, response.replacements)
+			response.is_allowed = data.get("condition") == null or check(data.get("condition"))
 			# Add as a child so that it gets cleaned up automatically
-			add_child(response)
+			_trash.add_child(response)
 			responses.append(response)
 	
 	return responses
@@ -697,5 +702,5 @@ func has_property(thing: Object, name: String) -> bool:
 
 
 func cleanup() -> void:
-	for line in get_children():
+	for line in _trash.get_children():
 		line.queue_free()

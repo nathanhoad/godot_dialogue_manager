@@ -81,11 +81,12 @@ func set_index(next_index: int) -> void:
 
 
 func action_item(item_index: int) -> void:
+	var actioned_node = get_child(item_index)
+	
+	if actioned_node and not actioned_node.is_allowed: return
+	
 	is_active = false
-	if get_child_count() < index:
-		emit_signal("actioned", item_index, get_child(index))
-	else:
-		emit_signal("actioned", item_index, null)
+	emit_signal("actioned", item_index, actioned_node)
 
 
 ### SIGNAL
