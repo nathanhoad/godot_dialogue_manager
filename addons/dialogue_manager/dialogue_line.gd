@@ -1,10 +1,10 @@
 extends Node
 
-const Constants = preload("res://addons/dialogue_manager/constants.gd")
+const DialogueConstants = preload("res://addons/dialogue_manager/constants.gd")
 
 var dialogue_manager
 
-var type: String = Constants.TYPE_DIALOGUE
+var type: String = DialogueConstants.TYPE_DIALOGUE
 var next_id: String
 var translation_key: String
 
@@ -29,7 +29,7 @@ func _init(data: Dictionary, should_translate: bool = true) -> void:
 	next_id = data.get("next_id")
 	
 	match data.get("type"):
-		Constants.TYPE_DIALOGUE:
+		DialogueConstants.TYPE_DIALOGUE:
 			character = data.get("character")
 			character_replacements = data.get("character_replacements", [])
 			dialogue = tr(data.get("translation_key")) if should_translate else data.get("text")
@@ -40,7 +40,7 @@ func _init(data: Dictionary, should_translate: bool = true) -> void:
 			inline_mutations = data.get("inline_mutations", [])
 			time = data.get("time")
 			
-		Constants.TYPE_MUTATION:
+		DialogueConstants.TYPE_MUTATION:
 			mutation = data.get("mutation")
 
 

@@ -5,12 +5,12 @@ extends WindowDialog
 signal script_button_pressed(path)
 
 
-const Settings = preload("res://addons/dialogue_manager/components/settings.gd")
+const DialogueSettings = preload("res://addons/dialogue_manager/components/settings.gd")
 
 
 export var _settings := NodePath()
 
-onready var settings: Settings = get_node(_settings)
+onready var settings: DialogueSettings = get_node(_settings) as DialogueSettings
 onready var errors_button := $Margin/VBox/Tabs/Editor/VBox/CheckForErrorsButton
 onready var store_compile_results_button := $Margin/VBox/Tabs/Editor/VBox/StoreCompileResultsButton
 onready var missing_translations_button := $Margin/VBox/Tabs/Editor/VBox/MissingTranslationsButton

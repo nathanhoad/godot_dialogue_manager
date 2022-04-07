@@ -3,7 +3,7 @@ extends Control
 
 
 const DialogueResource = preload("res://addons/dialogue_manager/dialogue_resource.gd")
-const Constants = preload("res://addons/dialogue_manager/constants.gd")
+const DialogueConstants = preload("res://addons/dialogue_manager/constants.gd")
 
 
 onready var settings := $Settings
@@ -189,7 +189,7 @@ func apply_upgrades(resource: DialogueResource) -> void:
 				line = line.substr(0, index) + "=> " + line.substr(index + 7).replace(" ", "_")
 		lines[i] = line
 	
-	resource.set("syntax_version", Constants.SYNTAX_VERSION)
+	resource.set("syntax_version", DialogueConstants.SYNTAX_VERSION)
 	resource.set("raw_text", lines.join("\n"))
 	
 
@@ -251,7 +251,7 @@ func generate_translations_keys() -> void:
 		var line = lines[i]
 		var l = line.strip_edges()
 		
-		if l == "" or l.begins_with("# "): continue
+		if l == "" or l.begins_with("#"): continue
 		if l.begins_with("if ") or l.begins_with("elif ") or l.begins_with("else") or l.begins_with("endif"): continue
 		if l.begins_with("~ "): continue
 		if l.begins_with("do ") or l.begins_with("set "): continue
@@ -314,7 +314,7 @@ func save_translations(path: String) -> void:
 	for key in dialogue.keys():
 		var line: Dictionary = dialogue.get(key)
 		
-		if not line.get("type") in [Constants.TYPE_DIALOGUE, Constants.TYPE_RESPONSE]: continue
+		if not line.get("type") in [DialogueConstants.TYPE_DIALOGUE, DialogueConstants.TYPE_RESPONSE]: continue
 		if line.get("text") in known_keys: continue
 		
 		known_keys.append(line.get("text"))

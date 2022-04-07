@@ -6,13 +6,13 @@ signal paused(duration)
 signal finished()
 
 
-const Line = preload("res://addons/dialogue_manager/dialogue_line.gd")
+const DialogueLine = preload("res://addons/dialogue_manager/dialogue_line.gd")
 
 export var skip_action: String = "ui_cancel"
 export var seconds_per_step: float = 0.02
 
 
-var dialogue: Line
+var dialogue: DialogueLine
 
 var index: int = 0
 var percent_per_index: float = 0

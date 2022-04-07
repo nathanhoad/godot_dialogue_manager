@@ -2,14 +2,14 @@ tool
 extends Node
 
 
-const Constants = preload("res://addons/dialogue_manager/constants.gd")
+const DialogueConstants = preload("res://addons/dialogue_manager/constants.gd")
 
 
 var config := ConfigFile.new()
 
 
 func _ready() -> void:
-	config.load(Constants.CONFIG_PATH)
+	config.load(DialogueConstants.CONFIG_PATH)
 	if not config.has_section("editor"):
 		config.set_value("editor", "check_for_errors", true)
 		config.set_value("editor", "missing_translations_are_errors", false)
@@ -21,7 +21,7 @@ func _ready() -> void:
 
 func reset_config() -> void:
 	var dir = Directory.new()
-	dir.remove(Constants.CONFIG_PATH)
+	dir.remove(DialogueConstants.CONFIG_PATH)
 
 
 func has_editor_value(key: String) -> bool:
@@ -30,7 +30,7 @@ func has_editor_value(key: String) -> bool:
 
 func set_editor_value(key: String, value) -> void:
 	config.set_value("editor", key, value)
-	config.save(Constants.CONFIG_PATH)
+	config.save(DialogueConstants.CONFIG_PATH)
 
 
 func get_editor_value(key: String, default = null):
@@ -43,7 +43,7 @@ func has_runtime_value(key: String) -> bool:
 
 func set_runtime_value(key: String, value) -> void:
 	config.set_value("runtime", key, value)
-	config.save(Constants.CONFIG_PATH)
+	config.save(DialogueConstants.CONFIG_PATH)
 
 
 func get_runtime_value(key: String, default = null):

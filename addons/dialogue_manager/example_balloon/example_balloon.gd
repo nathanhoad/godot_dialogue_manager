@@ -4,8 +4,8 @@ extends CanvasLayer
 signal actioned(next_id)
 
 
-const Line = preload("res://addons/dialogue_manager/dialogue_line.gd")
-const MenuItem = preload("res://addons/dialogue_manager/example_balloon/menu_item.tscn")
+const DialogueLine = preload("res://addons/dialogue_manager/dialogue_line.gd")
+const ExampleMenuItem = preload("res://addons/dialogue_manager/example_balloon/menu_item.tscn")
 
 
 onready var balloon := $Balloon
@@ -16,12 +16,13 @@ onready var dialogue_label := $Balloon/Margin/VBox/Dialogue
 onready var responses_menu := $Balloon/Margin/VBox/Responses/Menu
 
 
-var dialogue: Line
+var dialogue: DialogueLine
 
 
 func _ready() -> void:
 	balloon.visible = false
 	size_check_label.modulate.a = 0
+	responses_menu.is_active = false
 	
 	if not dialogue:
 		queue_free()
@@ -46,13 +47,12 @@ func _ready() -> void:
 	dialogue_label.rect_size = Vector2(0, 0)
 	
 	# Show any responses we have
-	responses_menu.is_active = false
 	for item in responses_menu.get_children():
 		item.queue_free()
 	
 	if dialogue.responses.size() > 0:
 		for response in dialogue.responses:
-			var item = MenuItem.instance()
+			var item = ExampleMenuItem.instance()
 			item.bbcode_text = response.prompt
 			item.is_allowed = response.is_allowed
 			responses_menu.add_child(item)

@@ -3,7 +3,6 @@ extends EditorPlugin
 
 
 const DialogueResource = preload("res://addons/dialogue_manager/dialogue_resource.gd")
-const Constants = preload("res://addons/dialogue_manager/constants.gd")
 const DialogueExportPlugin = preload("res://addons/dialogue_manager/editor_export_plugin.gd")
 
 const MainView = preload("res://addons/dialogue_manager/views/main_view.tscn")

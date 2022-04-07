@@ -3,7 +3,7 @@ class_name DialogueResource
 
 
 const DialogueLine := preload("res://addons/dialogue_manager/dialogue_line.gd")
-const Constants := preload("res://addons/dialogue_manager/constants.gd")
+const DialogueConstants := preload("res://addons/dialogue_manager/constants.gd")
 
 
 export(int) var syntax_version
@@ -14,7 +14,7 @@ export(Dictionary) var lines
 
 
 func _init():
-	syntax_version = Constants.SYNTAX_VERSION
+	syntax_version = DialogueConstants.SYNTAX_VERSION
 	raw_text = "~ this_is_a_node_title\n\nNathan: This is some dialogue.\nNathan: Here are some choices.\n- First one\n\tNathan: You picked the first one.\n- Second one\n\tNathan: You picked the second one.\n- Start again => this_is_a_node_title\n- End the conversation => END\nNathan: For more information about conditional dialogue, mutations, and all the fun stuff, see the online documentation."
 	errors = []
 	titles = {}
