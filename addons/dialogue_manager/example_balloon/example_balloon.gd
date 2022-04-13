@@ -11,7 +11,6 @@ const ExampleMenuItem = preload("res://addons/dialogue_manager/example_balloon/m
 onready var balloon := $Balloon
 onready var margin := $Balloon/Margin
 onready var character_label := $Balloon/Margin/VBox/Character
-onready var size_check_label := $SizeCheck
 onready var dialogue_label := $Balloon/Margin/VBox/Dialogue
 onready var responses_menu := $Balloon/Margin/VBox/Responses/Menu
 
@@ -21,7 +20,6 @@ var dialogue: DialogueLine
 
 func _ready() -> void:
 	balloon.visible = false
-	size_check_label.modulate.a = 0
 	responses_menu.is_active = false
 	
 	if not dialogue:
@@ -34,17 +32,8 @@ func _ready() -> void:
 	else:
 		character_label.visible = false
 	dialogue_label.dialogue = dialogue
-	
-	# For some reason, RichTextLabels within containers
-	# don't resize properly when their content changes
-	size_check_label.rect_size.x = dialogue_label.rect_size.x
-	size_check_label.bbcode_text = dialogue.dialogue
-	# Give the size check a chance to resize
-	yield(get_tree(), "idle_frame")
-	
-	# Resize our dialogue label with the new size hint
-	dialogue_label.rect_min_size = Vector2(dialogue_label.rect_size.x, size_check_label.get_content_height())
-	dialogue_label.rect_size = Vector2(0, 0)
+
+	yield(dialogue_label.reset_height(), "completed")
 	
 	# Show any responses we have
 	for item in responses_menu.get_children():

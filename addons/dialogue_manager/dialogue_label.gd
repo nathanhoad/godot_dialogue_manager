@@ -46,6 +46,27 @@ func _process(delta: float) -> void:
 				emit_signal("finished")
 
 
+func reset_height() -> void:
+	# For some reason, RichTextLabels within containers don't resize properly when their content 
+	# changes so we make a clone that isn't bound by a VBox
+	var size_check_label = duplicate(0)
+	size_check_label.modulate.a = 0
+	get_tree().current_scene.add_child(size_check_label)
+	size_check_label.rect_size.x = rect_size.x
+	size_check_label.bbcode_text = dialogue.dialogue
+	
+	# Give the size check a chance to resize
+	yield(get_tree(), "idle_frame")
+	
+	# Resize our dialogue label with the new size hint
+	rect_min_size = Vector2(rect_size.x, size_check_label.get_content_height())
+	rect_size = Vector2(0, 0)
+	
+	# Destroy our clone
+	size_check_label.queue_free()
+	
+
+
 func type_next(delta: float, seconds_needed: float) -> void:
 	if last_mutation_index != index:
 		last_mutation_index = index

@@ -1,4 +1,4 @@
-[gd_scene load_steps=16 format=2]
+[gd_scene load_steps=13 format=2]
 
 [ext_resource path="res://addons/dialogue_manager/example_balloon/example_balloon.gd" type="Script" id=1]
 [ext_resource path="res://addons/dialogue_manager/example_balloon/menu.tscn" type="PackedScene" id=2]
@@ -22,18 +22,6 @@ size = 25
 font_data = ExtResource( 5 )
 
 [sub_resource type="DynamicFont" id=7]
-size = 25
-font_data = ExtResource( 4 )
-
-[sub_resource type="DynamicFont" id=8]
-size = 25
-font_data = ExtResource( 6 )
-
-[sub_resource type="DynamicFont" id=9]
-size = 25
-font_data = ExtResource( 5 )
-
-[sub_resource type="DynamicFont" id=10]
 size = 25
 font_data = ExtResource( 4 )
 
@@ -121,20 +109,3 @@ position = Vector2( 29.6, 13 )
 texture = ExtResource( 3 )
 centered = false
 offset = Vector2( -20, -10 )
-
-[node name="SizeCheck" type="RichTextLabel" parent="."]
-margin_top = 649.0
-margin_right = 944.0
-margin_bottom = 689.0
-custom_fonts/italics_font = SubResource( 8 )
-custom_fonts/bold_font = SubResource( 9 )
-custom_fonts/normal_font = SubResource( 10 )
-bbcode_enabled = true
-bbcode_text = "This is used for sizing."
-meta_underlined = false
-text = "This is used for sizing."
-fit_content_height = true
-scroll_active = false
-__meta__ = {
-"_edit_use_anchors_": false
-}
