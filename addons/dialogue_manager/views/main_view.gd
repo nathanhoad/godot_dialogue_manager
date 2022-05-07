@@ -127,6 +127,7 @@ func set_resource(value: DialogueResource) -> void:
 		file_label.text = get_nice_file(current_resource.resource_path)
 		file_label.visible = true
 		editor.text = current_resource.raw_text
+		editor.clear_undo_history()
 		content.visible = true
 		error_button.disabled = false
 		run_node_button.disabled = false
@@ -472,6 +473,9 @@ func _on_RunButton_pressed():
 
 
 func _on_SearchButton_toggled(button_pressed):
+	if editor.last_selection_text:
+		search_toolbar.input.text = editor.last_selection_text
+		
 	search_toolbar.visible = button_pressed
 
 

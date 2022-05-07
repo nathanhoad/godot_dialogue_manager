@@ -15,6 +15,7 @@ onready var choose_title_dialog: ChooseTitleDialog = get_node(_choose_title_dial
 var active_title_id: int = 0
 var current_goto_title: String = ""
 var current_goto_line: int = -1
+var last_selection_text: String = ""
 
 var GOTO_ITEM_INDEX = -1
 var CREATE_ITEM_INDEX = -1
@@ -236,6 +237,8 @@ func _on_title_chosen(title):
 func _on_CodeEditor_cursor_changed():
 	check_active_title()
 	update_current_goto_title()
+	
+	last_selection_text = get_selection_text()
 
 
 func _on_CodeEditor_text_changed():
