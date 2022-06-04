@@ -124,6 +124,12 @@ If you have a mutation in the dialogue editor like `do some_variable = 1` then y
 
 If you have a mutation like `do animate("Character", "cheer")` then you will need a method on one of the `game_state`s or the current scene that matches the signature `func animate(character: String, animation: String) -> void:`. The argument `character` will be given `"Character"` and `animation` will be given `"cheer"`.
 
+
+## Signals
+
+When the Dialogue Manager first returns a line of dialogue it will emit a `dialogue_started` signal. When it encounters the end of a sequence of dialogue it will emit a `dialogue_finished` signal.
+
+
 ## Generating Dialogue Resources at runtime
 
 If you need to construct a `DialogueResource` at runtime you can use `get_resource_from_text(string)`:
