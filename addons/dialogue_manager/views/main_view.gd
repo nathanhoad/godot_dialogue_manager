@@ -24,6 +24,7 @@ onready var settings_dialog := $SettingsDialog
 onready var insert_menu := $Margin/VBox/Toolbar/InsertMenu
 onready var translations_menu := $Margin/VBox/Toolbar/TranslationsMenu
 onready var save_translations_dialog := $SaveTranslationsDialog
+onready var import_translations_dialog := $ImportTranslationsDialog
 onready var update_button := $Margin/VBox/Toolbar/UpdateButton
 onready var error_button := $Margin/VBox/Toolbar/ErrorButton
 onready var run_node_button := $Margin/VBox/Toolbar/RunButton
@@ -67,10 +68,13 @@ func _ready() -> void:
 	popup.set_item_icon(3, get_icon("Time", "EditorIcons"))
 	popup.set_item_icon(4, get_icon("ViewportSpeed", "EditorIcons"))
 	popup.set_item_icon(5, get_icon("DebugNext", "EditorIcons"))
+	insert_menu.get_popup().connect("id_pressed", self, "_on_insert_menu_id_pressed")
 	
 	popup = translations_menu.get_popup()
 	popup.set_item_icon(0, get_icon("Translation", "EditorIcons"))
 	popup.set_item_icon(1, get_icon("FileList", "EditorIcons"))
+	popup.set_item_icon(3, get_icon("AssetLib", "EditorIcons"))
+	translations_menu.get_popup().connect("id_pressed", self, "_on_translation_menu_id_pressed")
 	
 	search_toolbar.visible = false
 	
@@ -81,9 +85,6 @@ func _ready() -> void:
 		$Margin/VBox/Toolbar/VersionLabel.text = "v" + config.get_value("plugin", "version")
 	
 	file_label.icon = get_icon("Filesystem", "EditorIcons")
-	
-	insert_menu.get_popup().connect("id_pressed", self, "_on_insert_menu_id_pressed")
-	translations_menu.get_popup().connect("id_pressed", self, "_on_translation_menu_id_pressed")
 	
 	recent_resources = settings.get_editor_value("recent_resources", [])
 	build_open_menu()
@@ -152,6 +153,11 @@ func get_nice_file(file: String) -> String:
 		return bits[0]
 	else:
 		return "%s/%s" % [bits[bits.size() - 2], bits[bits.size() - 1]]
+
+
+func get_last_csv_path() -> String:
+	var filename = current_resource.resource_path.get_file().replace(".tres", ".csv")
+	return settings.get_editor_value("last_csv_path", current_resource.resource_path.get_base_dir()) + "/" + filename
 
 
 func open_resource(resource: DialogueResource) -> void:
@@ -240,7 +246,7 @@ func generate_translations_keys() -> void:
 			var text = ""
 			var l = line.replace(found.strings[0], "").strip_edges().strip_edges()
 			if l.begins_with("- "):
-				text = parser.extract_response(l)
+				text = parser.extract_response_prompt(l)
 			elif ":" in l:
 				text = l.split(":")[1]
 			else:
@@ -252,11 +258,11 @@ func generate_translations_keys() -> void:
 		var line = lines[i]
 		var l = line.strip_edges()
 		
-		if l == "" or l.begins_with("#"): continue
-		if l.begins_with("if ") or l.begins_with("elif ") or l.begins_with("else") or l.begins_with("endif"): continue
-		if l.begins_with("~ "): continue
-		if l.begins_with("do ") or l.begins_with("set "): continue
-		if l.begins_with("=>"): continue
+		if parser.is_line_empty(l): continue
+		if parser.is_condition_line(l, true): continue
+		if parser.is_title_line(l): continue
+		if parser.is_mutation_line(l): continue
+		if parser.is_goto_line(l): continue
 		
 		if "[TR:" in line: continue
 		
@@ -267,7 +273,7 @@ func generate_translations_keys() -> void:
 		# See if identical text already has a key
 		var text = ""
 		if l.begins_with("- "):
-			text = parser.extract_response(l)
+			text = parser.extract_response_prompt(l)
 		else:
 			text = l.substr(l.find(":") + 1)
 			
@@ -375,10 +381,11 @@ func _on_translation_menu_id_pressed(id):
 		0:
 			generate_translations_keys()
 		1:
-			var filename = current_resource.resource_path.get_file().replace(".tres", ".csv")
-			var path = settings.get_editor_value("last_csv_path", current_resource.resource_path.get_base_dir()) + "/" + filename
-			save_translations_dialog.current_path = path
+			save_translations_dialog.current_path = get_last_csv_path()
 			save_translations_dialog.popup_centered()
+		3:
+			import_translations_dialog.current_path = get_last_csv_path()
+			import_translations_dialog.popup_centered()
 
 
 func _on_CodeEditor_text_changed():
@@ -488,3 +495,52 @@ func _on_SearchToolbar_close_requested():
 func _on_SearchToolbar_open_requested():
 	search_button.pressed = true
 	search_toolbar.visible = true
+
+
+func _on_ImportTranslationsDialog_file_selected(path):
+	settings.set_editor_value("last_csv_path", path.get_base_dir())
+
+	# Open the CSV file and build a dictionary of the known keys
+	var file = File.new()
+	
+	if not file.file_exists(path): return
+
+	var keys = {}
+	file.open(path, File.READ)
+	var csv_line: Array
+	while !file.eof_reached():
+		csv_line = file.get_csv_line()
+		if csv_line.size() > 1:
+			keys[csv_line[0]] = csv_line[1]
+	file.close()
+	
+	# Now look over each line in the dialogue and replace the content for matched keys
+	var lines = editor.text.split("\n")
+	var start_index: int = 0
+	var end_index: int = 0
+	for i in range(0, lines.size()):
+		var line = lines[i]
+		var translation_key = parser.extract_translation(line)
+		if keys.has(translation_key):
+			if parser.is_dialogue_line(line):
+				start_index = 0
+				# See if we need to skip over a character name
+				line = line.replace("\\:", "!ESCAPED_COLON!")
+				if ": " in line:
+					start_index = line.find(": ") + 2
+				lines[i] = (line.substr(0, start_index) + keys.get(translation_key) + " [TR:" + translation_key + "]").replace("!ESCAPED_COLON!", ":")
+				
+			elif parser.is_response_line(line):
+				start_index = line.find("- ") + 2
+				# See if we need to skip over a character name
+				line = line.replace("\\:", "!ESCAPED_COLON!")
+				if ": " in line:
+					start_index = line.find(": ") + 2
+				end_index = line.length()
+				if " =>" in line:
+					end_index = line.find(" =>")
+				if " [if " in line:
+					end_index = line.find(" [if ")
+				lines[i] = (line.substr(0, start_index) + keys.get(translation_key) + " [TR:" + translation_key + "]" + line.substr(end_index)).replace("!ESCAPED_COLON!", ":")
+	
+	editor.text = lines.join("\n")

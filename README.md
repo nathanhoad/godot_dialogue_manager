@@ -19,7 +19,7 @@ Write your dialogue in a simple script-like way and run it in your game.
 
 ## Discord
 
-[![Join the Discord](docs/discord.png)](https://discord.gg/zwBVQdJchX)
+[![Join the Discord](docs/discord.svg)](https://discord.gg/zwBVQdJchX)
 
 ## Tutorials
 

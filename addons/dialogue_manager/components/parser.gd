@@ -122,15 +122,15 @@ func parse(content: String) -> Dictionary:
 		## Check for each kind of line
 		
 		# Response
-		if raw_line.begins_with("- "):
-			line["type"] = DialogueConstants.TYPE_RESPONSE
+		if is_response_line(raw_line):
 			parent_stack.append(str(id))
+			line["type"] = DialogueConstants.TYPE_RESPONSE
 			if " [if " in raw_line:
 				line["condition"] = extract_condition(raw_line, true)
 			if " => " in raw_line:
 				line["next_id"] = extract_goto(raw_line, titles)
 				
-			line["text"] = extract_response(raw_line)
+			line["text"] = extract_response_prompt(raw_line)
 			
 			var previous_response_id = find_previous_response_id(id, raw_lines)
 			if dialogue.has(previous_response_id):
@@ -189,7 +189,7 @@ func parse(content: String) -> Dictionary:
 				line["text"] = l.replace("!ESCAPED_COLON!", ":")
 		
 		# Title
-		elif raw_line.begins_with("~ "):
+		elif is_title_line(raw_line):
 			line["type"] = DialogueConstants.TYPE_TITLE
 			line["text"] = raw_line.replace("~ ", "")
 			var valid_title = VALID_TITLE_REGEX.search(raw_line.substr(2).strip_edges())
@@ -197,29 +197,26 @@ func parse(content: String) -> Dictionary:
 				errors.append(error(id, "Titles can only contain alphanumerics and underscores"))
 		
 		# Condition
-		elif raw_line.begins_with("if ") or raw_line.begins_with("elif "):
+		elif is_condition_line(raw_line, false):
 			parent_stack.append(str(id))
 			line["type"] = DialogueConstants.TYPE_CONDITION
 			line["condition"] = extract_condition(raw_line)
 			line["next_id_after"] = find_next_line_after_conditions(id, raw_lines, dialogue)
 			var next_sibling_id = find_next_condition_sibling(id, raw_lines)
 			line["next_conditional_id"] = next_sibling_id if is_valid_id(next_sibling_id) else line.get("next_id_after")
-		elif raw_line.begins_with("else"):
+		elif is_condition_line(raw_line, true):
 			parent_stack.append(str(id))
 			line["type"] = DialogueConstants.TYPE_CONDITION
 			line["next_id_after"] = find_next_line_after_conditions(id, raw_lines, dialogue)
 			line["next_conditional_id"] = line["next_id_after"]
 		
 		# Mutation
-		elif raw_line.begins_with("do "):
-			line["type"] = DialogueConstants.TYPE_MUTATION
-			line["mutation"] = extract_mutation(raw_line)
-		elif raw_line.begins_with("set "):
+		elif is_mutation_line(raw_line):
 			line["type"] = DialogueConstants.TYPE_MUTATION
 			line["mutation"] = extract_mutation(raw_line)
 		
 		# Goto
-		elif raw_line.begins_with("=> "):
+		elif is_goto_line(raw_line):
 			line["type"] = DialogueConstants.TYPE_GOTO
 			line["next_id"] = extract_goto(raw_line, titles)
 		
@@ -333,6 +330,39 @@ func error(line_number: int, message: String) -> Dictionary:
 		"message": message
 	}
 
+
+func is_title_line(line: String) -> bool:
+	return line.strip_edges().begins_with("~ ")
+
+
+func is_condition_line(line: String, include_else: bool = true) -> bool:
+	line = line.strip_edges()
+	if line.begins_with("if ") or line.begins_with("elif "): return true
+	if include_else and line.begins_with("else"): return true
+	return false
+
+
+func is_mutation_line(line: String) -> bool:
+	line = line.strip_edges()
+	return line.begins_with("do ") or line.begins_with("set ")
+
+
+func is_goto_line(line: String) -> bool:
+	return line.strip_edges().begins_with("=> ")
+
+
+func is_dialogue_line(line: String) -> bool:
+	if is_response_line(line): return false
+	if is_title_line(line): return false
+	if is_condition_line(line, true): return false
+	if is_mutation_line(line): return false
+	if is_goto_line(line): return false
+	return true
+
+
+func is_response_line(line: String) -> bool:
+	return line.strip_edges().begins_with("- ")
+	
 
 func is_valid_id(id: String) -> bool:
 	return false if id in [DialogueConstants.ID_NULL, DialogueConstants.ID_ERROR, DialogueConstants.ID_END_CONVERSATION] else true
@@ -507,13 +537,18 @@ func extract_translation(line: String) -> String:
 		return ""
 
 
-func extract_response(line: String) -> String:
+func extract_response_prompt(line: String) -> String:
 	# Find just the text prompt from a response, ignoring any conditions or gotos
 	line = line.replace("- ", "")
 	if " [if " in line:
 		line = line.substr(0, line.find(" [if "))
 	if " =>" in line:
 		line = line.substr(0, line.find(" =>"))
+	
+	# Without the translation key if there is one
+	var translation_key = extract_translation(line)
+	if translation_key:
+		line = line.replace("[TR:%s]" % translation_key, "")
 	
 	return line.strip_edges()
 
