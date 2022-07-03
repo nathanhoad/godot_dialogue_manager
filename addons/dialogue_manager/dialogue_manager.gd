@@ -221,14 +221,15 @@ func get_line(key: String, local_resource: DialogueResource) -> DialogueLine:
 	return line
 
 
-func set_is_dialogue_running(value: bool) -> void:
-	if is_dialogue_running != value:
-		if value:
+func set_is_dialogue_running(is_running: bool) -> void:
+	if is_dialogue_running != is_running:
+		if is_running:
+			_goto_stack = []
 			emit_signal("dialogue_started")
 		else:
 			emit_signal("dialogue_finished")
 			
-	is_dialogue_running = value
+	is_dialogue_running = is_running
 
 
 func get_game_states() -> Array:
