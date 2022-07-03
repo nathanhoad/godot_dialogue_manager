@@ -259,8 +259,11 @@ func parse(content: String) -> Dictionary:
 			if next_nonempty_line_id != DialogueConstants.ID_NULL \
 				and indent_size <= get_indent(raw_lines[next_nonempty_line_id.to_int()]):
 				# The next line is a title so we can end here
-				if raw_lines[next_nonempty_line_id.to_int()].strip_edges().begins_with("~ "):
-					line["next_id"] = DialogueConstants.ID_END_CONVERSATION
+				if is_title_line(raw_lines[next_nonempty_line_id.to_int()]):
+					if will_continue_through_titles():
+						line["next_id"] = get_next_nonempty_line_id(next_nonempty_line_id.to_int() + 1, raw_lines)
+					else:
+						line["next_id"] = DialogueConstants.ID_END_CONVERSATION
 				# Otherwise it's a normal line
 				else:
 					line["next_id"] = next_nonempty_line_id
@@ -329,6 +332,13 @@ func error(line_number: int, message: String) -> Dictionary:
 		"line": line_number,
 		"message": message
 	}
+
+
+func will_continue_through_titles() -> bool:
+	if is_instance_valid(settings):
+		return settings.get_editor_value("continue_through_titles", false)
+	else:
+		return false
 
 
 func is_title_line(line: String) -> bool:
@@ -455,8 +465,11 @@ func find_next_line_after_conditions(line_number: int, all_lines: Array, dialogu
 		var line_indent = get_indent(line)
 		line = line.strip_edges()
 		
-		if line.begins_with("~ "):
-			return DialogueConstants.ID_END_CONVERSATION
+		if is_title_line(line):
+			if will_continue_through_titles():
+				return get_next_nonempty_line_id(i + 1, all_lines)
+			else:
+				return DialogueConstants.ID_END_CONVERSATION
 			
 		elif line_indent > expected_indent:
 			continue
@@ -495,8 +508,11 @@ func find_next_line_after_responses(line_number: int, all_lines: Array, dialogue
 		line = line.strip_edges()
 		
 		# We hit a title so the next line is the end of the conversation
-		if line.begins_with("~ "):
-			return DialogueConstants.ID_END_CONVERSATION
+		if is_title_line(line):
+			if will_continue_through_titles():
+				return get_next_nonempty_line_id(i + 1, all_lines)
+			else:
+				return DialogueConstants.ID_END_CONVERSATION
 		
 		# Another option
 		elif line.begins_with("- "):
@@ -728,7 +744,7 @@ func extract_markers(line: String) -> Dictionary:
 		"mutations": mutations,
 		"time": time
 	}
-		
+	
 
 func tokenise(text: String) -> Array:
 	var tokens = []

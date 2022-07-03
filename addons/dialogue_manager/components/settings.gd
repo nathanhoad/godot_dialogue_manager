@@ -14,6 +14,7 @@ func _ready() -> void:
 		config.set_value("editor", "check_for_errors", true)
 		config.set_value("editor", "missing_translations_are_errors", false)
 		config.set_value("editor", "store_compiler_results", true)
+		config.set_value("editor", "continue_through_titles", false)
 	if not config.has_section("runtime"):
 		config.set_value("runtime", "include_all_responses", false)
 		config.set_value("runtime", "states", [])

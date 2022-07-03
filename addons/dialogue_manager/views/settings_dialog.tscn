@@ -117,10 +117,16 @@ margin_bottom = 14.0
 text = "If you are using static translation keys then having this enabled will help you find any lines that you haven't added a key to yet."
 autowrap = true
 
-[node name="EditorTitle" type="Label" parent="Margin/VBox/Tabs/Editor/VBox"]
+[node name="ContinueThroughTitlesButton" type="CheckButton" parent="Margin/VBox/Tabs/Editor/VBox"]
 margin_top = 188.0
 margin_right = 924.0
-margin_bottom = 202.0
+margin_bottom = 228.0
+text = "Continue through title after block"
+
+[node name="EditorTitle" type="Label" parent="Margin/VBox/Tabs/Editor/VBox"]
+margin_top = 232.0
+margin_right = 924.0
+margin_bottom = 246.0
 text = "Editor"
 uppercase = true
 __meta__ = {
@@ -128,16 +134,16 @@ __meta__ = {
 }
 
 [node name="WrapButton" type="CheckButton" parent="Margin/VBox/Tabs/Editor/VBox"]
-margin_top = 206.0
+margin_top = 250.0
 margin_right = 924.0
-margin_bottom = 246.0
+margin_bottom = 290.0
 text = "Wrap long lines"
 __meta__ = {
 "_edit_use_anchors_": false
 }
 
 [node name="Spacer" type="Control" parent="Margin/VBox/Tabs/Editor/VBox"]
-margin_top = 250.0
+margin_top = 294.0
 margin_right = 924.0
 margin_bottom = 446.0
 size_flags_horizontal = 3
@@ -227,6 +233,7 @@ text = "Done"
 [connection signal="toggled" from="Margin/VBox/Tabs/Editor/VBox/CheckForErrorsButton" to="." method="_on_CheckForErrorsButton_toggled"]
 [connection signal="toggled" from="Margin/VBox/Tabs/Editor/VBox/StoreCompileResultsButton" to="." method="_on_StoreCompileResultsButton_toggled"]
 [connection signal="toggled" from="Margin/VBox/Tabs/Editor/VBox/MissingTranslationsButton" to="." method="_on_MissingTranslationsButton_toggled"]
+[connection signal="toggled" from="Margin/VBox/Tabs/Editor/VBox/ContinueThroughTitlesButton" to="." method="_on_ContinueThroughTitlesButton_toggled"]
 [connection signal="toggled" from="Margin/VBox/Tabs/Editor/VBox/WrapButton" to="." method="_on_WrapButton_toggled"]
 [connection signal="toggled" from="Margin/VBox/Tabs/Runtime/VBox/IncludeAllResponsesButton" to="." method="_on_IncludeAllResponsesButton_toggled"]
 [connection signal="button_pressed" from="Margin/VBox/Tabs/Runtime/VBox/GlobalsList" to="." method="_on_GlobalsList_button_pressed"]

@@ -14,6 +14,7 @@ onready var settings: DialogueSettings = get_node(_settings) as DialogueSettings
 onready var errors_button := $Margin/VBox/Tabs/Editor/VBox/CheckForErrorsButton
 onready var store_compile_results_button := $Margin/VBox/Tabs/Editor/VBox/StoreCompileResultsButton
 onready var missing_translations_button := $Margin/VBox/Tabs/Editor/VBox/MissingTranslationsButton
+onready var continue_through_titles_button := $Margin/VBox/Tabs/Editor/VBox/ContinueThroughTitlesButton
 onready var wrap_button := $Margin/VBox/Tabs/Editor/VBox/WrapButton
 onready var include_all_responses_button := $Margin/VBox/Tabs/Runtime/VBox/IncludeAllResponsesButton
 onready var globals_list := $Margin/VBox/Tabs/Runtime/VBox/GlobalsList
@@ -30,6 +31,7 @@ func _on_SettingsDialog_about_to_show():
 	errors_button.pressed = settings.get_editor_value("check_for_errors", true)
 	store_compile_results_button.pressed = settings.get_editor_value("store_compiler_results", true)
 	missing_translations_button.pressed = settings.get_editor_value("missing_translations_are_errors", false)
+	continue_through_titles_button.pressed = settings.get_editor_value("continue_through_titles", false)
 	wrap_button.pressed = settings.get_editor_value("wrap_lines", false)
 	include_all_responses_button.pressed = settings.get_runtime_value("include_all_responses", false)
 
@@ -84,6 +86,10 @@ func _on_CheckForErrorsButton_toggled(button_pressed: bool) -> void:
 
 func _on_MissingTranslationsButton_toggled(button_pressed):
 	settings.set_editor_value("missing_translations_are_errors", button_pressed)
+
+
+func _on_ContinueThroughTitlesButton_toggled(button_pressed):
+	settings.set_editor_value("continue_through_titles", button_pressed)
 
 
 func _on_WrapButton_toggled(button_pressed):
