@@ -8,7 +8,6 @@ Open some dialogue by clicking the "new dialogue file" button or "open dialogue"
 
 ![New and Open buttons](new-open-buttons.jpg)
 
-
 ## Nodes
 
 All dialogue exists within nodes. A node is started with a line beginning with a "~ ".
@@ -16,7 +15,6 @@ All dialogue exists within nodes. A node is started with a line beginning with a
 ![Node titles begin with a "~ "](node-title.jpg)
 
 A node will continue until another title is encountered or the end of the file.
-
 
 ## Dialogue
 
@@ -32,6 +30,22 @@ If you use the `DialogueLabel` node then you can also make use of the `[wait=N]`
 
 There is also a `[next]` code that you can use to signify that a line should be auto advanced. If given no arguments it will auto advance immediately after the text has typed out. If given something like `[next=0.5]` it will wait for 0.5s after typing has finished before moving to the next line. If given `[next=auto]` it will wait for an automatic amount of time based on the length of the line.
 
+## Gotos
+
+If you want to jump to another title then you can use a goto line. Assuming the target title is "another_title" your goto line would be 
+
+```
+=> another_title
+```
+
+If you wanted the dialogue manager to jump to that title but then return to this line when it is finished then you can write the goto line as:
+
+```
+=>< another_title
+```
+
+You can write what are effectively "snippets" of dialogue this way.
+
 ## Responses
 
 To give the player branching options you can start a line with "- " and then a prompt. Like dialogue, prompts can also contain variables wrapped in `{{}}`.
@@ -40,7 +54,7 @@ To give the player branching options you can start a line with "- " and then a p
 
 By default responses will just continue on to the lines below the list when one is chosen.
 
-To branch, you can provide and indented body under a given prompt or add a `=> Some title` where "Some title" is the title of another node. If you want to end the conversation right away you can `=> END`.
+To branch, you can provide and indented body under a given prompt or add a `=> another_title` where "another_title" is the title of another node. If you want to end the conversation right away you can `=> END`.
 
 ![Prompts](prompts.jpg)
 
@@ -63,7 +77,6 @@ Someone: Here is a thing you can do
 - Nathan: That's good to hear!
 - Nathan: That's definitely news
 ```
-
 
 ## Conditions
 
@@ -99,7 +112,6 @@ Mutations can also be used inline. Inline mutations will be called as the typed 
 
 One thing to note is that inline mutations that use `yield` won't be awaited so the dialogue will continue right away.
 
-
 ## Error checking
 
 Running an error check should highlight any syntax or referential integrity issues with your dialogue.
@@ -108,7 +120,6 @@ Running an error check should highlight any syntax or referential integrity issu
 
 If a dialogue resource has any errors on it at runtime it will throw an assertion failure and tell you which file it is.
 
-
 ## Running a test scene
 
 For dialogue that doesn't rely too heavily on game state conditions you can do a quick test of it by clicking the "Run the test scene" button in the main toolbar.
@@ -116,7 +127,6 @@ For dialogue that doesn't rely too heavily on game state conditions you can do a
 This will boot up a test scene and run the currently active node. Use `ui_up`, `ui_down`, and `ui_accept` to navigate the dialogue and responses.
 
 Once the conversation is over the scene will close.
-
 
 ## Translations
 

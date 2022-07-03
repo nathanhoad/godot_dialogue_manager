@@ -30,7 +30,7 @@ func _init() -> void:
 	WRAPPED_CONDITION_REGEX.compile("\\[if (?<condition>.*)\\]")
 	CONDITION_REGEX.compile("(if|elif) (?<condition>.*)")
 	REPLACEMENTS_REGEX.compile("{{(.*?)}}")
-	GOTO_REGEX.compile("=> (?<jump_to_title>.*)")
+	GOTO_REGEX.compile("=><? (?<jump_to_title>.*)")
 	BB_CODE_REGEX.compile("\\[[^\\]]+\\]")
 	MARKER_CODE_REGEX.compile("\\[(?<code>wait|/?speed|do |set |next)(?<args>[^\\]]+)?\\]")
 	
@@ -129,6 +129,17 @@ func parse(content: String) -> Dictionary:
 				line["condition"] = extract_condition(raw_line, true)
 			if " => " in raw_line:
 				line["next_id"] = extract_goto(raw_line, titles)
+			if " =>< " in raw_line:
+				# Because of when the return point needs to be known at runtime we need to split
+				# this line into two (otherwise the return point would be dependent on the balloon)
+				var goto_line: Dictionary ={
+					type = DialogueConstants.TYPE_GOTO,
+					next_id = extract_goto(raw_line, titles),
+					next_id_after = find_next_line_after_responses(id, raw_lines, dialogue, parent_stack),
+					is_snippet = true
+				}
+				dialogue[str(id) + ".1"] = goto_line
+				line["next_id"] = str(id) + ".1"
 				
 			line["text"] = extract_response_prompt(raw_line)
 			
@@ -183,8 +194,8 @@ func parse(content: String) -> Dictionary:
 				if first_child.get("translation_key") == null:
 					first_child["translation_key"] = first_child.get("text")
 				
-				dialogue[str(id) + ".1"] = first_child
-				line["next_id"] = str(id) + ".1"
+				dialogue[str(id) + ".2"] = first_child
+				line["next_id"] = str(id) + ".2"
 			else:
 				line["text"] = l.replace("!ESCAPED_COLON!", ":")
 		
@@ -219,6 +230,9 @@ func parse(content: String) -> Dictionary:
 		elif is_goto_line(raw_line):
 			line["type"] = DialogueConstants.TYPE_GOTO
 			line["next_id"] = extract_goto(raw_line, titles)
+			if is_goto_snippet_line(raw_line):
+				line["is_snippet"] = true
+				line["next_id_after"] = get_line_after_line(id, indent_size, line, raw_lines, dialogue)
 		
 		# Dialogue
 		else:
@@ -253,25 +267,9 @@ func parse(content: String) -> Dictionary:
 		
 		# Work out where to go after this line
 		if line.get("next_id") == DialogueConstants.ID_NULL:
-			# Unless the next line is an outdent then we can assume
-			# it comes next
-			var next_nonempty_line_id = get_next_nonempty_line_id(id, raw_lines)
-			if next_nonempty_line_id != DialogueConstants.ID_NULL \
-				and indent_size <= get_indent(raw_lines[next_nonempty_line_id.to_int()]):
-				# The next line is a title so we can end here
-				if is_title_line(raw_lines[next_nonempty_line_id.to_int()]):
-					if will_continue_through_titles():
-						line["next_id"] = get_next_nonempty_line_id(next_nonempty_line_id.to_int() + 1, raw_lines)
-					else:
-						line["next_id"] = DialogueConstants.ID_END_CONVERSATION
-				# Otherwise it's a normal line
-				else:
-					line["next_id"] = next_nonempty_line_id
-			# Otherwise, we grab the ID from the parents next ID after children
-			elif dialogue.has(line.get("parent_id")):
-				line["next_id"] = dialogue[line.get("parent_id")].get("next_id_after")
+			line["next_id"] = get_line_after_line(id, indent_size, line, raw_lines, dialogue)
 		
-		# Check for duplicate transaction keys
+		# Check for duplicate translation keys
 		if line.get("type") in [DialogueConstants.TYPE_DIALOGUE, DialogueConstants.TYPE_RESPONSE]:
 			if line.has("translation_key"):
 				if known_translations.has(line.get("translation_key")) and known_translations.get(line.get("translation_key")) != line.get("text"):
@@ -358,7 +356,12 @@ func is_mutation_line(line: String) -> bool:
 
 
 func is_goto_line(line: String) -> bool:
-	return line.strip_edges().begins_with("=> ")
+	line = line.strip_edges()
+	return line.begins_with("=> ") or line.begins_with("=>< ")
+
+
+func is_goto_snippet_line(line: String) -> bool:
+	return line.strip_edges().begins_with("=>< ")
 
 
 func is_dialogue_line(line: String) -> bool:
@@ -386,6 +389,29 @@ func is_line_empty(line: String) -> bool:
 	if line.begins_with("#"): return true
 	
 	return false
+
+
+func get_line_after_line(id: int, indent_size: int, line: Dictionary, raw_lines: Array, dialogue: Dictionary) -> String:
+	# Unless the next line is an outdent then we can assume
+	# it comes next
+	var next_nonempty_line_id = get_next_nonempty_line_id(id, raw_lines)
+	if next_nonempty_line_id != DialogueConstants.ID_NULL \
+		and indent_size <= get_indent(raw_lines[next_nonempty_line_id.to_int()]):
+		# The next line is a title so we can end here
+		if is_title_line(raw_lines[next_nonempty_line_id.to_int()]):
+			if will_continue_through_titles():
+				return get_next_nonempty_line_id(next_nonempty_line_id.to_int() + 1, raw_lines)
+			else:
+				return DialogueConstants.ID_NULL
+		# Otherwise it's a normal line
+		else:
+			return next_nonempty_line_id
+	# Otherwise, we grab the ID from the parents next ID after children
+	elif dialogue.has(line.get("parent_id")):
+		return dialogue[line.get("parent_id")].get("next_id_after")
+	
+	else:
+		return DialogueConstants.ID_NULL
 
 
 func get_indent(line: String) -> int:

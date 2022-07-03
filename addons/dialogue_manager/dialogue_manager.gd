@@ -23,6 +23,8 @@ var settings: DialogueSettings = DialogueSettings.new()
 
 var is_dialogue_running := false setget set_is_dialogue_running
 
+var _goto_stack: Array = []
+
 var _node_properties: Array = []
 var _resource_cache: Array = []
 var _trash: Node = Node.new()
@@ -159,7 +161,12 @@ func compile_resource(resource: DialogueResource) -> DialogueResource:
 # Get a line by its ID
 func get_line(key: String, local_resource: DialogueResource) -> DialogueLine:
 	# End of conversation
-	if key in [DialogueConstants.ID_NULL, DialogueConstants.ID_END_CONVERSATION, null]:
+	if key in [DialogueConstants.ID_NULL, null]:
+		if _goto_stack.size() > 0:
+			return get_line(_goto_stack.pop_back(), local_resource)
+		else:
+			return null
+	elif key == DialogueConstants.ID_END_CONVERSATION:
 		return null
 	
 	# See if it is a title
@@ -185,6 +192,8 @@ func get_line(key: String, local_resource: DialogueResource) -> DialogueLine:
 	
 	# Evaluate early exits
 	if data.get("type") == DialogueConstants.TYPE_GOTO:
+		if data.get("is_snippet"):
+			_goto_stack.append(data.get("next_id_after"))
 		return get_line(data.get("next_id"), local_resource)
 	
 	# Set up a line object
