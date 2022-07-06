@@ -123,6 +123,8 @@ func build_open_menu() -> void:
 
 
 func set_resource(value: DialogueResource) -> void:
+	apply_changes()
+	
 	current_resource = value
 	if current_resource:
 		file_label.text = get_nice_file(current_resource.resource_path)
