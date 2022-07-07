@@ -26,7 +26,7 @@ var TOKEN_DEFINITIONS: Dictionary = {}
 func _init() -> void:
 	VALID_TITLE_REGEX.compile("^[^\\!\\@\\#\\$\\%\\^\\&\\*\\(\\)\\-\\=\\+\\{\\}\\[\\]\\;\\:\\\"\\'\\,\\.\\<\\>\\?\\/\\s]+$")
 	TRANSLATION_REGEX.compile("\\[TR:(?<tr>.*?)\\]")
-	MUTATION_REGEX.compile("(do|set) ((?<mutation>[a-z_A-Z][a-z_A-Z0-9\\[\\]\"\\.]+ ?(\\+=|\\-=|\\*=|/=|=) ? .*)|(?<function>[a-z_A-Z][a-z_A-Z0-9]+)\\((?<args>.*)\\))")
+	MUTATION_REGEX.compile("(do|set) (?<mutation>.*)")
 	WRAPPED_CONDITION_REGEX.compile("\\[if (?<condition>.*)\\]")
 	CONDITION_REGEX.compile("(if|elif) (?<condition>.*)")
 	REPLACEMENTS_REGEX.compile("{{(.*?)}}")
@@ -601,20 +601,7 @@ func extract_mutation(line: String) -> Dictionary:
 	if not found:
 		return { "error": "Incomplete expression" }
 	
-	# If the mutation starts with a function then grab it and and parse
-	# the args as expressions
-	if found.names.has("function"):
-		var expression = tokenise(found.strings[found.names.get("args")])
-		if expression.size() > 0 and expression[0].get("type") == DialogueConstants.TYPE_ERROR:
-			return { "error": expression[0].get("value") }
-		else:
-			return {
-				"function": found.strings[found.names.get("function")],
-				"args": tokens_to_list(expression)
-			}
-	
-	# Otherwise we are setting a variable so expressionise its new value
-	elif found.names.has("mutation"):
+	if found.names.has("mutation"):
 		var expression = tokenise(found.strings[found.names.get("mutation")])
 		if expression[0].get("type") == DialogueConstants.TYPE_ERROR:
 			return { "error": "Invalid expression for value" }

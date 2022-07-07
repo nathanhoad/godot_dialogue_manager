@@ -251,15 +251,18 @@ func check(condition: Dictionary) -> bool:
 # Make a change to game state or run a method
 func mutate(mutation: Dictionary) -> void:
 	if mutation == null: return
+	if not mutation.has("expression"): return
 	
-	if mutation.has("function"):
-		# If lhs is a function then we run it and return because you can't assign to a function
-		var function_name = mutation.get("function")
-		var args = resolve_each(mutation.get("args"))
-		match function_name:
+	var expression = mutation.get("expression")
+	
+	# Handle built in mutations
+	if expression[0].get("type") == DialogueConstants.TOKEN_FUNCTION and expression[0].get("function") in ["wait", "emit", "debug"]:
+		var args = resolve_each(expression[0].get("value"))
+		match expression[0].get("function"):
 			"wait":
 				yield(get_tree().create_timer(float(args[0])), "timeout")
 				return
+				
 			"emit":
 				for state in get_game_states():
 					if state.has_signal(args[0]):
@@ -280,25 +283,15 @@ func mutate(mutation: Dictionary) -> void:
 								state.emit_signal(args[0], args[1], args[2], args[3], args[4], args[5], args[6])
 							8:
 								state.emit_signal(args[0], args[1], args[2], args[3], args[4], args[5], args[6], args[7])
+						
 			"debug":
 				var printable = {}
 				for i in range(args.size()):
 					printable[mutation.get("args")[i][0].get("value")] = args[i]
 				print(printable)
-			_:
-				for state in get_game_states():
-					if state.has_method(function_name):
-						var result = state.callv(function_name, args)
-						if result is GDScriptFunctionState and result.is_valid():
-							yield(result, "completed")
-						else:
-							yield(get_tree(), "idle_frame")
-						return
-				
-				printerr("'" + function_name + "' is not a method in any game states (" + str(get_game_states()) + ").")
-				assert(false, "Missing function on current scene or game state. See Output for details.")
 	
-	elif mutation.has("expression"):
+	# Or pass through to the resolver
+	else:
 		resolve(mutation.get("expression").duplicate(true))
 		
 	# Wait one frame to give the dialogue handler a chance to yield
