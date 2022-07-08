@@ -660,9 +660,14 @@ func extract_goto(line: String, titles: Dictionary) -> String:
 	
 	var title = found.strings[found.names.get("jump_to_title")].strip_edges()
 	
-	# "goto # END" means end the conversation
-	if title == "END": 
+	# "=> END!" means end the conversation
+	if title == "END!":
 		return DialogueConstants.ID_END_CONVERSATION
+	# "=> END" means end the current title (and go back to the previous one if there is one 
+	#		   in the stack)
+	elif title == "END": 
+		return DialogueConstants.ID_NULL
+		
 	elif titles.has(title):
 		return titles.get(title)
 	else:
