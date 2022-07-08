@@ -131,6 +131,11 @@ func set_resource(value: DialogueResource) -> void:
 		file_label.visible = true
 		editor.text = current_resource.raw_text
 		editor.clear_undo_history()
+		var cursors = settings.get_editor_value("resource_cursors", {})
+		if cursors.has(current_resource.resource_path):
+			var cursor = cursors.get(current_resource.resource_path)
+			editor.cursor_set_line(cursor.y, true)
+			editor.cursor_set_column(cursor.x, true)
 		content.visible = true
 		error_button.disabled = false
 		run_node_button.disabled = false
@@ -234,6 +239,8 @@ func generate_translations_keys() -> void:
 	randomize()
 	seed(OS.get_unix_time())
 	
+	var cursor: Vector2 = editor.get_cursor()
+	
 	var lines: PoolStringArray = editor.text.split("\n")
 	
 	var key_regex = RegEx.new()
@@ -286,6 +293,7 @@ func generate_translations_keys() -> void:
 		known_keys[key] = text
 	
 	editor.text = lines.join("\n")
+	editor.set_cursor(cursor)
 	_on_CodeEditor_text_changed()
 
 
@@ -359,6 +367,7 @@ func _on_open_menu_index_pressed(index):
 		"Clear recent files":
 			recent_resources.clear()
 			settings.set_editor_value("recent_resources", recent_resources)
+			settings.set_editor_value("resource_cursors", {})
 			build_open_menu()
 		_:
 			open_resource_from_path(item)
@@ -420,6 +429,12 @@ func _on_CodeEditor_active_title_changed(title):
 	title_list.select_title(title)
 	settings.set_editor_value("run_title", title)
 	run_node_button.hint_tooltip = "Play the test scene using \"%s\"" % title
+
+
+func _on_CodeEditor_cursor_changed():
+	var next_resource_cursors = settings.get_editor_value("resource_cursors", {})
+	next_resource_cursors[current_resource.resource_path] = Vector2(editor.cursor_get_column(), editor.cursor_get_line())
+	settings.set_editor_value("resource_cursors", next_resource_cursors)
 
 
 func _on_ParseTimeout_timeout():
@@ -501,6 +516,8 @@ func _on_SearchToolbar_open_requested():
 
 func _on_ImportTranslationsDialog_file_selected(path):
 	settings.set_editor_value("last_csv_path", path.get_base_dir())
+	
+	var cursor: Vector2 = editor.get_cursor()
 
 	# Open the CSV file and build a dictionary of the known keys
 	var file = File.new()
@@ -546,3 +563,4 @@ func _on_ImportTranslationsDialog_file_selected(path):
 				lines[i] = (line.substr(0, start_index) + keys.get(translation_key) + " [TR:" + translation_key + "]" + line.substr(end_index)).replace("!ESCAPED_COLON!", ":")
 	
 	editor.text = lines.join("\n")
+	editor.set_cursor(cursor)

@@ -110,6 +110,15 @@ func _gui_input(event):
 			choose_title_dialog.choose_a_title(get_titles())
 
 
+func get_cursor() -> Vector2:
+	return Vector2(cursor_get_column(), cursor_get_line())
+
+
+func set_cursor(cursor: Vector2) -> void:
+	cursor_set_line(cursor.y, true)
+	cursor_set_column(cursor.x, true)
+
+
 func insert_bbcode(open_tag: String, close_tag: String = "") -> void:
 	if close_tag == "":
 		insert_text_at_cursor(open_tag)

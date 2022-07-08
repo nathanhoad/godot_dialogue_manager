@@ -105,56 +105,56 @@ icon = SubResource( 2 )
 flat = true
 
 [node name="Control" type="Control" parent="Margin/VBox/Toolbar"]
-margin_right = 610.0
+margin_right = 666.0
 margin_bottom = 24.0
 size_flags_horizontal = 3
 
 [node name="NewButton" type="ToolButton" parent="Margin/VBox/Toolbar"]
-margin_left = 614.0
-margin_right = 642.0
+margin_left = 670.0
+margin_right = 698.0
 margin_bottom = 24.0
 hint_tooltip = "Make a new dialogue file"
 icon = SubResource( 2 )
 
 [node name="OpenButton" type="MenuButton" parent="Margin/VBox/Toolbar"]
-margin_left = 646.0
-margin_right = 674.0
+margin_left = 702.0
+margin_right = 730.0
 margin_bottom = 24.0
 hint_tooltip = "Open a dialogue file"
 icon = SubResource( 2 )
-items = [ "Open...", SubResource( 2 ), 0, false, false, 0, 0, null, "", false, "", null, 0, false, false, -1, 0, null, "", true, "res://assets/dialogue/town.tres", SubResource( 2 ), 0, false, false, 2, 0, null, "", false, "res://test.tres", SubResource( 2 ), 0, false, false, 3, 0, null, "", false, "", null, 0, false, false, -1, 0, null, "", true, "Clear recent files", null, 0, false, false, 5, 0, null, "", false ]
+items = [ "Open...", SubResource( 2 ), 0, false, false, 0, 0, null, "", false, "", null, 0, false, false, -1, 0, null, "", true, "res://assets/dialogue/town.tres", SubResource( 2 ), 0, false, false, 2, 0, null, "", false, "", null, 0, false, false, -1, 0, null, "", true, "Clear recent files", null, 0, false, false, 4, 0, null, "", false ]
 
 [node name="VSeparator" type="VSeparator" parent="Margin/VBox/Toolbar"]
-margin_left = 678.0
-margin_right = 682.0
+margin_left = 734.0
+margin_right = 738.0
 margin_bottom = 24.0
 
 [node name="SettingsButton" type="ToolButton" parent="Margin/VBox/Toolbar"]
-margin_left = 686.0
-margin_right = 714.0
+margin_left = 742.0
+margin_right = 770.0
 margin_bottom = 24.0
 hint_tooltip = "Configure dialogue editor settings"
 icon = SubResource( 2 )
 
 [node name="ErrorButton" type="ToolButton" parent="Margin/VBox/Toolbar"]
-margin_left = 718.0
-margin_right = 746.0
+margin_left = 774.0
+margin_right = 802.0
 margin_bottom = 24.0
 hint_tooltip = "Check syntax"
 disabled = true
 icon = SubResource( 2 )
 
 [node name="RunButton" type="ToolButton" parent="Margin/VBox/Toolbar"]
-margin_left = 750.0
-margin_right = 778.0
+margin_left = 806.0
+margin_right = 834.0
 margin_bottom = 24.0
 hint_tooltip = "Play the test scene"
 disabled = true
 icon = SubResource( 2 )
 
 [node name="SearchButton" type="ToolButton" parent="Margin/VBox/Toolbar"]
-margin_left = 782.0
-margin_right = 810.0
+margin_left = 838.0
+margin_right = 866.0
 margin_bottom = 24.0
 hint_tooltip = "Find text"
 disabled = true
@@ -165,13 +165,13 @@ __meta__ = {
 }
 
 [node name="VSeparator2" type="VSeparator" parent="Margin/VBox/Toolbar"]
-margin_left = 814.0
-margin_right = 818.0
+margin_left = 870.0
+margin_right = 874.0
 margin_bottom = 24.0
 
 [node name="InsertMenu" type="MenuButton" parent="Margin/VBox/Toolbar"]
-margin_left = 822.0
-margin_right = 891.0
+margin_left = 878.0
+margin_right = 947.0
 margin_bottom = 24.0
 disabled = true
 text = "Insert"
@@ -179,8 +179,8 @@ icon = SubResource( 2 )
 items = [ "Wave BBCode", SubResource( 2 ), 0, false, false, 0, 0, null, "", false, "Shake BBCode", SubResource( 2 ), 0, false, false, 1, 0, null, "", false, "-", null, 0, false, true, 2, 0, null, "", true, "Typing pause", SubResource( 2 ), 0, false, false, 3, 0, null, "", false, "Typing speed change", SubResource( 2 ), 0, false, false, 4, 0, null, "", false, "Auto advance", SubResource( 2 ), 0, false, false, 5, 0, null, "", false ]
 
 [node name="TranslationsMenu" type="MenuButton" parent="Margin/VBox/Toolbar"]
-margin_left = 895.0
-margin_right = 1003.0
+margin_left = 951.0
+margin_right = 1059.0
 margin_bottom = 24.0
 disabled = true
 text = "Translations"
@@ -188,14 +188,14 @@ icon = SubResource( 2 )
 items = [ "Generate static keys", SubResource( 2 ), 0, false, false, 0, 0, null, "", false, "Save to CSV...", SubResource( 2 ), 0, false, false, 1, 0, null, "", false, "", null, 0, false, false, 2, 0, null, "", true, "Import updates from CSV...", SubResource( 2 ), 0, false, false, 3, 0, null, "", false ]
 
 [node name="Control2" type="Control" parent="Margin/VBox/Toolbar"]
-margin_left = 1007.0
-margin_right = 1618.0
+margin_left = 1063.0
+margin_right = 1729.0
 margin_bottom = 24.0
 size_flags_horizontal = 3
 
 [node name="HelpButton" type="ToolButton" parent="Margin/VBox/Toolbar"]
-margin_left = 1622.0
-margin_right = 1752.0
+margin_left = 1733.0
+margin_right = 1863.0
 margin_bottom = 24.0
 hint_tooltip = "Get some help"
 text = "Documentation"
@@ -203,11 +203,11 @@ icon = SubResource( 2 )
 
 [node name="VersionLabel" type="Label" parent="Margin/VBox/Toolbar"]
 modulate = Color( 1, 1, 1, 0.392157 )
-margin_left = 1756.0
-margin_right = 1795.0
+margin_left = 1867.0
+margin_right = 1914.0
 margin_bottom = 24.0
 size_flags_vertical = 1
-text = "v1.8.0"
+text = "v1.11.2"
 valign = 1
 
 [node name="UpdateButton" type="Button" parent="Margin/VBox/Toolbar"]
@@ -315,6 +315,7 @@ filters = PoolStringArray( "*.csv ; Translations" )
 [connection signal="close_requested" from="Margin/VBox/Content/VBox2/SearchToolbar" to="." method="_on_SearchToolbar_close_requested"]
 [connection signal="open_requested" from="Margin/VBox/Content/VBox2/SearchToolbar" to="." method="_on_SearchToolbar_open_requested"]
 [connection signal="active_title_changed" from="Margin/VBox/Content/VBox2/CodeEditor" to="." method="_on_CodeEditor_active_title_changed"]
+[connection signal="cursor_changed" from="Margin/VBox/Content/VBox2/CodeEditor" to="." method="_on_CodeEditor_cursor_changed"]
 [connection signal="text_changed" from="Margin/VBox/Content/VBox2/CodeEditor" to="." method="_on_CodeEditor_text_changed"]
 [connection signal="file_selected" from="NewDialogueDialog" to="." method="_on_NewDialogueDialog_file_selected"]
 [connection signal="confirmed" from="OpenDialogueDialog" to="." method="_on_OpenDialogueDialog_confirmed"]
