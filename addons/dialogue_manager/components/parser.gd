@@ -399,7 +399,9 @@ func get_line_after_line(id: int, indent_size: int, line: Dictionary, raw_lines:
 		and indent_size <= get_indent(raw_lines[next_nonempty_line_id.to_int()]):
 		# The next line is a title so we can end here
 		if is_title_line(raw_lines[next_nonempty_line_id.to_int()]):
-			if will_continue_through_titles():
+			if line.get("type") == DialogueConstants.TYPE_GOTO:
+				return DialogueConstants.ID_NULL
+			elif will_continue_through_titles():
 				return get_next_nonempty_line_id(next_nonempty_line_id.to_int() + 1, raw_lines)
 			else:
 				return DialogueConstants.ID_NULL

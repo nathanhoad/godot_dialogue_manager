@@ -77,14 +77,14 @@ func get_next_dialogue_line(key: String, override_resource: DialogueResource = n
 			printerr("\tLine %s: %s" % [error.get("line"), error.get("message")])
 		assert(false, "The provided DialogueResource contains errors. See Output for details.")
 	
+	self.is_dialogue_running = true
+	
 	var dialogue = get_line(key, local_resource)
 	
 	yield(get_tree(), "idle_frame")
 	
-	self.is_dialogue_running = true
-	
 	# If our dialogue is nothing then we hit the end
-	if dialogue == null or not is_valid(dialogue):
+	if not is_valid(dialogue):
 		self.is_dialogue_running = false
 		return null
 	
@@ -678,9 +678,9 @@ func apply_operation(operator: String, first_value, second_value):
 			assert(false, "Unknown operator")
 
 
-# Check if a dialogue line contains meaninful information
+# Check if a dialogue line contains meaningful information
 func is_valid(line: DialogueLine) -> bool:
-	if line.type == DialogueConstants.TYPE_DIALOGUE and line.dialogue == "":
+	if not line: 
 		return false
 	if line.type == DialogueConstants.TYPE_MUTATION and line.mutation == null:
 		return false
