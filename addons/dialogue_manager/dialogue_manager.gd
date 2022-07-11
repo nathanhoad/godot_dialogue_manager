@@ -200,13 +200,13 @@ func get_line(key: String, local_resource: DialogueResource) -> DialogueLine:
 	var line = DialogueLine.new(data, auto_translate)
 	line.dialogue_manager = self
 	
+	# Add as a child so that it gets cleaned up automatically
+	_trash.add_child(line)
+	
 	# If we are the first of a list of responses then get the other ones
 	if data.get("type") == DialogueConstants.TYPE_RESPONSE:
 		line.responses = get_responses(data.get("responses"), local_resource)
 		return line
-	
-	# Add as a child so that it gets cleaned up automatically
-	_trash.add_child(line)
 	
 	# Replace any variables in the dialogue text
 	if data.get("type") == DialogueConstants.TYPE_DIALOGUE and data.has("replacements"):
