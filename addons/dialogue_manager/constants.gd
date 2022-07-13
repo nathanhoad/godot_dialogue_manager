@@ -8,6 +8,7 @@ const CONFIG_PATH = "res://dialogue.cfg"
 
 const TOKEN_FUNCTION = "function"
 const TOKEN_DICTIONARY_REFERENCE = "dictionary_reference"
+const TOKEN_DICTIONARY_NESTED_REFERENCE = "dictionary_nested_reference"
 const TOKEN_GROUP = "group"
 const TOKEN_ARRAY = "array"
 const TOKEN_DICTIONARY = "dictionary"

@@ -429,6 +429,45 @@ func resolve(tokens: Array):
 						printerr("Index %d out of bounds of array \"%s\"" % [index, token.get("variable")])
 						assert(false, "Index out of bounds of array. See Output for details.")
 		
+		elif token.get("type") == DialogueConstants.TOKEN_DICTIONARY_NESTED_REFERENCE:
+			var dictionary = tokens[i - 1]
+			var index = resolve(token.get("value"))
+			var value = dictionary.get("value")
+			if typeof(value) == TYPE_DICTIONARY:
+				if tokens.size() > i + 1 and tokens[i + 1].get("type") == DialogueConstants.TOKEN_ASSIGNMENT:
+					# If the next token is an assignment then we need to leave this as a reference
+					# so that it can be resolved once everything ahead of it has been resolved
+					dictionary["type"] = "dictionary"
+					dictionary["key"] = index
+					dictionary["value"] = value
+					tokens.remove(i)
+					i -= 1
+				else:
+					if dictionary.get("value").has(index):
+						dictionary["value"] = value.get(index)
+						tokens.remove(i)
+						i -= 1
+					else:
+						printerr("Key \"%s\" not found in dictionary \"%s\"" % [str(index), value])
+						assert(false, "Key not found in dictionary. See Output for details.")
+			elif typeof(value) == TYPE_ARRAY:
+				if tokens.size() > i + 1 and tokens[i + 1].get("type") == DialogueConstants.TOKEN_ASSIGNMENT:
+					# If the next token is an assignment then we need to leave this as a reference
+					# so that it can be resolved once everything ahead of it has been resolved
+					dictionary["type"] = "array"
+					dictionary["value"] = value
+					dictionary["key"] = index
+					tokens.remove(i)
+					i -= 1
+				else:
+					if index >= 0 and index < value.size():
+						dictionary["value"] = value[index]
+						tokens.remove(i)
+						i -= 1
+					else:
+						printerr("Index %d out of bounds of array \"%s\"" % [index, value])
+						assert(false, "Index out of bounds of array. See Output for details.")
+		
 		elif token.get("type") == DialogueConstants.TOKEN_ARRAY:
 			token["type"] = "value"
 			token["value"] = resolve_each(token.get("value"))
@@ -577,7 +616,7 @@ func resolve(tokens: Array):
 					value = apply_operation(token.get("value"), lhs.get("value")[lhs.get("key")], tokens[i+1].get("value"))
 					lhs.get("value")[lhs.get("key")] = value
 				_:
-					assert(false, "Unknown assignment target")
+					assert(false, "Left hand side of expression cannot be assigned to.")
 			
 			token["type"] = "value"
 			token["value"] = value

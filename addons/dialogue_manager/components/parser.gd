@@ -852,9 +852,19 @@ func build_token_tree(tokens: Array, expected_close_token: String = "") -> Array
 				if sub_tree[0].size() > 0 and sub_tree[0][0].get("type") == DialogueConstants.TOKEN_ERROR:
 					return [build_token_tree_error(sub_tree[0][0].get("value")), tokens]
 				
+				var type = DialogueConstants.TOKEN_ARRAY
+				var value = tokens_to_list(sub_tree[0])
+				
+				# See if this is referencing a nested dictionary value
+				if tree.size() > 0:
+					var previous_token = tree[tree.size() - 1]
+					if previous_token.get("type") in [DialogueConstants.TOKEN_DICTIONARY_REFERENCE, DialogueConstants.TOKEN_DICTIONARY_NESTED_REFERENCE]:
+						type = DialogueConstants.TOKEN_DICTIONARY_NESTED_REFERENCE
+						value = value[0]
+				
 				tree.append({
-					"type": DialogueConstants.TOKEN_ARRAY,
-					"value": tokens_to_list(sub_tree[0])
+					"type": type,
+					"value": value
 				})
 				tokens = sub_tree[1]
 
