@@ -611,7 +611,10 @@ func resolve(tokens: Array):
 					set_state_value(lhs.get("value"), value)
 				"property":
 					value = apply_operation(token.get("value"), lhs.get("value").get(lhs.get("property")), tokens[i+1].get("value"))
-					lhs.get("value").set(lhs.get("property"), value)
+					if typeof(lhs.get("value")) == TYPE_DICTIONARY:
+						lhs.get("value")[lhs.get("property")] = value
+					else:
+						lhs.get("value").set(lhs.get("property"), value)
 				"dictionary", "array":
 					value = apply_operation(token.get("value"), lhs.get("value")[lhs.get("key")], tokens[i+1].get("value"))
 					lhs.get("value")[lhs.get("key")] = value
