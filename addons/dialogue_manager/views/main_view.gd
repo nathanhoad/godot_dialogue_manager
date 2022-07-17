@@ -24,6 +24,7 @@ onready var settings_dialog := $SettingsDialog
 onready var insert_menu := $Margin/VBox/Toolbar/InsertMenu
 onready var translations_menu := $Margin/VBox/Toolbar/TranslationsMenu
 onready var save_translations_dialog := $SaveTranslationsDialog
+onready var save_translations_dialog_po := $SaveTranslationsDialogPO
 onready var import_translations_dialog := $ImportTranslationsDialog
 onready var update_button := $Margin/VBox/Toolbar/UpdateButton
 onready var error_button := $Margin/VBox/Toolbar/ErrorButton
@@ -73,7 +74,7 @@ func _ready() -> void:
 	popup = translations_menu.get_popup()
 	popup.set_item_icon(0, get_icon("Translation", "EditorIcons"))
 	popup.set_item_icon(1, get_icon("FileList", "EditorIcons"))
-	popup.set_item_icon(3, get_icon("AssetLib", "EditorIcons"))
+	popup.set_item_icon(4, get_icon("AssetLib", "EditorIcons"))
 	translations_menu.get_popup().connect("id_pressed", self, "_on_translation_menu_id_pressed")
 	
 	search_toolbar.visible = false
@@ -356,6 +357,85 @@ func save_translations(path: String) -> void:
 	plugin.get_editor_interface().get_file_system_dock().navigate_to_path(path)
 
 
+func save_translations_po(path: String) -> void:
+	var id_str: Dictionary = {}
+	var dialogue = parser.parse(editor.text).get("lines")
+
+	for key in dialogue.keys():
+		var line: Dictionary = dialogue.get(key)
+
+		if not line.get("type") in [DialogueConstants.TYPE_DIALOGUE, DialogueConstants.TYPE_RESPONSE]: continue
+		if line.get("text") in id_str: continue
+
+		id_str[line.get("translation_key")] = line.get("text")
+
+	var file = File.new()
+
+	# If the file exists, keep content except for known entries.
+	var existing_po: String = ""
+	var already_existing_keys: PoolStringArray = PoolStringArray()
+	if file.file_exists(path):
+		file.open(path, File.READ)
+		var line: String
+		while !file.eof_reached():
+			line = file.get_line().strip_edges()
+
+			if line.begins_with("msgid"): # Extract msgid
+				var msgid = line.trim_prefix("msgid \"").trim_suffix("\"").c_unescape()
+				existing_po += line + "\n"
+				line = file.get_line().strip_edges()
+				while !line.begins_with("msgstr") and !file.eof_reached():
+					if line.begins_with("\""):
+						msgid += line.trim_prefix("\"").trim_suffix("\"").c_unescape()
+					existing_po += line + "\n"
+					line = file.get_line().strip_edges()
+
+				if msgid in id_str:
+					already_existing_keys.append(msgid)
+					existing_po += generate_po_line("msgstr", id_str[msgid])
+					# skip old msgstr
+					while !file.eof_reached() and !line.empty() and (line.begins_with("msgstr") or line.begins_with("\"")):
+						line = file.get_line().strip_edges()
+					existing_po += line + "\n"
+				else: # keep unknown msgstr
+					existing_po += line + "\n"
+					while !file.eof_reached() and !line.empty() and (line.begins_with("msgstr") or line.begins_with("\"")):
+						line = file.get_line().strip_edges()
+						existing_po += line + "\n"
+			else: # keep old lines
+				existing_po += line + "\n"
+		file.close()
+
+	for key in id_str:
+		if !(key in already_existing_keys):
+			existing_po += generate_po_line("msgid", key)
+			existing_po += generate_po_line("msgstr", id_str[key]) + "\n"
+
+	# Start a new file
+	file.open(path, File.WRITE)
+	file.store_string(existing_po)
+	file.close()
+
+	plugin.get_editor_interface().get_resource_filesystem().scan()
+	plugin.get_editor_interface().get_file_system_dock().navigate_to_path(path)
+
+
+# type is supposed to be either msgid or msgstr
+func generate_po_line(type: String, line) -> String:
+	var result: String
+	if "\n" in line: # multiline
+		result += type + " \"\"\n"
+		var lines: PoolStringArray = line.split("\n")
+		for i in len(lines):
+			if i != len(lines) - 1:
+				result += "\"" + lines[i].c_escape() + "\\n\"\n"
+			else:
+				result += "\"" + lines[i].c_escape() + "\"\n"
+	else: # singleline
+		result += type + " \"" + line.c_escape() + "\"\n"
+	return result
+
+
 ### Signals
 
 
@@ -394,7 +474,10 @@ func _on_translation_menu_id_pressed(id):
 		1:
 			save_translations_dialog.current_path = get_last_csv_path()
 			save_translations_dialog.popup_centered()
-		3:
+		2:
+			save_translations_dialog_po.current_path = get_last_csv_path().replace(".csv", ".po")
+			save_translations_dialog_po.popup_centered()
+		4:
 			import_translations_dialog.current_path = get_last_csv_path()
 			import_translations_dialog.popup_centered()
 
@@ -471,6 +554,11 @@ func _on_HelpButton_pressed():
 func _on_SaveTranslationsDialog_file_selected(path):
 	settings.set_editor_value("last_csv_path", path.get_base_dir())
 	save_translations(path)
+
+
+func _on_SaveTranslationsDialogPO_file_selected(path):
+	settings.set_editor_value("last_csv_path", path.get_base_dir())
+	save_translations_po(path)
 
 
 func _on_UpdateChecker_has_update(version, url):
