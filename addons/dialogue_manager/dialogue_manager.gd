@@ -250,8 +250,7 @@ func check(condition: Dictionary) -> bool:
 
 # Make a change to game state or run a method
 func mutate(mutation: Dictionary) -> void:
-	if mutation == null: return
-	if not mutation.has("expression"): return
+	assert(mutation != null and mutation.has("expression"), "Mutation is not valid. You might need to re-open the source dialogue file.")
 	
 	var expression = mutation.get("expression")
 	

@@ -1,111 +1,119 @@
-[gd_scene load_steps=13 format=2]
+[gd_scene load_steps=9 format=2]
 
 [ext_resource path="res://addons/dialogue_manager/example_balloon/example_balloon.gd" type="Script" id=1]
-[ext_resource path="res://addons/dialogue_manager/example_balloon/menu.tscn" type="PackedScene" id=2]
-[ext_resource path="res://addons/dialogue_manager/example_balloon/pointer.svg" type="Texture" id=3]
-[ext_resource path="res://addons/dialogue_manager/example_balloon/Open_Sans/OpenSans-Regular.ttf" type="DynamicFontData" id=4]
-[ext_resource path="res://addons/dialogue_manager/example_balloon/Open_Sans/OpenSans-Bold.ttf" type="DynamicFontData" id=5]
-[ext_resource path="res://addons/dialogue_manager/example_balloon/Open_Sans/OpenSans-Italic.ttf" type="DynamicFontData" id=6]
+[ext_resource path="res://addons/dialogue_manager/example_balloon/font_normal.tres" type="DynamicFont" id=3]
+[ext_resource path="res://addons/dialogue_manager/example_balloon/font_italics.tres" type="DynamicFont" id=5]
+[ext_resource path="res://addons/dialogue_manager/example_balloon/font_bold.tres" type="DynamicFont" id=6]
 [ext_resource path="res://addons/dialogue_manager/dialogue_label.tscn" type="PackedScene" id=7]
 [ext_resource path="res://addons/dialogue_manager/example_balloon/background.svg" type="Texture" id=8]
 
-[sub_resource type="DynamicFont" id=1]
-size = 25
-font_data = ExtResource( 4 )
+[sub_resource type="StyleBoxFlat" id=8]
+content_margin_left = 20.0
+content_margin_right = 20.0
+content_margin_top = 3.0
+content_margin_bottom = 3.0
+bg_color = Color( 0.823529, 0.890196, 0.968627, 1 )
+corner_radius_top_left = 5
+corner_radius_top_right = 5
+corner_radius_bottom_right = 5
+corner_radius_bottom_left = 5
 
-[sub_resource type="DynamicFont" id=5]
-size = 25
-font_data = ExtResource( 6 )
-
-[sub_resource type="DynamicFont" id=6]
-size = 25
-font_data = ExtResource( 5 )
-
-[sub_resource type="DynamicFont" id=7]
-size = 25
-font_data = ExtResource( 4 )
+[sub_resource type="StyleBoxEmpty" id=9]
+content_margin_left = 20.0
+content_margin_right = 20.0
+content_margin_top = 3.0
+content_margin_bottom = 3.0
 
 [node name="ExampleBalloon" type="CanvasLayer"]
 layer = 128
 script = ExtResource( 1 )
+response_template = NodePath("Balloon/Margin/VBox/ResponseTemplate")
 
-[node name="Balloon" type="Control" parent="."]
-anchor_left = 0.1
-anchor_right = 0.9
-margin_bottom = 120.0
-__meta__ = {
-"_edit_use_anchors_": false
-}
-
-[node name="Background" type="NinePatchRect" parent="Balloon"]
-anchor_right = 1.0
-anchor_bottom = 1.0
+[node name="Balloon" type="NinePatchRect" parent="."]
+margin_right = 1920.0
+margin_bottom = 1080.0
+focus_mode = 2
+mouse_filter = 0
+size_flags_horizontal = 3
+size_flags_vertical = 3
 texture = ExtResource( 8 )
 patch_margin_left = 25
 patch_margin_top = 25
 patch_margin_right = 25
 patch_margin_bottom = 25
-__meta__ = {
-"_edit_use_anchors_": false
-}
 
 [node name="Margin" type="MarginContainer" parent="Balloon"]
 anchor_right = 1.0
 anchor_bottom = 1.0
+mouse_filter = 1
+size_flags_horizontal = 3
+size_flags_vertical = 3
 custom_constants/margin_right = 30
 custom_constants/margin_top = 20
 custom_constants/margin_left = 30
 custom_constants/margin_bottom = 20
-__meta__ = {
-"_edit_use_anchors_": false
-}
 
 [node name="VBox" type="VBoxContainer" parent="Balloon/Margin"]
-anchor_right = 1.0
-anchor_bottom = 1.0
+margin_left = 30.0
+margin_top = 20.0
+margin_right = 1890.0
+margin_bottom = 1060.0
+size_flags_horizontal = 3
+size_flags_vertical = 3
 custom_constants/separation = 5
 
 [node name="Character" type="RichTextLabel" parent="Balloon/Margin/VBox"]
 modulate = Color( 1, 1, 1, 0.470588 )
-anchor_right = 1.0
-margin_bottom = 30.0
+margin_right = 1860.0
+margin_bottom = 36.0
 rect_min_size = Vector2( 0, 30 )
+mouse_filter = 1
+size_flags_horizontal = 3
 custom_colors/default_color = Color( 0, 0, 0, 1 )
-custom_fonts/normal_font = SubResource( 1 )
+custom_fonts/normal_font = ExtResource( 3 )
 bbcode_enabled = true
 bbcode_text = "Character"
+meta_underlined = false
 text = "Character"
+fit_content_height = true
 scroll_active = false
 
 [node name="Dialogue" parent="Balloon/Margin/VBox" instance=ExtResource( 7 )]
-anchor_right = 1.0
-margin_top = 35.0
-margin_right = 0.0
-margin_bottom = 71.0
+margin_top = 41.0
+margin_right = 1860.0
+margin_bottom = 77.0
 rect_clip_content = false
+mouse_filter = 1
 custom_colors/default_color = Color( 0, 0, 0, 1 )
-custom_fonts/italics_font = SubResource( 5 )
-custom_fonts/bold_font = SubResource( 6 )
-custom_fonts/normal_font = SubResource( 7 )
+custom_fonts/italics_font = ExtResource( 5 )
+custom_fonts/bold_font = ExtResource( 6 )
+custom_fonts/normal_font = ExtResource( 3 )
 bbcode_text = "This is a bunch of dialogue!"
 text = "This is a bunch of dialogue!"
 
-[node name="Responses" type="MarginContainer" parent="Balloon/Margin/VBox"]
-anchor_right = 1.0
-margin_top = 76.0
-margin_bottom = 76.0
-custom_constants/margin_left = 40
-__meta__ = {
-"_edit_use_anchors_": false
-}
+[node name="Responses" type="VBoxContainer" parent="Balloon/Margin/VBox"]
+margin_top = 82.0
+margin_right = 1860.0
+margin_bottom = 990.0
+size_flags_horizontal = 3
+size_flags_vertical = 3
 
-[node name="Menu" parent="Balloon/Margin/VBox/Responses" instance=ExtResource( 2 )]
-margin_right = 1536.0
-margin_bottom = 0.0
-_pointer = NodePath("../Pointer")
+[node name="ResponseTemplate" type="RichTextLabel" parent="Balloon/Margin/VBox"]
+margin_top = 995.0
+margin_right = 1860.0
+margin_bottom = 1040.0
+rect_min_size = Vector2( 0, 45 )
+size_flags_horizontal = 3
+custom_colors/default_color = Color( 0, 0, 0, 1 )
+custom_fonts/italics_font = ExtResource( 5 )
+custom_fonts/bold_font = ExtResource( 6 )
+custom_fonts/normal_font = ExtResource( 3 )
+custom_styles/focus = SubResource( 8 )
+custom_styles/normal = SubResource( 9 )
+bbcode_enabled = true
+bbcode_text = "test"
+meta_underlined = false
+text = "test"
+scroll_active = false
 
-[node name="Pointer" type="Sprite" parent="Balloon/Margin/VBox/Responses"]
-position = Vector2( 29.6, 13 )
-texture = ExtResource( 3 )
-centered = false
-offset = Vector2( -20, -10 )
+[connection signal="gui_input" from="Balloon" to="." method="_on_Balloon_gui_input"]

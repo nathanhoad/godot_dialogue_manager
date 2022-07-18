@@ -74,6 +74,7 @@ func _ready() -> void:
 	popup = translations_menu.get_popup()
 	popup.set_item_icon(0, get_icon("Translation", "EditorIcons"))
 	popup.set_item_icon(1, get_icon("FileList", "EditorIcons"))
+	popup.set_item_icon(2, get_icon("FileList", "EditorIcons"))
 	popup.set_item_icon(4, get_icon("AssetLib", "EditorIcons"))
 	translations_menu.get_popup().connect("id_pressed", self, "_on_translation_menu_id_pressed")
 	
@@ -280,16 +281,12 @@ func generate_translations_keys() -> void:
 		while key in known_keys:
 			key = "t" + str(randi() % 1000000).sha1_text().substr(0, 10)
 		
-		# See if identical text already has a key
 		var text = ""
 		if l.begins_with("- "):
 			text = parser.extract_response_prompt(l)
 		else:
 			text = l.substr(l.find(":") + 1)
-			
-		var index = known_keys.values().find(text)
-		if index > -1:
-			key = known_keys.keys()[index]
+		
 		lines[i] = line.replace(text, text + " [TR:%s]" % key)
 		known_keys[key] = text
 	
@@ -314,7 +311,8 @@ func save_translations(path: String) -> void:
 				is_first_line = false
 				for i in range(2, line.size()):
 					commas.append("")
-			existing_csv[line[0]] = line
+			if line.size() > 0 and line[0].strip_edges() != "":
+				existing_csv[line[0]] = line
 		file.close()
 		
 	# Start a new file
@@ -333,16 +331,16 @@ func save_translations(path: String) -> void:
 		var line: Dictionary = dialogue.get(key)
 		
 		if not line.get("type") in [DialogueConstants.TYPE_DIALOGUE, DialogueConstants.TYPE_RESPONSE]: continue
-		if line.get("text") in known_keys: continue
+		if line.get("translation_key") in known_keys: continue
 		
-		known_keys.append(line.get("text"))
+		known_keys.append(line.get("translation_key"))
+		
 		if existing_csv.has(line.get("translation_key")):
 			var existing_line = existing_csv.get(line.get("translation_key"))
 			existing_line[1] = line.get("text")
 			lines_to_save.append(existing_line)
 			existing_csv.erase(line.get("translation_key"))
 		else:
-			known_keys.append(line.get("text"))
 			lines_to_save.append(PoolStringArray([line.get("translation_key"), line.get("text")] + commas))
 	
 	# Store lines in the file, starting with anything that already exists that hasn't been touched
