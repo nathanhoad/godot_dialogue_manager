@@ -26,6 +26,7 @@ Write your dialogue in a simple script-like way and run it in your game.
 [![Tutorial video](docs/tutorial.png)](https://youtu.be/08HHSQGXfgM)
 [![Advanced tutorial video](docs/tutorial2.png)](https://youtu.be/X02XHXQlhSo)
 [![New features](docs/tutorial3.png)](https://youtu.be/ZCa2pJ_ZiL0)
+[![Making balloons](docs/tutorial4.png)](https://youtu.be/17iM5dXExoQ)
 
 ## Contributors
 
