@@ -291,7 +291,10 @@ func mutate(mutation: Dictionary) -> void:
 	
 	# Or pass through to the resolver
 	else:
-		resolve(mutation.get("expression").duplicate(true))
+		var result = resolve(mutation.get("expression").duplicate(true))
+		if result is GDScriptFunctionState and result.is_valid():
+			yield(result, "completed")
+			return
 		
 	# Wait one frame to give the dialogue handler a chance to yield
 	yield(get_tree(), "idle_frame")
