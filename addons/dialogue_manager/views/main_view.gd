@@ -363,7 +363,7 @@ func save_translations_po(path: String) -> void:
 		var line: Dictionary = dialogue.get(key)
 
 		if not line.get("type") in [DialogueConstants.TYPE_DIALOGUE, DialogueConstants.TYPE_RESPONSE]: continue
-		if line.get("text") in id_str: continue
+		if line.get("translation_key") in id_str: continue
 
 		id_str[line.get("translation_key")] = line.get("text")
 
@@ -388,8 +388,8 @@ func save_translations_po(path: String) -> void:
 					existing_po += line + "\n"
 					line = file.get_line().strip_edges()
 
+				already_existing_keys.append(msgid)
 				if msgid in id_str:
-					already_existing_keys.append(msgid)
 					existing_po += generate_po_line("msgstr", id_str[msgid])
 					# skip old msgstr
 					while !file.eof_reached() and !line.empty() and (line.begins_with("msgstr") or line.begins_with("\"")):
@@ -404,10 +404,17 @@ func save_translations_po(path: String) -> void:
 				existing_po += line + "\n"
 		file.close()
 
+	# Godot requires the config in the PO regardless of whether it constains anything relevant.
+	if !("" in already_existing_keys):
+		existing_po += generate_po_line("msgid", "")
+		existing_po += "msgstr \"\"\n\"Content-Type: text/plain; charset=UTF-8\\n\"" + "\n" + "\n"
+
 	for key in id_str:
 		if !(key in already_existing_keys):
 			existing_po += generate_po_line("msgid", key)
 			existing_po += generate_po_line("msgstr", id_str[key]) + "\n"
+
+	existing_po = existing_po.trim_suffix("\n")
 
 	# Start a new file
 	file.open(path, File.WRITE)
@@ -426,11 +433,12 @@ func generate_po_line(type: String, line) -> String:
 		var lines: PoolStringArray = line.split("\n")
 		for i in len(lines):
 			if i != len(lines) - 1:
-				result += "\"" + lines[i].c_escape() + "\\n\"\n"
+				# c_espace also escapes "?" and "'". msgfmt doesn't like that.
+				result += "\"" + lines[i].c_escape().replace("\\?", "?").replace("\\'", "'") + "\\n\"\n"
 			else:
-				result += "\"" + lines[i].c_escape() + "\"\n"
+				result += "\"" + lines[i].c_escape().replace("\\?", "?").replace("\\'", "'") + "\"\n"
 	else: # singleline
-		result += type + " \"" + line.c_escape() + "\"\n"
+		result += type + " \"" + line.c_escape().replace("\\?", "?").replace("\\'", "'") + "\"\n"
 	return result
 
 
