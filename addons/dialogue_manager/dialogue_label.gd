@@ -12,7 +12,7 @@ export var skip_action: String = "ui_cancel"
 export var seconds_per_step: float = 0.02
 
 
-var dialogue: DialogueLine
+var dialogue: DialogueLine setget set_dialogue
 
 var index: int = 0
 var percent_per_index: float = 0
@@ -111,3 +111,12 @@ func type_out() -> void:
 	else:
 		percent_per_index = 100.0 / float(get_total_character_count()) / 100.0
 		is_typing = true
+
+
+### Setters
+
+
+func set_dialogue(value: DialogueLine) -> void:
+	dialogue = value
+	dialogue.get_parent().remove_child(dialogue)
+	add_child(dialogue)
