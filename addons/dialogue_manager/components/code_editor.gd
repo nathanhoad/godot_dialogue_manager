@@ -168,15 +168,23 @@ func update_current_goto_title() -> void:
 	var line_number = cursor_get_line()
 	var current_line = get_line(line_number)
 	
+	var next_goto_title = ""
+	
 	# If we are on a goto line then make a note of the title and the line
 	# of the target title (if it exists)
 	if "=> " in current_line:
-		current_goto_title = current_line.substr(current_line.find("=> ") + 3).strip_edges()
+		next_goto_title = current_line.substr(current_line.find("=> ") + 3).strip_edges()
+	elif "=>< " in current_line:
+		next_goto_title = current_line.substr(current_line.find("=>< ") + 4).strip_edges()
+	
+	current_goto_title = next_goto_title
+	
+	if next_goto_title != "":
 		# Check if title exists
 		current_goto_line = -1
 		var lines = text.split("\n")
 		for i in range(0, lines.size()):
-			if lines[i].strip_edges() == "~ " + current_goto_title:
+			if lines[i].strip_edges() == "~ " + next_goto_title:
 				current_goto_line = i
 				break
 	
@@ -195,9 +203,9 @@ func _on_menu_about_to_show():
 	# Update our special menu items based on what the goto details are
 	var menu = get_menu()
 	if current_goto_title != "":
-		# END is a special title which ends the conversation. It never points
+		# END and END! are special titles which end the conversation. They never point
 		# to an actual title
-		if current_goto_title == "END":
+		if current_goto_title in ["END", "END!"]:
 			menu.set_item_text(CREATE_ITEM_INDEX, "Create node")
 			menu.set_item_disabled(CREATE_ITEM_INDEX, true)
 			menu.set_item_text(GOTO_ITEM_INDEX, "Jump to node")
@@ -235,7 +243,11 @@ func _on_menu_index_pressed(index):
 func _on_title_chosen(title):
 	var cursor_line = cursor_get_line()
 	var line: String = get_line(cursor_line)
-	line = line.substr(0, line.find("=> ") + 2)
+	
+	if "=> " in line:
+		line = line.substr(0, line.find("=> ") + 2)
+	elif "=>< " in line:
+		line = line.substr(0, line.find("=>< ") + 3)
 	
 	set_line(cursor_line, line + " " + title)
 	current_goto_title = title

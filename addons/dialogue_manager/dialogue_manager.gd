@@ -23,8 +23,6 @@ var settings: DialogueSettings = DialogueSettings.new()
 
 var is_dialogue_running := false setget set_is_dialogue_running
 
-var _goto_stack: Array = []
-
 var _node_properties: Array = []
 var _resource_cache: Array = []
 var _trash: Node = Node.new()
@@ -92,7 +90,8 @@ func get_next_dialogue_line(key: String, override_resource: DialogueResource = n
 	if dialogue.type == DialogueConstants.TYPE_MUTATION:
 		yield(mutate(dialogue.mutation), "completed")
 		dialogue.queue_free()
-		if dialogue.next_id in [DialogueConstants.ID_END_CONVERSATION, DialogueConstants.ID_NULL, null]:
+		var actual_next_id = Array(dialogue.next_id.split(",")).front()
+		if actual_next_id in [DialogueConstants.ID_END_CONVERSATION, DialogueConstants.ID_NULL, null]:
 			# End the conversation
 			self.is_dialogue_running = false
 			return null
@@ -160,10 +159,15 @@ func compile_resource(resource: DialogueResource) -> DialogueResource:
 
 # Get a line by its ID
 func get_line(key: String, local_resource: DialogueResource) -> DialogueLine:
-	# End of conversation
+	# See if we were given a stack instead of just the one key
+	var stack: Array = key.split(",")
+	key = stack.pop_front()
+	var id_trail = "" if stack.size() == 0 else "," + ",".join(stack)
+	
+	# See if we just ended the conversation
 	if key in [DialogueConstants.ID_NULL, null]:
-		if _goto_stack.size() > 0:
-			return get_line(_goto_stack.pop_back(), local_resource)
+		if stack.size() > 0:
+			return get_line(",".join(stack), local_resource)
 		else:
 			return null
 	elif key == DialogueConstants.ID_END_CONVERSATION:
@@ -186,26 +190,27 @@ func get_line(key: String, local_resource: DialogueResource) -> DialogueLine:
 	if data.get("type") == DialogueConstants.TYPE_CONDITION:
 		# "else" will have no actual condition
 		if data.get("condition") == null or check(data.get("condition")):
-			return get_line(data.get("next_id"), local_resource)
+			return get_line(data.get("next_id") + id_trail, local_resource)
 		else:
-			return get_line(data.get("next_conditional_id"), local_resource)
+			return get_line(data.get("next_conditional_id") + id_trail, local_resource)
 	
-	# Evaluate early exits
+	# Evaluate jumps
 	if data.get("type") == DialogueConstants.TYPE_GOTO:
 		if data.get("is_snippet"):
-			_goto_stack.append(data.get("next_id_after"))
-		return get_line(data.get("next_id"), local_resource)
+			id_trail = "," + data.get("next_id_after") + id_trail
+		return get_line(data.get("next_id") + id_trail, local_resource)
 	
 	# Set up a line object
 	var line = DialogueLine.new(data, auto_translate)
 	line.dialogue_manager = self
+	line.next_id += id_trail
 	
 	# Add as a child so that it gets cleaned up automatically
 	_trash.add_child(line)
 	
 	# If we are the first of a list of responses then get the other ones
 	if data.get("type") == DialogueConstants.TYPE_RESPONSE:
-		line.responses = get_responses(data.get("responses"), local_resource)
+		line.responses = get_responses(data.get("responses"), local_resource, id_trail)
 		return line
 	
 	# Replace any variables in the dialogue text
@@ -216,7 +221,7 @@ func get_line(key: String, local_resource: DialogueResource) -> DialogueLine:
 	# Inject the next node's responses if they have any
 	var next_line = local_resource.lines.get(line.next_id)
 	if next_line != null and next_line.get("type") == DialogueConstants.TYPE_RESPONSE:
-		line.responses = get_responses(next_line.get("responses"), local_resource)
+		line.responses = get_responses(next_line.get("responses"), local_resource, id_trail)
 	
 	return line
 
@@ -224,7 +229,6 @@ func get_line(key: String, local_resource: DialogueResource) -> DialogueLine:
 func set_is_dialogue_running(is_running: bool) -> void:
 	if is_dialogue_running != is_running:
 		if is_running:
-			_goto_stack = []
 			emit_signal("dialogue_started")
 		else:
 			emit_signal("dialogue_finished")
@@ -317,12 +321,13 @@ func get_with_replacements(text: String, replacements: Array) -> String:
 
 
 # Replace an array of line IDs with their response prompts
-func get_responses(ids: Array, local_resource: DialogueResource) -> Array:
+func get_responses(ids: Array, local_resource: DialogueResource, id_trail: String) -> Array:
 	var responses: Array = []
 	for id in ids:
 		var data = local_resource.lines.get(id)
 		if settings.get_runtime_value("include_all_responses", false) or data.get("condition") == null or check(data.get("condition")):
 			var response = DialogueResponse.new(data, auto_translate)
+			response.next_id += id_trail
 			response.character = get_with_replacements(response.character, response.character_replacements)
 			response.prompt = get_with_replacements(response.prompt, response.replacements)
 			response.is_allowed = data.get("condition") == null or check(data.get("condition"))
