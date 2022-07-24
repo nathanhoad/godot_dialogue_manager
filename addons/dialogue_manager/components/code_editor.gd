@@ -108,7 +108,53 @@ func _gui_input(event):
 			create_title(current_goto_title)
 		"Control+Shift+Space":
 			choose_title_dialog.choose_a_title(get_titles())
+		"Control+K":
+			toggle_comment()
+		"Alt+Up":
+			move_line(true)
+		"Alt+Down":
+			move_line(false)
 
+func toggle_comment() -> void:
+	var start = -1
+	var end = -1 
+	if is_selection_active():
+		start = get_selection_from_line()
+		end = get_selection_to_line()
+	if -1 == start:
+		start = cursor_get_line()
+	if -1 == end:
+		end = cursor_get_line()
+	
+#	print("toggle comment from: ", start, " to: ", end)
+	var found_first := false
+	var am_commenting := false
+	for line_num in range(start, 1 + end):
+		var line = get_line(line_num)
+		if line.length() == 0:
+			continue
+		var has_comment : bool = "#" == line[0]
+		if not found_first:
+			found_first = true
+			am_commenting = not has_comment
+		if am_commenting and not has_comment:
+			set_line(line_num, "#" + line)
+		elif not am_commenting and has_comment:
+			set_line(line_num, line.substr(1))
+
+func move_line(up_flag : bool) -> void:
+	var cursor := get_cursor()
+	var line_num := cursor.y
+#	print("move_line: ", up_flag, " line_num: ", line_num)
+	if line_num != -1:
+		var offset := -1 if up_flag else 1
+		var new_line_num := line_num + offset
+		if new_line_num >= 0 and new_line_num < get_line_count():
+			var old_line := get_line(line_num)
+			var new_line := get_line(new_line_num)
+			set_line(line_num, new_line)
+			set_line(new_line_num, old_line)
+			set_cursor(Vector2(cursor.x, new_line_num))
 
 func get_cursor() -> Vector2:
 	return Vector2(cursor_get_column(), cursor_get_line())
