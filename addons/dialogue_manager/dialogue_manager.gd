@@ -89,14 +89,19 @@ func get_next_dialogue_line(key: String, override_resource: DialogueResource = n
 	# Run the mutation if it is one
 	if dialogue.type == DialogueConstants.TYPE_MUTATION:
 		yield(mutate(dialogue.mutation), "completed")
-		dialogue.queue_free()
-		var actual_next_id = Array(dialogue.next_id.split(",")).front()
-		if actual_next_id in [DialogueConstants.ID_END_CONVERSATION, DialogueConstants.ID_NULL, null]:
+		if is_instance_valid(dialogue):
+			dialogue.queue_free()
+			var actual_next_id = Array(dialogue.next_id.split(",")).front()
+			if actual_next_id in [DialogueConstants.ID_END_CONVERSATION, DialogueConstants.ID_NULL, null]:
+				# End the conversation
+				self.is_dialogue_running = false
+				return null
+			else:
+				return get_next_dialogue_line(dialogue.next_id, local_resource)
+		else:
 			# End the conversation
 			self.is_dialogue_running = false
 			return null
-		else:
-			return get_next_dialogue_line(dialogue.next_id, local_resource)
 	else:
 		return dialogue
 
