@@ -89,14 +89,19 @@ func get_next_dialogue_line(key: String, override_resource: DialogueResource = n
 	# Run the mutation if it is one
 	if dialogue.type == DialogueConstants.TYPE_MUTATION:
 		yield(mutate(dialogue.mutation), "completed")
-		dialogue.queue_free()
-		var actual_next_id = Array(dialogue.next_id.split(",")).front()
-		if actual_next_id in [DialogueConstants.ID_END_CONVERSATION, DialogueConstants.ID_NULL, null]:
+		if is_instance_valid(dialogue):
+			dialogue.queue_free()
+			var actual_next_id = Array(dialogue.next_id.split(",")).front()
+			if actual_next_id in [DialogueConstants.ID_END_CONVERSATION, DialogueConstants.ID_NULL, null]:
+				# End the conversation
+				self.is_dialogue_running = false
+				return null
+			else:
+				return get_next_dialogue_line(dialogue.next_id, local_resource)
+		else:
 			# End the conversation
 			self.is_dialogue_running = false
 			return null
-		else:
-			return get_next_dialogue_line(dialogue.next_id, local_resource)
 	else:
 		return dialogue
 
@@ -162,12 +167,12 @@ func get_line(key: String, local_resource: DialogueResource) -> DialogueLine:
 	# See if we were given a stack instead of just the one key
 	var stack: Array = key.split(",")
 	key = stack.pop_front()
-	var id_trail = "" if stack.size() == 0 else "," + ",".join(stack)
+	var id_trail = "" if stack.size() == 0 else "," + PoolStringArray(stack).join(",")
 	
 	# See if we just ended the conversation
 	if key in [DialogueConstants.ID_NULL, null]:
 		if stack.size() > 0:
-			return get_line(",".join(stack), local_resource)
+			return get_line(PoolStringArray(stack).join(","), local_resource)
 		else:
 			return null
 	elif key == DialogueConstants.ID_END_CONVERSATION:
@@ -695,17 +700,6 @@ func compare(operator: String, first_value, second_value):
 
 
 func apply_operation(operator: String, first_value, second_value):
-	if first_value == null:
-		if typeof(second_value) == TYPE_BOOL and second_value == true:
-			return false
-		else:
-			return second_value
-	elif second_value == null:
-		if typeof(first_value) == TYPE_BOOL and first_value == true:
-			return false
-		else:
-			return first_value
-	
 	match operator:
 		"=":
 			return second_value
