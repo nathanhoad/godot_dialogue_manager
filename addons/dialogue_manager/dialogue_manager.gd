@@ -700,17 +700,6 @@ func compare(operator: String, first_value, second_value):
 
 
 func apply_operation(operator: String, first_value, second_value):
-	if first_value == null:
-		if typeof(second_value) == TYPE_BOOL and second_value == true:
-			return false
-		else:
-			return second_value
-	elif second_value == null:
-		if typeof(first_value) == TYPE_BOOL and first_value == true:
-			return false
-		else:
-			return first_value
-	
 	match operator:
 		"=":
 			return second_value
