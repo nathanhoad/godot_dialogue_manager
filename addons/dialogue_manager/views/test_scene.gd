@@ -12,9 +12,11 @@ func _ready():
 	
 	DialogueManager.connect("dialogue_finished", self, "_on_dialogue_finished")
 	
-	var title = settings.get_editor_value("run_title")
-	var dialogue_resource = load(settings.get_editor_value("run_resource"))
-	DialogueManager.show_example_dialogue_balloon(title, dialogue_resource)
+#	var title = settings.get_editor_value("run_title")
+	var full_path = settings.get_editor_value("run_resource")
+	var dialogue_resource = load(full_path)
+	State.switch_scene(full_path.get_basename().get_file())
+#	DialogueManager.show_example_dialogue_balloon(title, dialogue_resource)
 
 
 ### Signals

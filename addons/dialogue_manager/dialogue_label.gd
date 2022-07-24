@@ -8,7 +8,7 @@ signal finished()
 
 const DialogueLine = preload("res://addons/dialogue_manager/dialogue_line.gd")
 
-export var skip_action: String = "ui_cancel"
+export var skip_action: String = "dialogic_skip"
 export var seconds_per_step: float = 0.02
 
 
@@ -21,14 +21,15 @@ var last_mutation_index: int = -1
 var waiting_seconds: float = 0
 var is_typing: bool = false
 var has_finished: bool = false
-
+var skip_ahead := false
 
 func _process(delta: float) -> void:
 	if is_typing:
 		# Type out text
 		if percent_visible < 1:
 			# If cancel is pressed then skip typing it out
-			if Input.is_action_just_pressed(skip_action):
+			if skip_ahead or Input.is_action_pressed(skip_action):
+				skip_ahead = false
 				percent_visible = 1
 				# Run any inline mutations that haven't been run yet
 				for i in range(index, get_total_character_count()):
@@ -42,6 +43,7 @@ func _process(delta: float) -> void:
 		else:
 			is_typing = false
 			if has_finished == false:
+				skip_ahead = false
 				has_finished = true
 				emit_signal("finished")
 
@@ -87,6 +89,8 @@ func type_next(delta: float, seconds_needed: float) -> void:
 		else:
 			type_next(delta, seconds_needed)
 
+func skip_to_end() -> void:
+	skip_ahead = true
 
 func type_out() -> void:
 	bbcode_text = dialogue.dialogue
@@ -94,7 +98,8 @@ func type_out() -> void:
 	index = 0
 	has_finished = false
 	waiting_seconds = 0
-	
+	skip_ahead = false
+
 	# Text isn't calculated until the next frame
 	yield(get_tree(), "idle_frame")
 	if not get_total_character_count():

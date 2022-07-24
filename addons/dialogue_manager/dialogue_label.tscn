@@ -12,6 +12,3 @@ meta_underlined = false
 fit_content_height = true
 scroll_active = false
 script = ExtResource( 1 )
-__meta__ = {
-"_edit_use_anchors_": false
-}
