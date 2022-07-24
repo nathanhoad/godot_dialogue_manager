@@ -201,11 +201,14 @@ func parse(content: String) -> Dictionary:
 		
 		# Title
 		elif is_title_line(raw_line):
-			line["type"] = DialogueConstants.TYPE_TITLE
-			line["text"] = raw_line.replace("~ ", "")
-			var valid_title = VALID_TITLE_REGEX.search(raw_line.substr(2).strip_edges())
-			if not valid_title:
-				errors.append(error(id, "Titles can only contain alphanumerics and underscores"))
+			if not raw_lines[id].begins_with("~"):
+				errors.append(error(id, "Titles cannot be nested"))
+			else:
+				line["type"] = DialogueConstants.TYPE_TITLE
+				line["text"] = raw_line.replace("~ ", "")
+				var valid_title = VALID_TITLE_REGEX.search(raw_line.substr(2).strip_edges())
+				if not valid_title:
+					errors.append(error(id, "Titles can only contain alphanumerics and underscores"))
 		
 		# Condition
 		elif is_condition_line(raw_line, false):
