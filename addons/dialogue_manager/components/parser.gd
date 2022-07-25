@@ -395,8 +395,7 @@ func is_line_empty(line: String) -> bool:
 
 
 func get_line_after_line(id: int, indent_size: int, line: Dictionary, raw_lines: Array, dialogue: Dictionary) -> String:
-	# Unless the next line is an outdent then we can assume
-	# it comes next
+	# Unless the next line is an outdent we can assume it comes next
 	var next_nonempty_line_id = get_next_nonempty_line_id(id, raw_lines)
 	if next_nonempty_line_id != DialogueConstants.ID_NULL \
 		and indent_size <= get_indent(raw_lines[next_nonempty_line_id.to_int()]):
@@ -405,7 +404,7 @@ func get_line_after_line(id: int, indent_size: int, line: Dictionary, raw_lines:
 			if line.get("type") == DialogueConstants.TYPE_GOTO:
 				return DialogueConstants.ID_NULL
 			elif will_continue_through_titles():
-				return get_next_nonempty_line_id(next_nonempty_line_id.to_int() + 1, raw_lines)
+				return get_next_nonempty_line_id(next_nonempty_line_id.to_int(), raw_lines)
 			else:
 				return DialogueConstants.ID_NULL
 		# Otherwise it's a normal line
