@@ -1,8 +1,9 @@
-[gd_scene load_steps=4 format=2]
+[gd_scene load_steps=5 format=2]
 
 [ext_resource path="res://ui/ScreenCanvas.tscn" type="PackedScene" id=1]
 [ext_resource path="res://addons/dialogue_manager/views/test_scene.gd" type="Script" id=2]
 [ext_resource path="res://addons/dialogue_manager/components/settings.gd" type="Script" id=3]
+[ext_resource path="res://ui/Debugger.tscn" type="PackedScene" id=4]
 
 [node name="TestScene" type="Node2D"]
 script = ExtResource( 2 )
@@ -11,3 +12,5 @@ script = ExtResource( 2 )
 
 [node name="Settings" type="Node" parent="."]
 script = ExtResource( 3 )
+
+[node name="Debugger" parent="." instance=ExtResource( 4 )]
