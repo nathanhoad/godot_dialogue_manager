@@ -1,5 +1,9 @@
 # Using dialogue in your game
 
+It's up to you to implement the actual dialogue rendering and input control but there is an [example balloon](Example_Balloon.md) included to help get you started. You can also have a look at [these further examples](https://github.com/nathanhoad/example_dialogue_balloons).
+
+## Getting a line of dialogue
+
 A global called `DialogueManager` is available to provide lines of dialogue.
 
 If you haven't specified your game states in [the editor](Settings.md) you can manually set them with something like:
@@ -31,33 +35,25 @@ You need to `yield` this call because it can't guarantee an immediate return. If
 
 The returned line in dialogue is a `DialogueLine` and will have the following properties:
 
-- **character**: String
-- **dialogue**: String
-- **translation_key**: String
-- **replacements**: Array { expression, value_in_text } Dictionaries (expression is in AST format and can be manually resolved with `DialogueManager.replace_values()`)
+- **character**: String - The name of the character if there was one
+- **dialogue**: String - The line of dialogue
+- **translation_key**: String - The [static translation key](Writing_Dialogue.md#translations) (or the dialogue if no key was specified)
+- **replacements**: Array of { expression, value_in_text } Dictionaries (expression is in AST format and can be manually resolved with `DialogueManager.replace_values()`)
 - **pauses**: Dictionary of { index => time }
 - **speeds**: Array of [index, speed]
 - **inline_mutations**: Array of [index, expression] (expression is in AST format and which can be manually resolved with `DialogueManager.mutate()`)
-- **next_id**: String
+- **next_id**: String - The next value to give to `get_next_dialogue_line()`
 - **time**: null or String ("auto" or a float-like string)
 - **responses**: Array of DialogueResponse:
-  - **character**: String
-  - **character_replacements**: Array { expression, value_in_text } Dictionaries (expression is in AST format and can be manually resolved with `DialogueManager.replace_values()`)
-  - **prompt**: String
-  - **is_allowed**: bool (false if this response has failed its condition check)
-  - **replacements**: Array { expression, value_in_text } Dictionaries (expression is in AST format and can be manually resolved with `DialogueManager.replace_values()`)
-  - **translation_key**: String
-  - **next_id**: String
+  - **character**: String - The name of the character if there is one
+  - **character_replacements**: Array of { expression, value_in_text } Dictionaries (expression is in AST format and can be manually resolved with `DialogueManager.replace_values()`)
+  - **prompt**: String - The text to show a player
+  - **is_allowed**: bool - false if this response has failed its condition check
+  - **replacements**: Array of { expression, value_in_text } Dictionaries (expression is in AST format and can be manually resolved with `DialogueManager.replace_values()`)
+  - **translation_key**: String - The [static translation key](Writing_Dialogue.md#translations) (or the dialogue if no key was specified)
+  - **next_id**: String - The next value to give to `get_next_dialogue_line()` if the player chooses this response
 
-Now that you have a line of dialogue you can find the next line after it with:
-
-```gdscript
-# If this line has no responses we can just use "next_id". If it does have responses you can use
-# the "next_id" of whichever response was chosen
-dialogue_line = yield(DialogueManager.get_next_dialogue_line(dialogue_line.next_id, dialogue_resource), "completed")
-```
-
-It's up to you to implement the actual dialogue rendering and input control but there are a couple of things included to get you started: `DialogueLabel` and the **Example Balloon**.
+Now that you have a line of dialogue you can use a `DialogueLabel` node to show it.
 
 ## DialogueLabel node
 
@@ -68,47 +64,6 @@ This node is given a `DialogueLine` object (mentioned above) and uses its proper
 Use `type_out()` to start typing out the text. The label will emit a `finished` signal when it has finished typing.
 
 The label will emit a `paused` signal (along with the duration of the pause) when there is a pause in the typing and a `spoke` signal (along with the letter typed and the current speed) when a letter was just typed.
-
-## Example balloon
-
-There is an example implementation of a dialogue balloon you can use to get started (it's the same balloon that gets used when you run the test scene from the dialogue editor).
-
-Have a look at [/addons/dialogue_manager/example_balloon](../addons/dialogue_manager/example_balloon) to see how it's put together.
-
-You can give the balloon a go in your game by doing something like this:
-
-```gdscript
-var dialogue_resource = preload("res://assets/dialogue/example.tres")
-DialogueManager.show_example_dialogue_balloon("Some title", dialogue_resource)
-```
-
-This will add a CanvasLayer and some UI to the bottom of the screen for an interactive dialogue balloon. Input is mapped to `ui_up`, `ui_down`, and `ui_accept`.
-
-![Example balloon instance](example-balloon.jpg)
-
-Make a copy of the example balloon directory to start customising it to fit your own game.
-
-Once you have your own balloon scene you can do something like this (This is what I have in my game):
-
-```gdscript
-# Start some dialogue from a title, then recursively step through further lines
-func show_dialogue(title: String, resource: DialogueResource) -> void:
-	var dialogue = yield(DialogueManager.get_next_dialogue_line(title, resource), "completed")
-	if dialogue != null:
-		var balloon := DialogueBalloon.instance()
-		balloon.dialogue = dialogue
-		add_child(balloon)
-		# Dialogue might have response options so we have to wait and see
-		# what the player chose. "actioned" is emitted and passes the "next_id"
-		# once the player has made their choice.
-		show_dialogue(yield(balloon, "actioned"), resource)
-```
-
-![Real dialogue balloon example](real-example.jpg)
-
-To achieve something similar to the above example (balloons that position themselves near characters) I'd suggest parenting your balloon control to a `Node2D` that you can then move to the character's `global_position`. Additionally, within each "talkable" character I have a `Position2D` node that is used to work out where the pin should be located.
-
-For more example balloons, check out [github.com/nathanhoad/example_dialogue_balloons](https://github.com/nathanhoad/example_dialogue_balloons)
 
 ## Conditions
 
@@ -125,7 +80,6 @@ Mutations are for updating game state or running sequences (or both).
 If you have a mutation in the dialogue editor like `do some_variable = 1` then you will need a matching property on one of your `game_state`s or the current scene.
 
 If you have a mutation like `do animate("Character", "cheer")` then you will need a method on one of the `game_state`s or the current scene that matches the signature `func animate(character: String, animation: String) -> void:`. The argument `character` will be given `"Character"` and `animation` will be given `"cheer"`.
-
 
 ## Signals
 

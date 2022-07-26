@@ -12,7 +12,9 @@ Open some dialogue by clicking the "new dialogue file" button or "open dialogue"
 
 All dialogue exists within nodes. A node is started with a line beginning with a "~ ".
 
-![Node titles begin with a "~ "](node-title.jpg)
+```
+~ talk_to_nathan
+```
 
 A node will continue until another title is encountered or the end of the file.
 
@@ -22,7 +24,11 @@ A dialogue line is either just text or in the form of "Character: What they say"
 
 Dialogue lines can contain **variables** wrapped in "{{}}" (in either the character name or the dialogue). Any variables you use must be a property or method on one of your provided game states (see down below under **Settings, Runtime**).
 
-![Dialogue lines](dialogue-lines.jpg)
+```
+This is a line said by nobody.
+Nathan: I am saying this line.
+Nathan: The value of some_variable is {{some_variable}}.
+```
 
 Dialogue lines can also contain **bb_code** for RichTextEffects (if you end up using a `RichTextLabel` or the `DialogueLabel` provided by this addon).
 
@@ -50,13 +56,24 @@ You can write what are effectively "snippets" of dialogue this way.
 
 To give the player branching options you can start a line with "- " and then a prompt. Like dialogue, prompts can also contain variables wrapped in `{{}}`.
 
-![Empty prompts](empty-prompts.jpg)
+```
+Nathan: What would you like?
+- This one
+- No, this one
+- Nothing
+```
 
 By default responses will just continue on to the lines below the list when one is chosen.
 
 To branch, you can provide and indented body under a given prompt or add a `=> another_title` where "another_title" is the title of another node. If you want to end the conversation right away you can `=> END`.
 
-![Prompts](prompts.jpg)
+```
+Nathan: What would you like?
+- This one
+    Nathan: Ah, so you want this one?
+- Another one => another_title
+- Nothing => END
+```
 
 If a response prompt contains a character name then it will be treated as an actual line of dialogue when the player selects it.
 
@@ -84,11 +101,25 @@ You can use conditional blocks to further branch. Start a condition line with "i
 
 Additional conditions use "elif" and you can use "else" to catch any other cases.
 
-![Conditional lines](conditions.jpg)
+```
+if some_variable >= 10
+    Nathan: That variable is greather than or equal to 10
+elif something_else == "some value"
+    Nathan: Or we might be in here.
+else
+    Nathan: If neither are true I'll say this.
+```
 
 Responses can also have conditions. Wrap these in "[" and "]".
 
-![Conditional responses](conditional-responses.jpg)
+```
+Nathan: What would you like?
+- This one [if some_variable == 0 or some_other_variable == false]
+    Nathan: Ah, so you want this one?
+- Another one [if some_function()] => another_title
+- Nothing => END
+```
+
 
 If using a condition and a goto on a response line then make sure the goto is provided last.
 
@@ -96,7 +127,14 @@ If using a condition and a goto on a response line then make sure the goto is pr
 
 You can modify state with either a "set" or a "do" line. Any variables or functions used must be a property or method on one of your provided game states (see down below under **Settings, Runtime**).
 
-![Mutations](mutations.jpg)
+```
+if has_met_nathan == false
+    do animate("Nathan", "Wave")
+    Nathan: Hi, I'm Nathan.
+    set has_met_nathan = true
+Nathan: What can I do for you?
+- Tell me more about this dialogue editor
+```
 
 In the example above, the dialogue manager would expect one of your game states to implement a method with the signature `func animate(string, string) -> void`.
 
@@ -108,7 +146,10 @@ There are also a couple of special built-in mutations you can use:
 
 Mutations can also be used inline. Inline mutations will be called as the typed out dialogue reaches that point in the text.
 
-![Inline mutations](inline-mutations.jpg)
+```
+Nathan: I'm not sure we've met before [do wave()]I'm Nathan.
+Nathan: I can also emit signals[do emit("some_signal")] inline.
+```
 
 One thing to note is that inline mutations that use `yield` won't be awaited so the dialogue will continue right away.
 
