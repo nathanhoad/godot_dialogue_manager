@@ -346,23 +346,24 @@ func get_responses(ids: Array, local_resource: DialogueResource, id_trail: Strin
 # Get a value on the current scene or game state
 func get_state_value(property: String):
 	# It's a variable
-	for state in get_game_states():
-		if has_property(state, property):
-			return state.get(property)
-
-	printerr("'" + property + "' is not a property on any game states (" + str(get_game_states()) + ").")
-	assert(false, "Missing property on current scene or game state. See Output for details.")
+	return State.safe_get(property, null)
+#	for state in get_game_states():
+#		if has_property(state, property):
+#			return state.get(property)
+#
+#	printerr("'" + property + "' is not a property on any game states (" + str(get_game_states()) + ").")
+#	assert(false, "Missing property on current scene or game state. See Output for details.")
 
 
 # Set a value on the current scene or game state
 func set_state_value(property: String, value) -> void:
-	for state in get_game_states():
-		if has_property(state, property):
-			state.set(property, value)
-			return
-	
-	printerr("'" + property + "' is not a property on any game states (" + str(get_game_states()) + ").")
-	assert(false, "Missing property on current scene or game state. See Output for details.")
+#	for state in get_game_states():
+#		if has_property(state, property):
+#			state.set(property, value)
+#			return
+	State.set(property, value)
+#	printerr("'" + property + "' is not a property on any game states (" + str(get_game_states()) + ").")
+#	assert(false, "Missing property on current scene or game state. See Output for details.")
 
 
 # Collapse any expressions
@@ -704,18 +705,25 @@ func apply_operation(operator: String, first_value, second_value):
 		"=":
 			return second_value
 		"+", "+=":
+			first_value = 0 if first_value == null else first_value 
 			return first_value + second_value
 		"-", "-=":
+			first_value = 0 if first_value == null else first_value 
 			return first_value - second_value
 		"/", "/=":
+			first_value = 0 if first_value == null else first_value 
 			return first_value / second_value
 		"*", "*=":
+			first_value = 0 if first_value == null else first_value 
 			return first_value * second_value
 		"%":
+			first_value = 0 if first_value == null else first_value 
 			return first_value % second_value
 		"and":
+			first_value = false if first_value == null else first_value 
 			return first_value and second_value
 		"or":
+			first_value = false if first_value == null else first_value 
 			return first_value or second_value
 		_:
 			assert(false, "Unknown operator")
