@@ -345,12 +345,17 @@ func get_responses(ids: Array, local_resource: DialogueResource, id_trail: Strin
 
 # Get a value on the current scene or game state
 func get_state_value(property: String):
-	# It's a variable
+	var expression = Expression.new()
+	if expression.parse(property) != OK:
+		printerr("'%s' is not a valid expression: %s" % [property, expression.get_error_text()])
+		assert(false, "Invalid expression. See Output for details.")
+	
 	for state in get_game_states():
-		if has_property(state, property):
-			return state.get(property)
+		var result = expression.execute([], state, false)
+		if not expression.has_execute_failed():
+			return result
 
-	printerr("'" + property + "' is not a property on any game states (" + str(get_game_states()) + ").")
+	printerr("'%s' is not a property on any game states (%s)." % [property, str(get_game_states())])
 	assert(false, "Missing property on current scene or game state. See Output for details.")
 
 
@@ -361,7 +366,7 @@ func set_state_value(property: String, value) -> void:
 			state.set(property, value)
 			return
 	
-	printerr("'" + property + "' is not a property on any game states (" + str(get_game_states()) + ").")
+	printerr("'%s' is not a property on any game states (%s)." % [property, str(get_game_states())])
 	assert(false, "Missing property on current scene or game state. See Output for details.")
 
 
