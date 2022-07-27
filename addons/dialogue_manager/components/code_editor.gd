@@ -108,6 +108,12 @@ func _gui_input(event):
 			create_title(current_goto_title)
 		"Control+Shift+Space":
 			choose_title_dialog.choose_a_title(get_titles())
+		"Control+K":
+			toggle_comment()
+		"Alt+Up":
+			move_line(-1)
+		"Alt+Down":
+			move_line(1)
 
 
 func get_cursor() -> Vector2:
@@ -118,6 +124,45 @@ func set_cursor(cursor: Vector2) -> void:
 	cursor_set_line(cursor.y, true)
 	cursor_set_column(cursor.x, true)
 
+
+func toggle_comment() -> void:
+	var cursor := get_cursor()
+	var from: int = cursor.y
+	var to: int = cursor.y
+	if is_selection_active():
+		from = get_selection_from_line()
+		to = get_selection_to_line()
+	
+	var lines := text.split("\n")
+	var will_comment := not lines[from].begins_with("#")
+	for i in range(from, to + 1):
+		lines[i] = "#" + lines[i] if will_comment else lines[i].substr(1)
+	
+	text = lines.join("\n")
+	select(from, 0, to, get_line_width(to))
+	set_cursor(cursor)
+
+
+func move_line(offset: int) -> void:
+	if is_selection_active(): return
+	
+	var cursor = get_cursor()
+	var lines := text.split("\n")
+	
+	if cursor.y + offset < 0: return
+	if cursor.y + offset >= lines.size(): return
+	
+	var line = lines[cursor.y]
+	var other_line = lines[cursor.y + offset]
+	
+	lines[cursor.y] = other_line
+	lines[cursor.y + offset] = line
+	
+	cursor.y += offset
+	
+	text = lines.join("\n")
+	set_cursor(cursor)
+	
 
 func insert_bbcode(open_tag: String, close_tag: String = "") -> void:
 	if close_tag == "":
