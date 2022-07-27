@@ -706,24 +706,31 @@ func apply_operation(operator: String, first_value, second_value):
 			return second_value
 		"+", "+=":
 			first_value = 0 if first_value == null else first_value 
+			second_value = 0 if second_value == null else second_value 
 			return first_value + second_value
 		"-", "-=":
 			first_value = 0 if first_value == null else first_value 
+			second_value = 0 if second_value == null else second_value 
 			return first_value - second_value
 		"/", "/=":
 			first_value = 0 if first_value == null else first_value 
+			second_value = 0 if second_value == null else second_value 
 			return first_value / second_value
 		"*", "*=":
 			first_value = 0 if first_value == null else first_value 
+			second_value = 0 if second_value == null else second_value 
 			return first_value * second_value
 		"%":
 			first_value = 0 if first_value == null else first_value 
+			second_value = 0 if second_value == null else second_value 
 			return first_value % second_value
 		"and":
 			first_value = false if first_value == null else first_value 
+			second_value = false if second_value == null else second_value 
 			return first_value and second_value
 		"or":
 			first_value = false if first_value == null else first_value 
+			second_value = false if second_value == null else second_value 
 			return first_value or second_value
 		_:
 			assert(false, "Unknown operator")
