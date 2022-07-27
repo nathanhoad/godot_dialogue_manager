@@ -16,12 +16,14 @@ func _ready():
 	var full_path = settings.get_editor_value("run_resource")
 	var dialogue_resource = load(full_path)
 	SaveGame.current_id = "start"
+	State.set("TESTING", true)
 	State.switch_scene(full_path.get_basename().get_file())
 #	DialogueManager.show_example_dialogue_balloon(title, dialogue_resource)
 
 
-### Signals
-
+func _input(event):
+	if event.is_action_pressed("ui_cancel"):
+		get_tree().quit()
 
 func _on_dialogue_finished():
 #	get_tree().quit()
