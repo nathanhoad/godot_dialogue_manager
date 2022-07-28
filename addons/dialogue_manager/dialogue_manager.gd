@@ -170,7 +170,7 @@ func get_line(key: String, local_resource: DialogueResource) -> DialogueLine:
 	var id_trail = "" if stack.size() == 0 else "," + PoolStringArray(stack).join(",")
 	
 	# See if we just ended the conversation
-	if key in [DialogueConstants.ID_NULL, null]:
+	if key in [DialogueConstants.ID_END, DialogueConstants.ID_NULL, null]:
 		if stack.size() > 0:
 			return get_line(PoolStringArray(stack).join(","), local_resource)
 		else:

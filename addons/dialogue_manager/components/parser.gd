@@ -670,7 +670,7 @@ func extract_goto(line: String, titles: Dictionary) -> String:
 	# "=> END" means end the current title (and go back to the previous one if there is one 
 	#		   in the stack)
 	elif title == "END": 
-		return DialogueConstants.ID_NULL
+		return DialogueConstants.ID_END
 		
 	elif titles.has(title):
 		return titles.get(title)
