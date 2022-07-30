@@ -144,23 +144,36 @@ func toggle_comment() -> void:
 
 
 func move_line(offset: int) -> void:
-	if is_selection_active(): return
+	offset = clamp(offset, -1, 1)
 	
 	var cursor = get_cursor()
+	var reselect: bool = false
+	var from: int = cursor.y
+	var to: int = cursor.y
+	
+	if is_selection_active():
+		reselect = true
+		from = get_selection_from_line()
+		to = get_selection_to_line()
+	
 	var lines := text.split("\n")
 	
-	if cursor.y + offset < 0: return
-	if cursor.y + offset >= lines.size(): return
+	# We can't move the lines out of bounds
+	if from + offset < 0 or to + offset >= lines.size(): return
 	
-	var line = lines[cursor.y]
-	var other_line = lines[cursor.y + offset]
-	
-	lines[cursor.y] = other_line
-	lines[cursor.y + offset] = line
-	
-	cursor.y += offset
+	var target_from_index = from - 1 if offset == -1 else to + 1
+	var target_to_index = to if offset == -1 else from
+	var line_to_move = lines[target_from_index]
+	lines.remove(target_from_index)
+	lines.insert(target_to_index, line_to_move)
 	
 	text = lines.join("\n")
+	
+	cursor.y += offset
+	from += offset
+	to += offset
+	if reselect:
+		select(from, 0, to, get_line_width(to))
 	set_cursor(cursor)
 	
 
