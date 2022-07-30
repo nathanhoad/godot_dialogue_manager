@@ -497,7 +497,7 @@ func find_next_line_after_conditions(line_number: int, all_lines: Array, dialogu
 		
 		if is_title_line(line):
 			if will_continue_through_titles():
-				return get_next_nonempty_line_id(i + 1, all_lines)
+				return get_next_nonempty_line_id(i, all_lines)
 			else:
 				return DialogueConstants.ID_END_CONVERSATION
 			
@@ -540,7 +540,7 @@ func find_next_line_after_responses(line_number: int, all_lines: Array, dialogue
 		# We hit a title so the next line is the end of the conversation
 		if is_title_line(line):
 			if will_continue_through_titles():
-				return get_next_nonempty_line_id(i + 1, all_lines)
+				return get_next_nonempty_line_id(i, all_lines)
 			else:
 				return DialogueConstants.ID_END_CONVERSATION
 		
