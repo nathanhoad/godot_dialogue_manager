@@ -66,10 +66,9 @@ func _on_SettingsDialog_about_to_show():
 	globals_list.set_column_title(2, "Path")
 
 
-
 func _on_GlobalsList_item_selected():
 	var item = globals_list.get_selected()
-	var is_checked = !item.is_checked(0)
+	var is_checked = not item.is_checked(0)	
 	item.set_checked(0, is_checked)
 	
 	if is_checked:

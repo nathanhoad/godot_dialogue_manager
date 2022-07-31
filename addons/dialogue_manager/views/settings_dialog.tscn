@@ -211,6 +211,7 @@ margin_bottom = 446.0
 size_flags_horizontal = 3
 size_flags_vertical = 3
 columns = 3
+allow_reselect = true
 hide_folding = true
 hide_root = true
 select_mode = 1
