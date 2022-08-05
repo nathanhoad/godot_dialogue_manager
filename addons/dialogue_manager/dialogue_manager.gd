@@ -293,10 +293,7 @@ func mutate(mutation: Dictionary) -> void:
 								state.emit_signal(args[0], args[1], args[2], args[3], args[4], args[5], args[6], args[7])
 						
 			"debug":
-				var printable = {}
-				for i in range(args.size()):
-					printable[mutation.get("args")[i][0].get("value")] = args[i]
-				print(printable)
+				prints("Debug:", args)
 	
 	# Or pass through to the resolver
 	else:
