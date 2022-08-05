@@ -21,13 +21,13 @@ func _init():
 	lines = {}
 
 
-func get_next_dialogue_line(title: String) -> DialogueLine:
+func get_next_dialogue_line(title: String, extra_game_states: Array = []) -> DialogueLine:
 	# NOTE: For some reason get_singleton doesn't work here so we have to get creative
 	var tree: SceneTree = Engine.get_main_loop()
 	if tree:
 		var dialogue_manager = tree.current_scene.get_node_or_null("/root/DialogueManager")
 		if dialogue_manager != null:
-			return dialogue_manager.get_next_dialogue_line(title, self)
+			return dialogue_manager.get_next_dialogue_line(title, self, extra_game_states)
 
 	assert(false, "The \"DialogueManager\" autoload does not appear to be loaded.")
 	return null

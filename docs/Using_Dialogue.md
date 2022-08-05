@@ -33,6 +33,8 @@ This will find the line with the given title and then begin checking conditions 
 
 You need to `yield` this call because it can't guarantee an immediate return. If there are any mutations it will need to allow for them to run before finding the next line.
 
+There is a third, optional argument for `get_next_dialogue_line` that allows you to pass temporary extra [game states](Settings.md).
+
 The returned line in dialogue is a `DialogueLine` and will have the following properties:
 
 - **character**: String - The name of the character if there was one
