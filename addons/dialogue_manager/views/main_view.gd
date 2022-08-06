@@ -21,6 +21,7 @@ onready var new_dialogue_dialog := $NewDialogueDialog
 onready var open_dialogue_dialog := $OpenDialogueDialog
 onready var invalid_dialogue_dialog := $InvalidDialogueDialog
 onready var settings_dialog := $SettingsDialog
+onready var errors_confirm_dialog := $ErrorsConfirmDialog
 onready var insert_menu := $Margin/VBox/Toolbar/InsertMenu
 onready var translations_menu := $Margin/VBox/Toolbar/TranslationsMenu
 onready var save_translations_dialog := $SaveTranslationsDialog
@@ -238,7 +239,7 @@ func parse(force_show_errors: bool = false) -> void:
 	if force_show_errors or settings.get_editor_value("check_for_errors") or error_list.errors.size() > 0:
 		error_list.errors = result.errors
 		
-		for line_number in range(0, editor.get_line_count() - 1):
+		for line_number in range(0, editor.get_line_count()):
 			editor.set_line_as_bookmark(line_number, false)
 			for error in result.errors:
 				if error.get("line") == line_number:
@@ -524,7 +525,7 @@ func _on_SettingsButton_pressed():
 
 func _on_CodeEditor_active_title_changed(title):
 	title_list.select_title(title)
-	settings.set_editor_value("run_title", title)
+	settings.set_user_value("run_title", title)
 	run_node_button.hint_tooltip = "Play the test scene using \"%s\"" % title
 
 
@@ -596,9 +597,12 @@ func _on_SettingsDialog_script_button_pressed(path):
 
 
 func _on_RunButton_pressed():
-	if settings.has_editor_value("run_title"):
-		settings.set_editor_value("run_resource", current_resource.resource_path)
-		plugin.get_editor_interface().play_custom_scene("res://addons/dialogue_manager/views/test_scene.tscn")
+	if current_resource.errors.size() > 0:
+		errors_confirm_dialog.popup_centered()
+		return
+		
+	settings.set_user_value("run_resource_path", current_resource.resource_path)
+	plugin.get_editor_interface().play_custom_scene("res://addons/dialogue_manager/views/test_scene.tscn")
 
 
 func _on_SearchButton_toggled(button_pressed):
