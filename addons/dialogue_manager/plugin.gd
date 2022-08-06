@@ -50,10 +50,16 @@ func get_plugin_name() -> String:
 
 
 func get_plugin_icon() -> Texture:
-	var scale = get_editor_interface().get_editor_scale()
 	var base_color = get_editor_interface().get_editor_settings().get_setting("interface/theme/base_color")
 	var theme = "light" if base_color.v > 0.5 else "dark"
-	return load("res://addons/dialogue_manager/assets/icons/icon_%s_%d.svg" % [theme, scale]) as Texture
+	var base_icon = load("res://addons/dialogue_manager/assets/icons/icon_%s.svg" % [theme]) as Texture
+	
+	var size = get_editor_interface().get_editor_viewport().get_icon("Godot", "EditorIcons").get_size()
+	var image: Image = base_icon.get_data()
+	image.resize(size.x, size.y, Image.INTERPOLATE_TRILINEAR)
+	var texture = ImageTexture.new()
+	texture.create_from_image(image)
+	return texture
 
 
 func handles(object) -> bool:

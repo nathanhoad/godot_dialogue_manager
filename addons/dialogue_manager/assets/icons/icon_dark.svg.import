@@ -2,15 +2,15 @@
 
 importer="texture"
 type="StreamTexture"
-path="res://.import/icon_light_1.5.svg-2a14c5fb6ef51b46d1ac0512b336ea74.stex"
+path="res://.import/icon_dark.svg-e5597fe28dca2e66ba9595c6b6035ea9.stex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://addons/dialogue_manager/assets/icons/icon_light_1.5.svg"
-dest_files=[ "res://.import/icon_light_1.5.svg-2a14c5fb6ef51b46d1ac0512b336ea74.stex" ]
+source_file="res://addons/dialogue_manager/assets/icons/icon_dark.svg"
+dest_files=[ "res://.import/icon_dark.svg-e5597fe28dca2e66ba9595c6b6035ea9.stex" ]
 
 [params]
 
@@ -32,4 +32,4 @@ process/normal_map_invert_y=false
 stream=false
 size_limit=0
 detect_3d=false
-svg/scale=1.5
+svg/scale=1.0
