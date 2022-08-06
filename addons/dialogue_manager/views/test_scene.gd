@@ -12,8 +12,8 @@ func _ready():
 	
 	DialogueManager.connect("dialogue_finished", self, "_on_dialogue_finished")
 	
-	var title = settings.get_editor_value("run_title")
-	var dialogue_resource = load(settings.get_editor_value("run_resource"))
+	var title = settings.get_user_value("run_title")
+	var dialogue_resource = load(settings.get_user_value("run_resource_path"))
 	DialogueManager.show_example_dialogue_balloon(title, dialogue_resource)
 
 

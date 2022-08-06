@@ -88,7 +88,7 @@ func _ready() -> void:
 	
 	file_label.icon = get_icon("Filesystem", "EditorIcons")
 	
-	recent_resources = settings.get_editor_value("recent_resources", [])
+	recent_resources = settings.get_user_value("recent_resources", [])
 	build_open_menu()
 	
 	editor.wrap_enabled = settings.get_editor_value("wrap_lines", false)
@@ -133,7 +133,7 @@ func set_resource(value: DialogueResource) -> void:
 		file_label.visible = true
 		editor.text = current_resource.raw_text
 		editor.clear_undo_history()
-		var cursors = settings.get_editor_value("resource_cursors", {})
+		var cursors = settings.get_user_value("resource_cursors", {})
 		if cursors.has(current_resource.resource_path):
 			var cursor = cursors.get(current_resource.resource_path)
 			editor.cursor_set_line(cursor.y, true)
@@ -176,7 +176,7 @@ func open_resource(resource: DialogueResource) -> void:
 	if resource.resource_path in recent_resources:
 		recent_resources.erase(resource.resource_path)
 	recent_resources.insert(0, resource.resource_path)
-	settings.set_editor_value("recent_resources", recent_resources)
+	settings.set_user_value("recent_resources", recent_resources)
 	build_open_menu()
 	parse(true)
 
@@ -452,8 +452,8 @@ func _on_open_menu_index_pressed(index):
 			open_dialogue_dialog.popup_centered()
 		"Clear recent files":
 			recent_resources.clear()
-			settings.set_editor_value("recent_resources", recent_resources)
-			settings.set_editor_value("resource_cursors", {})
+			settings.set_user_value("recent_resources", recent_resources)
+			settings.set_user_value("resource_cursors", {})
 			build_open_menu()
 		_:
 			open_resource_from_path(item)
@@ -521,9 +521,9 @@ func _on_CodeEditor_active_title_changed(title):
 
 
 func _on_CodeEditor_cursor_changed():
-	var next_resource_cursors = settings.get_editor_value("resource_cursors", {})
+	var next_resource_cursors = settings.get_user_value("resource_cursors", {})
 	next_resource_cursors[current_resource.resource_path] = Vector2(editor.cursor_get_column(), editor.cursor_get_line())
-	settings.set_editor_value("resource_cursors", next_resource_cursors)
+	settings.set_user_value("resource_cursors", next_resource_cursors)
 
 
 func _on_ParseTimeout_timeout():
