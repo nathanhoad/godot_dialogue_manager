@@ -36,6 +36,7 @@ var plugin
 var current_resource: DialogueResource
 var has_changed: bool = false
 var recent_resources: Array
+var pristine_raw_text: String = ""
 
 
 func _ready() -> void:
@@ -97,6 +98,11 @@ func _ready() -> void:
 func apply_changes() -> void:
 	if is_instance_valid(editor) and current_resource != null:
 		current_resource.set("raw_text", editor.text)
+		
+		if pristine_raw_text != current_resource.raw_text:
+			current_resource.set("resource_version", current_resource.resource_version + 1)
+			pristine_raw_text = current_resource.raw_text
+		
 		ResourceSaver.save(current_resource.resource_path, current_resource)
 		parse(true)
 
@@ -146,6 +152,8 @@ func set_resource(value: DialogueResource) -> void:
 		translations_menu.disabled = false
 		_on_CodeEditor_text_changed()
 		has_changed = false
+		pristine_raw_text = current_resource.raw_text
+		
 	else:
 		content.visible = false
 		file_label.visible = false
@@ -522,7 +530,10 @@ func _on_CodeEditor_active_title_changed(title):
 
 func _on_CodeEditor_cursor_changed():
 	var next_resource_cursors = settings.get_user_value("resource_cursors", {})
-	next_resource_cursors[current_resource.resource_path] = Vector2(editor.cursor_get_column(), editor.cursor_get_line())
+	next_resource_cursors[current_resource.resource_path] = { 
+		x = editor.cursor_get_column(), 
+		y = editor.cursor_get_line() 
+	}
 	settings.set_user_value("resource_cursors", next_resource_cursors)
 
 
