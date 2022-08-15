@@ -219,7 +219,7 @@ func get_line(key: String, local_resource: DialogueResource) -> DialogueLine:
 	
 	# If we are the first of a list of responses then get the other ones
 	if data.get("type") == DialogueConstants.TYPE_RESPONSE:
-		line.responses = get_responses(data.get("responses"), local_resource, id_trail)
+		line.responses = get_responses(data.get("responses"), local_resource, id_trail, line)
 		return line
 	
 	# Replace any variables in the dialogue text
@@ -230,7 +230,7 @@ func get_line(key: String, local_resource: DialogueResource) -> DialogueLine:
 	# Inject the next node's responses if they have any
 	var next_line = local_resource.lines.get(line.next_id)
 	if next_line != null and next_line.get("type") == DialogueConstants.TYPE_RESPONSE:
-		line.responses = get_responses(next_line.get("responses"), local_resource, id_trail)
+		line.responses = get_responses(next_line.get("responses"), local_resource, id_trail, line)
 	
 	return line
 
@@ -327,7 +327,7 @@ func get_with_replacements(text: String, replacements: Array) -> String:
 
 
 # Replace an array of line IDs with their response prompts
-func get_responses(ids: Array, local_resource: DialogueResource, id_trail: String) -> Array:
+func get_responses(ids: Array, local_resource: DialogueResource, id_trail: String, line: Node) -> Array:
 	var responses: Array = []
 	for id in ids:
 		var data = local_resource.lines.get(id)
@@ -338,7 +338,7 @@ func get_responses(ids: Array, local_resource: DialogueResource, id_trail: Strin
 			response.prompt = get_with_replacements(response.prompt, response.replacements)
 			response.is_allowed = data.get("condition") == null or check(data.get("condition"))
 			# Add as a child so that it gets cleaned up automatically
-			_trash.add_child(response)
+			line.add_child(response)
 			responses.append(response)
 	
 	return responses
