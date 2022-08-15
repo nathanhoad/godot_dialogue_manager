@@ -30,6 +30,7 @@ const TOKEN_AND_OR = "and_or"
 const TOKEN_STRING = "string"
 const TOKEN_NUMBER = "number"
 const TOKEN_VARIABLE = "variable"
+const TOKEN_COMMMENT = "comment"
 
 const TOKEN_ERROR = "error"
 

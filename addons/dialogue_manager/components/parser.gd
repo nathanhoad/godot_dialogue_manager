@@ -17,8 +17,6 @@ var WRAPPED_CONDITION_REGEX := RegEx.new()
 var CONDITION_PARTS_REGEX := RegEx.new()
 var REPLACEMENTS_REGEX := RegEx.new()
 var GOTO_REGEX := RegEx.new()
-var BB_CODE_REGEX := RegEx.new()
-var MARKER_CODE_REGEX := RegEx.new()
 
 var TOKEN_DEFINITIONS: Dictionary = {}
 
@@ -31,8 +29,6 @@ func _init() -> void:
 	CONDITION_REGEX.compile("(if|elif) (?<condition>.*)")
 	REPLACEMENTS_REGEX.compile("{{(.*?)}}")
 	GOTO_REGEX.compile("=><? (?<jump_to_title>.*)")
-	BB_CODE_REGEX.compile("\\[[^\\]]+\\]")
-	MARKER_CODE_REGEX.compile("\\[(?<code>wait|/?speed|do |set |next)(?<args>[^\\]]+)?\\]")
 	
 	# Build our list of tokeniser tokens
 	var tokens = {
@@ -56,6 +52,7 @@ func _init() -> void:
 		DialogueConstants.TOKEN_AND_OR: "^(and|or)( |$)",
 		DialogueConstants.TOKEN_STRING: "^\".*?\"",
 		DialogueConstants.TOKEN_VARIABLE: "^[a-zA-Z_][a-zA-Z_0-9]+",
+		DialogueConstants.TOKEN_COMMMENT: "^#.*"
 	}
 	for key in tokens.keys():
 		var regex = RegEx.new()
@@ -296,10 +293,14 @@ func parse(content: String) -> Dictionary:
 				errors.append(error(id, "Referenced node has no body"))
 		
 		# Line after condition isn't indented once to the right
-		if line.get("type") == DialogueConstants.TYPE_CONDITION and is_valid_id(line.get("next_id")):
-			var next_line = raw_lines[line.get("next_id").to_int()]
-			if next_line != null and get_indent(next_line) != indent_size + 1:
-				errors.append(error(line.get("next_id").to_int(), "Invalid indentation"))
+		if line.get("type") == DialogueConstants.TYPE_CONDITION:
+			if is_valid_id(line.get("next_id")):
+				var next_line = raw_lines[line.get("next_id").to_int()]
+				if get_indent(next_line) != indent_size + 1:
+					errors.append(error(line.get("next_id").to_int(), "Invalid indentation"))
+			else:
+				errors.append(error(id, "Conditional lines need at least one indented line below them"))
+				
 		# Line after normal line is indented to the right
 		elif line.get("type") in [DialogueConstants.TYPE_TITLE, DialogueConstants.TYPE_DIALOGUE, DialogueConstants.TYPE_MUTATION, DialogueConstants.TYPE_GOTO] and is_valid_id(line.get("next_id")):
 			var next_line = raw_lines[line.get("next_id").to_int()]
@@ -567,7 +568,7 @@ func find_next_line_after_responses(line_number: int, all_lines: Array, dialogue
 		else:
 			line_number = i
 			line = all_lines[line_number]
-			if get_indent(line) == expected_indent:
+			if get_indent(line) <= expected_indent:
 				return str(line_number)
 	
 	# EOF so must be end of conversation
@@ -683,52 +684,52 @@ func extract_markers(line: String) -> Dictionary:
 	var pauses = {}
 	var speeds = []
 	var mutations = []
-	var bb_codes = []
+	var bbcodes = []
 	var index_map = {}
 	var time = null
 	
 	# Extract all of the BB codes so that we know the actual text (we could do this easier with
 	# a RichTextLabel but then we'd need to await idle_frame which is annoying)
-	var founds = BB_CODE_REGEX.search_all(text)
+	var bbcode_positions = find_bbcode_positions_in_string(text)
 	var accumulaive_length_offset = 0
-	if founds:
-		for found in founds:
-			var code = found.strings[0]
-			# Ignore our own markers
-			if MARKER_CODE_REGEX.search(code):
-				continue
-			bb_codes.append({
-				code = code,
-				start = found.get_start(),
-				offset_start = found.get_start() - accumulaive_length_offset
-			})
-			accumulaive_length_offset += code.length()
+	for position in bbcode_positions:
+		# Ignore our own markers
+		if position.code in ["wait", "speed", "/speed", "do", "set"]:
+			continue
+		
+		bbcodes.append({
+			bbcode = position.bbcode,
+			start = position.start,
+			offset_start = position.start - accumulaive_length_offset
+		})
+		accumulaive_length_offset += position.bbcode.length()
 
-	for bb_code in bb_codes:
-		text.erase(bb_code.offset_start, bb_code.code.length())
+	for bb in bbcodes:
+		text.erase(bb.offset_start, bb.bbcode.length())
 	
-	var found = MARKER_CODE_REGEX.search(text)
+	# Now find any dialogue markers
+	var next_bbcode_position = find_bbcode_positions_in_string(text, false)
 	var limit = 0
-	var prev_codes_len = 0
-	while found and limit < 1000:
+	while next_bbcode_position.size() > 0 and limit < 1000:
 		limit += 1
-		var index = text.find(found.strings[0])
-		var code = found.strings[found.names.get("code")].strip_edges()
-		var raw_args = ""
+		
+		var bbcode = next_bbcode_position[0]
+		
+		var index = bbcode.start
+		var code = bbcode.code
+		var raw_args = bbcode.raw_args
 		var args = {}
-		if found.names.has("args"):
-			raw_args = found.strings[found.names.get("args")]
-			if code in ["do", "set"]:
-				args["value"] = extract_mutation("%s %s" % [code, raw_args])
-			else:
-				# Could be something like:
-				# 	"=1.0"
-				# 	" rate=20 level=10"
-				if raw_args[0] == "=":
-					raw_args = "value" + raw_args
-				for pair in raw_args.strip_edges().split(" "):
-					var bits = pair.split("=")
-					args[bits[0]] = bits[1]
+		if code in ["do", "set"]:
+			args["value"] = extract_mutation("%s %s" % [code, raw_args])
+		else:
+			# Could be something like:
+			# 	"=1.0"
+			# 	" rate=20 level=10"
+			if raw_args[0] == "=":
+				raw_args = "value" + raw_args
+			for pair in raw_args.strip_edges().split(" "):
+				var bits = pair.split("=")
+				args[bits[0]] = bits[1]
 			
 		match code:
 			"wait":
@@ -746,18 +747,18 @@ func extract_markers(line: String) -> Dictionary:
 				time = args.get("value") if args.has("value") else "0"
 		
 		# Find any BB codes that are after this index and remove the length from their start
-		var length = found.strings[0].length()
-		for bb_code in bb_codes:
-			if bb_code.offset_start >= found.get_start():
-				bb_code.offset_start -= length
-				bb_code.start -= length
+		var length = bbcode.bbcode.length()
+		for bb in bbcodes:
+			if bb.offset_start >= bbcode.start:
+				bb.offset_start -= length
+				bb.start -= length
 		
 		text.erase(index, length)
-		found = MARKER_CODE_REGEX.search(text)
+		next_bbcode_position = find_bbcode_positions_in_string(text, false)
 	
 	# Put the BB Codes back in
-	for bb_code in bb_codes:
-		text = text.insert(bb_code.start, bb_code.code)
+	for bb in bbcodes:
+		text = text.insert(bb.start, bb.bbcode)
 
 	return {
 		"text": text,
@@ -766,7 +767,51 @@ func extract_markers(line: String) -> Dictionary:
 		"mutations": mutations,
 		"time": time
 	}
+
+
+func find_bbcode_positions_in_string(string: String, find_all: bool = true) -> Array:
+	if not "[" in string: return []
 	
+	var positions: Array = []
+	
+	var open_brace_count: int = 0
+	var start: int = 0
+	var bbcode: String = ""
+	var code: String = ""
+	var is_finished_code: bool = false
+	for i in range(0, string.length()):
+		if string[i] == "[":
+			if open_brace_count == 0:
+				start = i
+				bbcode = ""
+				code = ""
+				is_finished_code = false
+			open_brace_count += 1
+		
+		else:
+			if not is_finished_code and (string[i].to_upper() != string[i] or string[i] == "/"):
+				code += string[i]
+			else:
+				is_finished_code = true
+		
+		if open_brace_count > 0:
+			bbcode += string[i]
+		
+		if string[i] == "]":
+			open_brace_count -= 1
+			if open_brace_count == 0:
+				positions.append({
+					bbcode = bbcode,
+					code = code,
+					start = start,
+					raw_args = bbcode.substr(code.length() + 1, bbcode.length() - code.length() - 2).strip_edges()
+				})
+				
+				if not find_all:
+					return positions
+			
+	return positions
+
 
 func tokenise(text: String) -> Array:
 	var tokens = []

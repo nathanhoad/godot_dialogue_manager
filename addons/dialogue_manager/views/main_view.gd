@@ -175,7 +175,7 @@ func get_nice_file(file: String) -> String:
 
 func get_last_csv_path() -> String:
 	var filename = current_resource.resource_path.get_file().replace(".tres", ".csv")
-	return settings.get_editor_value("last_csv_path", current_resource.resource_path.get_base_dir()) + "/" + filename
+	return settings.get_user_value("last_csv_path", current_resource.resource_path.get_base_dir()) + "/" + filename
 
 
 func open_resource(resource: DialogueResource) -> void:
@@ -570,12 +570,12 @@ func _on_HelpButton_pressed():
 
 
 func _on_SaveTranslationsDialog_file_selected(path):
-	settings.set_editor_value("last_csv_path", path.get_base_dir())
+	settings.set_user_value("last_csv_path", path.get_base_dir())
 	save_translations(path)
 
 
 func _on_SaveTranslationsDialogPO_file_selected(path):
-	settings.set_editor_value("last_csv_path", path.get_base_dir())
+	settings.set_user_value("last_csv_path", path.get_base_dir())
 	save_translations_po(path)
 
 
@@ -624,7 +624,7 @@ func _on_SearchToolbar_open_requested():
 
 
 func _on_ImportTranslationsDialog_file_selected(path):
-	settings.set_editor_value("last_csv_path", path.get_base_dir())
+	settings.set_user_value("last_csv_path", path.get_base_dir())
 	
 	var cursor: Vector2 = editor.get_cursor()
 
