@@ -136,10 +136,13 @@ func get_responses() -> Array:
 
 
 func _on_response_mouse_entered(item):
-	item.grab_focus()
+	if not "disallowed" in item.name.to_lower():
+		item.grab_focus()
 
 
 func _on_response_gui_input(event, item):
+	if "disallowed" in item.name.to_lower(): return
+	
 	if event is InputEventMouseButton and event.is_pressed() and event.button_index == 1:
 		next(dialogue.responses[item.get_index()].next_id)
 	elif event.is_action_pressed("ui_accept") and item in get_responses():
