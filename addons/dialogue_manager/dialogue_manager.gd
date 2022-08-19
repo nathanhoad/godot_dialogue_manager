@@ -215,7 +215,8 @@ func get_line(key: String, local_resource: DialogueResource) -> DialogueLine:
 	line.next_id += id_trail
 	
 	# Add as a child so that it gets cleaned up automatically
-	_trash.add_child(line)
+	if line.get("type") != DialogueConstants.TYPE_MUTATION:
+		_trash.add_child(line)
 	
 	# If we are the first of a list of responses then get the other ones
 	if data.get("type") == DialogueConstants.TYPE_RESPONSE:
