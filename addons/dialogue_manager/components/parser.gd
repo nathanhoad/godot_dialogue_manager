@@ -694,7 +694,7 @@ func extract_markers(line: String) -> Dictionary:
 	var accumulaive_length_offset = 0
 	for position in bbcode_positions:
 		# Ignore our own markers
-		if position.code in ["wait", "speed", "/speed", "do", "set"]:
+		if position.code in ["wait", "speed", "/speed", "do", "set", "next"]:
 			continue
 		
 		bbcodes.append({
@@ -741,7 +741,7 @@ func extract_markers(line: String) -> Dictionary:
 				speeds.append([index, args.get("value").to_float()])
 			"/speed":
 				speeds.append([index, 1.0])
-			"do":
+			"do", "set":
 				mutations.append([index, args.get("value")])
 			"next":
 				time = args.get("value") if args.has("value") else "0"
