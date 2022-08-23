@@ -22,6 +22,8 @@ A node will continue until another title is encountered or the end of the file.
 
 A dialogue line is either just text or in the form of "Character: What they say". 
 
+You can add a bit of random variation with text surrounded by `[[]]`. For example, `Nathan: [[Hi|Hello|Howdy]]! I'm Nathan` would pick one from "Hi", "Hello", or "Howdy".
+
 Dialogue lines can contain **variables** wrapped in "{{}}" (in either the character name or the dialogue). Any variables you use must be a property or method on one of your provided game states (see down below under **Settings, Runtime**).
 
 ```

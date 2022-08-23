@@ -30,6 +30,8 @@ var _trash: Node = Node.new()
 
 
 func _ready() -> void:
+	randomize()
+	
 	# Cache the known Node2D properties
 	_node_properties = ["Script Variables"]
 	var temp_node = Node2D.new()
@@ -323,6 +325,13 @@ func get_with_replacements(text: String, replacements: Array) -> String:
 	for replacement in replacements:
 		var value = resolve(replacement.get("expression").duplicate(true))
 		text = text.replace(replacement.get("value_in_text"), str(value))
+	
+	# Resolve random groups
+	var random_regex: RegEx = RegEx.new()
+	random_regex.compile("\\[\\[(?<options>.*?)\\]\\]")
+	for found in random_regex.search_all(text):
+		var options = found.get_string("options").split("|")
+		text = text.replace("[[%s]]" % found.get_string("options"), options[rand_range(0, options.size())])
 	
 	return text
 
