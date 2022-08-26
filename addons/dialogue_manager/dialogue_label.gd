@@ -33,12 +33,17 @@ func _process(delta: float) -> void:
 				# Run any inline mutations that haven't been run yet
 				for i in range(index, get_total_character_count()):
 					dialogue.mutate_inline_mutations(i)
+				has_finished = true
+				emit_signal("finished")
+				return
 			
-			# Otherwise, keep typing
-			elif waiting_seconds > 0:
-				waiting_seconds = max(0, waiting_seconds - delta)
-			else:
-				type_next(delta, 0)
+			# Otherwise, see if we are waiting
+			if waiting_seconds > 0:
+				waiting_seconds = waiting_seconds - delta
+			
+			# If we are no longer waiting then keep typing
+			if waiting_seconds <= 0:
+				type_next(delta, waiting_seconds)
 		else:
 			is_typing = false
 			if has_finished == false:
