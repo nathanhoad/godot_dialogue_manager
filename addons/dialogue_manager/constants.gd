@@ -1,8 +1,30 @@
 extends Node
 
 
-const SYNTAX_VERSION = 2
-const CONFIG_PATH = "res://dialogue.cfg"
+const USER_CONFIG_PATH = "user://dialogue_manager_user_config.json"
+const CACHE_PATH = "user://dialogue_manager_cache.json"
+
+# Errors
+
+const ERR_ERRORS_IN_IMPORTED_FILE = 100
+const ERR_FILE_ALREADY_IMPORTED = 101
+const ERR_DUPLICATE_IMPORT_NAME = 102
+const ERR_EMPTY_TITLE = 103
+const ERR_DUPLICATE_TITLE = 104
+const ERR_NESTED_TITLE = 105
+const ERR_TITLE_INVALID_CHARACTERS = 106
+const ERR_UNKNOWN_TITLE = 107
+const ERR_INVALID_TITLE_REFERENCE = 108
+const ERR_TITLE_REFERENCE_HAS_NO_CONTENT = 109
+const ERR_INVALID_EXPRESSION = 110
+const ERR_INVALID_EXPRESSION_IN_CHARACTER_NAME = 111
+const ERR_DUPLICATE_ID = 112
+const ERR_MISSING_ID = 113
+const ERR_INVALID_INDENTATION = 114
+const ERR_INVALID_CONDITION_INDENTATION = 115
+const ERR_INCOMPLETE_EXPRESSION = 116
+const ERR_INVALID_EXPRESSION_FOR_VALUE = 117
+const ERR_UNKNOWN_LINE_SYNTAX = 118
 
 # Token types
 
@@ -30,7 +52,7 @@ const TOKEN_AND_OR = "and_or"
 const TOKEN_STRING = "string"
 const TOKEN_NUMBER = "number"
 const TOKEN_VARIABLE = "variable"
-const TOKEN_COMMMENT = "comment"
+const TOKEN_COMMENT = "comment"
 
 const TOKEN_ERROR = "error"
 
@@ -51,6 +73,52 @@ const TYPE_ELSE = "else"
 
 const ID_NULL = ""
 const ID_ERROR = "error"
-const ID_TITLE_HAS_NO_BODY = "title has no body"
+const ID_ERROR_INVALID_TITLE = "invalid title"
+const ID_ERROR_TITLE_HAS_NO_BODY = "title has no body"
 const ID_END = "end"
 const ID_END_CONVERSATION = "end!"
+
+
+## Get the error message
+static func get_error_message(error: int) -> String:
+	match error:
+		ERR_ERRORS_IN_IMPORTED_FILE:
+			return "There are errors in this imported file."
+		ERR_FILE_ALREADY_IMPORTED:
+			return "File already imported."
+		ERR_DUPLICATE_IMPORT_NAME:
+			return "Duplicate import name."
+		ERR_EMPTY_TITLE:
+			return "Titles cannot be empty."
+		ERR_DUPLICATE_TITLE:
+			return "There is already a title with that name."
+		ERR_NESTED_TITLE:
+			return "Titles cannot be nested."
+		ERR_TITLE_INVALID_CHARACTERS:
+			return "Titles can only contain alphanumeric characters and numbers."
+		ERR_UNKNOWN_TITLE:
+			return "Unknown title."
+		ERR_INVALID_TITLE_REFERENCE:
+			return "This jump is pointing to an invalid title."
+		ERR_TITLE_REFERENCE_HAS_NO_CONTENT:
+			return "That title has no content. Maybe change this to a \"=> END\"."
+		ERR_INVALID_EXPRESSION:
+			return "Expression is invalid."
+		ERR_INVALID_EXPRESSION_IN_CHARACTER_NAME:
+			return "The expression used for a character name is invalid."
+		ERR_DUPLICATE_ID:
+			return "This ID is already on another line."
+		ERR_MISSING_ID:
+			return "This line is missing an ID."
+		ERR_INVALID_INDENTATION:
+			return "Invalid indentation."
+		ERR_INVALID_CONDITION_INDENTATION:
+			return "A condition line needs an indented line below it."
+		ERR_INCOMPLETE_EXPRESSION:
+			return "Incomplate expression."
+		ERR_INVALID_EXPRESSION_FOR_VALUE:
+			return "Invalid expression for value."
+		ERR_FILE_NOT_FOUND:
+			return "File not found."
+		_:
+			return "Unknown syntax."

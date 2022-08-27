@@ -2,27 +2,19 @@
 
 ## Editor
 
-**Compiler**
-
-- `Check for errors as you type` will do a syntax check after 1 second of inactivity.
-- `Store compile results in resource` will allow you to turn off pre-baking compile results. When this is off, dialogue resources will be parsed at run time instead.
 - `Treat missing translations as errors` can be enabled if you are using static translation keys and are adding them manually (there is an automatic static key button but you might be writing specific keys).
-- `Continue through title after block` will skip over titles and continue dialogue as if the title wasn't there. When this is enabled you can use `=> END` to manually end dialogue.
-
-**Editor**
-
 - `Wrap long lines` turns on word wrapping.
 
 ## Runtime
 
-**Responses**
-
 - `Include responses with failed conditions` will include responses that failed their condition check in the list of responses attached to a given line.
 
-**Game States**
+### Globals shortcuts
 
-The dialogue runtime itself is stateless, meaning it looks to your game to provide values for variables and for methods to run. At run time, the dialogue manager will check the current scene first and then check any global states provided here.
+The dialogue runtime itself is stateless, meaning it looks to your game to provide values for variables and for methods to run. At run time, the dialogue manager will check the current scene first and then check any globals.
 
-For example, I have a persistent `GameState` and an ephemeral `SessionState` that my dialogue uses.
+If you don't want to type out a globals' name all of the time you can add it to the globals shortcut list.
+
+For example, instead of having to type out `GameState.some_variable`, you could enable `GameState` and then you would just need to type out `some_variable`.
 
 ![GameState and SessionState are used by dialogue](states.jpg)

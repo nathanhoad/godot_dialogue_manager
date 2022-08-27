@@ -1,0 +1,17 @@
+[gd_scene load_steps=2 format=3 uid="uid://cbho187ysok6y"]
+
+[ext_resource type="Script" path="res://examples/name_input_dialog/name_input_dialog.gd" id="1_jrtgd"]
+
+[node name="NameInputDialog" type="AcceptDialog"]
+title = "Name"
+size = Vector2i(200, 100)
+min_size = Vector2i(200, 0)
+dialog_close_on_escape = false
+script = ExtResource("1_jrtgd")
+
+[node name="NameEdit" type="LineEdit" parent="."]
+offset_right = 67.0625
+offset_bottom = 31.0
+
+[connection signal="about_to_popup" from="." to="." method="_on_name_input_dialog_about_to_popup"]
+[connection signal="close_requested" from="." to="." method="_on_name_input_dialog_close_requested"]

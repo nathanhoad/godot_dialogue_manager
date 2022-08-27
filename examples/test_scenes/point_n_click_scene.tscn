@@ -1,0 +1,68 @@
+[gd_scene load_steps=14 format=3 uid="uid://7swgccys7grp"]
+
+[ext_resource type="Script" path="res://examples/test_scenes/test_scene.gd" id="1_g6mv8"]
+[ext_resource type="PackedScene" uid="uid://chk6py6m8g356" path="res://examples/point_n_click_balloon/balloon.tscn" id="2_pwirw"]
+[ext_resource type="Resource" uid="uid://d1mtqcmytv6kp" path="res://examples/dialogue.dialogue" id="3_ihiqx"]
+[ext_resource type="Texture2D" uid="uid://ddhhe6dgk6up8" path="res://examples/point_n_click_balloon/scene.png" id="4"]
+[ext_resource type="Texture2D" uid="uid://wnew0ysrr5df" path="res://examples/point_n_click_balloon/characters/coco.png" id="5"]
+[ext_resource type="Texture2D" uid="uid://dm27r4lh8drrk" path="res://examples/point_n_click_balloon/characters/nathan.png" id="6"]
+[ext_resource type="Script" path="res://examples/point_n_click_balloon/characters/nathan.gd" id="7"]
+
+[sub_resource type="AtlasTexture" id="1"]
+atlas = ExtResource("6")
+region = Rect2(0, 0, 40, 70)
+
+[sub_resource type="AtlasTexture" id="2"]
+atlas = ExtResource("6")
+region = Rect2(0, 0, 40, 70)
+
+[sub_resource type="AtlasTexture" id="3"]
+atlas = ExtResource("6")
+region = Rect2(40, 0, 40, 70)
+
+[sub_resource type="AtlasTexture" id="4"]
+atlas = ExtResource("6")
+region = Rect2(80, 0, 40, 70)
+
+[sub_resource type="AtlasTexture" id="5"]
+atlas = ExtResource("6")
+region = Rect2(120, 0, 40, 70)
+
+[sub_resource type="SpriteFrames" id="6"]
+animations = [{
+"frames": [SubResource("1")],
+"loop": true,
+"name": &"Default",
+"speed": 5.0
+}, {
+"frames": [SubResource("2"), SubResource("3"), SubResource("4"), SubResource("5"), SubResource("2"), SubResource("5")],
+"loop": true,
+"name": &"Talking",
+"speed": 12.0
+}]
+
+[node name="PointNClickScene" type="Node2D"]
+texture_filter = 1
+script = ExtResource("1_g6mv8")
+Balloon = ExtResource("2_pwirw")
+SmallBalloon = ExtResource("2_pwirw")
+dialogue_resource = ExtResource("3_ihiqx")
+
+[node name="Scene" type="Sprite2D" parent="."]
+position = Vector2(538, 434)
+scale = Vector2(4, 4)
+texture = ExtResource("4")
+
+[node name="Coco" type="Sprite2D" parent="Scene"]
+position = Vector2(14.5, -72)
+texture = ExtResource("5")
+centered = false
+offset = Vector2(-6.0833, 4)
+
+[node name="Nathan" type="AnimatedSprite2D" parent="Scene"]
+position = Vector2(49, -79.25)
+frames = SubResource("6")
+animation = &"Default"
+playing = true
+offset = Vector2(1.1667, 26.5)
+script = ExtResource("7")

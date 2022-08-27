@@ -1,0 +1,82 @@
+[gd_scene load_steps=2 format=3 uid="uid://cpg4lg1r3ff6m"]
+
+[ext_resource type="Script" path="res://addons/dialogue_manager/views/settings_view.gd" id="1_06uxa"]
+
+[node name="SettingsView" type="VBoxContainer"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_right = -206.0
+offset_bottom = -345.0
+size_flags_horizontal = 3
+size_flags_vertical = 3
+script = ExtResource("1_06uxa")
+
+[node name="MissingTranslationsButton" type="CheckBox" parent="."]
+offset_right = 818.0
+offset_bottom = 31.0
+text = "Treat missing translation keys as errors"
+
+[node name="MissingTranslationsHint" type="Label" parent="."]
+modulate = Color(1, 1, 1, 0.501961)
+offset_top = 35.0
+offset_right = 818.0
+offset_bottom = 87.0
+text = "If you are using static translation keys then having this enabled will help you find any lines that you haven't added a key to yet."
+autowrap_mode = 3
+
+[node name="WrapLinesButton" type="CheckBox" parent="."]
+offset_top = 91.0
+offset_right = 818.0
+offset_bottom = 122.0
+text = "Wrap long lines"
+
+[node name="IncludeAllResponsesButton" type="CheckBox" parent="."]
+offset_top = 126.0
+offset_right = 818.0
+offset_bottom = 157.0
+text = "Include responses with failed conditions"
+
+[node name="HSeparator" type="HSeparator" parent="."]
+offset_top = 161.0
+offset_right = 818.0
+offset_bottom = 165.0
+
+[node name="StatesTitle" type="Label" parent="."]
+offset_top = 169.0
+offset_right = 818.0
+offset_bottom = 195.0
+text = "State Shortcuts"
+
+[node name="StatesMessage" type="Label" parent="."]
+offset_top = 199.0
+offset_right = 818.0
+offset_bottom = 225.0
+text = "If an autoload is enabled here you can refer to its properties and methods without having to use its name."
+
+[node name="StatesHint" type="Label" parent="."]
+modulate = Color(1, 1, 1, 0.501961)
+offset_top = 229.0
+offset_right = 818.0
+offset_bottom = 255.0
+text = "ie. Instead of \"SomeState.some_property\" you could just use \"some_property\""
+autowrap_mode = 3
+
+[node name="GlobalsList" type="Tree" parent="."]
+offset_top = 259.0
+offset_right = 818.0
+offset_bottom = 259.0
+size_flags_vertical = 3
+columns = 3
+column_titles_visible = true
+allow_reselect = true
+hide_folding = true
+hide_root = true
+select_mode = 1
+scroll_horizontal_enabled = false
+
+[connection signal="visibility_changed" from="." to="." method="_on_settings_view_visibility_changed"]
+[connection signal="toggled" from="MissingTranslationsButton" to="." method="_on_missing_translations_button_toggled"]
+[connection signal="toggled" from="WrapLinesButton" to="." method="_on_wrap_lines_button_toggled"]
+[connection signal="toggled" from="IncludeAllResponsesButton" to="." method="_on_include_all_responses_button_toggled"]
+[connection signal="button_clicked" from="GlobalsList" to="." method="_on_globals_list_button_clicked"]
+[connection signal="item_selected" from="GlobalsList" to="." method="_on_globals_list_item_selected"]

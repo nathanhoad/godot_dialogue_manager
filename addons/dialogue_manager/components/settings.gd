@@ -1,83 +1,111 @@
-tool
+@tool
 extends Node
 
 
 const DialogueConstants = preload("res://addons/dialogue_manager/constants.gd")
 
 
-var config := ConfigFile.new()
-var user_config: Dictionary = {
-	recent_resources = [],
-	resource_cursors = {},
-	run_title = "",
-	run_resource_path = ""
-}
+### Editor config
 
 
-func _ready() -> void:
-	config.load(DialogueConstants.CONFIG_PATH)
-	if not config.has_section("editor"):
-		config.set_value("editor", "check_for_errors", true)
-		config.set_value("editor", "missing_translations_are_errors", false)
-		config.set_value("editor", "store_compiler_results", true)
-		config.set_value("editor", "continue_through_titles", false)
-	if not config.has_section("runtime"):
-		config.set_value("runtime", "include_all_responses", false)
-		config.set_value("runtime", "states", [])
-	
-	load_user_config()
+static func set_setting(key: String, value) -> void:
+	ProjectSettings.set_setting("dialogue_manager/%s" % key, value)
+	ProjectSettings.save()
 
 
-func reset_config() -> void:
-	var dir = Directory.new()
-	dir.remove(DialogueConstants.CONFIG_PATH)
+static func get_setting(key: String, default):
+	if ProjectSettings.has_setting("dialogue_manager/%s" % key):
+		return ProjectSettings.get_setting("dialogue_manager/%s" % key)
+	else:
+		return default
 
 
-func has_editor_value(key: String) -> bool:
-	return config.has_section_key("editor", key)
+### User config
 
 
-func set_editor_value(key: String, value) -> void:
-	config.set_value("editor", key, value)
-	config.save(DialogueConstants.CONFIG_PATH)
-
-
-func get_editor_value(key: String, default = null):
-	return config.get_value("editor", key, default)
-
-
-func has_runtime_value(key: String) -> bool:
-	return config.has_section_key("runtime", key)
-
-
-func set_runtime_value(key: String, value) -> void:
-	config.set_value("runtime", key, value)
-	config.save(DialogueConstants.CONFIG_PATH)
-
-
-func get_runtime_value(key: String, default = null):
-	return config.get_value("runtime", key, default)
-
-
-func set_user_value(key: String, value):
-	user_config[key] = value
-	save_user_config()
-
-
-func get_user_value(key: String, default = null):
-	return user_config.get(key, default)
-
-
-func load_user_config() -> void:
+static func get_user_config() -> Dictionary:
+	var user_config: Dictionary = {
+		just_refreshed = null,
+		recent_files = [],
+		carets = {},
+		run_title = "",
+		run_resource_path = "",
+		is_running_test_scene = false
+	}
+	var json: JSON = JSON.new()
 	var file = File.new()
-	if file.file_exists(OS.get_user_data_dir() + "/dialogue-user-config.json"):
-		file.open(OS.get_user_data_dir() + "/dialogue-user-config.json", File.READ)
-		user_config = parse_json(file.get_as_text())
+	if file.file_exists(DialogueConstants.USER_CONFIG_PATH):
+		file.open(DialogueConstants.USER_CONFIG_PATH, File.READ)
+		json.parse(file.get_as_text())
+		user_config.merge(json.get_data(), true)
 		file.close()
+	
+	return user_config
 
 
-func save_user_config() -> void:
+static func save_user_config(user_config: Dictionary) -> void:
+	var json: JSON = JSON.new()
 	var file = File.new()
-	file.open(OS.get_user_data_dir() + "/dialogue-user-config.json", File.WRITE)
-	file.store_string(to_json(user_config))
+	file.open(DialogueConstants.USER_CONFIG_PATH, File.WRITE)
+	file.store_string(json.stringify(user_config))
 	file.close()
+
+
+static func set_user_value(key: String, value):
+	var user_config = get_user_config()
+	user_config[key] = value
+	save_user_config(user_config)
+
+
+static func get_user_value(key: String, default = null):
+	return get_user_config().get(key, default)
+
+
+static func add_recent_file(path: String) -> void:
+	var recent_files = get_user_value("recent_files", [])
+	if path in recent_files:
+		recent_files.erase(path)
+	recent_files.insert(0, path)
+	set_user_value("recent_files", recent_files)
+
+
+static func move_recent_file(from_path: String, to_path: String) -> void:
+	var recent_files = get_user_value("recent_files", [])
+	for i in range(0, recent_files.size()):
+		if recent_files[i] == from_path:
+			recent_files[i] = to_path
+	set_user_value("recent_files", recent_files)
+
+
+static func remove_recent_file(path: String) -> void:
+	var recent_files = get_user_value("recent_files", [])
+	if path in recent_files:
+		recent_files.erase(path)
+	set_user_value("recent_files", recent_files)
+
+
+static func get_recent_files() -> Array:
+	return get_user_value("recent_files", [])
+
+
+static func clear_recent_files() -> void:
+	set_user_value("recent_files", [])
+	set_user_value("carets", {})
+
+
+static func set_caret(path: String, cursor: Vector2) -> void:
+	var carets = get_user_value("carets", {})
+	carets[path] = { 
+		x = cursor.x, 
+		y = cursor.y
+	}
+	set_user_value("carets", carets)
+
+
+static func get_caret(path: String) -> Vector2:
+	var carets = get_user_value("carets", {})
+	if carets.has(path):
+		var caret = carets.get(path)
+		return Vector2(caret.x, caret.y)
+	else:
+		return Vector2.ZERO

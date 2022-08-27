@@ -1,0 +1,82 @@
+[gd_scene load_steps=7 format=3 uid="uid://chk6py6m8g356"]
+
+[ext_resource type="Script" path="res://addons/dialogue_manager/dialogue_label.gd" id="2"]
+[ext_resource type="Script" path="res://examples/point_n_click_balloon/balloon.gd" id="3"]
+
+[sub_resource type="Theme" id="Theme_miaqt"]
+default_font_size = 26
+
+[sub_resource type="Theme" id="Theme_yli3t"]
+default_font_size = 26
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_g8ef4"]
+draw_center = false
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_ype81"]
+draw_center = false
+
+[node name="PointNClickBalloon" type="CanvasLayer"]
+layer = 128
+script = ExtResource("3")
+
+[node name="AudioStreamPlayer" type="AudioStreamPlayer" parent="."]
+
+[node name="DialogueLabel" type="RichTextLabel" parent="."]
+texture_filter = 1
+clip_contents = false
+offset_right = 533.0
+offset_bottom = 107.0
+theme = SubResource("Theme_miaqt")
+theme_override_colors/font_shadow_color = Color(0, 0, 0, 1)
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_constants/shadow_offset_y = 3
+theme_override_constants/shadow_outline_size = 6
+theme_override_constants/outline_size = 6
+bbcode_enabled = true
+text = "This is some dialogue"
+fit_content_height = true
+scroll_active = false
+meta_underlined = false
+script = ExtResource("2")
+seconds_per_step = 0.0
+
+[node name="Background" type="ColorRect" parent="."]
+texture_filter = 1
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = -200.0
+mouse_filter = 1
+color = Color(0, 0, 0, 1)
+
+[node name="Margin" type="MarginContainer" parent="Background"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+theme_override_constants/margin_left = 20
+
+[node name="Responses" type="VBoxContainer" parent="Background/Margin"]
+offset_left = 20.0
+offset_right = 1024.0
+offset_bottom = 200.0
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="ResponseTemplate" type="RichTextLabel" parent="Background/Margin"]
+clip_contents = false
+custom_minimum_size = Vector2(0, 32)
+offset_left = 20.0
+offset_right = 1024.0
+offset_bottom = 200.0
+size_flags_horizontal = 3
+mouse_default_cursor_shape = 2
+theme = SubResource("Theme_yli3t")
+theme_override_styles/focus = SubResource("StyleBoxFlat_g8ef4")
+theme_override_styles/normal = SubResource("StyleBoxFlat_ype81")
+bbcode_enabled = true
+text = "Response"
+fit_content_height = true
+scroll_active = false
+meta_underlined = false
+hint_underlined = false
+
+[connection signal="resized" from="DialogueLabel" to="." method="_on_dialogue_label_resized"]

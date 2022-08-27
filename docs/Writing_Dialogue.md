@@ -24,12 +24,12 @@ A dialogue line is either just text or in the form of "Character: What they say"
 
 You can add a bit of random variation with text surrounded by `[[]]`. For example, `Nathan: [[Hi|Hello|Howdy]]! I'm Nathan` would pick one from "Hi", "Hello", or "Howdy".
 
-Dialogue lines can contain **variables** wrapped in "{{}}" (in either the character name or the dialogue). Any variables you use must be a property or method on one of your provided game states (see down below under **Settings, Runtime**).
+Dialogue lines can contain **variables** wrapped in "{{}}" (in either the character name or the dialogue). Any variables referenced must be either globals or specified in the Dialogue Manager settings.
 
 ```
 This is a line said by nobody.
 Nathan: I am saying this line.
-Nathan: The value of some_variable is {{some_variable}}.
+Nathan: The value of some_variable is {{SomeGlobal.some_property}}.
 ```
 
 Dialogue lines can also contain **bb_code** for RichTextEffects (if you end up using a `RichTextLabel` or the `DialogueLabel` provided by this addon).
@@ -38,9 +38,9 @@ If you use the `DialogueLabel` node then you can also make use of the `[wait=N]`
 
 There is also a `[next]` code that you can use to signify that a line should be auto advanced. If given no arguments it will auto advance immediately after the text has typed out. If given something like `[next=0.5]` it will wait for 0.5s after typing has finished before moving to the next line. If given `[next=auto]` it will wait for an automatic amount of time based on the length of the line.
 
-## Gotos
+## Jumps
 
-If you want to jump to another title then you can use a goto line. Assuming the target title is "another_title" your goto line would be 
+If you want to redirect flow to another title then you can use a jump line. Assuming the target title is "another_title" your jump line would be 
 
 ```
 => another_title
@@ -53,6 +53,14 @@ If you wanted the dialogue manager to jump to that title but then return to this
 ```
 
 You can write what are effectively "snippets" of dialogue this way.
+
+You can also import titles from other files. Specify your imports at the top of the file like this:
+
+```
+import "res://snippets.dialogue" as snippets
+```
+
+And then you can jump to titles by prefixing them with `snippets/`. For example, say there was a "talk_to_nathan" title in the snippets file then in the current file I could use `=> snippets/talk_to_nathan`.
 
 ## Responses
 
@@ -104,9 +112,9 @@ You can use conditional blocks to further branch. Start a condition line with "i
 Additional conditions use "elif" and you can use "else" to catch any other cases.
 
 ```
-if some_variable >= 10
-    Nathan: That variable is greather than or equal to 10
-elif something_else == "some value"
+if SomeGlobal.some_property >= 10
+    Nathan: That property is greather than or equal to 10
+elif SomeGlobal.some_other_property == "some value"
     Nathan: Or we might be in here.
 else
     Nathan: If neither are true I'll say this.
@@ -116,33 +124,32 @@ Responses can also have conditions. Wrap these in "[" and "]".
 
 ```
 Nathan: What would you like?
-- This one [if some_variable == 0 or some_other_variable == false]
+- This one [if SomeGlobal.some_property == 0 or SomeGlobal.some_other_property == false]
     Nathan: Ah, so you want this one?
-- Another one [if some_function()] => another_title
+- Another one [if SomeGlobal.some_method()] => another_title
 - Nothing => END
 ```
-
 
 If using a condition and a goto on a response line then make sure the goto is provided last.
 
 ## Mutations
 
-You can modify state with either a "set" or a "do" line. Any variables or functions used must be a property or method on one of your provided game states (see down below under **Settings, Runtime**).
+You can modify state with either a "set" or a "do" line. Any variables or functions used must 
 
 ```
 if has_met_nathan == false
-    do animate("Nathan", "Wave")
+    do SomeGlobal.animate("Nathan", "Wave")
     Nathan: Hi, I'm Nathan.
     set has_met_nathan = true
 Nathan: What can I do for you?
 - Tell me more about this dialogue editor
 ```
 
-In the example above, the dialogue manager would expect one of your game states to implement a method with the signature `func animate(string, string) -> void`.
+In the example above, the dialogue manager would expect a global called `SomeGlobal` to implement a method with the signature `func animate(string, string) -> void`.
 
 There are also a couple of special built-in mutations you can use:
 
-- `emit(...)` - emit a signal on your game states.
+- `emit(...)` - emit a signal on a game state or the current scene.
 - `wait(float)` - wait for `float` seconds (this has no effect when used inline).
 - `debug(...)` - print something to the Output window.
 
@@ -153,15 +160,13 @@ Nathan: I'm not sure we've met before [do wave()]I'm Nathan.
 Nathan: I can also emit signals[do emit("some_signal")] inline.
 ```
 
-One thing to note is that inline mutations that use `yield` won't be awaited so the dialogue will continue right away.
+One thing to note is that inline mutations that use `await` won't be awaited so the dialogue will continue right away.
 
 ## Error checking
 
-Running an error check should highlight any syntax or referential integrity issues with your dialogue.
+Your dialogue will be periodically checked for syntax or referential integrity issues.
 
-![Errors](errors.jpg)
-
-If a dialogue resource has any errors on it at runtime it will throw an assertion failure and tell you which file it is.
+If any are found they will be highlighted and must be fixed before you can run your game.
 
 ## Running a test scene
 
@@ -175,6 +180,6 @@ Once the conversation is over the scene will close.
 
 You can export tranlsations as CSV from the "Translations" menu in the dialogue editor. 
 
-This will find any unique dialogue lines or response prompts and add them to a list. If a static key is specified for the line (eg. `[TR:SOME_KEY]`) then that will be used as the translation key, otherwise the dialogue/prompt itself will be.
+This will find any unique dialogue lines or response prompts and add them to a list. If an ID is specified for the line (eg. `[ID:SOME_KEY]`) then that will be used as the translation key, otherwise the dialogue/prompt itself will be.
 
 If the target CSV file already exists, it will be merged with.
