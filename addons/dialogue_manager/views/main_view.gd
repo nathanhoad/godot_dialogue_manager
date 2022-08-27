@@ -566,7 +566,7 @@ func _on_ErrorList_error_pressed(error):
 
 
 func _on_HelpButton_pressed():
-	OS.shell_open("https://github.com/nathanhoad/godot_dialogue_manager")
+	OS.shell_open("https://github.com/nathanhoad/godot_dialogue_manager/tree/v1.x")
 
 
 func _on_SaveTranslationsDialog_file_selected(path):

@@ -721,7 +721,7 @@ func extract_markers(line: String) -> Dictionary:
 		var args = {}
 		if code in ["do", "set"]:
 			args["value"] = extract_mutation("%s %s" % [code, raw_args])
-		else:
+		elif raw_args.length() > 0:
 			# Could be something like:
 			# 	"=1.0"
 			# 	" rate=20 level=10"
