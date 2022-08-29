@@ -10,7 +10,7 @@ config_version=5
 
 [application]
 
-config/name="Balloon Examples"
+config/name="Dialogue Manager"
 config/features=PackedStringArray("4.0", "Vulkan Clustered")
 
 [autoload]

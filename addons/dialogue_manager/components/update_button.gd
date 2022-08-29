@@ -85,10 +85,6 @@ func _on_http_request_request_completed(result: int, response_code: int, headers
 		editor_plugin.get_editor_interface().get_resource_filesystem().filesystem_changed.connect(_on_filesystem_changed)
 
 
-func _on_timer_timeout() -> void:
-	check_for_local_update()
-
-
 func _on_update_button_pressed() -> void:
 	OS.shell_open(OPEN_URL)
 

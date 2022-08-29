@@ -108,7 +108,7 @@ func add_to_dialogue_file_cache(path: String, resource_path: String, parse_resul
 	dialogue_file_cache[path] = {
 		path = path,
 		resource_path = resource_path,
-		dependencies = parse_results.imported_paths.filter(func(d): return d != path),
+		dependencies = Array(parse_results.imported_paths).filter(func(d): return d != path),
 		errors = []
 	}
 	
