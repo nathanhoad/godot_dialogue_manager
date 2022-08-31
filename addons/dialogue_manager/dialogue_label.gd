@@ -24,8 +24,6 @@ var dialogue_line: Dictionary:
 	get:
 		return dialogue_line
 
-var index: int = 0
-var percent_per_index: float = 0
 var last_wait_index: int = -1
 var last_mutation_index: int = -1
 var waiting_seconds: float = 0
@@ -36,13 +34,13 @@ var has_finished: bool = false
 func _process(delta: float) -> void:
 	if is_typing:
 		# Type out text
-		if percent_visible < 1:
+		if visible_ratio < 1:
 			# If cancel is pressed then skip typing it out
 			if Input.is_action_just_pressed(skip_action):
-				percent_visible = 1
 				# Run any inline mutations that haven't been run yet
-				for i in range(index, get_total_character_count()):
+				for i in range(visible_characters, get_total_character_count()):
 					mutate_inline_mutations(i)
+				visible_characters = get_total_character_count()
 				has_finished = true
 				emit_signal("finished_typing")
 				return
@@ -83,45 +81,48 @@ func reset_height() -> void:
 # Start typing out the text
 func type_out() -> void:
 	text = dialogue_line.text
-	percent_visible = 0
-	index = 0
+	visible_characters = 0
 	has_finished = false
 	waiting_seconds = 0
 	
 	# Text isn't calculated until the next frame
 	await get_tree().process_frame
+	
 	if get_total_character_count() == 0:
 		emit_signal("finished_typing")
 	elif seconds_per_step == 0:
 		is_typing = false
-		percent_visible = 1
 		# Run any inline mutations
-		for i in range(index, get_total_character_count()):
+		for i in range(0, get_total_character_count()):
 			mutate_inline_mutations(i)
+		visible_characters = get_total_character_count()
 		emit_signal("finished_typing")
 	else:
-		percent_per_index = 100.0 / float(get_total_character_count()) / 100.0
+#		percent_per_index = 100.0 / float(get_total_character_count()) / 100.0
 		is_typing = true
 
 
 # Type out the next character(s)
 func type_next(delta: float, seconds_needed: float) -> void:
-	if last_mutation_index != index:
-		last_mutation_index = index
-		mutate_inline_mutations(index)
+	if visible_characters == get_total_character_count():
+		return
 	
-	if last_wait_index != index and get_pause(index) > 0:
-		last_wait_index = index
-		waiting_seconds += get_pause(index)
-		emit_signal("paused_typing", get_pause(index))
+	if last_mutation_index != visible_characters:
+		last_mutation_index = visible_characters
+		mutate_inline_mutations(visible_characters)
+	
+	if last_wait_index != visible_characters and get_pause(visible_characters) > 0:
+		last_wait_index = visible_characters
+		waiting_seconds += get_pause(visible_characters)
+		emit_signal("paused_typing", get_pause(visible_characters))
 	else:
-		percent_visible += percent_per_index
-		index += 1
-		seconds_needed += seconds_per_step * (1.0 / get_speed(index))
+#		visible_ratio += percent_per_index
+		visible_characters += 1
+		seconds_needed += seconds_per_step * (1.0 / get_speed(visible_characters))
 		if seconds_needed > delta:
 			waiting_seconds += seconds_needed
-			if index < text.length():
-				emit_signal("spoke", text[index - 1], index, get_speed(index))
+			if visible_characters < get_total_character_count():
+				emit_signal("spoke", text[visible_characters - 1], visible_characters, get_speed(visible_characters))
 		else:
 			type_next(delta, seconds_needed)
 

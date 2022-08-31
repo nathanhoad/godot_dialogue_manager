@@ -6,14 +6,12 @@
 visible = false
 offset_right = 8.0
 offset_bottom = 8.0
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_colors/font_hover_color = Color(0, 0, 0, 1)
 flat = true
 script = ExtResource("1_d2tpb")
 
 [node name="HTTPRequest" type="HTTPRequest" parent="."]
 
-[node name="Timer" type="Timer" parent="."]
-
 [connection signal="pressed" from="." to="." method="_on_update_button_pressed"]
-[connection signal="theme_changed" from="." to="." method="_on_update_button_theme_changed"]
 [connection signal="request_completed" from="HTTPRequest" to="." method="_on_http_request_request_completed"]
-[connection signal="timeout" from="Timer" to="." method="_on_timer_timeout"]

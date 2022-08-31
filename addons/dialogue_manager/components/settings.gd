@@ -32,22 +32,19 @@ static func get_user_config() -> Dictionary:
 		run_resource_path = "",
 		is_running_test_scene = false
 	}
-	var json: JSON = JSON.new()
 	var file = File.new()
 	if file.file_exists(DialogueConstants.USER_CONFIG_PATH):
 		file.open(DialogueConstants.USER_CONFIG_PATH, File.READ)
-		json.parse(file.get_as_text())
-		user_config.merge(json.get_data(), true)
+		user_config.merge(JSON.parse_string(file.get_as_text()), true)
 		file.close()
 	
 	return user_config
 
 
 static func save_user_config(user_config: Dictionary) -> void:
-	var json: JSON = JSON.new()
 	var file = File.new()
 	file.open(DialogueConstants.USER_CONFIG_PATH, File.WRITE)
-	file.store_string(json.stringify(user_config))
+	file.store_string(JSON.stringify(user_config))
 	file.close()
 
 

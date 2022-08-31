@@ -1,7 +1,7 @@
 [gd_scene load_steps=8 format=3 uid="uid://b361p61jmf257"]
 
 [ext_resource type="Script" path="res://addons/dialogue_manager/example_balloon/example_balloon.gd" id="1_4u26j"]
-[ext_resource type="PackedScene" uid="uid://b3fou1ah46t1e" path="res://addons/dialogue_manager/dialogue_label.tscn" id="2_a8ve6"]
+[ext_resource type="PackedScene" uid="uid://ckvgyvclnwggo" path="res://addons/dialogue_manager/dialogue_label.tscn" id="2_a8ve6"]
 
 [sub_resource type="Theme" id="Theme_isg48"]
 default_font_size = 9
@@ -32,16 +32,16 @@ script = ExtResource("1_4u26j")
 response_template = NodePath("Balloon/Margin/VBox/ResponseTemplate")
 
 [node name="Balloon" type="ColorRect" parent="."]
-anchor_top = 1.0
+anchors_preset = 10
 anchor_right = 1.0
-anchor_bottom = 1.0
 grow_horizontal = 2
-grow_vertical = 0
 color = Color(0, 0, 0, 1)
 
 [node name="Margin" type="MarginContainer" parent="Balloon"]
+layout_mode = 1
+anchors_preset = 10
 anchor_right = 1.0
-offset_bottom = 119.0
+offset_bottom = 75.0
 grow_horizontal = 2
 theme_override_constants/margin_left = 20
 theme_override_constants/margin_top = 10
@@ -50,15 +50,17 @@ theme_override_constants/margin_bottom = 10
 metadata/_edit_layout_mode = 1
 
 [node name="VBox" type="VBoxContainer" parent="Balloon/Margin"]
+layout_mode = 2
 offset_left = 20.0
 offset_top = 10.0
-offset_right = 300.0
-offset_bottom = 109.0
+offset_right = 1132.0
+offset_bottom = 65.0
 theme_override_constants/separation = 4
 
 [node name="CharacterLabel" type="RichTextLabel" parent="Balloon/Margin/VBox"]
 modulate = Color(1, 1, 1, 0.501961)
-offset_right = 280.0
+layout_mode = 2
+offset_right = 1112.0
 offset_bottom = 13.0
 mouse_filter = 1
 theme = SubResource("Theme_isg48")
@@ -68,22 +70,27 @@ fit_content_height = true
 scroll_active = false
 
 [node name="DialogueLabel" parent="Balloon/Margin/VBox" instance=ExtResource("2_a8ve6")]
+layout_mode = 2
+anchors_preset = 0
 anchor_right = 0.0
 offset_top = 17.0
-offset_right = 280.0
+offset_right = 1112.0
 offset_bottom = 30.0
+grow_horizontal = 1
 theme = SubResource("Theme_owda0")
 text = "Dialogue"
 
 [node name="Responses" type="VBoxContainer" parent="Balloon/Margin/VBox"]
+layout_mode = 2
 offset_top = 34.0
-offset_right = 280.0
+offset_right = 1112.0
 offset_bottom = 34.0
 theme_override_constants/separation = 1
 
 [node name="ResponseTemplate" type="RichTextLabel" parent="Balloon/Margin/VBox"]
+layout_mode = 2
 offset_top = 38.0
-offset_right = 280.0
+offset_right = 1112.0
 offset_bottom = 55.0
 focus_mode = 2
 theme = SubResource("Theme_fakos")
@@ -93,9 +100,9 @@ bbcode_enabled = true
 text = "Response"
 fit_content_height = true
 scroll_active = false
+shortcut_keys_enabled = false
 meta_underlined = false
 hint_underlined = false
-shortcut_keys_enabled = false
 
 [connection signal="gui_input" from="Balloon" to="." method="_on_balloon_gui_input"]
 [connection signal="resized" from="Balloon/Margin" to="." method="_on_margin_resized"]

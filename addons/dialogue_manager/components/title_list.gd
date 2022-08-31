@@ -23,7 +23,8 @@ var filter: String:
 
 
 func _ready() -> void:
-	apply_theme()
+	# For some reason theme icons aren't available in the first tick
+	call_deferred("apply_theme")
 
 
 func select_title(title: String) -> void:

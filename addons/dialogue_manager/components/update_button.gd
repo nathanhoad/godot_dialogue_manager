@@ -62,10 +62,6 @@ func apply_theme() -> void:
 ### Signals
 
 
-func _on_update_button_theme_changed() -> void:
-	apply_theme()
-
-
 func _on_http_request_request_completed(result: int, response_code: int, headers: PackedStringArray, body: PackedByteArray) -> void:
 	if result != HTTPRequest.RESULT_SUCCESS: return
 	

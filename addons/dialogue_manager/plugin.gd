@@ -182,9 +182,7 @@ func update_dialogue_file_cache() -> void:
 	var file: File = File.new()
 	if file.file_exists(DialogueConstants.CACHE_PATH):
 		file.open(DialogueConstants.CACHE_PATH, File.READ)
-		var json: JSON = JSON.new()
-		if json.parse(file.get_as_text()) == OK:
-			cache = json.get_data()
+		cache = JSON.parse_string(file.get_as_text())
 		file.close()
 	
 	# Scan for dialogue files
@@ -203,8 +201,7 @@ func update_dialogue_file_cache() -> void:
 func save_dialogue_cache() -> void:
 	var file: File = File.new()
 	file.open(DialogueConstants.CACHE_PATH, File.WRITE)
-	var json: JSON = JSON.new()
-	file.store_string(json.stringify(dialogue_file_cache))
+	file.store_string(JSON.stringify(dialogue_file_cache))
 	file.close()
 
 

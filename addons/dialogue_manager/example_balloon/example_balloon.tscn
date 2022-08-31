@@ -1,7 +1,7 @@
 [gd_scene load_steps=5 format=3 uid="uid://g03pae3ovm6r"]
 
 [ext_resource type="Script" path="res://addons/dialogue_manager/example_balloon/example_balloon.gd" id="1_4u26j"]
-[ext_resource type="PackedScene" uid="uid://b3fou1ah46t1e" path="res://addons/dialogue_manager/dialogue_label.tscn" id="2_a8ve6"]
+[ext_resource type="PackedScene" uid="uid://ckvgyvclnwggo" path="res://addons/dialogue_manager/dialogue_label.tscn" id="2_a8ve6"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_5d24i"]
 content_margin_left = 40.0
@@ -23,12 +23,13 @@ script = ExtResource("1_4u26j")
 response_template = NodePath("Balloon/Margin/VBox/ResponseTemplate")
 
 [node name="Balloon" type="ColorRect" parent="."]
+anchors_preset = 10
 anchor_right = 1.0
-offset_bottom = 143.0
 grow_horizontal = 2
 color = Color(0, 0, 0, 1)
 
 [node name="Margin" type="MarginContainer" parent="Balloon"]
+anchors_preset = 10
 anchor_right = 1.0
 offset_bottom = 119.0
 grow_horizontal = 2
@@ -41,13 +42,13 @@ metadata/_edit_layout_mode = 1
 [node name="VBox" type="VBoxContainer" parent="Balloon/Margin"]
 offset_left = 20.0
 offset_top = 10.0
-offset_right = 1004.0
+offset_right = 300.0
 offset_bottom = 119.0
 theme_override_constants/separation = 10
 
 [node name="CharacterLabel" type="RichTextLabel" parent="Balloon/Margin/VBox"]
 modulate = Color(1, 1, 1, 0.501961)
-offset_right = 984.0
+offset_right = 280.0
 offset_bottom = 23.0
 mouse_filter = 1
 bbcode_enabled = true
@@ -56,21 +57,23 @@ fit_content_height = true
 scroll_active = false
 
 [node name="DialogueLabel" parent="Balloon/Margin/VBox" instance=ExtResource("2_a8ve6")]
+anchors_preset = 0
 anchor_right = 0.0
 offset_top = 33.0
-offset_right = 984.0
+offset_right = 280.0
 offset_bottom = 56.0
+grow_horizontal = 1
 text = "Dialogue"
 
 [node name="Responses" type="VBoxContainer" parent="Balloon/Margin/VBox"]
 offset_top = 66.0
-offset_right = 984.0
+offset_right = 280.0
 offset_bottom = 66.0
 theme_override_constants/separation = 2
 
 [node name="ResponseTemplate" type="RichTextLabel" parent="Balloon/Margin/VBox"]
 offset_top = 76.0
-offset_right = 984.0
+offset_right = 280.0
 offset_bottom = 109.0
 theme_override_styles/focus = SubResource("StyleBoxFlat_5d24i")
 theme_override_styles/normal = SubResource("StyleBoxFlat_oj3c8")
@@ -78,9 +81,9 @@ bbcode_enabled = true
 text = "Response"
 fit_content_height = true
 scroll_active = false
+shortcut_keys_enabled = false
 meta_underlined = false
 hint_underlined = false
-shortcut_keys_enabled = false
 
 [connection signal="gui_input" from="Balloon" to="." method="_on_balloon_gui_input"]
 [connection signal="resized" from="Balloon/Margin" to="." method="_on_margin_resized"]

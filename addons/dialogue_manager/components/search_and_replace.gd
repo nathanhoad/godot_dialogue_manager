@@ -43,9 +43,10 @@ var result_index: int = -1:
 		return result_index
 
 
-func _ready():
-	previous_button.icon = get_theme_icon("ArrowLeft", "EditorIcons")
-	next_button.icon = get_theme_icon("ArrowRight", "EditorIcons")
+func _ready() -> void:
+	# For some reason theme icons aren't available in the first tick
+	call_deferred("apply_theme")
+	
 	self.result_index = -1
 	
 	replace_panel.hide()
@@ -53,7 +54,12 @@ func _ready():
 	replace_all_button.disabled = true
 	
 	hide()
-	
+
+
+func apply_theme() -> void:
+	previous_button.icon = get_theme_icon("ArrowLeft", "EditorIcons")
+	next_button.icon = get_theme_icon("ArrowRight", "EditorIcons")
+
 
 # Find text in the code
 func search(text: String = "", default_result_index: int = 0) -> void:
@@ -99,6 +105,10 @@ func _on_text_edit_gui_input(event: InputEvent) -> void:
 
 func _on_text_edit_text_changed() -> void:
 	results.clear()
+
+
+func _on_search_and_replace_theme_changed() -> void:
+	apply_theme()
 
 
 func _on_input_text_changed(new_text: String) -> void:

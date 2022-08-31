@@ -82,6 +82,7 @@ var dialogue_line: Dictionary:
 func _ready() -> void:
 	response_template.hide()
 	balloon.hide()
+	balloon.custom_minimum_size.x = balloon.get_viewport_rect().size.x
 	
 	DialogueManager.mutation.connect(_on_mutation)
 
@@ -181,6 +182,7 @@ func _on_balloon_gui_input(event: InputEvent) -> void:
 func _on_margin_resized() -> void:
 	if is_instance_valid(margin):
 		balloon.custom_minimum_size.y = margin.size.y
+		# Force a resize on only the height
 		balloon.size.y = 0
 		var viewport_size = balloon.get_viewport_rect().size
 		balloon.global_position = Vector2((viewport_size.x - balloon.size.x) * 0.5, viewport_size.y - balloon.size.y)

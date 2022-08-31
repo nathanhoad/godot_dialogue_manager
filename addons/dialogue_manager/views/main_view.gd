@@ -75,7 +75,8 @@ var colors: Dictionary = {}
 
 
 func _ready() -> void:
-	apply_theme()
+	# For some reason theme icons aren't available in the first tick
+	call_deferred("apply_theme")
 	
 	# Start with nothing open
 	self.current_file_path = ""
@@ -96,9 +97,6 @@ func _ready() -> void:
 	if just_refreshed != null:
 		DialogueSettings.set_user_value("just_refreshed", null)
 		call_deferred("load_from_version_refresh", just_refreshed)
-	
-	# Populate recent files
-	build_open_menu()
 	
 	# Hook up the search toolbar
 	search_and_replace.code_edit = code_edit
@@ -222,21 +220,23 @@ func apply_theme() -> void:
 	
 	current_file_button.icon = get_theme_icon("Filesystem", "EditorIcons")
 	new_button.icon = get_theme_icon("New", "EditorIcons")
-	new_button.hint_tooltip = "Start a new file"
+	new_button.tooltip_text = "Start a new file"
 	open_button.icon = get_theme_icon("Load", "EditorIcons")
-	open_button.hint_tooltip = "Open a file"
+	open_button.tooltip_text = "Open a file"
 	test_button.icon = get_theme_icon("PlayScene", "EditorIcons")
-	test_button.hint_tooltip = "Test dialogue"
+	test_button.tooltip_text = "Test dialogue"
 	search_button.icon = get_theme_icon("Search", "EditorIcons")
-	search_button.hint_tooltip = "Search for text"
+	search_button.tooltip_text = "Search for text"
 	insert_button.icon = get_theme_icon("RichTextEffect", "EditorIcons")
 	insert_button.text = "Insert"
 	translations_button.icon = get_theme_icon("Translation", "EditorIcons")
 	translations_button.text = "Translations"
 	settings_button.icon = get_theme_icon("Tools", "EditorIcons")
-	settings_button.hint_tooltip = "Settings"
+	settings_button.tooltip_text = "Settings"
 	docs_button.icon = get_theme_icon("Help", "EditorIcons")
 	docs_button.text = "Docs"
+	
+	update_button.apply_theme()
 	
 	# Set up the effect menu
 	var popup: PopupMenu = insert_button.get_popup()
@@ -257,7 +257,6 @@ func apply_theme() -> void:
 	popup.add_icon_item(get_theme_icon("AssetLib", "EditorIcons"), "Import changes from CSV..." , 3)
 	popup.add_separator()
 	popup.add_icon_item(get_theme_icon("FileList", "EditorIcons"), "Save to PO...", 5)
-	
 
 
 ### Helpers
@@ -664,6 +663,10 @@ func _on_new_button_pressed() -> void:
 
 func _on_new_dialog_file_selected(path: String) -> void:
 	open_file(path)
+
+
+func _on_open_button_about_to_popup() -> void:
+	build_open_menu()
 
 
 func _on_open_dialog_file_selected(path: String) -> void:
