@@ -42,6 +42,7 @@ seconds_per_step = 0.0
 
 [node name="Background" type="ColorRect" parent="."]
 texture_filter = 1
+anchors_preset = 12
 anchor_top = 1.0
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -50,13 +51,14 @@ mouse_filter = 1
 color = Color(0, 0, 0, 1)
 
 [node name="Margin" type="MarginContainer" parent="Background"]
+anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 theme_override_constants/margin_left = 20
 
 [node name="Responses" type="VBoxContainer" parent="Background/Margin"]
 offset_left = 20.0
-offset_right = 1024.0
+offset_right = 1152.0
 offset_bottom = 200.0
 size_flags_horizontal = 3
 size_flags_vertical = 3
@@ -65,7 +67,7 @@ size_flags_vertical = 3
 clip_contents = false
 custom_minimum_size = Vector2(0, 32)
 offset_left = 20.0
-offset_right = 1024.0
+offset_right = 1152.0
 offset_bottom = 200.0
 size_flags_horizontal = 3
 mouse_default_cursor_shape = 2

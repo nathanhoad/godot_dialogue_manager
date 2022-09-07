@@ -44,8 +44,7 @@ var result_index: int = -1:
 
 
 func _ready() -> void:
-	# For some reason theme icons aren't available in the first tick
-	call_deferred("apply_theme")
+	apply_theme()
 	
 	self.result_index = -1
 	
@@ -57,8 +56,10 @@ func _ready() -> void:
 
 
 func apply_theme() -> void:
-	previous_button.icon = get_theme_icon("ArrowLeft", "EditorIcons")
-	next_button.icon = get_theme_icon("ArrowRight", "EditorIcons")
+	if is_instance_valid(previous_button):
+		previous_button.icon = get_theme_icon("ArrowLeft", "EditorIcons")
+	if is_instance_valid(next_button):
+		next_button.icon = get_theme_icon("ArrowRight", "EditorIcons")
 
 
 # Find text in the code

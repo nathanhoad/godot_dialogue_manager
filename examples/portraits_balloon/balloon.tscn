@@ -3,7 +3,7 @@
 [ext_resource type="Script" path="res://examples/portraits_balloon/balloon.gd" id="1_bf5nr"]
 [ext_resource type="AudioStream" uid="uid://s3ltpt0lmtyw" path="res://examples/portraits_balloon/talk.wav" id="2_lpqs4"]
 [ext_resource type="Texture2D" uid="uid://bkyteweyoly67" path="res://examples/portraits_balloon/portraits/nathan.png" id="3_wu27c"]
-[ext_resource type="PackedScene" uid="uid://b3fou1ah46t1e" path="res://addons/dialogue_manager/dialogue_label.tscn" id="4_m3ccg"]
+[ext_resource type="PackedScene" uid="uid://ckvgyvclnwggo" path="res://addons/dialogue_manager/dialogue_label.tscn" id="4_m3ccg"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_5d24i"]
 content_margin_left = 40.0
@@ -29,6 +29,7 @@ stream = ExtResource("2_lpqs4")
 
 [node name="Balloon" type="ColorRect" parent="."]
 texture_filter = 2
+anchors_preset = 10
 anchor_right = 1.0
 offset_bottom = 143.0
 grow_horizontal = 2
@@ -36,6 +37,7 @@ color = Color(0, 0, 0, 1)
 
 [node name="Margin" type="MarginContainer" parent="Balloon"]
 custom_minimum_size = Vector2(0, 190)
+anchors_preset = 10
 anchor_right = 1.0
 offset_bottom = 119.0
 grow_horizontal = 2
@@ -48,12 +50,14 @@ metadata/_edit_layout_mode = 1
 [node name="HBox" type="HBoxContainer" parent="Balloon/Margin"]
 offset_left = 20.0
 offset_top = 20.0
-offset_right = 1004.0
+offset_right = 1132.0
 offset_bottom = 170.0
 theme_override_constants/separation = 20
 
 [node name="Portrait" type="Control" parent="Balloon/Margin/HBox"]
 custom_minimum_size = Vector2(150, 0)
+layout_mode = 3
+anchors_preset = 0
 offset_right = 150.0
 offset_bottom = 150.0
 
@@ -63,14 +67,14 @@ centered = false
 
 [node name="VBox" type="VBoxContainer" parent="Balloon/Margin/HBox"]
 offset_left = 170.0
-offset_right = 984.0
+offset_right = 1112.0
 offset_bottom = 150.0
 size_flags_horizontal = 3
 theme_override_constants/separation = 10
 
 [node name="CharacterLabel" type="RichTextLabel" parent="Balloon/Margin/HBox/VBox"]
 modulate = Color(1, 1, 1, 0.501961)
-offset_right = 814.0
+offset_right = 942.0
 offset_bottom = 23.0
 mouse_filter = 1
 bbcode_enabled = true
@@ -79,21 +83,22 @@ fit_content_height = true
 scroll_active = false
 
 [node name="DialogueLabel" parent="Balloon/Margin/HBox/VBox" instance=ExtResource("4_m3ccg")]
+anchors_preset = 0
 anchor_right = 0.0
 offset_top = 33.0
-offset_right = 814.0
+offset_right = 942.0
 offset_bottom = 56.0
 text = "Dialogue"
 
 [node name="Responses" type="VBoxContainer" parent="Balloon/Margin/HBox/VBox"]
 offset_top = 66.0
-offset_right = 814.0
+offset_right = 942.0
 offset_bottom = 66.0
 theme_override_constants/separation = 2
 
 [node name="ResponseTemplate" type="RichTextLabel" parent="Balloon/Margin/HBox/VBox"]
 offset_top = 76.0
-offset_right = 814.0
+offset_right = 942.0
 offset_bottom = 109.0
 theme_override_styles/focus = SubResource("StyleBoxFlat_5d24i")
 theme_override_styles/normal = SubResource("StyleBoxFlat_oj3c8")
@@ -101,9 +106,9 @@ bbcode_enabled = true
 text = "Response"
 fit_content_height = true
 scroll_active = false
+shortcut_keys_enabled = false
 meta_underlined = false
 hint_underlined = false
-shortcut_keys_enabled = false
 
 [connection signal="gui_input" from="Balloon" to="." method="_on_balloon_gui_input"]
 [connection signal="resized" from="Balloon/Margin" to="." method="_on_margin_resized"]

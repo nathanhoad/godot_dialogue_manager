@@ -23,8 +23,7 @@ var filter: String:
 
 
 func _ready() -> void:
-	# For some reason theme icons aren't available in the first tick
-	call_deferred("apply_theme")
+	apply_theme()
 
 
 func select_title(title: String) -> void:
@@ -42,7 +41,8 @@ func apply_filter() -> void:
 
 
 func apply_theme() -> void:
-	filter_edit.right_icon = get_theme_icon("Search", "EditorIcons")
+	if is_instance_valid(filter_edit):
+		filter_edit.right_icon = get_theme_icon("Search", "EditorIcons")
 
 
 ### Signals

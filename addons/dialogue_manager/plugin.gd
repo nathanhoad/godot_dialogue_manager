@@ -25,7 +25,7 @@ func _enter_tree():
 		
 		main_view = MainView.instantiate()
 		main_view.editor_plugin = self
-		get_editor_interface().get_editor_main_control().add_child(main_view)
+		get_editor_interface().get_editor_main_screen().add_child(main_view)
 		_make_visible(false)
 		
 		update_dialogue_file_cache()
@@ -65,7 +65,7 @@ func _get_plugin_icon() -> Texture2D:
 	var base_color = get_editor_interface().get_editor_settings().get_setting("interface/theme/base_color")
 	var theme = "light" if base_color.v > 0.5 else "dark"
 	var base_icon = load("res://addons/dialogue_manager/assets/icons/icon_%s.svg" % theme) as Texture2D
-	var size = get_editor_interface().get_editor_main_control().get_theme_icon("Godot", "EditorIcons").get_size()
+	var size = get_editor_interface().get_editor_main_screen().get_theme_icon("Godot", "EditorIcons").get_size()
 	var image: Image = base_icon.get_image()
 	image.resize(size.x, size.y, Image.INTERPOLATE_TRILINEAR)
 	return ImageTexture.create_from_image(image)

@@ -75,8 +75,7 @@ var colors: Dictionary = {}
 
 
 func _ready() -> void:
-	# For some reason theme icons aren't available in the first tick
-	call_deferred("apply_theme")
+	apply_theme()
 	
 	# Start with nothing open
 	self.current_file_path = ""
@@ -199,7 +198,7 @@ func save_file() -> void:
 
 # Apply theme colors and icons to the UI
 func apply_theme() -> void:
-	if is_instance_valid(editor_plugin):
+	if is_instance_valid(editor_plugin) and is_instance_valid(code_edit):
 		var editor_settings = editor_plugin.get_editor_interface().get_editor_settings()
 		colors = {
 			background = editor_settings.get_setting("text_editor/theme/highlighting/background_color"),
@@ -218,45 +217,45 @@ func apply_theme() -> void:
 		}
 		code_edit.colors = colors
 	
-	current_file_button.icon = get_theme_icon("Filesystem", "EditorIcons")
-	new_button.icon = get_theme_icon("New", "EditorIcons")
-	new_button.tooltip_text = "Start a new file"
-	open_button.icon = get_theme_icon("Load", "EditorIcons")
-	open_button.tooltip_text = "Open a file"
-	test_button.icon = get_theme_icon("PlayScene", "EditorIcons")
-	test_button.tooltip_text = "Test dialogue"
-	search_button.icon = get_theme_icon("Search", "EditorIcons")
-	search_button.tooltip_text = "Search for text"
-	insert_button.icon = get_theme_icon("RichTextEffect", "EditorIcons")
-	insert_button.text = "Insert"
-	translations_button.icon = get_theme_icon("Translation", "EditorIcons")
-	translations_button.text = "Translations"
-	settings_button.icon = get_theme_icon("Tools", "EditorIcons")
-	settings_button.tooltip_text = "Settings"
-	docs_button.icon = get_theme_icon("Help", "EditorIcons")
-	docs_button.text = "Docs"
-	
-	update_button.apply_theme()
-	
-	# Set up the effect menu
-	var popup: PopupMenu = insert_button.get_popup()
-	popup.clear()
-	popup.add_icon_item(get_theme_icon("RichTextEffect", "EditorIcons"), "Wave BBCode", 0)
-	popup.add_icon_item(get_theme_icon("RichTextEffect", "EditorIcons"), "Shake BBCode", 1)
-	popup.add_separator()
-	popup.add_icon_item(get_theme_icon("Time", "EditorIcons"), "Typing pause", 3)
-	popup.add_icon_item(get_theme_icon("ViewportSpeed", "EditorIcons"), "Typing speed change", 4)
-	popup.add_icon_item(get_theme_icon("DebugNext", "EditorIcons"), "Auto advance", 5)
-	
-	# Set up the translations menu
-	popup = translations_button.get_popup()
-	popup.clear()
-	popup.add_icon_item(get_theme_icon("Translation", "EditorIcons"), "Generate line IDs", 0)
-	popup.add_separator()
-	popup.add_icon_item(get_theme_icon("FileList", "EditorIcons"), "Save to CSV...", 2)
-	popup.add_icon_item(get_theme_icon("AssetLib", "EditorIcons"), "Import changes from CSV..." , 3)
-	popup.add_separator()
-	popup.add_icon_item(get_theme_icon("FileList", "EditorIcons"), "Save to PO...", 5)
+		current_file_button.icon = get_theme_icon("Filesystem", "EditorIcons")
+		new_button.icon = get_theme_icon("New", "EditorIcons")
+		new_button.tooltip_text = "Start a new file"
+		open_button.icon = get_theme_icon("Load", "EditorIcons")
+		open_button.tooltip_text = "Open a file"
+		test_button.icon = get_theme_icon("PlayScene", "EditorIcons")
+		test_button.tooltip_text = "Test dialogue"
+		search_button.icon = get_theme_icon("Search", "EditorIcons")
+		search_button.tooltip_text = "Search for text"
+		insert_button.icon = get_theme_icon("RichTextEffect", "EditorIcons")
+		insert_button.text = "Insert"
+		translations_button.icon = get_theme_icon("Translation", "EditorIcons")
+		translations_button.text = "Translations"
+		settings_button.icon = get_theme_icon("Tools", "EditorIcons")
+		settings_button.tooltip_text = "Settings"
+		docs_button.icon = get_theme_icon("Help", "EditorIcons")
+		docs_button.text = "Docs"
+		
+		update_button.apply_theme()
+		
+		# Set up the effect menu
+		var popup: PopupMenu = insert_button.get_popup()
+		popup.clear()
+		popup.add_icon_item(get_theme_icon("RichTextEffect", "EditorIcons"), "Wave BBCode", 0)
+		popup.add_icon_item(get_theme_icon("RichTextEffect", "EditorIcons"), "Shake BBCode", 1)
+		popup.add_separator()
+		popup.add_icon_item(get_theme_icon("Time", "EditorIcons"), "Typing pause", 3)
+		popup.add_icon_item(get_theme_icon("ViewportSpeed", "EditorIcons"), "Typing speed change", 4)
+		popup.add_icon_item(get_theme_icon("DebugNext", "EditorIcons"), "Auto advance", 5)
+		
+		# Set up the translations menu
+		popup = translations_button.get_popup()
+		popup.clear()
+		popup.add_icon_item(get_theme_icon("Translation", "EditorIcons"), "Generate line IDs", 0)
+		popup.add_separator()
+		popup.add_icon_item(get_theme_icon("FileList", "EditorIcons"), "Save to CSV...", 2)
+		popup.add_icon_item(get_theme_icon("AssetLib", "EditorIcons"), "Import changes from CSV..." , 3)
+		popup.add_separator()
+		popup.add_icon_item(get_theme_icon("FileList", "EditorIcons"), "Save to PO...", 5)
 
 
 ### Helpers
