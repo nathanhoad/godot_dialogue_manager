@@ -212,6 +212,7 @@ func apply_theme() -> void:
 			members = editor_settings.get_setting("text_editor/theme/highlighting/member_variable_color"),
 			strings = editor_settings.get_setting("text_editor/theme/highlighting/string_color"),
 			numbers = editor_settings.get_setting("text_editor/theme/highlighting/number_color"),
+			symbols = editor_settings.get_setting("text_editor/theme/highlighting/symbol_color"),
 			comments = editor_settings.get_setting("text_editor/theme/highlighting/comment_color"),
 			jumps = Color(editor_settings.get_setting("text_editor/theme/highlighting/control_flow_keyword_color"), 0.7),
 		}

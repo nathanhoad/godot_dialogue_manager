@@ -59,7 +59,7 @@ var colors: Dictionary:
 		syntax_highlighter.add_color_region(": ", "::", colors.text, true)
 		
 		# General UI
-		syntax_highlighter.symbol_color = colors.text
+		syntax_highlighter.symbol_color = colors.symbols
 		add_theme_color_override("font_color", colors.text)
 		add_theme_color_override("background_color", colors.background)
 		add_theme_color_override("current_line_color", colors.current_line)

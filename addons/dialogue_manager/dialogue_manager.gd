@@ -158,8 +158,19 @@ func get_line(resource: Resource, key: String) -> Dictionary:
 	
 	var data: Dictionary = resource.get_meta("lines").get(key)
 	
+	# Check for weighted random lines
+	if data.has("siblings"):
+		var result = randi() % data.siblings.reduce(func(total, sibling): return total + sibling.weight, 0)
+		var cummulative_weight = 0
+		for sibling in data.siblings:
+			if result < cummulative_weight + sibling.weight:
+				data = resource.get_meta("lines").get(sibling.id)
+				break
+			else:
+				cummulative_weight += sibling.weight
+	
 	# Check condtiions
-	if data.type == DialogueConstants.TYPE_CONDITION:
+	elif data.type == DialogueConstants.TYPE_CONDITION:
 		# "else" will have no actual condition
 		if await check_condition(data):
 			return await get_line(resource, data.next_id + id_trail)
@@ -167,7 +178,7 @@ func get_line(resource: Resource, key: String) -> Dictionary:
 			return await get_line(resource, data.next_conditional_id + id_trail)
 	
 	# Evaluate jumps
-	if data.type == DialogueConstants.TYPE_GOTO:
+	elif data.type == DialogueConstants.TYPE_GOTO:
 		if data.is_snippet:
 			id_trail = "|" + data.next_id_after + id_trail
 		return await get_line(resource, data.next_id + id_trail)

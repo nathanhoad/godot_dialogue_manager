@@ -6,17 +6,40 @@ const DialogueConstants = preload("res://addons/dialogue_manager/constants.gd")
 const DialogueSettings = preload("res://addons/dialogue_manager/components/settings.gd")
 
 
-var IMPORT_REGEX: RegEx = RegEx.new()
-var VALID_TITLE_REGEX: RegEx = RegEx.new()
-var TRANSLATION_REGEX: RegEx = RegEx.new()
-var MUTATION_REGEX: RegEx = RegEx.new()
-var CONDITION_REGEX: RegEx = RegEx.new()
-var WRAPPED_CONDITION_REGEX: RegEx = RegEx.new()
-var CONDITION_PARTS_REGEX: RegEx = RegEx.new()
-var REPLACEMENTS_REGEX: RegEx = RegEx.new()
-var GOTO_REGEX: RegEx = RegEx.new()
+var IMPORT_REGEX: RegEx = RegEx.create_from_string("import \"(?<path>[^\"]+)\" as (?<prefix>[^\\!\\@\\#\\$\\%\\^\\&\\*\\(\\)\\-\\=\\+\\{\\}\\[\\]\\;\\:\\\"\\'\\,\\.\\<\\>\\?\\/\\s]+)")
+var VALID_TITLE_REGEX: RegEx = RegEx.create_from_string("^[^\\!\\@\\#\\$\\%\\^\\&\\*\\(\\)\\-\\=\\+\\{\\}\\[\\]\\;\\:\\\"\\'\\,\\.\\<\\>\\?\\/\\s]+$")
+var TRANSLATION_REGEX: RegEx = RegEx.create_from_string("\\[ID:(?<tr>.*?)\\]")
+var MUTATION_REGEX: RegEx = RegEx.create_from_string("(do|set) (?<mutation>.*)")
+var CONDITION_REGEX: RegEx = RegEx.create_from_string("(if|elif) (?<condition>.*)")
+var WRAPPED_CONDITION_REGEX: RegEx = RegEx.create_from_string("\\[if (?<condition>.*)\\]")
+var REPLACEMENTS_REGEX: RegEx = RegEx.create_from_string("{{(.*?)}}")
+var GOTO_REGEX: RegEx = RegEx.create_from_string("=><? (?<jump_to_title>.*)")
 
-var TOKEN_DEFINITIONS: Dictionary = {}
+var TOKEN_DEFINITIONS: Dictionary = {
+	DialogueConstants.TOKEN_FUNCTION: RegEx.create_from_string("^[a-zA-Z_][a-zA-Z_0-9]+\\("),
+	DialogueConstants.TOKEN_DICTIONARY_REFERENCE: RegEx.create_from_string("^[a-zA-Z_][a-zA-Z_0-9]+\\["),
+	DialogueConstants.TOKEN_PARENS_OPEN: RegEx.create_from_string("^\\("),
+	DialogueConstants.TOKEN_PARENS_CLOSE: RegEx.create_from_string("^\\)"),
+	DialogueConstants.TOKEN_BRACKET_OPEN: RegEx.create_from_string("^\\["),
+	DialogueConstants.TOKEN_BRACKET_CLOSE: RegEx.create_from_string("^\\]"),
+	DialogueConstants.TOKEN_BRACE_OPEN: RegEx.create_from_string("^\\{"),
+	DialogueConstants.TOKEN_BRACE_CLOSE: RegEx.create_from_string("^\\}"),
+	DialogueConstants.TOKEN_COLON: RegEx.create_from_string("^:"),
+	DialogueConstants.TOKEN_COMPARISON: RegEx.create_from_string("^(==|<=|>=|<|>|!=|in )"),
+	DialogueConstants.TOKEN_ASSIGNMENT: RegEx.create_from_string("^(\\+=|\\-=|\\*=|/=|=)"),
+	DialogueConstants.TOKEN_NUMBER: RegEx.create_from_string("^\\-?\\d+(\\.\\d+)?"),
+	DialogueConstants.TOKEN_OPERATOR: RegEx.create_from_string("^(\\+|\\-|\\*|/|%)"),
+	DialogueConstants.TOKEN_COMMA: RegEx.create_from_string("^,"),
+	DialogueConstants.TOKEN_DOT: RegEx.create_from_string("^\\."),
+	DialogueConstants.TOKEN_BOOL: RegEx.create_from_string("^(true|false)"),
+	DialogueConstants.TOKEN_NOT: RegEx.create_from_string("^(not( |$)|!)"),
+	DialogueConstants.TOKEN_AND_OR: RegEx.create_from_string("^(and|or)( |$)"),
+	DialogueConstants.TOKEN_STRING: RegEx.create_from_string("^\".*?\""),
+	DialogueConstants.TOKEN_VARIABLE: RegEx.create_from_string("^[a-zA-Z_][a-zA-Z_0-9]+"),
+	DialogueConstants.TOKEN_COMMENT: RegEx.create_from_string("^#.*")
+}
+
+var WEIGHTED_RANDOM_SIBLINGS_REGEX: RegEx = RegEx.create_from_string("^\\%(?<weight>\\d+)? ")
 
 var raw_lines: PackedStringArray = []
 var parent_stack: Array[String] = []
@@ -29,46 +52,6 @@ var errors: Array[Dictionary] = []
 
 var _imported_line_map: Array[Dictionary] = []
 var _imported_line_count: int = 0
-
-
-func _init() -> void:
-	IMPORT_REGEX.compile("import \"(?<path>[^\"]+)\" as (?<prefix>[^\\!\\@\\#\\$\\%\\^\\&\\*\\(\\)\\-\\=\\+\\{\\}\\[\\]\\;\\:\\\"\\'\\,\\.\\<\\>\\?\\/\\s]+)")
-	VALID_TITLE_REGEX.compile("^[^\\!\\@\\#\\$\\%\\^\\&\\*\\(\\)\\-\\=\\+\\{\\}\\[\\]\\;\\:\\\"\\'\\,\\.\\<\\>\\?\\/\\s]+$")
-	TRANSLATION_REGEX.compile("\\[ID:(?<tr>.*?)\\]")
-	MUTATION_REGEX.compile("(do|set) (?<mutation>.*)")
-	WRAPPED_CONDITION_REGEX.compile("\\[if (?<condition>.*)\\]")
-	CONDITION_REGEX.compile("(if|elif) (?<condition>.*)")
-	REPLACEMENTS_REGEX.compile("{{(.*?)}}")
-	GOTO_REGEX.compile("=><? (?<jump_to_title>.*)")
-	
-	# Build our list of tokeniser tokens
-	var tokens = {
-		DialogueConstants.TOKEN_FUNCTION: "^[a-zA-Z_][a-zA-Z_0-9]+\\(",
-		DialogueConstants.TOKEN_DICTIONARY_REFERENCE: "^[a-zA-Z_][a-zA-Z_0-9]+\\[",
-		DialogueConstants.TOKEN_PARENS_OPEN: "^\\(",
-		DialogueConstants.TOKEN_PARENS_CLOSE: "^\\)",
-		DialogueConstants.TOKEN_BRACKET_OPEN: "^\\[",
-		DialogueConstants.TOKEN_BRACKET_CLOSE: "^\\]",
-		DialogueConstants.TOKEN_BRACE_OPEN: "^\\{",
-		DialogueConstants.TOKEN_BRACE_CLOSE: "^\\}",
-		DialogueConstants.TOKEN_COLON: "^:",
-		DialogueConstants.TOKEN_COMPARISON: "^(==|<=|>=|<|>|!=|in )",
-		DialogueConstants.TOKEN_ASSIGNMENT: "^(\\+=|\\-=|\\*=|/=|=)",
-		DialogueConstants.TOKEN_NUMBER: "^\\-?\\d+(\\.\\d+)?",
-		DialogueConstants.TOKEN_OPERATOR: "^(\\+|\\-|\\*|/|%)",
-		DialogueConstants.TOKEN_COMMA: "^,",
-		DialogueConstants.TOKEN_DOT: "^\\.",
-		DialogueConstants.TOKEN_BOOL: "^(true|false)",
-		DialogueConstants.TOKEN_NOT: "^(not( |$)|!)",
-		DialogueConstants.TOKEN_AND_OR: "^(and|or)( |$)",
-		DialogueConstants.TOKEN_STRING: "^\".*?\"",
-		DialogueConstants.TOKEN_VARIABLE: "^[a-zA-Z_][a-zA-Z_0-9]+",
-		DialogueConstants.TOKEN_COMMENT: "^#.*"
-	}
-	for key in tokens.keys():
-		var regex = RegEx.new()
-		regex.compile(tokens.get(key))
-		TOKEN_DEFINITIONS[key] = regex
 
 
 ## Parse some raw dialogue text. Returns a dictionary containing parse results
@@ -237,6 +220,11 @@ func parse(text: String) -> int:
 		
 		# Dialogue
 		else:
+			# Work out any weighted random siblings
+			if raw_line.begins_with("%"):
+				apply_weighted_random(id, raw_line, indent_size, line)
+				raw_line = WEIGHTED_RANDOM_SIBLINGS_REGEX.sub(raw_line, "")
+			
 			line["type"] = DialogueConstants.TYPE_DIALOGUE
 			var l = raw_line.replace("\\:", "!ESCAPED_COLON!")
 			if ": " in l:
@@ -537,6 +525,36 @@ func find_previous_response_id(line_number: int) -> String:
 				
 	# Return itself if nothing was found
 	return last_found_response_id
+
+
+func apply_weighted_random(id: int, raw_line: String, indent_size: int, line: Dictionary) -> void:
+	var weight: int = 1
+	var found = WEIGHTED_RANDOM_SIBLINGS_REGEX.search(raw_line)
+	if found and found.names.has("weight"):
+		weight = found.strings[found.names.weight].to_int()
+	
+	# Look back up the list to find the first weighted random line in this group
+	var original_random_line: Dictionary = {}
+	for i in range(id, 0, -1):
+		if not raw_lines[i].strip_edges().begins_with("%") or get_indent(raw_lines[i]) != indent_size:
+			break
+		elif parsed_lines.has(str(i)) and parsed_lines[str(i)].has("siblings"):
+			original_random_line = parsed_lines[str(i)]
+	
+	# Attach it to the original random line and work out where to go after the line
+	if original_random_line.size() > 0:
+		original_random_line["siblings"] += [{ weight = weight, id = str(id) }]
+		line["next_id"] = original_random_line.next_id
+	# Or set up this line as the original
+	else:
+		line["siblings"] = [{ weight = weight, id = str(id) }]
+		# Find the last weighted random line in this group
+		for i in range(id, raw_lines.size()):
+			if i + 1 >= raw_lines.size():
+				break
+			if not raw_lines[i + 1].strip_edges().begins_with("%") or get_indent(raw_lines[i + 1]) != indent_size:
+				line["next_id"] = get_line_after_line(i, indent_size, line)
+				break
 
 
 func find_next_condition_sibling(line_number: int) -> String:
