@@ -212,8 +212,7 @@ func get_line(key: String, local_resource: DialogueResource) -> DialogueLine:
 		return get_line(data.get("next_id") + id_trail, local_resource)
 	
 	# Set up a line object
-	var line = DialogueLine.new(data, auto_translate)
-	line.dialogue_manager = self
+	var line = DialogueLine.new(data, auto_translate, self)
 	line.next_id += id_trail
 	
 	# Add as a child so that it gets cleaned up automatically

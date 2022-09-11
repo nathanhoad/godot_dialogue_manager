@@ -254,14 +254,6 @@ func parse(content: String) -> Dictionary:
 			if line.get("replacements").size() > 0 and line.get("replacements")[0].has("error"):
 				errors.append(error(id, "Invalid expression"))
 			
-			# Extract any BB style codes out of the text
-			var markers = extract_markers(line.get("text"))
-			line["text"] = markers.get("text")
-			line["pauses"] = markers.get("pauses")
-			line["speeds"] = markers.get("speeds")
-			line["inline_mutations"] = markers.get("mutations")
-			line["time"] = markers.get("time")
-			
 			# Unescape any newlines
 			line["text"] = line.get("text").replace("\\n", "\n")
 		
