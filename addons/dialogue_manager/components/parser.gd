@@ -18,6 +18,8 @@ var CONDITION_PARTS_REGEX := RegEx.new()
 var REPLACEMENTS_REGEX := RegEx.new()
 var GOTO_REGEX := RegEx.new()
 
+var WEIGHTED_RANDOM_SIBLINGS_REGEX: RegEx = RegEx.new()
+
 var TOKEN_DEFINITIONS: Dictionary = {}
 
 
@@ -29,6 +31,8 @@ func _init() -> void:
 	CONDITION_REGEX.compile("(if|elif) (?<condition>.*)")
 	REPLACEMENTS_REGEX.compile("{{(.*?)}}")
 	GOTO_REGEX.compile("=><? (?<jump_to_title>.*)")
+	
+	WEIGHTED_RANDOM_SIBLINGS_REGEX.compile("^\\%(?<weight>\\d+)? ")
 	
 	# Build our list of tokeniser tokens
 	var tokens = {
@@ -236,6 +240,11 @@ func parse(content: String) -> Dictionary:
 		
 		# Dialogue
 		else:
+			# Work out any weighted random siblings
+			if raw_line.begins_with("%"):
+				apply_weighted_random(id, raw_line, indent_size, line, raw_lines, dialogue)
+				raw_line = WEIGHTED_RANDOM_SIBLINGS_REGEX.sub(raw_line, "")
+			
 			line["type"] = DialogueConstants.TYPE_DIALOGUE
 			var l = raw_line.replace("\\:", "!ESCAPED_COLON!")
 			if ": " in l:
@@ -413,6 +422,36 @@ func get_line_after_line(id: int, indent_size: int, line: Dictionary, raw_lines:
 
 func get_indent(line: String) -> int:
 	return line.count("\t", 0, line.find(line.strip_edges()))
+
+
+func apply_weighted_random(id: int, raw_line: String, indent_size: int, line: Dictionary, raw_lines: Array, dialogue: Dictionary) -> void:
+	var weight: int = 1
+	var found = WEIGHTED_RANDOM_SIBLINGS_REGEX.search(raw_line)
+	if found and found.names.has("weight"):
+		weight = found.strings[found.names.weight].to_int()
+	
+	# Look back up the list to find the first weighted random line in this group
+	var original_random_line: Dictionary = {}
+	for i in range(id, 0, -1):
+		if not raw_lines[i].strip_edges().begins_with("%") or get_indent(raw_lines[i]) != indent_size:
+			break
+		elif dialogue.has(str(i)) and dialogue[str(i)].has("siblings"):
+			original_random_line = dialogue[str(i)]
+	
+	# Attach it to the original random line and work out where to go after the line
+	if original_random_line.size() > 0:
+		original_random_line["siblings"] += [{ weight = weight, id = str(id) }]
+		line["next_id"] = original_random_line.next_id
+	# Or set up this line as the original
+	else:
+		line["siblings"] = [{ weight = weight, id = str(id) }]
+		# Find the last weighted random line in this group
+		for i in range(id, raw_lines.size()):
+			if i + 1 >= raw_lines.size():
+				break
+			if not raw_lines[i + 1].strip_edges().begins_with("%") or get_indent(raw_lines[i + 1]) != indent_size:
+				line["next_id"] = get_line_after_line(i, indent_size, line, raw_lines, dialogue)
+				break
 
 
 func get_next_nonempty_line_id(line_number: int, all_lines: Array) -> String:

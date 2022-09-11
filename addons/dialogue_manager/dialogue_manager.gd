@@ -197,8 +197,22 @@ func get_line(key: String, local_resource: DialogueResource) -> DialogueLine:
 	
 	var data = local_resource.lines.get(key)
 	
+	# Check for weighted random lines
+	if data.has("siblings"):
+		var total = 0
+		for sibling in data.get("siblings"):
+			total += sibling.get("weight")
+		var result = randi() % total
+		var cummulative_weight = 0
+		for sibling in data.siblings:
+			if result < cummulative_weight + sibling.weight:
+				data = local_resource.lines.get(sibling.id)
+				break
+			else:
+				cummulative_weight += sibling.weight
+	
 	# Check condtiions
-	if data.get("type") == DialogueConstants.TYPE_CONDITION:
+	elif data.get("type") == DialogueConstants.TYPE_CONDITION:
 		# "else" will have no actual condition
 		if data.get("condition") == null or check(data.get("condition")):
 			return get_line(data.get("next_id") + id_trail, local_resource)
@@ -206,7 +220,7 @@ func get_line(key: String, local_resource: DialogueResource) -> DialogueLine:
 			return get_line(data.get("next_conditional_id") + id_trail, local_resource)
 	
 	# Evaluate jumps
-	if data.get("type") == DialogueConstants.TYPE_GOTO:
+	elif data.get("type") == DialogueConstants.TYPE_GOTO:
 		if data.get("is_snippet"):
 			id_trail = "," + data.get("next_id_after") + id_trail
 		return get_line(data.get("next_id") + id_trail, local_resource)
