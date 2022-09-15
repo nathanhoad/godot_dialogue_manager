@@ -99,7 +99,7 @@ func create_resource_from_text(text: String) -> Resource:
 	parser.parse(text)
 	var results: Dictionary = parser.get_data()
 	var errors: Array[Dictionary] = parser.get_errors()
-	parser.queue_free()
+	parser.free()
 	
 	if errors.size() > 0:
 		printerr("You have errors in your dialogue text.")
