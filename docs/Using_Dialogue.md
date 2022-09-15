@@ -24,7 +24,7 @@ Nathan: Here are some options.
 And then in your game:
 
 ```gdscript
-var resource = load("res://some_dialogue.dialogue)
+var resource = load("res://some_dialogue.dialogue")
 var dialogue_line = await DialogueManager.get_next_dialogue_line(resource, "start")
 ```
 
@@ -54,10 +54,10 @@ The label will emit a `paused_typing` signal (along with the duration of the pau
 
 ## Generating Dialogue Resources at runtime
 
-If you need to construct a dialogue resource at runtime you can use `get_resource_from_text(string)`:
+If you need to construct a dialogue resource at runtime you can use `create_resource_from_text(string)`:
 
 ```gdscript
-var resource = DialogueManager.get_resource_from_text("~ title\nCharacter: Hello!)
+var resource = DialogueManager.create_resource_from_text("~ title\nCharacter: Hello!")
 ```
 
 This will run the given text through the parser.
