@@ -99,7 +99,7 @@ func _prepare_for_dialogue_manager_2(ud) -> void:
 			# Replace translations with IDs
 			line = line.replace("[TR:", "[ID:")
 		
-		raw_text = "\n".join(lines)
+		raw_text = lines.join("\n")
 		
 		var new_path = item.path.replace(".tres", ".dialogue")
 		
