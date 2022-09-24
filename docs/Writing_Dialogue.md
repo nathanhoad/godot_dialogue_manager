@@ -167,6 +167,8 @@ Nathan: What can I do for you?
 
 In the example above, the dialogue manager would expect a global called `SomeGlobal` to implement a method with the signature `func animate(string, string) -> void`.
 
+You can pass an array of nodes/objects when [requesting a line of dialogue](API.md#func-get_next_dialogue_lineresource-resource-key-string--0-extra_game_states-array-----dictionary) which will also be checked for possible mutation methods.
+
 There are also a couple of special built-in mutations you can use:
 
 - `emit(...)` - emit a signal on a game state or the current scene.
@@ -180,7 +182,7 @@ Nathan: I'm not sure we've met before [do wave()]I'm Nathan.
 Nathan: I can also emit signals[do emit("some_signal")] inline.
 ```
 
-One thing to note is that inline mutations that use `await` won't be awaited so the dialogue will continue right away.
+One thing to note is that _inline mutations_ that use `await` won't be awaited so the dialogue will continue right away.
 
 ## Error checking
 
