@@ -134,43 +134,48 @@ func open_file(path: String) -> void:
 	
 	# Create the file if it doesn't exist
 	if not FileAccess.file_exists(path):
-		var file: FileAccess = FileAccess.open(path, FileAccess.WRITE)
-		file.store_string("\n".join([
-			"~ this_is_a_node_title",
-			"",
-			"Nathan: [[Hi|Hello|Howdy]], this is some dialogue.",
-			"Nathan: Here are some choices.",
-			"- First one",
-				"\tNathan: You picked the first one.",
-			"- Second one",
-				"\tNathan: You picked the second one.",
-			"- Start again => this_is_a_node_title",
-			"- End the conversation => END",
-			"Nathan: For more information see the online documentation."
-		]))
-		editor_plugin.get_editor_interface().get_resource_filesystem().scan()
+		create_empty_file(path)
+	
+	editor_plugin.get_editor_interface().get_resource_filesystem().scan()
 	
 	# Open the new resource
 	self.current_file_path = path
-	if current_file_path != "":
-		var file: FileAccess = FileAccess.open(current_file_path, FileAccess.READ)
-		var text = file.get_as_text()
-		
-		code_edit.text = text
-		code_edit.errors = []
-		code_edit.clear_undo_history()
-		code_edit.set_cursor(DialogueSettings.get_caret(current_file_path))
-		code_edit.grab_focus()
-		
-		pristine_text = text
-		
-		_on_code_edit_text_changed()
-		
-		DialogueSettings.add_recent_file(path)
-		build_open_menu()
+	
+	var file: FileAccess = FileAccess.open(current_file_path, FileAccess.READ)
+	var text = file.get_as_text()
+	
+	code_edit.text = text
+	code_edit.errors = []
+	code_edit.clear_undo_history()
+	code_edit.set_cursor(DialogueSettings.get_caret(current_file_path))
+	code_edit.grab_focus()
+	
+	pristine_text = text
+	
+	_on_code_edit_text_changed()
+	
+	DialogueSettings.add_recent_file(path)
+	build_open_menu()
 	
 	errors_panel.errors = []
 	code_edit.errors = []
+
+
+func create_empty_file(path: String) -> void:
+	var file: FileAccess = FileAccess.open(path, FileAccess.WRITE)
+	file.store_string("\n".join([
+		"~ this_is_a_node_title",
+		"",
+		"Nathan: [[Hi|Hello|Howdy]], this is some dialogue.",
+		"Nathan: Here are some choices.",
+		"- First one",
+			"\tNathan: You picked the first one.",
+		"- Second one",
+			"\tNathan: You picked the second one.",
+		"- Start again => this_is_a_node_title",
+		"- End the conversation => END",
+		"Nathan: For more information see the online documentation."
+	]))
 
 
 # Save the current file
@@ -182,6 +187,7 @@ func save_file() -> void:
 	# Save the current resource
 	var file: FileAccess = FileAccess.open(current_file_path, FileAccess.WRITE)
 	file.store_string(code_edit.text)
+	file.flush()
 	
 	pristine_text = code_edit.text
 	update_current_file_button()

@@ -21,6 +21,8 @@ var is_waiting_for_input: bool = false
 ## The current line
 var dialogue_line: Dictionary:
 	set(next_dialogue_line):
+		is_waiting_for_input = false
+		
 		if next_dialogue_line.size() == 0:
 			queue_free()
 			return

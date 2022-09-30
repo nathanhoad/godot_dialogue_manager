@@ -808,7 +808,7 @@ func apply_operation(operator: String, first_value, second_value):
 
 # Check if a dialogue line contains meaningful information
 func is_valid(line: Dictionary) -> bool:
-	if line.size() == 0:
+	if line.size() == 0 or not line.has("type"):
 		return false
 	if line.type == DialogueConstants.TYPE_MUTATION and line.mutation == null:
 		return false
