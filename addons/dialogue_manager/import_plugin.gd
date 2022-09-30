@@ -60,16 +60,14 @@ func _import(source_file: String, save_path: String, options: Dictionary, platfo
 
 func compile_file(path: String, resource_path: String, will_cascade_cache_data: bool = true) -> int:
 	# Get the raw file contents
-	var file: File = File.new()
-	var err: int = file.open(path, File.READ)
-	if err != OK:
-		return err
+	if not FileAccess.file_exists(path): return ERR_FILE_NOT_FOUND
+	
+	var file: FileAccess = FileAccess.open(path, FileAccess.READ)
 	var raw_text: String = file.get_as_text()
-	file.close()
 	
 	# Parse the text
 	var parser: DialogueParser = DialogueParser.new()
-	err = parser.parse(raw_text)
+	var err: int = parser.parse(raw_text)
 	var data: Dictionary = parser.get_data()
 	var errors: Array[Dictionary] = parser.get_errors()
 	parser.free()

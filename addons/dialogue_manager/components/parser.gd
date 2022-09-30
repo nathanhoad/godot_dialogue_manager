@@ -676,11 +676,9 @@ func find_next_line_after_responses(line_number: int) -> String:
 
 ## Import content from another dialogue file or return an ERR
 func import_content(path: String, prefix: String, known_imports: Dictionary) -> int:
-	var file: File = File.new()
-	if file.file_exists(path):
-		file.open(path, File.READ)
+	if FileAccess.file_exists(path):
+		var file = FileAccess.open(path, FileAccess.READ)
 		var content: PackedStringArray = file.get_as_text().split("\n")
-		file.close()
 		
 		var imported_titles: Dictionary = {}
 		

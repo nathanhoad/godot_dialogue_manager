@@ -133,9 +133,8 @@ func open_file(path: String) -> void:
 	save_file()
 	
 	# Create the file if it doesn't exist
-	var file = File.new()
-	if not file.file_exists(path):
-		file.open(path, File.WRITE)
+	if not FileAccess.file_exists(path):
+		var file: FileAccess = FileAccess.open(path, FileAccess.WRITE)
 		file.store_string("\n".join([
 			"~ this_is_a_node_title",
 			"",
@@ -149,16 +148,13 @@ func open_file(path: String) -> void:
 			"- End the conversation => END",
 			"Nathan: For more information see the online documentation."
 		]))
-		file.close()
 		editor_plugin.get_editor_interface().get_resource_filesystem().scan()
 	
 	# Open the new resource
 	self.current_file_path = path
 	if current_file_path != "":
-		file = File.new()
-		file.open(current_file_path, File.READ)
+		var file: FileAccess = FileAccess.open(current_file_path, FileAccess.READ)
 		var text = file.get_as_text()
-		file.close()
 		
 		code_edit.text = text
 		code_edit.errors = []
@@ -184,10 +180,8 @@ func save_file() -> void:
 	if current_file_path == "": return
 	
 	# Save the current resource
-	var file = File.new()
-	file.open(current_file_path, File.WRITE)
+	var file: FileAccess = FileAccess.open(current_file_path, FileAccess.WRITE)
 	file.store_string(code_edit.text)
-	file.close()
 	
 	pristine_text = code_edit.text
 	update_current_file_button()
@@ -386,13 +380,13 @@ func generate_translations_keys() -> void:
 
 # Export dialogue and responses to CSV
 func export_translations_to_csv(path: String) -> void:
-	var file = File.new()
+	var file: FileAccess
 	
 	# If the file exists, open it first and work out which keys are already in it
 	var existing_csv = {}
 	var commas = []
-	if file.file_exists(path):
-		file.open(path, File.READ)
+	if FileAccess.file_exists(path):
+		file = FileAccess.open(path, FileAccess.READ)
 		var is_first_line = true
 		var line: Array
 		while !file.eof_reached():
@@ -404,10 +398,9 @@ func export_translations_to_csv(path: String) -> void:
 			# Make sure the line isn't empty before adding it
 			if line.size() > 0 and line[0].strip_edges() != "":
 				existing_csv[line[0]] = line
-		file.close()
 		
 	# Start a new file
-	file.open(path, File.WRITE)
+	file = FileAccess.open(path, FileAccess.WRITE)
 	
 	if not file.file_exists(path):
 		file.store_csv_line(["keys", "en"])
@@ -444,8 +437,6 @@ func export_translations_to_csv(path: String) -> void:
 	for line in lines_to_save:
 		file.store_csv_line(line)
 	
-	file.close()
-	
 	editor_plugin.get_editor_interface().get_resource_filesystem().scan()
 	editor_plugin.get_editor_interface().get_file_system_dock().navigate_to_path(path)
 
@@ -454,21 +445,18 @@ func export_translations_to_csv(path: String) -> void:
 func import_translations_from_csv(path: String) -> void:
 	var cursor: Vector2 = code_edit.get_cursor()
 
-	# Open the CSV file and build a dictionary of the known keys
-	var file := File.new()
-	
-	if not file.file_exists(path): return
+	if not FileAccess.file_exists(path): return
 
+	# Open the CSV file and build a dictionary of the known keys
 	var keys: Dictionary = {}
-	file.open(path, File.READ)
+	var file: FileAccess = FileAccess.open(path, FileAccess.READ)
 	var csv_line: Array
 	while !file.eof_reached():
 		csv_line = file.get_csv_line()
 		if csv_line.size() > 1:
 			keys[csv_line[0]] = csv_line[1]
-	file.close()
 	
-	var parser = DialogueParser.new()
+	var parser: DialogueParser = DialogueParser.new()
 	
 	# Now look over each line in the dialogue and replace the content for matched keys
 	var lines: PackedStringArray = code_edit.text.split("\n")
@@ -509,7 +497,7 @@ func import_translations_from_csv(path: String) -> void:
 func export_translations_to_po(path: String) -> void:
 	var id_str: Dictionary = {}
 	
-	var parser = DialogueParser.new()
+	var parser: DialogueParser = DialogueParser.new()
 	parser.parse(code_edit.text)
 	var dialogue = parser.get_data().lines
 	parser.free()
@@ -522,13 +510,13 @@ func export_translations_to_po(path: String) -> void:
 
 		id_str[line.translation_key] = line.text
 
-	var file = File.new()
+	var file: FileAccess
 
 	# If the file exists, keep content except for known entries.
 	var existing_po: String = ""
-	var already_existing_keys := PackedStringArray([])
+	var already_existing_keys: PackedStringArray = PackedStringArray([])
 	if file.file_exists(path):
-		file.open(path, File.READ)
+		file = FileAccess.open(path, FileAccess.READ)
 		var line: String
 		while !file.eof_reached():
 			line = file.get_line().strip_edges()
@@ -557,7 +545,6 @@ func export_translations_to_po(path: String) -> void:
 						existing_po += line + "\n"
 			else: # keep old lines
 				existing_po += line + "\n"
-		file.close()
 
 	# Godot requires the config in the PO regardless of whether it constains anything relevant.
 	if !("" in already_existing_keys):
@@ -572,9 +559,8 @@ func export_translations_to_po(path: String) -> void:
 	existing_po = existing_po.trim_suffix("\n")
 
 	# Start a new file
-	file.open(path, File.WRITE)
+	file = FileAccess.open(path, FileAccess.WRITE)
 	file.store_string(existing_po)
-	file.close()
 
 	editor_plugin.get_editor_interface().get_resource_filesystem().scan()
 	editor_plugin.get_editor_interface().get_file_system_dock().navigate_to_path(path)
