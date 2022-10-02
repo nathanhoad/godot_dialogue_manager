@@ -24,9 +24,10 @@ _**NOTE:** This is for Godot 4. If you are using Godot 3 then have a look at the
 
 [![Join the Discord](docs/discord.svg)](https://discord.gg/zwBVQdJchX)
 
-## Tutorial
+## Tutorials
 
 [![Dialogue Manager for Godot 4](docs/tutorial.png)](https://youtu.be/DL79aS-dT7E)
+[![Interacting with nearby things](docs/interaction-tutorial.png)](https://youtu.be/-rytm4o1ndE)
 
 ## Contributors
 
