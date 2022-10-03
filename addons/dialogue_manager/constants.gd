@@ -25,6 +25,7 @@ const ERR_INVALID_CONDITION_INDENTATION = 115
 const ERR_INCOMPLETE_EXPRESSION = 116
 const ERR_INVALID_EXPRESSION_FOR_VALUE = 117
 const ERR_UNKNOWN_LINE_SYNTAX = 118
+const ERR_TITLE_BEGINS_WITH_NUMBER = 119
 
 # Token types
 
@@ -96,6 +97,8 @@ static func get_error_message(error: int) -> String:
 			return "Titles cannot be nested."
 		ERR_TITLE_INVALID_CHARACTERS:
 			return "Titles can only contain alphanumeric characters and numbers."
+		ERR_TITLE_BEGINS_WITH_NUMBER:
+			return "Titles cannot begin with a number."
 		ERR_UNKNOWN_TITLE:
 			return "Unknown title."
 		ERR_INVALID_TITLE_REFERENCE:

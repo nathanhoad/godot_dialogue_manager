@@ -8,6 +8,7 @@ const DialogueSettings = preload("res://addons/dialogue_manager/components/setti
 
 var IMPORT_REGEX: RegEx = RegEx.create_from_string("import \"(?<path>[^\"]+)\" as (?<prefix>[^\\!\\@\\#\\$\\%\\^\\&\\*\\(\\)\\-\\=\\+\\{\\}\\[\\]\\;\\:\\\"\\'\\,\\.\\<\\>\\?\\/\\s]+)")
 var VALID_TITLE_REGEX: RegEx = RegEx.create_from_string("^[^\\!\\@\\#\\$\\%\\^\\&\\*\\(\\)\\-\\=\\+\\{\\}\\[\\]\\;\\:\\\"\\'\\,\\.\\<\\>\\?\\/\\s]+$")
+var BEGINS_WITH_NUMBER_REGEX: RegEx = RegEx.create_from_string("^\\d")
 var TRANSLATION_REGEX: RegEx = RegEx.create_from_string("\\[ID:(?<tr>.*?)\\]")
 var MUTATION_REGEX: RegEx = RegEx.create_from_string("(do|set) (?<mutation>.*)")
 var CONDITION_REGEX: RegEx = RegEx.create_from_string("(if|elif) (?<condition>.*)")
@@ -184,6 +185,9 @@ func parse(text: String) -> int:
 			else:
 				line["type"] = DialogueConstants.TYPE_TITLE
 				line["text"] = extract_title(raw_line)
+				# Titles can't have numbers as the first letter (unless they are external titles which get replaced with hashes)
+				if id >= _imported_line_count and BEGINS_WITH_NUMBER_REGEX.search(line.text):
+					add_error(id, DialogueConstants.ERR_TITLE_BEGINS_WITH_NUMBER)
 				# Only import titles are allowed to have "/" in them
 				var valid_title = VALID_TITLE_REGEX.search(raw_line.replace("/", "").substr(2).strip_edges())
 				if not valid_title:
@@ -398,9 +402,10 @@ func prepare(text: String, include_imported_titles_hashes: bool = true) -> void:
 					if "/" in title:
 						if include_imported_titles_hashes == false:
 							titles.erase(title)
-						var bits = title.split("/")
-						title = imported_titles[bits[0]] + "/" + bits[1]
-						titles[title] = next_nonempty_line_id
+						var bits: PackedStringArray = title.split("/")
+						if imported_titles.has(bits[0]):
+							title = imported_titles[bits[0]] + "/" + bits[1]
+							titles[title] = next_nonempty_line_id
 					elif first_title == "":
 						first_title = next_nonempty_line_id
 				else:

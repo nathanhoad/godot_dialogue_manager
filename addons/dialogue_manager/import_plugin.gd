@@ -3,15 +3,15 @@ extends EditorImportPlugin
 
 
 const DialogueParser = preload("res://addons/dialogue_manager/components/parser.gd")
-const compiler_version = 2
+const compiler_version = 3
 
 
 var editor_plugin
 
 
 func _get_importer_name() -> String:
-	# TODO: change this to force a re-import of all dialogue
-	return "dialogue_manager_%s" % compiler_version
+	# NOTE: A change to this forces a re-import of all dialogue
+	return "dialogue_manager_compiler_%s" % compiler_version
 
 
 func _get_visible_name() -> String:

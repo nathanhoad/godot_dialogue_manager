@@ -1,4 +1,4 @@
-[gd_scene load_steps=5 format=3 uid="uid://c550jfhw056ua"]
+[gd_scene load_steps=5 format=3 uid="uid://dwx3hg8jg2j6e"]
 
 [ext_resource type="Script" path="res://examples/test_scenes/test_scene.gd" id="1_pjy14"]
 [ext_resource type="PackedScene" uid="uid://cryh0kyrps0c4" path="res://examples/portraits_balloon/balloon.tscn" id="2_qrul3"]
