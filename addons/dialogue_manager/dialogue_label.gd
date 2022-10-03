@@ -12,7 +12,7 @@ export var skip_action: String = "ui_cancel"
 export var seconds_per_step: float = 0.02
 
 
-var dialogue: DialogueLine setget set_dialogue
+var dialogue: DialogueLine
 
 var index: int = 0
 var percent_per_index: float = 0
@@ -21,6 +21,10 @@ var last_mutation_index: int = -1
 var waiting_seconds: float = 0
 var is_typing: bool = false
 var has_finished: bool = false
+
+
+func _ready() -> void:
+	bbcode_text = ""
 
 
 func _process(delta: float) -> void:
@@ -52,6 +56,16 @@ func _process(delta: float) -> void:
 
 
 func reset_height() -> void:
+	# If there is no dialogue then this label should have no height
+	if dialogue.dialogue == "":
+		fit_content_height = false
+		rect_min_size = Vector2(rect_size.x, 0)
+		rect_size = Vector2.ZERO
+		yield(get_tree(), "idle_frame")
+		return
+	
+	fit_content_height = true
+	
 	# For some reason, RichTextLabels within containers don't resize properly when their content 
 	# changes so we make a clone that isn't bound by a VBox
 	var size_check_label = duplicate(0)
@@ -65,7 +79,7 @@ func reset_height() -> void:
 	
 	# Resize our dialogue label with the new size hint
 	rect_min_size = Vector2(rect_size.x, size_check_label.get_content_height())
-	rect_size = Vector2(0, 0)
+	rect_size = Vector2.ZERO
 	
 	# Destroy our clone
 	size_check_label.queue_free()
@@ -116,12 +130,3 @@ func type_out() -> void:
 	else:
 		percent_per_index = 100.0 / float(get_total_character_count()) / 100.0
 		is_typing = true
-
-
-### Setters
-
-
-func set_dialogue(value: DialogueLine) -> void:
-	dialogue = value
-	dialogue.get_parent().remove_child(dialogue)
-	add_child(dialogue)

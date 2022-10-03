@@ -25,8 +25,11 @@ func _ready() -> void:
 		queue_free()
 		return
 	
-	response_template.hide()
+	# Reparent the dialogue line so that it gets cleaned up when this balloon is cleaned up
+	dialogue.get_parent().remove_child(dialogue)
+	add_child(dialogue)
 	
+	response_template.hide()
 	balloon.hide()
 	
 	var viewport_size = balloon.get_viewport_rect().size
@@ -35,7 +38,7 @@ func _ready() -> void:
 	character_label.visible = dialogue.character != ""
 	character_label.bbcode_text = dialogue.character
 	
-	dialogue_label.rect_size.x = margin.rect_size.x - margin.get("custom_constants/margin_left") - margin.get("custom_constants/margin_right")	
+	dialogue_label.rect_size.x = margin.rect_size.x - margin.get("custom_constants/margin_left") - margin.get("custom_constants/margin_right")
 	dialogue_label.dialogue = dialogue
 	yield(dialogue_label.reset_height(), "completed")
 	
@@ -69,8 +72,9 @@ func _ready() -> void:
 	# Show our box
 	balloon.visible = true
 	
-	dialogue_label.type_out()
-	yield(dialogue_label, "finished")
+	if dialogue.dialogue != "":
+		dialogue_label.type_out()
+		yield(dialogue_label, "finished")
 	
 	# Wait for input
 	if dialogue.responses.size() > 0:
