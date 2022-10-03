@@ -225,6 +225,23 @@ func create_dialogue_line(data: Dictionary) -> Dictionary:
 				time = markers.time,
 				responses = []
 			}
+			
+		DialogueConstants.TYPE_RESPONSE:
+			return {
+				type = DialogueConstants.TYPE_DIALOGUE,
+				next_id = data.next_id,
+				character = "",
+				character_replacements = [],
+				text = "",
+				text_replacements = [],
+				translation_key = "",
+				pauses = {},
+				speeds = [],
+				inline_mutations = [],
+				time = null,
+				responses = []
+			}
+			
 		DialogueConstants.TYPE_MUTATION:
 			return {
 				type = DialogueConstants.TYPE_MUTATION,
