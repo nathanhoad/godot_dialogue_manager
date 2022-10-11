@@ -35,6 +35,7 @@ const DialogueSettings = preload("res://addons/dialogue_manager/components/setti
 @onready var search_and_replace := %SearchAndReplace
 
 # Code editor
+@onready var content: HSplitContainer = %Content
 @onready var title_list := %TitleList
 @onready var code_edit := %CodeEdit
 @onready var errors_panel := %ErrorsPanel
@@ -54,6 +55,7 @@ var current_file_path: String = "":
 			search_button.disabled = true
 			insert_button.disabled = true
 			translations_button.disabled = true
+			content.dragger_visibility = SplitContainer.DRAGGER_HIDDEN
 			title_list.hide()
 			code_edit.hide()
 		else:
@@ -62,6 +64,7 @@ var current_file_path: String = "":
 			search_button.disabled = false
 			insert_button.disabled = false
 			translations_button.disabled = false
+			content.dragger_visibility = SplitContainer.DRAGGER_VISIBLE
 			title_list.show()
 			code_edit.show()
 	get:
