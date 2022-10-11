@@ -4,29 +4,6 @@ extends Node
 const USER_CONFIG_PATH = "user://dialogue_manager_user_config.json"
 const CACHE_PATH = "user://dialogue_manager_cache.json"
 
-# Errors
-
-const ERR_ERRORS_IN_IMPORTED_FILE = 100
-const ERR_FILE_ALREADY_IMPORTED = 101
-const ERR_DUPLICATE_IMPORT_NAME = 102
-const ERR_EMPTY_TITLE = 103
-const ERR_DUPLICATE_TITLE = 104
-const ERR_NESTED_TITLE = 105
-const ERR_TITLE_INVALID_CHARACTERS = 106
-const ERR_UNKNOWN_TITLE = 107
-const ERR_INVALID_TITLE_REFERENCE = 108
-const ERR_TITLE_REFERENCE_HAS_NO_CONTENT = 109
-const ERR_INVALID_EXPRESSION = 110
-const ERR_INVALID_EXPRESSION_IN_CHARACTER_NAME = 111
-const ERR_DUPLICATE_ID = 112
-const ERR_MISSING_ID = 113
-const ERR_INVALID_INDENTATION = 114
-const ERR_INVALID_CONDITION_INDENTATION = 115
-const ERR_INCOMPLETE_EXPRESSION = 116
-const ERR_INVALID_EXPRESSION_FOR_VALUE = 117
-const ERR_UNKNOWN_LINE_SYNTAX = 118
-const ERR_TITLE_BEGINS_WITH_NUMBER = 119
-
 # Token types
 
 const TOKEN_FUNCTION = "function"
@@ -79,6 +56,44 @@ const ID_ERROR_TITLE_HAS_NO_BODY = "title has no body"
 const ID_END = "end"
 const ID_END_CONVERSATION = "end!"
 
+# Errors
+
+const ERR_ERRORS_IN_IMPORTED_FILE = 100
+const ERR_FILE_ALREADY_IMPORTED = 101
+const ERR_DUPLICATE_IMPORT_NAME = 102
+const ERR_EMPTY_TITLE = 103
+const ERR_DUPLICATE_TITLE = 104
+const ERR_NESTED_TITLE = 105
+const ERR_TITLE_INVALID_CHARACTERS = 106
+const ERR_UNKNOWN_TITLE = 107
+const ERR_INVALID_TITLE_REFERENCE = 108
+const ERR_TITLE_REFERENCE_HAS_NO_CONTENT = 109
+const ERR_INVALID_EXPRESSION = 110
+const ERR_INVALID_EXPRESSION_IN_CHARACTER_NAME = 111
+const ERR_DUPLICATE_ID = 112
+const ERR_MISSING_ID = 113
+const ERR_INVALID_INDENTATION = 114
+const ERR_INVALID_CONDITION_INDENTATION = 115
+const ERR_INCOMPLETE_EXPRESSION = 116
+const ERR_INVALID_EXPRESSION_FOR_VALUE = 117
+const ERR_UNKNOWN_LINE_SYNTAX = 118
+const ERR_TITLE_BEGINS_WITH_NUMBER = 119
+const ERR_UNEXPECTED_END_OF_EXPRESSION = 120
+const ERR_UNEXPECTED_FUNCTION = 121
+const ERR_UNEXPECTED_BRACKET = 122
+const ERR_UNEXPECTED_CLOSING_BRACKET = 123
+const ERR_MISSING_CLOSING_BRACKET = 124
+const ERR_UNEXPECTED_OPERATOR = 125
+const ERR_UNEXPECTED_COMMA = 126
+const ERR_UNEXPECTED_COLON = 127
+const ERR_UNEXPECTED_DOT = 128
+const ERR_UNEXPECTED_BOOLEAN = 129
+const ERR_UNEXPECTED_STRING = 130
+const ERR_UNEXPECTED_NUMBER = 131
+const ERR_UNEXPECTED_VARIABLE = 132
+const ERR_INVALID_INDEX = 133
+const ERR_STRINGS_MUST_USE_DOUBLE_QUOTE = 134
+
 
 ## Get the error message
 static func get_error_message(error: int) -> String:
@@ -123,5 +138,35 @@ static func get_error_message(error: int) -> String:
 			return "Invalid expression for value."
 		ERR_FILE_NOT_FOUND:
 			return "File not found."
+		ERR_UNEXPECTED_END_OF_EXPRESSION:
+			return "Unexpected end of expression."
+		ERR_UNEXPECTED_FUNCTION:
+			return "Unexpected function."
+		ERR_UNEXPECTED_BRACKET:
+			return "Unexpected bracket."
+		ERR_UNEXPECTED_CLOSING_BRACKET:
+			return "Unexpected closing bracket."
+		ERR_MISSING_CLOSING_BRACKET:
+			return "Missing closing bracket."
+		ERR_UNEXPECTED_OPERATOR:
+			return "Unexpected operator."
+		ERR_UNEXPECTED_COMMA:
+			return "Unexpected comma."
+		ERR_UNEXPECTED_COLON:
+			return "Unexpected colon."
+		ERR_UNEXPECTED_DOT:
+			return "Unexpected dot."
+		ERR_UNEXPECTED_BOOLEAN:
+			return "Unexpected boolean."
+		ERR_UNEXPECTED_STRING:
+			return "Unexpected string."
+		ERR_UNEXPECTED_NUMBER:
+			return "Unexpected number."
+		ERR_UNEXPECTED_VARIABLE:
+			return "Unexpected variable."
+		ERR_INVALID_INDEX:
+			return "Invalid index."
+		ERR_STRINGS_MUST_USE_DOUBLE_QUOTE:
+			return "Strings must use double quotes (\"\")."
 		_:
 			return "Unknown syntax."

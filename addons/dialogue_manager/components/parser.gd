@@ -35,7 +35,7 @@ var TOKEN_DEFINITIONS: Dictionary = {
 	DialogueConstants.TOKEN_BOOL: RegEx.create_from_string("^(true|false)"),
 	DialogueConstants.TOKEN_NOT: RegEx.create_from_string("^(not( |$)|!)"),
 	DialogueConstants.TOKEN_AND_OR: RegEx.create_from_string("^(and|or)( |$)"),
-	DialogueConstants.TOKEN_STRING: RegEx.create_from_string("^\".*?\""),
+	DialogueConstants.TOKEN_STRING: RegEx.create_from_string("^[\"\'].*?[\"\']"),
 	DialogueConstants.TOKEN_VARIABLE: RegEx.create_from_string("^[a-zA-Z_][a-zA-Z_0-9]+"),
 	DialogueConstants.TOKEN_COMMENT: RegEx.create_from_string("^#.*")
 }
@@ -1009,13 +1009,13 @@ func tokenise(text: String) -> Array[Dictionary]:
 		elif text.begins_with(" "):
 			text = text.substr(1)
 		else:
-			return build_token_tree_error("Invalid expression")
+			return build_token_tree_error(DialogueConstants.ERR_INVALID_EXPRESSION)
 	
 	return build_token_tree(tokens)[0]
 	
 
-func build_token_tree_error(message: String) -> Array:
-	return [{ type = DialogueConstants.TOKEN_ERROR, value = message }]
+func build_token_tree_error(error: int) -> Array:
+	return [{ type = DialogueConstants.TOKEN_ERROR, value = error }]
 
 
 func build_token_tree(tokens: Array[Dictionary], expected_close_token: String = "") -> Array:
@@ -1026,7 +1026,7 @@ func build_token_tree(tokens: Array[Dictionary], expected_close_token: String = 
 		var token = tokens.pop_front()
 		
 		var error = check_next_token(token, tokens)
-		if error != "":
+		if error != OK:
 			return [build_token_tree_error(error), tokens]
 		
 		match token.type:
@@ -1052,7 +1052,7 @@ func build_token_tree(tokens: Array[Dictionary], expected_close_token: String = 
 				
 				var args = tokens_to_list(sub_tree[0])
 				if args.size() != 1:
-					return [build_token_tree_error("Invalid index"), tokens]
+					return [build_token_tree_error(DialogueConstants.ERR_INVALID_INDEX), tokens]
 				
 				tree.append({
 					type = DialogueConstants.TOKEN_DICTIONARY_REFERENCE,
@@ -1112,7 +1112,7 @@ func build_token_tree(tokens: Array[Dictionary], expected_close_token: String = 
 			DialogueConstants.TOKEN_BRACE_CLOSE, \
 			DialogueConstants.TOKEN_BRACKET_CLOSE:
 				if token.type != expected_close_token:
-					return [build_token_tree_error("Unexpected closing bracket"), tokens]
+					return [build_token_tree_error(DialogueConstants.ERR_UNEXPECTED_CLOSING_BRACKET), tokens]
 				
 				return [tree, tokens]
 			
@@ -1143,10 +1143,13 @@ func build_token_tree(tokens: Array[Dictionary], expected_close_token: String = 
 				})
 			
 			DialogueConstants.TOKEN_STRING:
-				tree.append({
-					type = token.type,
-					value = token.value.substr(1, token.value.length() - 2)
-				})
+				if token.value[0] == "'":
+					return [build_token_tree_error(DialogueConstants.ERR_STRINGS_MUST_USE_DOUBLE_QUOTE), tokens]
+				else:
+					tree.append({
+						type = token.type,
+						value = token.value.substr(1, token.value.length() - 2)
+					})
 			
 			DialogueConstants.TOKEN_BOOL:
 				tree.append({
@@ -1161,12 +1164,12 @@ func build_token_tree(tokens: Array[Dictionary], expected_close_token: String = 
 				})
 	
 	if expected_close_token != "":
-		return [build_token_tree_error("Missing closing bracket"), tokens] 
+		return [build_token_tree_error(DialogueConstants.ERR_MISSING_CLOSING_BRACKET), tokens] 
 
 	return [tree, tokens]
 
 
-func check_next_token(token: Dictionary, next_tokens: Array[Dictionary]) -> String:
+func check_next_token(token: Dictionary, next_tokens: Array[Dictionary]) -> int:
 	var next_token_type = null
 	if next_tokens.size() > 0:
 		next_token_type = next_tokens.front().type
@@ -1260,43 +1263,42 @@ func check_next_token(token: Dictionary, next_tokens: Array[Dictionary]) -> Stri
 	if next_token_type in unexpected_token_types:
 		match next_token_type:
 			null:
-				return "Unexpected end of expression"
+				return DialogueConstants.ERR_UNEXPECTED_END_OF_EXPRESSION
 
 			DialogueConstants.TOKEN_FUNCTION:
-				return "Unexpected function"
+				return DialogueConstants.ERR_UNEXPECTED_FUNCTION
 
 			DialogueConstants.TOKEN_PARENS_OPEN, \
 			DialogueConstants.TOKEN_PARENS_CLOSE:
-				return "Unexpected bracket"
+				return DialogueConstants.ERR_UNEXPECTED_BRACKET
 
 			DialogueConstants.TOKEN_COMPARISON, \
 			DialogueConstants.TOKEN_ASSIGNMENT, \
 			DialogueConstants.TOKEN_OPERATOR, \
 			DialogueConstants.TOKEN_NOT, \
 			DialogueConstants.TOKEN_AND_OR:
-				return "Unexpected operator"
+				return DialogueConstants.ERR_UNEXPECTED_OPERATOR
 			
 			DialogueConstants.TOKEN_COMMA:
-				return "Unexpected comma"
+				return DialogueConstants.ERR_UNEXPECTED_COMMA
 			DialogueConstants.TOKEN_COLON:
-				return "Unexpected colon"
+				return DialogueConstants.ERR_UNEXPECTED_COLON
 			DialogueConstants.TOKEN_DOT:
-				return "Unexpected dot"
+				return DialogueConstants.ERR_UNEXPECTED_DOT
 
 			DialogueConstants.TOKEN_BOOL:
-				return "Unexpected boolean"
+				return DialogueConstants.ERR_UNEXPECTED_BOOLEAN
 			DialogueConstants.TOKEN_STRING:
-				return "Unexpected string"
+				return DialogueConstants.ERR_UNEXPECTED_STRING
 			DialogueConstants.TOKEN_NUMBER:
-				return "Unexpected number"
+				return DialogueConstants.ERR_UNEXPECTED_NUMBER
 			DialogueConstants.TOKEN_VARIABLE:
-				return "Unexpected variable"
+				return DialogueConstants.ERR_UNEXPECTED_VARIABLE
 
 			_:
-				return "Invalid expression"
+				return DialogueConstants.ERR_INVALID_EXPRESSION
 
-	return ""
-
+	return OK
 
 
 func tokens_to_list(tokens: Array[Dictionary]) -> Array[Array]:
