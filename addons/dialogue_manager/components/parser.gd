@@ -153,9 +153,9 @@ func parse(text: String) -> int:
 			if ": " in l:
 				var first_child: Dictionary = { 
 					type = DialogueConstants.TYPE_DIALOGUE, 
-					next_id = line.get("next_id"),
-					next_id_after = line.get("next_id_after"),
-					replacements = line.get("replacements"),
+					next_id = line.next_id,
+					next_id_after = line.next_id_after,
+					text_replacements = line.text_replacements,
 					translation_key = line.get("translation_key")
 				}
 				

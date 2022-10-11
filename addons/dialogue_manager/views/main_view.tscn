@@ -1,12 +1,12 @@
-[gd_scene load_steps=12 format=3 uid="uid://c0c3rq6p01sj2"]
+[gd_scene load_steps=12 format=3 uid="uid://cbuf1q3xsse3q"]
 
 [ext_resource type="Script" path="res://addons/dialogue_manager/views/main_view.gd" id="1_h6qfq"]
-[ext_resource type="PackedScene" uid="uid://civ6shmka5e8u" path="res://addons/dialogue_manager/components/code_edit.tscn" id="2_f73fm"]
-[ext_resource type="PackedScene" uid="uid://ctns6ouwwd68i" path="res://addons/dialogue_manager/components/title_list.tscn" id="2_onb4i"]
-[ext_resource type="PackedScene" uid="uid://co8yl23idiwbi" path="res://addons/dialogue_manager/components/update_button.tscn" id="2_ph3vs"]
-[ext_resource type="PackedScene" uid="uid://gr8nakpbrhby" path="res://addons/dialogue_manager/components/search_and_replace.tscn" id="6_ylh0t"]
-[ext_resource type="PackedScene" uid="uid://cs8pwrxr5vxix" path="res://addons/dialogue_manager/components/errors_panel.tscn" id="7_5cvl4"]
-[ext_resource type="PackedScene" uid="uid://cpg4lg1r3ff6m" path="res://addons/dialogue_manager/views/settings_view.tscn" id="9_8bf36"]
+[ext_resource type="PackedScene" path="res://addons/dialogue_manager/components/code_edit.tscn" id="2_f73fm"]
+[ext_resource type="PackedScene" path="res://addons/dialogue_manager/components/title_list.tscn" id="2_onb4i"]
+[ext_resource type="PackedScene" path="res://addons/dialogue_manager/components/update_button.tscn" id="2_ph3vs"]
+[ext_resource type="PackedScene" path="res://addons/dialogue_manager/components/search_and_replace.tscn" id="6_ylh0t"]
+[ext_resource type="PackedScene" path="res://addons/dialogue_manager/components/errors_panel.tscn" id="7_5cvl4"]
+[ext_resource type="PackedScene" path="res://addons/dialogue_manager/views/settings_view.tscn" id="9_8bf36"]
 
 [sub_resource type="Image" id="Image_8mb43"]
 data = {
