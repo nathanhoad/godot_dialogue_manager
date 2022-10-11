@@ -58,7 +58,7 @@ theme_override_constants/margin_right = 5
 theme_override_constants/margin_bottom = 5
 metadata/_edit_layout_mode = 1
 
-[node name="Content" type="HBoxContainer" parent="Margin"]
+[node name="Content" type="HSplitContainer" parent="Margin"]
 layout_mode = 2
 offset_left = 5.0
 offset_right = 1147.0
@@ -66,9 +66,9 @@ offset_bottom = 643.0
 size_flags_vertical = 3
 
 [node name="TitlesPanel" type="VBoxContainer" parent="Margin/Content"]
-custom_minimum_size = Vector2i(300, 0)
+custom_minimum_size = Vector2i(150, 0)
 layout_mode = 2
-offset_right = 300.0
+offset_right = 222.0
 offset_bottom = 643.0
 size_flags_horizontal = 3
 
