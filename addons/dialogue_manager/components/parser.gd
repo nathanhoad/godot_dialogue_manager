@@ -930,7 +930,7 @@ func extract_markers(line: String) -> Dictionary:
 		# Find any BB codes that are after this index and remove the length from their start
 		var length = bbcode.bbcode.length()
 		for bb in bbcodes:
-			if bb.offset_start >= bbcode.start:
+			if bb.offset_start > bbcode.start:
 				bb.offset_start -= length
 				bb.start -= length
 		
