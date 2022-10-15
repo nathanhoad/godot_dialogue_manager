@@ -4,6 +4,8 @@ It's up to you to implement the actual dialogue rendering and input control but 
 
 You can find them in the [/examples](../examples) directory.
 
+_**NOTE**: The first time you open this project in Godot 4 you'll need to save and then restart Godot (possibly twice) in order to try out the examples. There appears to be an issue with Godot when it initially creates the `.godot` cache folder._
+
 Example scenes include:
 
 - A portrait balloon showing character potraits and typing noises. This also shows using a low res balloon if the viewport is set to lower than 400px.
