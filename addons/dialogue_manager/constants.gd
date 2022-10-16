@@ -92,7 +92,6 @@ const ERR_UNEXPECTED_STRING = 130
 const ERR_UNEXPECTED_NUMBER = 131
 const ERR_UNEXPECTED_VARIABLE = 132
 const ERR_INVALID_INDEX = 133
-const ERR_STRINGS_MUST_USE_DOUBLE_QUOTE = 134
 
 
 ## Get the error message
@@ -166,7 +165,5 @@ static func get_error_message(error: int) -> String:
 			return "Unexpected variable."
 		ERR_INVALID_INDEX:
 			return "Invalid index."
-		ERR_STRINGS_MUST_USE_DOUBLE_QUOTE:
-			return "Strings must use double quotes (\"\")."
 		_:
 			return "Unknown syntax."

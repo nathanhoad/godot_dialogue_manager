@@ -35,7 +35,7 @@ var TOKEN_DEFINITIONS: Dictionary = {
 	DialogueConstants.TOKEN_BOOL: RegEx.create_from_string("^(true|false)"),
 	DialogueConstants.TOKEN_NOT: RegEx.create_from_string("^(not( |$)|!)"),
 	DialogueConstants.TOKEN_AND_OR: RegEx.create_from_string("^(and|or)( |$)"),
-	DialogueConstants.TOKEN_STRING: RegEx.create_from_string("^[\"\'].*?[\"\']"),
+	DialogueConstants.TOKEN_STRING: RegEx.create_from_string("^(\".*?\"|\'.*?\')"),
 	DialogueConstants.TOKEN_VARIABLE: RegEx.create_from_string("^[a-zA-Z_][a-zA-Z_0-9]+"),
 	DialogueConstants.TOKEN_COMMENT: RegEx.create_from_string("^#.*")
 }
@@ -783,7 +783,7 @@ func extract_mutation(line: String) -> Dictionary:
 		if expression.size() == 0:
 			return { error = DialogueConstants.ERR_INCOMPLETE_EXPRESSION }
 		elif expression[0].type == DialogueConstants.TYPE_ERROR:
-			return { error = DialogueConstants.ERR_INVALID_EXPRESSION_FOR_VALUE }
+			return { error = expression[0].value }
 		else:
 			return { expression = expression }
 	
@@ -1143,13 +1143,10 @@ func build_token_tree(tokens: Array[Dictionary], expected_close_token: String = 
 				})
 			
 			DialogueConstants.TOKEN_STRING:
-				if token.value[0] == "'":
-					return [build_token_tree_error(DialogueConstants.ERR_STRINGS_MUST_USE_DOUBLE_QUOTE), tokens]
-				else:
-					tree.append({
-						type = token.type,
-						value = token.value.substr(1, token.value.length() - 2)
-					})
+				tree.append({
+					type = token.type,
+					value = token.value.substr(1, token.value.length() - 2)
+				})
 			
 			DialogueConstants.TOKEN_BOOL:
 				tree.append({
