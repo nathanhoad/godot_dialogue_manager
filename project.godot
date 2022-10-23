@@ -29,6 +29,10 @@ wrap_lines=false
 
 window/stretch/mode="viewport"
 
+[dotnet]
+
+project/assembly_name="Dialogue Manager"
+
 [editor_plugins]
 
 enabled=PackedStringArray("res://addons/dialogue_manager/plugin.cfg")

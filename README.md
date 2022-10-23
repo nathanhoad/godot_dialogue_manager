@@ -19,6 +19,8 @@ _**NOTE:** This is for Godot 4. If you are using Godot 3 then have a look at the
 - [Using dialogue in your game](docs/Using_Dialogue.md)
 - [Example balloons](docs/Example_Balloons.md)
 - [Translations](docs/Translations.md)
+- [API](docs/API.md)
+- [C# wrapper](docs/CSharp.md)
 
 ## Discord
 

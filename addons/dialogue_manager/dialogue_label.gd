@@ -128,17 +128,17 @@ func type_next(delta: float, seconds_needed: float) -> void:
 
 
 # Get the pause for the current typing position if there is one
-func get_pause(index: int) -> float:
-	return dialogue_line.pauses.get(index, 0)
+func get_pause(at_index: int) -> float:
+	return dialogue_line.pauses.get(at_index, 0)
 
 
 # Get the speed for the current typing position
-func get_speed(index: int) -> float:
+func get_speed(at_index: int) -> float:
 	var speed: float = 1
-	for s in dialogue_line.speeds:
-		if s[0] > index:
+	for index in dialogue_line.speeds:
+		if index > at_index:
 			return speed
-		speed = s[1]
+		speed = dialogue_line.speeds[index]
 	return speed
 
 

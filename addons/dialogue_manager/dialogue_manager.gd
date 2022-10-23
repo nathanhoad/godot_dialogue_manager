@@ -4,6 +4,7 @@ extends Node
 signal dialogue()
 signal mutation()
 signal dialogue_finished()
+signal bridge_get_next_dialogue_line_completed(line)
 
 
 const DialogueConstants = preload("res://addons/dialogue_manager/constants.gd")
@@ -123,6 +124,14 @@ func show_example_dialogue_balloon(resource: Resource, title: String = "0", extr
 	var balloon: Node = (SmallExampleBalloonScene if is_small_window else ExampleBalloonScene).instantiate()
 	get_tree().current_scene.add_child(balloon)
 	balloon.start(resource, title, extra_game_states)
+
+
+### Dotnet bridge
+
+
+func _bridge_get_next_dialogue_line(resource: Resource, key: String, extra_game_states: Array = []) -> void:
+	var line = await get_next_dialogue_line(resource, key, extra_game_states)
+	emit_signal("bridge_get_next_dialogue_line_completed", line)
 
 
 ### Helpers

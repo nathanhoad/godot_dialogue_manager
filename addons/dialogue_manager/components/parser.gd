@@ -860,7 +860,7 @@ func extract_goto(line: String) -> String:
 func extract_markers(line: String) -> Dictionary:
 	var text = line
 	var pauses = {}
-	var speeds = []
+	var speeds = {}
 	var mutations = []
 	var bbcodes = []
 	var index_map = {}
@@ -903,11 +903,12 @@ func extract_markers(line: String) -> Dictionary:
 			# Could be something like:
 			# 	"=1.0"
 			# 	" rate=20 level=10"
-			if raw_args[0] == "=":
+			if raw_args and raw_args[0] == "=":
 				raw_args = "value" + raw_args
 			for pair in raw_args.strip_edges().split(" "):
-				var bits = pair.split("=")
-				args[bits[0]] = bits[1]
+				if "=" in pair:
+					var bits = pair.split("=")
+					args[bits[0]] = bits[1]
 			
 		match code:
 			"wait":
@@ -916,9 +917,9 @@ func extract_markers(line: String) -> Dictionary:
 				else:
 					pauses[index] = args.get("value").to_float()
 			"speed":
-				speeds.append([index, args.get("value").to_float()])
+				speeds[index] = args.get("value").to_float()
 			"/speed":
-				speeds.append([index, 1.0])
+				speeds[index] = 1.0
 			"do", "set":
 				mutations.append([index, args.get("value")])
 			"next":

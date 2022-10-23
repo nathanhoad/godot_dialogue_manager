@@ -2,6 +2,10 @@
 
 It's up to you to implement the actual dialogue rendering and input control but there are [a few example balloons](Example_Balloons.md) included to get you started.
 
+To use the built-in example balloon you can call [`DialogueManager.show_example_dialogue_balloon(resource, title)`](API.md) with a dialogue resource and the title you want to start from.
+
+Once you get to the stage of building your own balloon you'll need to know how to get a line of dialogue and how to use the dialogue label node.
+
 ## Getting a line of dialogue
 
 A global called `DialogueManager` is available to provide lines of dialogue.
