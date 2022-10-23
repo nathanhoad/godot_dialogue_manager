@@ -376,7 +376,8 @@ func get_state_value(property: String):
 	
 	for state in get_game_states():
 		if typeof(state) == TYPE_DICTIONARY:
-			return state.get(property)
+			if state.has(property):
+				return state.get(property)
 		else:
 			var result = expression.execute([], state, false)
 			if not expression.has_execute_failed():
@@ -389,7 +390,11 @@ func get_state_value(property: String):
 # Set a value on the current scene or game state
 func set_state_value(property: String, value) -> void:
 	for state in get_game_states():
-		if has_property(state, property):
+		if typeof(state) == TYPE_DICTIONARY:
+			if state.has(property):
+				state[property] = value
+				return
+		elif has_property(state, property):
 			state.set(property, value)
 			return
 	
