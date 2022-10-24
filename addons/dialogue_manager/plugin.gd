@@ -233,5 +233,5 @@ func _on_files_moved(old_file: String, new_file: String) -> void:
 
 func _on_file_removed(file: String) -> void:
 	recompile_dependent_files(file)
-	if is_instance_valid(main_view) and main_view.current_file_path == file:
-		main_view.current_file_path = ""
+	if is_instance_valid(main_view):
+		main_view.close_file(file)

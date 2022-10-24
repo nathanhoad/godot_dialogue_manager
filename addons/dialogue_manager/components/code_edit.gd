@@ -4,6 +4,7 @@ extends CodeEdit
 
 signal active_title_change(title: String)
 signal error_clicked(line_number: int)
+signal external_file_requested(path: String, title: String)
 
 
 const DialogueParser = preload("res://addons/dialogue_manager/components/parser.gd")
@@ -282,7 +283,11 @@ func move_line(offset: int) -> void:
 ### Signals
 
 
-func _on_code_edit_symbol_validate(symbol):
+func _on_code_edit_symbol_validate(symbol: String) -> void:
+	if symbol.begins_with("res://") and symbol.ends_with(".dialogue"):
+		set_symbol_lookup_word_as_valid(true)
+		return
+	
 	for title in get_titles():
 		if symbol == title:
 			set_symbol_lookup_word_as_valid(true)
@@ -290,11 +295,14 @@ func _on_code_edit_symbol_validate(symbol):
 	set_symbol_lookup_word_as_valid(false)
 
 
-func _on_code_edit_symbol_lookup(symbol, line, column):
-	go_to_title(symbol)
+func _on_code_edit_symbol_lookup(symbol: String, line: int, column: int) -> void:
+	if symbol.begins_with("res://") and symbol.ends_with(".dialogue"):
+		emit_signal("external_file_requested", symbol, "")
+	else:
+		go_to_title(symbol)
 
 
-func _on_code_edit_text_changed():
+func _on_code_edit_text_changed() -> void:
 	request_code_completion(true)
 
 

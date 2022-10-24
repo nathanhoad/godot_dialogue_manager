@@ -1,13 +1,13 @@
 @tool
 extends VBoxContainer
 
-signal title_selected(title)
+signal title_selected(title: String)
 
 
 @onready var filter_edit: LineEdit = $FilterEdit
 @onready var list: ItemList = $List
 
-var titles: Array:
+var titles: PackedStringArray:
 	set(next_titles):
 		titles = next_titles
 		apply_filter()
@@ -48,7 +48,7 @@ func apply_theme() -> void:
 ### Signals
 
 
-func _on_title_list_theme_changed() -> void:
+func _on_theme_changed() -> void:
 	apply_theme()
 
 

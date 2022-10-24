@@ -14,7 +14,7 @@ const LOCAL_CONFIG_PATH = "res://addons/dialogue_manager/plugin.cfg"
 var editor_plugin: EditorPlugin
 
 # A lambda that gets called just before refreshing the plugin. Return false to stop the reload.
-var on_before_refresh: Callable = func on_before_refresh(): return true
+var on_before_refresh: Callable = func(): return true
 
 
 func _ready() -> void:
@@ -34,9 +34,9 @@ func check_for_local_update() -> void:
 	if version_to_number(next_version) > version_to_number(version_on_load):
 		var will_refresh = on_before_refresh.call()
 		if will_refresh:
-			if editor_plugin.get_editor_interface().get_resource_filesystem().filesystem_changed.is_connected(_on_filesystem_changed):
-				editor_plugin.get_editor_interface().get_resource_filesystem().filesystem_changed.disconnect(_on_filesystem_changed)
-			print_rich("[b]Updated Dialogue Manager to v%s[b]" % next_version)
+			if editor_plugin.get_editor_interface().get_resource_filesystem().sources_changed.is_connected(_on_sources_changed):
+				editor_plugin.get_editor_interface().get_resource_filesystem().sources_changed.disconnect(_on_sources_changed)
+			print_rich("\n[b]Updated Dialogue Manager to v%s[/b]\n" % next_version)
 			editor_plugin.get_editor_interface().call_deferred("set_plugin_enabled", "dialogue_manager", true)
 			editor_plugin.get_editor_interface().set_plugin_enabled("dialogue_manager", false)
 
@@ -78,12 +78,12 @@ func _on_http_request_request_completed(result: int, response_code: int, headers
 		text = "v%s available" % next_version
 		show()
 		# Wait for the local files to be updated
-		editor_plugin.get_editor_interface().get_resource_filesystem().filesystem_changed.connect(_on_filesystem_changed)
+		editor_plugin.get_editor_interface().get_resource_filesystem().sources_changed.connect(_on_sources_changed)
 
 
 func _on_update_button_pressed() -> void:
 	OS.shell_open(OPEN_URL)
 
 
-func _on_filesystem_changed() -> void:
+func _on_sources_changed(exist: bool) -> void:
 	check_for_local_update()
