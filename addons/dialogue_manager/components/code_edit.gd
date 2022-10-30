@@ -115,8 +115,7 @@ func _can_drop_data(at_position: Vector2, data) -> bool:
 
 
 func _drop_data(at_position: Vector2, data) -> void:
-	var replace_regex: RegEx = RegEx.new()
-	replace_regex.compile("[^a-zA-Z_0-9]+")
+	var replace_regex: RegEx = RegEx.create_from_string("[^a-zA-Z_0-9]+")
 	
 	var files: PackedStringArray = Array(data.files).filter(func(f): return f.get_extension() == "dialogue")
 	for file in files:

@@ -4,17 +4,19 @@ extends EditorPlugin
 
 const DialogueConstants = preload("res://addons/dialogue_manager/constants.gd")
 const DialogueImportPlugin = preload("res://addons/dialogue_manager/import_plugin.gd")
+const DialogueInspectorPlugin = preload("res://addons/dialogue_manager/inspector_plugin.gd")
 const DialogueSettings = preload("res://addons/dialogue_manager/components/settings.gd")
 const MainView = preload("res://addons/dialogue_manager/views/main_view.tscn")
 
 
 var import_plugin: DialogueImportPlugin
+var inspector_plugin: DialogueInspectorPlugin
 var main_view
 
 var dialogue_file_cache: Dictionary = {}
 
 
-func _enter_tree():
+func _enter_tree() -> void:
 	add_autoload_singleton("DialogueManager", "res://addons/dialogue_manager/dialogue_manager.gd")
 	add_custom_type("DialogueLabel", "RichTextLabel", preload("res://addons/dialogue_manager/dialogue_label.gd"), _get_plugin_icon())
 	
@@ -22,6 +24,10 @@ func _enter_tree():
 		import_plugin = DialogueImportPlugin.new()
 		import_plugin.editor_plugin = self
 		add_import_plugin(import_plugin)
+		
+		inspector_plugin = DialogueInspectorPlugin.new()
+		inspector_plugin.editor_plugin = self
+		add_inspector_plugin(inspector_plugin)
 		
 		main_view = MainView.instantiate()
 		main_view.editor_plugin = self
@@ -34,12 +40,15 @@ func _enter_tree():
 		get_editor_interface().get_file_system_dock().file_removed.connect(_on_file_removed)
 
 
-func _exit_tree():
+func _exit_tree() -> void:
 	remove_autoload_singleton("DialogueManager")
 	remove_custom_type("DialogueLabel")
 	
 	remove_import_plugin(import_plugin)
 	import_plugin = null
+	
+	remove_inspector_plugin(inspector_plugin)
+	inspector_plugin = null
 	
 	if is_instance_valid(main_view):
 		main_view.queue_free()
@@ -62,13 +71,7 @@ func _get_plugin_name() -> String:
 
 
 func _get_plugin_icon() -> Texture2D:
-	var base_color = get_editor_interface().get_editor_settings().get_setting("interface/theme/base_color")
-	var theme = "light" if base_color.v > 0.5 else "dark"
-	var base_icon = load("res://addons/dialogue_manager/assets/icons/icon_%s.svg" % theme) as Texture2D
-	var size = get_editor_interface().get_editor_main_screen().get_theme_icon("Godot", "EditorIcons").get_size()
-	var image: Image = base_icon.get_image()
-	image.resize(size.x, size.y, Image.INTERPOLATE_TRILINEAR)
-	return ImageTexture.create_from_image(image)
+	return create_icon()
 
 
 func _handles(object) -> bool:
@@ -101,6 +104,17 @@ func _build() -> bool:
 			push_error("You have %d error(s) in %s" % [dialogue_file.errors.size(), dialogue_file.path])
 			can_build = false
 	return can_build
+
+
+## Generate the plugin icon
+func create_icon() -> Texture2D:
+	var base_color = get_editor_interface().get_editor_settings().get_setting("interface/theme/base_color")
+	var theme = "light" if base_color.v > 0.5 else "dark"
+	var base_icon = load("res://addons/dialogue_manager/assets/icons/icon_%s.svg" % theme) as Texture2D
+	var size = get_editor_interface().get_editor_main_screen().get_theme_icon("Godot", "EditorIcons").get_size()
+	var image: Image = base_icon.get_image()
+	image.resize(size.x, size.y, Image.INTERPOLATE_TRILINEAR)
+	return ImageTexture.create_from_image(image)
 
 
 ## Keep track of known files and their dependencies

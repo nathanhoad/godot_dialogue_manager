@@ -4,6 +4,7 @@ extends VBoxContainer
 
 signal file_selected(file_path: String)
 signal file_popup_menu_requested(at_position: Vector2)
+signal file_double_clicked(file_path: String)
 
 
 const MODIFIED_SUFFIX = "(*)"
@@ -112,3 +113,10 @@ func _on_list_item_clicked(index: int, at_position: Vector2, mouse_button_index:
 	
 	if mouse_button_index == 2:
 		emit_signal("file_popup_menu_requested", at_position)
+
+
+func _on_list_item_activated(index: int) -> void:
+	var item_text = list.get_item_text(index).replace(MODIFIED_SUFFIX, "")
+	var file = file_map.find_key(item_text)
+	select_file(file)
+	emit_signal("file_double_clicked", file)

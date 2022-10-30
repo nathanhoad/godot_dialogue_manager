@@ -2,6 +2,9 @@
 extends EditorImportPlugin
 
 
+signal compiled_resource(resource: Resource)
+
+
 const DialogueParser = preload("res://addons/dialogue_manager/components/parser.gd")
 const compiler_version = 3
 
@@ -88,8 +91,12 @@ func compile_file(path: String, resource_path: String, will_cascade_cache_data: 
 	resource.set_meta("titles", data.titles)
 	resource.set_meta("first_title", data.first_title)
 	resource.set_meta("lines", data.lines)
-
+	
 	if will_cascade_cache_data:
 		editor_plugin.add_to_dialogue_file_cache(path, resource_path, data)
+
+	err = ResourceSaver.save(resource, resource_path)
+
+	emit_signal("compiled_resource", resource)
 	
-	return ResourceSaver.save(resource, resource_path)
+	return err
