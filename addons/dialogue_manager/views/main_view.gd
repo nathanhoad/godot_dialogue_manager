@@ -859,7 +859,7 @@ func _on_files_popup_menu_about_to_popup() -> void:
 	files_popup_menu.clear()
 	
 	files_popup_menu.add_item("Save", ITEM_SAVE, KEY_MASK_CTRL | KEY_MASK_ALT | KEY_S)
-	files_popup_menu.add_item("Save As...", ITEM_SAVE_AS, KEY_MASK_CTRL | KEY_MASK_ALT | KEY_S)
+	files_popup_menu.add_item("Save As...", ITEM_SAVE_AS)
 	files_popup_menu.add_item("Close", ITEM_CLOSE, KEY_MASK_CTRL | KEY_W)
 	files_popup_menu.add_item("Close All", ITEM_CLOSE_ALL)
 	files_popup_menu.add_item("Close Other Files", ITEM_CLOSE_OTHERS)
