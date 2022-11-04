@@ -553,10 +553,14 @@ func apply_weighted_random(id: int, raw_line: String, indent_size: int, line: Di
 		# Find the last weighted random line in this group
 		for i in range(id, raw_lines.size()):
 			if i + 1 >= raw_lines.size():
+				line["next_id"] = DialogueConstants.ID_END
 				break
 			if not raw_lines[i + 1].strip_edges().begins_with("%") or get_indent(raw_lines[i + 1]) != indent_size:
 				line["next_id"] = get_line_after_line(i, indent_size, line)
 				break
+	
+	if line.next_id == DialogueConstants.ID_NULL:
+		line["next_id"] = DialogueConstants.ID_END
 
 
 func find_next_condition_sibling(line_number: int) -> String:
