@@ -122,7 +122,7 @@ func type_next(delta: float, seconds_needed: float) -> void:
 		if seconds_needed > delta:
 			waiting_seconds += seconds_needed
 			if visible_characters < get_total_character_count():
-				emit_signal("spoke", text[visible_characters - 1], visible_characters, get_speed(visible_characters))
+				emit_signal("spoke", text[visible_characters - 1], visible_characters - 1, get_speed(visible_characters))
 		else:
 			type_next(delta, seconds_needed)
 
