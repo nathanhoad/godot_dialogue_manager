@@ -30,6 +30,7 @@ _**NOTE:** This is for Godot 4. If you are using Godot 3 then have a look at the
 
 [![Dialogue Manager for Godot 4](docs/tutorial.png)](https://youtu.be/DL79aS-dT7E)
 [![Interacting with nearby things](docs/interaction-tutorial.png)](https://youtu.be/-rytm4o1ndE)
+[![New Stuff in Dialogue Manager for Godot 4](docs/tutorial2.png)](https://youtu.be/Kco9jeGfOtA)
 
 ## Contributors
 
