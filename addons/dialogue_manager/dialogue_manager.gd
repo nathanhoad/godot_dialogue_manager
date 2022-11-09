@@ -312,7 +312,9 @@ func mutate(mutation: Dictionary) -> void:
 				
 			"emit":
 				for state in get_game_states():
-					if state.has_signal(args[0]):
+					if typeof(state) == TYPE_DICTIONARY:
+						continue
+					elif state.has_signal(args[0]):
 						match args.size():
 							1:
 								state.emit_signal(args[0])
@@ -330,7 +332,11 @@ func mutate(mutation: Dictionary) -> void:
 								state.emit_signal(args[0], args[1], args[2], args[3], args[4], args[5], args[6])
 							8:
 								state.emit_signal(args[0], args[1], args[2], args[3], args[4], args[5], args[6], args[7])
-						
+				
+				# The signal hasn't been found anywhere
+				printerr("\"%s\" is not a signal on any game states (%s)" % [args[0], str(get_game_states())])
+				assert(false, "Missing signal on calling object. See Output for details.")
+				
 			"debug":
 				prints("Debug:", args)
 	
