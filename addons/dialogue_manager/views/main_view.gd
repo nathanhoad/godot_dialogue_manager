@@ -33,7 +33,7 @@ onready var run_node_button := $Margin/VBox/Toolbar/RunButton
 onready var search_button := $Margin/VBox/Toolbar/SearchButton
 
 
-var plugin
+var plugin: EditorPlugin setget set_plugin
 var current_resource: DialogueResource
 var has_changed: bool = false
 var recent_resources: Array
@@ -106,6 +106,11 @@ func apply_changes() -> void:
 		
 		ResourceSaver.save(current_resource.resource_path, current_resource)
 		parse(true)
+
+
+func set_plugin(next_plugin: EditorPlugin) -> void:
+	plugin = next_plugin
+	editor.set_colors_from_editor(plugin.get_editor_interface().get_editor_settings())
 
 
 ### Helpers

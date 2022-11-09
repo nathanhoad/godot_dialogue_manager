@@ -40,61 +40,6 @@ func _ready() -> void:
 	
 	# Set up choose title dialog
 	choose_title_dialog.connect("title_chosen", self, "_on_title_chosen")
-	
-	# Colors
-	var title_color = get_color("accent_color", "Editor")
-	var comment_color = get_color("font_color", "Editor")
-	comment_color.a = 0.5
-	var condition_color = get_color("error_color", "Editor")
-	var value_color = get_color("warning_color", "Editor")
-	var mutation_color = get_color("success_color", "Editor")
-	var goto_color = get_color("accent_color", "Editor")
-	goto_color.a = 0.7
-	var dialogue_color = get_color("mono_color", "Editor")
-	
-	# Title
-	add_color_region("~", "~", title_color, true)
-	
-	# Comments
-	add_color_region("#", "##", comment_color, true)
-	
-	# Conditions
-	add_keyword_color("if", condition_color)
-	add_keyword_color("elif", condition_color)
-	add_keyword_color("else", condition_color)
-	add_keyword_color("endif", condition_color)
-	add_keyword_color("in", condition_color)
-	add_keyword_color("and", condition_color)
-	add_keyword_color("or", condition_color)
-	add_keyword_color("not", condition_color)
-	
-	# Values
-	add_keyword_color("true", value_color)
-	add_keyword_color("false", value_color)
-	add_color_override("number_color", value_color)
-	add_color_region("\"", "\"", value_color)
-	
-	# Mutations
-	add_keyword_color("do", mutation_color)
-	add_keyword_color("set", mutation_color)
-	add_color_override("function_color", mutation_color)
-	
-	# Jumps
-	add_color_region("=>", "<=", goto_color, true)
-	
-	# Dialogue
-	add_color_region(": ", "::", dialogue_color, true)
-	
-	# Errors
-	add_color_override("bookmark_color", Color("ff5555"))
-	
-	# General UI
-	add_constant_override("line_spacing", 10)
-	add_color_override("symbol_color", get_color("font_color", "Editor"))
-	add_color_override("font_color", get_color("font_color", "Editor"))
-	add_color_override("background_color", get_color("base_color", "Editor"))
-	add_color_override("current_line_color", get_color("base_color", "Editor").lightened(0.1))
-	add_font_override("font", get_font("source", "EditorFonts"))
 
 
 func _gui_input(event):
@@ -114,6 +59,63 @@ func _gui_input(event):
 			move_line(-1)
 		"Alt+Down":
 			move_line(1)
+
+
+func set_colors_from_editor(editor_settings: EditorSettings) -> void:
+	# Colors
+	var title_color = editor_settings.get_setting("text_editor/highlighting/control_flow_keyword_color")
+	var comment_color = editor_settings.get_setting("text_editor/highlighting/comment_color")
+	var keyword_color = editor_settings.get_setting("text_editor/highlighting/keyword_color")
+	var string_color = editor_settings.get_setting("text_editor/highlighting/string_color")
+	var number_color = editor_settings.get_setting("text_editor/highlighting/number_color")
+	var mutation_color = editor_settings.get_setting("text_editor/highlighting/function_color")
+	var goto_color = editor_settings.get_setting("text_editor/highlighting/control_flow_keyword_color")
+	goto_color.a = 0.7
+	var dialogue_color = editor_settings.get_setting("text_editor/highlighting/text_color")
+	
+	# Title
+	add_color_region("~", "~", title_color, true)
+	
+	# Comments
+	add_color_region("#", "##", comment_color, true)
+	
+	# Conditions
+	add_keyword_color("if", keyword_color)
+	add_keyword_color("elif", keyword_color)
+	add_keyword_color("else", keyword_color)
+	add_keyword_color("endif", keyword_color)
+	add_keyword_color("in", keyword_color)
+	add_keyword_color("and", keyword_color)
+	add_keyword_color("or", keyword_color)
+	add_keyword_color("not", keyword_color)
+	
+	# Values
+	add_keyword_color("true", keyword_color)
+	add_keyword_color("false", keyword_color)
+	add_color_override("number_color", number_color)
+	add_color_region("\"", "\"", string_color)
+	
+	# Mutations
+	add_keyword_color("do", mutation_color)
+	add_keyword_color("set", mutation_color)
+	add_color_override("function_color", mutation_color)
+	
+	# Jumps
+	add_color_region("=>", "<=", goto_color, true)
+	
+	# Dialogue
+	add_color_region(": ", "::", dialogue_color, true)
+	
+	# Errors
+	add_color_override("bookmark_color", editor_settings.get_setting("text_editor/highlighting/brace_mismatch_color"))
+	
+	# General UI
+	add_constant_override("line_spacing", 10)
+	add_color_override("symbol_color", editor_settings.get_setting("text_editor/highlighting/symbol_color"))
+	add_color_override("font_color", editor_settings.get_setting("text_editor/highlighting/text_color"))
+	add_color_override("background_color", editor_settings.get_setting("text_editor/highlighting/background_color"))
+	add_color_override("current_line_color", editor_settings.get_setting("text_editor/highlighting/current_line_color"))
+	add_font_override("font", get_font("source", "EditorFonts"))
 
 
 func get_cursor() -> Vector2:
