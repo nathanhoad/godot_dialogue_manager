@@ -1294,8 +1294,7 @@ func check_next_token(token: Dictionary, next_tokens: Array[Dictionary]) -> int:
 			DialogueConstants.TOKEN_VARIABLE:
 				return DialogueConstants.ERR_UNEXPECTED_VARIABLE
 
-			_:
-				return DialogueConstants.ERR_INVALID_EXPRESSION
+		return DialogueConstants.ERR_INVALID_EXPRESSION
 
 	return OK
 

@@ -108,6 +108,8 @@ func next(next_id: String) -> void:
 
 # Set up keyboard movement and signals for the response menu
 func configure_menu() -> void:
+	balloon.focus_mode = Control.FOCUS_NONE
+	
 	var items = get_responses()
 	for i in items.size():
 		var item: Control = items[i]
@@ -172,6 +174,7 @@ func _on_response_gui_input(event: InputEvent, item: Control) -> void:
 
 func _on_balloon_gui_input(event: InputEvent) -> void:
 	if not is_waiting_for_input: return
+	if dialogue_line.responses.size() > 0: return
 
 	# When there are no response options the balloon itself is the clickable thing	
 	get_viewport().set_input_as_handled()

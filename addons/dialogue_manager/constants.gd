@@ -165,5 +165,5 @@ static func get_error_message(error: int) -> String:
 			return "Unexpected variable."
 		ERR_INVALID_INDEX:
 			return "Invalid index."
-		_:
-			return "Unknown syntax."
+
+	return "Unknown syntax."

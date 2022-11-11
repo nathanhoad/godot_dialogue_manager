@@ -258,8 +258,7 @@ func create_dialogue_line(data: Dictionary) -> Dictionary:
 				mutation = data.mutation
 			}
 		
-		_:
-			return create_empty_dialogue_line()
+	return create_empty_dialogue_line()
 
 
 # Create a response
@@ -812,8 +811,8 @@ func compare(operator: String, first_value, second_value) -> bool:
 					return false
 			else:
 				return first_value != second_value
-		_:
-			return false
+
+	return false
 
 
 func apply_operation(operator: String, first_value, second_value):
@@ -834,8 +833,8 @@ func apply_operation(operator: String, first_value, second_value):
 			return first_value and second_value
 		"or":
 			return first_value or second_value
-		_:
-			assert(false, "Unknown operator")
+	
+	assert(false, "Unknown operator")
 
 
 # Check if a dialogue line contains meaningful information
