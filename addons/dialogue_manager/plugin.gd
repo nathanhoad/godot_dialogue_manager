@@ -3,6 +3,7 @@ extends EditorPlugin
 
 
 const DialogueConstants = preload("res://addons/dialogue_manager/constants.gd")
+const DialogueUtils = preload("res://addons/dialogue_manager/utils.gd")
 const DialogueImportPlugin = preload("res://addons/dialogue_manager/import_plugin.gd")
 const DialogueInspectorPlugin = preload("res://addons/dialogue_manager/inspector_plugin.gd")
 const DialogueSettings = preload("res://addons/dialogue_manager/components/settings.gd")
@@ -71,7 +72,7 @@ func _get_plugin_name() -> String:
 
 
 func _get_plugin_icon() -> Texture2D:
-	return create_icon()
+	return DialogueUtils.create_main_icon()
 
 
 func _handles(object) -> bool:
@@ -104,17 +105,6 @@ func _build() -> bool:
 			push_error("You have %d error(s) in %s" % [dialogue_file.errors.size(), dialogue_file.path])
 			can_build = false
 	return can_build
-
-
-## Generate the plugin icon
-func create_icon() -> Texture2D:
-	var base_color = get_editor_interface().get_editor_settings().get_setting("interface/theme/base_color")
-	var theme = "light" if base_color.v > 0.5 else "dark"
-	var base_icon = load("res://addons/dialogue_manager/assets/icons/icon_%s.svg" % theme) as Texture2D
-	var size = get_editor_interface().get_editor_main_screen().get_theme_icon("Godot", "EditorIcons").get_size()
-	var image: Image = base_icon.get_image()
-	image.resize(size.x, size.y, Image.INTERPOLATE_TRILINEAR)
-	return ImageTexture.create_from_image(image)
 
 
 ## Keep track of known files and their dependencies

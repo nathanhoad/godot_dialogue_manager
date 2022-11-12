@@ -2,13 +2,15 @@
 extends Button
 
 
-const OPEN_URL = "https://github.com/nathanhoad/godot_dialogue_manager"
 const REMOTE_CONFIG_URL = "https://raw.githubusercontent.com/nathanhoad/godot_dialogue_manager/main/addons/dialogue_manager/plugin.cfg"
 const LOCAL_CONFIG_PATH = "res://addons/dialogue_manager/plugin.cfg"
 
 
 @onready var http_request: HTTPRequest = $HTTPRequest
 @onready var version_on_load: String = get_version()
+@onready var download_dialog: AcceptDialog = $DownloadDialog
+@onready var download_update_panel = $DownloadDialog/DownloadUpdatePanel
+@onready var update_failed_dialog: AcceptDialog = $UpdateFailedDialog
 
 # The main editor plugin
 var editor_plugin: EditorPlugin
@@ -26,19 +28,6 @@ func _ready() -> void:
 # Check for updates on GitHub
 func check_for_remote_update() -> void:
 	http_request.request(REMOTE_CONFIG_URL)
-
-
-# Check for local file updates and restart the plugin if found
-func check_for_local_update() -> void:
-	var next_version = get_version()
-	if version_to_number(next_version) > version_to_number(version_on_load):
-		var will_refresh = on_before_refresh.call()
-		if will_refresh:
-			if editor_plugin.get_editor_interface().get_resource_filesystem().sources_changed.is_connected(_on_sources_changed):
-				editor_plugin.get_editor_interface().get_resource_filesystem().sources_changed.disconnect(_on_sources_changed)
-			print_rich("\n[b]Updated Dialogue Manager to v%s[/b]\n" % next_version)
-			editor_plugin.get_editor_interface().call_deferred("set_plugin_enabled", "dialogue_manager", true)
-			editor_plugin.get_editor_interface().set_plugin_enabled("dialogue_manager", false)
 
 
 # Get the current version
@@ -75,15 +64,32 @@ func _on_http_request_request_completed(result: int, response_code: int, headers
 	
 	var next_version = found.strings[found.names.get("version")]
 	if version_to_number(next_version) > version_to_number(version_on_load):
+		download_update_panel.next_version = next_version
 		text = "v%s available" % next_version
 		show()
-		# Wait for the local files to be updated
-		editor_plugin.get_editor_interface().get_resource_filesystem().sources_changed.connect(_on_sources_changed)
 
 
 func _on_update_button_pressed() -> void:
-	OS.shell_open(OPEN_URL)
+	download_dialog.popup_centered()
 
 
-func _on_sources_changed(exist: bool) -> void:
-	check_for_local_update()
+func _on_download_dialog_close_requested() -> void:
+	download_dialog.hide()
+
+
+func _on_download_update_panel_updated(updated_to_version: String) -> void:
+	download_dialog.hide()
+	
+	editor_plugin.get_editor_interface().get_resource_filesystem().scan()
+	
+	var will_refresh = on_before_refresh.call()
+	if will_refresh:
+		print_rich("\n[b]Updated Dialogue Manager to v%s[/b]\n" % updated_to_version)
+		editor_plugin.get_editor_interface().call_deferred("set_plugin_enabled", "dialogue_manager", true)
+		editor_plugin.get_editor_interface().set_plugin_enabled("dialogue_manager", false)
+
+
+func _on_download_update_panel_failed() -> void:
+	download_dialog.hide()
+	update_failed_dialog.dialog_text = "There was a problem downloading the update."
+	update_failed_dialog.popup_centered()

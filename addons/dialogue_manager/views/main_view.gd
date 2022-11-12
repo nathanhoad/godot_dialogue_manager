@@ -28,6 +28,7 @@ const ITEM_SHOW_IN_FILESYSTEM = 201
 @onready var settings_view := $SettingsDialog/SettingsView
 @onready var build_error_dialog: AcceptDialog = $BuildErrorDialog
 @onready var close_confirmation_dialog: ConfirmationDialog = $CloseConfirmationDialog
+@onready var updated_dialog: AcceptDialog = $UpdatedDialog
 
 # Toolbar
 @onready var new_button: Button = %NewButton
@@ -163,8 +164,13 @@ func load_from_version_refresh(just_refreshed: Dictionary) -> void:
 		}
 	else:
 		open_buffers = just_refreshed.open_buffers
-		
-	editor_plugin.get_editor_interface().edit_resource(load(just_refreshed.current_file_path))
+	
+	if just_refreshed.current_file_path != "":
+		editor_plugin.get_editor_interface().edit_resource(load(just_refreshed.current_file_path))
+	else:
+		editor_plugin.get_editor_interface().set_main_screen_editor("Dialogue")
+	
+	updated_dialog.popup_centered()
 
 
 func new_file(path: String, content: String = "") -> void:
