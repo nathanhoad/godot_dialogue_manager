@@ -156,6 +156,11 @@ func _request_code_completion(force: bool) -> void:
 		parser.free()
 
 
+func _filter_code_completion_candidates(candidates: Array) -> Array:
+	# Not sure why but if this method isn't overridden then all completions are wrapped in quotes.
+	return candidates
+
+
 ### Helpers
 
 
