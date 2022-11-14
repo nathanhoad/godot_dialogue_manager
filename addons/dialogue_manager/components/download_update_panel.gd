@@ -38,6 +38,12 @@ func save_zip(bytes: PackedByteArray) -> void:
 
 
 func _on_download_button_pressed() -> void:
+	# Safeguard the actual dialogue manager repo from accidentally updating itself
+	if FileAccess.file_exists("res://examples/test_scenes/test_scene.gd"): 
+		prints("You can't update the dialogue manager from within itself.")
+		emit_signal("failed")
+		return
+	
 	http_request.request("https://github.com/nathanhoad/godot_dialogue_manager/archive/refs/tags/v%s.zip" % next_version)
 	download_button.disabled = true
 	download_button.text = "Downloading..."
@@ -45,12 +51,6 @@ func _on_download_button_pressed() -> void:
 
 func _on_http_request_request_completed(result: int, response_code: int, headers: PackedStringArray, body: PackedByteArray) -> void:
 	if result != HTTPRequest.RESULT_SUCCESS: 
-		emit_signal("failed")
-		return
-	
-	# Safeguard the actual dialogue manager repo from accidentally updating itself
-	if FileAccess.file_exists("res://examples/test_scenes/test_scene.gd"): 
-		prints("You can't update the dialogue manager from within itself.")
 		emit_signal("failed")
 		return
 	

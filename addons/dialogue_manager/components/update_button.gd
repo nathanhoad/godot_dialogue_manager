@@ -22,11 +22,8 @@ var on_before_refresh: Callable = func(): return true
 func _ready() -> void:
 	hide()
 	apply_theme()
-	check_for_remote_update()
 	
-
-# Check for updates on GitHub
-func check_for_remote_update() -> void:
+	# Check for updates on GitHub
 	http_request.request(REMOTE_CONFIG_URL)
 
 
