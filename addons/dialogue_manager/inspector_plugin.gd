@@ -9,7 +9,9 @@ var editor_plugin: EditorPlugin
 
 
 func _can_handle(object) -> bool:
-	return "dialogue_resource" in object
+	if object is Resource:
+		return "dialogue_resource" in object
+	return false
 
 
 func _parse_property(object: Object, type: int, name: String, hint_type: int, hint_string: String, usage_flags: int, wide: bool) -> bool:
