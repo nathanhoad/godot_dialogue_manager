@@ -72,7 +72,8 @@ func _get_plugin_name() -> String:
 
 
 func _get_plugin_icon() -> Texture2D:
-	return DialogueUtils.create_main_icon()
+	var size: Vector2 = Vector2(16, 16) * get_editor_interface().get_editor_scale()
+	return DialogueUtils.create_main_icon(size)
 
 
 func _handles(object) -> bool:
