@@ -67,6 +67,8 @@ func _on_http_request_request_completed(result: int, response_code: int, headers
 
 
 func _on_update_button_pressed() -> void:
+	var scale: float = editor_plugin.get_editor_interface().get_editor_scale()
+	download_dialog.min_size = Vector2(300, 250) * scale
 	download_dialog.popup_centered()
 
 

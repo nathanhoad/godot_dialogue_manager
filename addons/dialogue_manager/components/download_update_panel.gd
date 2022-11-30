@@ -26,7 +26,7 @@ var next_version: String = "":
 
 func _ready() -> void:
 	logo.texture = DialogueUtils.create_main_icon(Vector2(32, 32))
-
+	
 
 func save_zip(bytes: PackedByteArray) -> void:
 	var file: FileAccess = FileAccess.open(TEMP_FILE_NAME, FileAccess.WRITE)

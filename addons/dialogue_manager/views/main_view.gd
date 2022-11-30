@@ -352,6 +352,15 @@ func apply_theme() -> void:
 		popup.add_icon_item(get_theme_icon("AssetLib", "EditorIcons"), "Import changes from CSV..." , 3)
 		popup.add_separator()
 		popup.add_icon_item(get_theme_icon("FileList", "EditorIcons"), "Save to PO...", 5)
+		
+		# Dialog sizes
+		var scale: float = editor_plugin.get_editor_interface().get_editor_scale()
+		new_dialog.min_size = Vector2(600, 500) * scale
+		save_dialog.min_size = Vector2(600, 500) * scale
+		open_dialog.min_size = Vector2(600, 500) * scale
+		export_dialog.min_size = Vector2(600, 500) * scale
+		export_dialog.min_size = Vector2(600, 500) * scale
+		settings_dialog.min_size = Vector2(600, 500) * scale
 
 
 ### Helpers
