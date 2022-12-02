@@ -6,8 +6,6 @@ signal pressed()
 signal resource_changed(next_resource: Resource)
 
 
-const DialogueUtils = preload("res://addons/dialogue_manager/utils.gd")
-
 const ITEM_NEW = 100
 const ITEM_QUICK_LOAD = 200
 const ITEM_LOAD = 201
@@ -39,16 +37,17 @@ var quick_selected_file: String = ""
 func _ready() -> void:
 	menu_button.icon = get_theme_icon("GuiDropdown", "EditorIcons")
 	
-	editor_plugin.main_view.new_dialog.file_selected.connect(_on_file_dialog_new_file_selected)
-	editor_plugin.main_view.open_dialog.file_selected.connect(_on_file_dialog_file_selected)
-	editor_plugin.main_view.new_dialog.cancelled.connect(_on_file_dialog_cancelled)
-	editor_plugin.main_view.open_dialog.cancelled.connect(_on_file_dialog_cancelled)
+	if is_instance_valid(editor_plugin):
+		editor_plugin.main_view.new_dialog.file_selected.connect(_on_file_dialog_new_file_selected)
+		editor_plugin.main_view.open_dialog.file_selected.connect(_on_file_dialog_file_selected)
+		editor_plugin.main_view.new_dialog.cancelled.connect(_on_file_dialog_cancelled)
+		editor_plugin.main_view.open_dialog.cancelled.connect(_on_file_dialog_cancelled)
 
 
 func build_menu() -> void:
 	menu.clear()
 	
-	menu.add_icon_item(DialogueUtils.create_main_icon(), "New Dialogue", ITEM_NEW)
+	menu.add_icon_item(editor_plugin.create_main_icon(), "New Dialogue", ITEM_NEW)
 	menu.add_separator()
 	menu.add_icon_item(get_theme_icon("Load", "EditorIcons"), "Quick Load", ITEM_QUICK_LOAD)
 	menu.add_icon_item(get_theme_icon("Load", "EditorIcons"), "Load", ITEM_LOAD)

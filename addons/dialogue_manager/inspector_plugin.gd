@@ -9,9 +9,11 @@ var editor_plugin: EditorPlugin
 
 
 func _can_handle(object) -> bool:
-	if object is Resource:
-		return "dialogue_resource" in object
-	return false
+	if object is GDScript: return false
+	if not object is Node: return false
+	if "name" in object and object.name == "Dialogue Manager": return false
+	
+	return "dialogue_resource" in object
 
 
 func _parse_property(object: Object, type: int, name: String, hint_type: int, hint_string: String, usage_flags: int, wide: bool) -> bool:

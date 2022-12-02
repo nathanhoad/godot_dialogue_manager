@@ -38,6 +38,11 @@ project/assembly_name="Dialogue Manager"
 
 enabled=PackedStringArray("res://addons/dialogue_manager/plugin.cfg")
 
+[filesystem]
+
+import/blender/enabled=false
+import/fbx/enabled=false
+
 [internationalization]
 
 locale/translation_remaps={

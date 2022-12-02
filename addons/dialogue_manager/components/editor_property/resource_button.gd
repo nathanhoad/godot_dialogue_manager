@@ -5,14 +5,11 @@ extends Button
 signal resource_dropped(next_resource: Resource)
 
 
-const DialogueUtils = preload("res://addons/dialogue_manager/utils.gd")
-
-
 var resource: Resource:
 	set(next_resource):
 		resource = next_resource
 		if resource:
-			icon = DialogueUtils.create_main_icon()
+			icon = owner.editor_plugin.create_main_icon()
 			text = resource.resource_path.get_file().replace(".dialogue", "")
 		else:
 			icon = null

@@ -6,8 +6,6 @@ signal failed()
 signal updated(updated_to_version: String)
 
 
-const DialogueUtils = preload("res://addons/dialogue_manager/utils.gd")
-
 const TEMP_FILE_NAME = "user://temp.zip"
 
 
@@ -22,10 +20,6 @@ var next_version: String = "":
 		label.text = "Version %s is available for download!" % next_version
 	get:
 		return next_version
-
-
-func _ready() -> void:
-	logo.texture = DialogueUtils.create_main_icon(Vector2(32, 32))
 	
 
 func save_zip(bytes: PackedByteArray) -> void:

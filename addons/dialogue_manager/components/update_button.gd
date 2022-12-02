@@ -7,7 +7,6 @@ const LOCAL_CONFIG_PATH = "res://addons/dialogue_manager/plugin.cfg"
 
 
 @onready var http_request: HTTPRequest = $HTTPRequest
-@onready var version_on_load: String = get_version()
 @onready var download_dialog: AcceptDialog = $DownloadDialog
 @onready var download_update_panel = $DownloadDialog/DownloadUpdatePanel
 @onready var update_failed_dialog: AcceptDialog = $UpdateFailedDialog
@@ -59,8 +58,9 @@ func _on_http_request_request_completed(result: int, response_code: int, headers
 	
 	if not found: return
 	
+	var current_version: String = get_version()
 	var next_version = found.strings[found.names.get("version")]
-	if version_to_number(next_version) > version_to_number(version_on_load):
+	if version_to_number(next_version) > version_to_number(current_version):
 		download_update_panel.next_version = next_version
 		text = "v%s available" % next_version
 		show()

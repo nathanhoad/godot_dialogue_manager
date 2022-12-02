@@ -3,7 +3,6 @@ extends EditorPlugin
 
 
 const DialogueConstants = preload("res://addons/dialogue_manager/constants.gd")
-const DialogueUtils = preload("res://addons/dialogue_manager/utils.gd")
 const DialogueImportPlugin = preload("res://addons/dialogue_manager/import_plugin.gd")
 const DialogueInspectorPlugin = preload("res://addons/dialogue_manager/inspector_plugin.gd")
 const DialogueSettings = preload("res://addons/dialogue_manager/components/settings.gd")
@@ -72,8 +71,7 @@ func _get_plugin_name() -> String:
 
 
 func _get_plugin_icon() -> Texture2D:
-	var size: Vector2 = Vector2(16, 16) * get_editor_interface().get_editor_scale()
-	return DialogueUtils.create_main_icon(size)
+	return create_main_icon()
 
 
 func _handles(object) -> bool:
@@ -106,6 +104,17 @@ func _build() -> bool:
 			push_error("You have %d error(s) in %s" % [dialogue_file.errors.size(), dialogue_file.path])
 			can_build = false
 	return can_build
+
+
+func create_main_icon(scale: float = 1.0) -> Texture2D:
+	var size: Vector2 = Vector2(16, 16) * get_editor_interface().get_editor_scale() * scale
+	var base_color: Color = get_editor_interface().get_editor_main_screen().get_theme_color("base_color", "Editor")
+	var theme: String = "light" if base_color.v > 0.5 else "dark"
+	var base_icon: Texture2D = load("res://addons/dialogue_manager/assets/icons/icon_%s.svg" % theme)
+	var image: Image = base_icon.get_image()
+	
+	image.resize(size.x, size.y, Image.INTERPOLATE_TRILINEAR)
+	return ImageTexture.create_from_image(image)
 
 
 ## Keep track of known files and their dependencies
