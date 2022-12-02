@@ -331,6 +331,7 @@ func mutate(mutation: Dictionary) -> void:
 								state.emit_signal(args[0], args[1], args[2], args[3], args[4], args[5], args[6])
 							8:
 								state.emit_signal(args[0], args[1], args[2], args[3], args[4], args[5], args[6], args[7])
+						return
 				
 				# The signal hasn't been found anywhere
 				printerr("\"%s\" is not a signal on any game states (%s)" % [args[0], str(get_game_states())])
