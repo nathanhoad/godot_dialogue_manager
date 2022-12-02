@@ -11,6 +11,7 @@ const DialogueSettings = preload("res://addons/dialogue_manager/components/setti
 @onready var missing_translations_button: CheckBox = $MissingTranslationsButton
 @onready var wrap_lines_button: Button = $WrapLinesButton
 @onready var include_all_responses_button: Button = $IncludeAllResponsesButton
+@onready var sample_template_button: CheckBox = $SampleTemplate
 @onready var states_title: Label = $StatesTitle
 @onready var globals_list: Tree = $GlobalsList
 
@@ -24,7 +25,7 @@ func prepare() -> void:
 	missing_translations_button.set_pressed_no_signal(DialogueSettings.get_setting("missing_translations_are_errors", false))
 	wrap_lines_button.set_pressed_no_signal(DialogueSettings.get_setting("wrap_lines", false))
 	include_all_responses_button.set_pressed_no_signal(DialogueSettings.get_setting("include_all_responses", false))
-
+	sample_template_button.set_pressed_no_signal(DialogueSettings.get_setting("new_with_template",true))
 	var project = ConfigFile.new()
 	var err = project.load("res://project.godot")
 	assert(err == OK, "Could not find the project file")
@@ -90,3 +91,7 @@ func _on_globals_list_item_selected() -> void:
 
 func _on_globals_list_button_clicked(item: TreeItem, column: int, id: int, mouse_button_index: int) -> void:
 	emit_signal("script_button_pressed", item.get_text(2))
+
+
+func _on_sample_template_toggled(button_pressed):
+	DialogueSettings.set_setting("new_with_template", button_pressed)

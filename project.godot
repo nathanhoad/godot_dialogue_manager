@@ -24,7 +24,8 @@ DialogueManager="*res://addons/dialogue_manager/dialogue_manager.gd"
 
 states=["State", "Events"]
 missing_translations_are_errors=false
-wrap_lines=false
+wrap_lines=true
+new_with_template=false
 
 [display]
 

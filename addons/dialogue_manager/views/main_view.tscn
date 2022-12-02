@@ -9,7 +9,7 @@
 [ext_resource type="PackedScene" uid="uid://cs8pwrxr5vxix" path="res://addons/dialogue_manager/components/errors_panel.tscn" id="7_5cvl4"]
 [ext_resource type="PackedScene" uid="uid://cpg4lg1r3ff6m" path="res://addons/dialogue_manager/views/settings_view.tscn" id="9_8bf36"]
 
-[sub_resource type="Image" id="Image_xdt7e"]
+[sub_resource type="Image" id="Image_35eth"]
 data = {
 "data": PackedByteArray(255, 255, 255, 0, 255, 255, 255, 0, 255, 128, 128, 4, 255, 128, 128, 4, 255, 128, 128, 4, 255, 128, 128, 4, 255, 128, 128, 4, 255, 128, 128, 4, 255, 128, 128, 4, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 93, 93, 255, 255, 93, 93, 255, 255, 93, 93, 255, 255, 93, 93, 255, 255, 93, 93, 255, 255, 93, 93, 255, 255, 93, 93, 255, 255, 255, 255, 0, 255, 93, 93, 131, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 93, 93, 255, 255, 93, 93, 255, 255, 93, 93, 255, 255, 93, 93, 255, 255, 93, 93, 255, 255, 93, 93, 255, 255, 93, 93, 255, 255, 255, 255, 0, 255, 93, 93, 255, 255, 93, 93, 131, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 93, 93, 255, 255, 93, 93, 255, 255, 93, 93, 255, 255, 93, 93, 255, 255, 93, 93, 255, 255, 93, 93, 255, 255, 93, 93, 255, 255, 255, 255, 0, 255, 93, 93, 255, 255, 93, 93, 255, 255, 93, 93, 131, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 93, 93, 255, 255, 93, 93, 255, 255, 93, 93, 255, 255, 93, 93, 255, 255, 93, 93, 255, 255, 93, 93, 255, 255, 93, 93, 255, 255, 255, 255, 0, 255, 93, 93, 252, 255, 93, 93, 252, 255, 93, 93, 252, 255, 94, 94, 127, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 93, 93, 255, 255, 93, 93, 255, 255, 93, 93, 255, 255, 93, 93, 255, 255, 93, 93, 255, 255, 93, 93, 255, 255, 93, 93, 255, 255, 128, 128, 4, 255, 128, 128, 4, 255, 128, 128, 4, 255, 128, 128, 4, 255, 128, 128, 4, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 93, 93, 255, 255, 93, 93, 255, 255, 93, 93, 255, 255, 93, 93, 255, 255, 93, 93, 255, 255, 93, 93, 255, 255, 93, 93, 255, 255, 93, 93, 255, 255, 93, 93, 255, 255, 93, 93, 255, 255, 93, 93, 255, 255, 93, 93, 255, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 93, 93, 255, 255, 93, 93, 255, 255, 93, 93, 255, 255, 93, 93, 255, 255, 93, 93, 255, 255, 93, 93, 255, 255, 93, 93, 255, 255, 93, 93, 255, 255, 93, 93, 255, 255, 93, 93, 255, 255, 93, 93, 255, 255, 93, 93, 255, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 93, 93, 231, 255, 93, 93, 55, 255, 97, 97, 58, 255, 93, 93, 233, 255, 93, 93, 255, 255, 93, 93, 255, 255, 93, 93, 231, 255, 94, 94, 54, 255, 94, 94, 57, 255, 93, 93, 233, 255, 93, 93, 255, 255, 93, 93, 255, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 97, 97, 42, 255, 255, 255, 0, 255, 255, 255, 0, 255, 97, 97, 42, 255, 93, 93, 233, 255, 93, 93, 232, 255, 93, 93, 41, 255, 255, 255, 0, 255, 255, 255, 0, 255, 97, 97, 42, 255, 93, 93, 233, 255, 93, 93, 232, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 96, 96, 45, 255, 97, 97, 42, 255, 255, 255, 0, 255, 97, 97, 42, 255, 97, 97, 42, 255, 255, 255, 0, 255, 98, 98, 47, 255, 97, 97, 42, 255, 255, 255, 0, 255, 97, 97, 42, 255, 97, 97, 42, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 96, 96, 45, 255, 93, 93, 235, 255, 93, 93, 233, 255, 97, 97, 42, 255, 255, 255, 0, 255, 255, 255, 0, 255, 94, 94, 46, 255, 93, 93, 236, 255, 93, 93, 233, 255, 97, 97, 42, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 93, 93, 235, 255, 93, 93, 255, 255, 93, 93, 255, 255, 93, 93, 233, 255, 95, 95, 59, 255, 96, 96, 61, 255, 93, 93, 235, 255, 93, 93, 255, 255, 93, 93, 255, 255, 93, 93, 233, 255, 95, 95, 59, 255, 96, 96, 61, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 93, 93, 255, 255, 93, 93, 255, 255, 93, 93, 255, 255, 93, 93, 255, 255, 93, 93, 255, 255, 93, 93, 255, 255, 93, 93, 255, 255, 93, 93, 255, 255, 93, 93, 255, 255, 93, 93, 255, 255, 93, 93, 255, 255, 93, 93, 255, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 93, 93, 252, 255, 93, 93, 252, 255, 93, 93, 252, 255, 93, 93, 252, 255, 93, 93, 252, 255, 93, 93, 252, 255, 93, 93, 252, 255, 93, 93, 252, 255, 93, 93, 252, 255, 93, 93, 252, 255, 93, 93, 252, 255, 93, 93, 252, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0),
 "format": "RGBA8",
@@ -18,10 +18,10 @@ data = {
 "width": 16
 }
 
-[sub_resource type="ImageTexture" id="ImageTexture_o25ou"]
-image = SubResource("Image_xdt7e")
+[sub_resource type="ImageTexture" id="ImageTexture_p2y7a"]
+image = SubResource("Image_35eth")
 
-[sub_resource type="Image" id="Image_yqv4y"]
+[sub_resource type="Image" id="Image_nwgwr"]
 data = {
 "data": PackedByteArray(255, 255, 255, 0, 255, 255, 255, 0, 255, 128, 128, 4, 255, 128, 128, 4, 255, 128, 128, 4, 255, 128, 128, 4, 255, 128, 128, 4, 255, 128, 128, 4, 255, 128, 128, 4, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 93, 93, 255, 255, 93, 93, 255, 255, 93, 93, 255, 255, 93, 93, 255, 255, 93, 93, 255, 255, 93, 93, 255, 255, 93, 93, 255, 255, 255, 255, 0, 255, 93, 93, 131, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 93, 93, 255, 255, 93, 93, 255, 255, 93, 93, 255, 255, 93, 93, 255, 255, 93, 93, 255, 255, 93, 93, 255, 255, 93, 93, 255, 255, 255, 255, 0, 255, 93, 93, 255, 255, 93, 93, 131, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 93, 93, 255, 255, 93, 93, 255, 255, 93, 93, 255, 255, 93, 93, 255, 255, 93, 93, 255, 255, 93, 93, 255, 255, 93, 93, 255, 255, 255, 255, 0, 255, 93, 93, 255, 255, 93, 93, 255, 255, 93, 93, 131, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 93, 93, 255, 255, 93, 93, 255, 255, 93, 93, 255, 255, 93, 93, 255, 255, 93, 93, 255, 255, 93, 93, 255, 255, 93, 93, 255, 255, 255, 255, 0, 255, 93, 93, 252, 255, 93, 93, 252, 255, 93, 93, 252, 255, 94, 94, 127, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 93, 93, 255, 255, 93, 93, 255, 255, 93, 93, 255, 255, 93, 93, 255, 255, 93, 93, 255, 255, 93, 93, 255, 255, 93, 93, 255, 255, 128, 128, 4, 255, 128, 128, 4, 255, 128, 128, 4, 255, 128, 128, 4, 255, 128, 128, 4, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 93, 93, 255, 255, 93, 93, 255, 255, 93, 93, 255, 255, 93, 93, 255, 255, 93, 93, 255, 255, 93, 93, 255, 255, 93, 93, 255, 255, 93, 93, 255, 255, 93, 93, 255, 255, 93, 93, 255, 255, 93, 93, 255, 255, 93, 93, 255, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 93, 93, 255, 255, 93, 93, 255, 255, 93, 93, 255, 255, 93, 93, 255, 255, 93, 93, 255, 255, 93, 93, 255, 255, 93, 93, 255, 255, 93, 93, 255, 255, 93, 93, 255, 255, 93, 93, 255, 255, 93, 93, 255, 255, 93, 93, 255, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 93, 93, 231, 255, 93, 93, 55, 255, 97, 97, 58, 255, 93, 93, 233, 255, 93, 93, 255, 255, 93, 93, 255, 255, 93, 93, 231, 255, 94, 94, 54, 255, 94, 94, 57, 255, 93, 93, 233, 255, 93, 93, 255, 255, 93, 93, 255, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 97, 97, 42, 255, 255, 255, 0, 255, 255, 255, 0, 255, 97, 97, 42, 255, 93, 93, 233, 255, 93, 93, 232, 255, 93, 93, 41, 255, 255, 255, 0, 255, 255, 255, 0, 255, 97, 97, 42, 255, 93, 93, 233, 255, 93, 93, 232, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 96, 96, 45, 255, 97, 97, 42, 255, 255, 255, 0, 255, 97, 97, 42, 255, 97, 97, 42, 255, 255, 255, 0, 255, 98, 98, 47, 255, 97, 97, 42, 255, 255, 255, 0, 255, 97, 97, 42, 255, 97, 97, 42, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 96, 96, 45, 255, 93, 93, 235, 255, 93, 93, 233, 255, 97, 97, 42, 255, 255, 255, 0, 255, 255, 255, 0, 255, 94, 94, 46, 255, 93, 93, 236, 255, 93, 93, 233, 255, 97, 97, 42, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 93, 93, 235, 255, 93, 93, 255, 255, 93, 93, 255, 255, 93, 93, 233, 255, 95, 95, 59, 255, 96, 96, 61, 255, 93, 93, 235, 255, 93, 93, 255, 255, 93, 93, 255, 255, 93, 93, 233, 255, 95, 95, 59, 255, 96, 96, 61, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 93, 93, 255, 255, 93, 93, 255, 255, 93, 93, 255, 255, 93, 93, 255, 255, 93, 93, 255, 255, 93, 93, 255, 255, 93, 93, 255, 255, 93, 93, 255, 255, 93, 93, 255, 255, 93, 93, 255, 255, 93, 93, 255, 255, 93, 93, 255, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 93, 93, 252, 255, 93, 93, 252, 255, 93, 93, 252, 255, 93, 93, 252, 255, 93, 93, 252, 255, 93, 93, 252, 255, 93, 93, 252, 255, 93, 93, 252, 255, 93, 93, 252, 255, 93, 93, 252, 255, 93, 93, 252, 255, 93, 93, 252, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0),
 "format": "RGBA8",
@@ -30,8 +30,8 @@ data = {
 "width": 16
 }
 
-[sub_resource type="ImageTexture" id="ImageTexture_t82np"]
-image = SubResource("Image_yqv4y")
+[sub_resource type="ImageTexture" id="ImageTexture_lvqww"]
+image = SubResource("Image_nwgwr")
 
 [node name="MainView" type="Control"]
 layout_mode = 3
@@ -47,6 +47,7 @@ script = ExtResource("1_h6qfq")
 [node name="ParseTimer" type="Timer" parent="."]
 
 [node name="Margin" type="MarginContainer" parent="."]
+layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -60,46 +61,39 @@ metadata/_edit_layout_mode = 1
 
 [node name="Content" type="HSplitContainer" parent="Margin"]
 unique_name_in_owner = true
-offset_left = 5.0
-offset_right = 1147.0
-offset_bottom = 643.0
+layout_mode = 2
 size_flags_vertical = 3
 dragger_visibility = 1
 
 [node name="SidePanel" type="VBoxContainer" parent="Margin/Content"]
 custom_minimum_size = Vector2(150, 0)
-offset_right = 222.0
-offset_bottom = 643.0
+layout_mode = 2
 size_flags_horizontal = 3
 
 [node name="Toolbar" type="HBoxContainer" parent="Margin/Content/SidePanel"]
-offset_right = 222.0
-offset_bottom = 24.0
+layout_mode = 2
 
 [node name="NewButton" type="Button" parent="Margin/Content/SidePanel/Toolbar"]
 unique_name_in_owner = true
-offset_right = 24.0
-offset_bottom = 24.0
+layout_mode = 2
 tooltip_text = "Start a new file"
-icon = SubResource("ImageTexture_o25ou")
+icon = SubResource("ImageTexture_p2y7a")
 flat = true
 
 [node name="OpenButton" type="MenuButton" parent="Margin/Content/SidePanel/Toolbar"]
 unique_name_in_owner = true
-offset_left = 28.0
-offset_right = 52.0
-offset_bottom = 24.0
+layout_mode = 2
 tooltip_text = "Open a file"
-icon = SubResource("ImageTexture_o25ou")
+icon = SubResource("ImageTexture_p2y7a")
 item_count = 5
 popup/item_0/text = "Open..."
-popup/item_0/icon = SubResource("ImageTexture_t82np")
+popup/item_0/icon = SubResource("ImageTexture_lvqww")
 popup/item_0/id = 0
 popup/item_1/text = ""
 popup/item_1/id = -1
 popup/item_1/separator = true
 popup/item_2/text = "res://examples/dialogue.dialogue"
-popup/item_2/icon = SubResource("ImageTexture_t82np")
+popup/item_2/icon = SubResource("ImageTexture_lvqww")
 popup/item_2/id = 2
 popup/item_3/text = ""
 popup/item_3/id = -1
@@ -109,29 +103,18 @@ popup/item_4/id = 4
 
 [node name="SaveAllButton" type="Button" parent="Margin/Content/SidePanel/Toolbar"]
 unique_name_in_owner = true
-offset_left = 56.0
-offset_right = 64.0
-offset_bottom = 24.0
+layout_mode = 2
 disabled = true
 flat = true
 
 [node name="Bookmarks" type="VSplitContainer" parent="Margin/Content/SidePanel"]
-offset_top = 28.0
-offset_right = 222.0
-offset_bottom = 643.0
+layout_mode = 2
 size_flags_vertical = 3
 
 [node name="FilesList" parent="Margin/Content/SidePanel/Bookmarks" instance=ExtResource("2_npj2k")]
 unique_name_in_owner = true
 visible = false
-anchors_preset = 0
-anchor_right = 0.0
-anchor_bottom = 0.0
-offset_top = -28.0
-offset_right = 222.0
-offset_bottom = 615.0
-grow_horizontal = 1
-grow_vertical = 1
+layout_mode = 2
 size_flags_vertical = 3
 
 [node name="FilesPopupMenu" type="PopupMenu" parent="Margin/Content/SidePanel/Bookmarks/FilesList"]
@@ -140,179 +123,137 @@ unique_name_in_owner = true
 [node name="TitleList" parent="Margin/Content/SidePanel/Bookmarks" instance=ExtResource("2_onb4i")]
 unique_name_in_owner = true
 visible = false
-anchors_preset = 0
-anchor_right = 0.0
-anchor_bottom = 0.0
-offset_top = 295.0
-offset_right = 222.0
-offset_bottom = 615.0
-grow_horizontal = 1
-grow_vertical = 1
+layout_mode = 2
 
 [node name="CodePanel" type="VBoxContainer" parent="Margin/Content"]
-offset_left = 234.0
-offset_right = 1142.0
-offset_bottom = 643.0
+layout_mode = 2
 size_flags_horizontal = 3
 size_flags_stretch_ratio = 4.0
 
 [node name="Toolbar" type="HBoxContainer" parent="Margin/Content/CodePanel"]
-offset_right = 908.0
-offset_bottom = 31.0
+layout_mode = 2
 
 [node name="InsertButton" type="MenuButton" parent="Margin/Content/CodePanel/Toolbar"]
 unique_name_in_owner = true
-offset_right = 73.0
-offset_bottom = 31.0
+layout_mode = 2
 disabled = true
 text = "Insert"
-icon = SubResource("ImageTexture_o25ou")
+icon = SubResource("ImageTexture_p2y7a")
 item_count = 6
 popup/item_0/text = "Wave BBCode"
-popup/item_0/icon = SubResource("ImageTexture_o25ou")
+popup/item_0/icon = SubResource("ImageTexture_p2y7a")
 popup/item_0/id = 0
 popup/item_1/text = "Shake BBCode"
-popup/item_1/icon = SubResource("ImageTexture_o25ou")
+popup/item_1/icon = SubResource("ImageTexture_p2y7a")
 popup/item_1/id = 1
 popup/item_2/text = ""
 popup/item_2/id = -1
 popup/item_2/separator = true
 popup/item_3/text = "Typing pause"
-popup/item_3/icon = SubResource("ImageTexture_o25ou")
+popup/item_3/icon = SubResource("ImageTexture_p2y7a")
 popup/item_3/id = 3
 popup/item_4/text = "Typing speed change"
-popup/item_4/icon = SubResource("ImageTexture_o25ou")
+popup/item_4/icon = SubResource("ImageTexture_p2y7a")
 popup/item_4/id = 4
 popup/item_5/text = "Auto advance"
-popup/item_5/icon = SubResource("ImageTexture_o25ou")
+popup/item_5/icon = SubResource("ImageTexture_p2y7a")
 popup/item_5/id = 5
 
 [node name="TranslationsButton" type="MenuButton" parent="Margin/Content/CodePanel/Toolbar"]
 unique_name_in_owner = true
-offset_left = 77.0
-offset_right = 200.0
-offset_bottom = 31.0
+layout_mode = 2
 disabled = true
 text = "Translations"
-icon = SubResource("ImageTexture_o25ou")
+icon = SubResource("ImageTexture_p2y7a")
 item_count = 6
 popup/item_0/text = "Generate line IDs"
-popup/item_0/icon = SubResource("ImageTexture_o25ou")
+popup/item_0/icon = SubResource("ImageTexture_p2y7a")
 popup/item_0/id = 0
 popup/item_1/text = ""
 popup/item_1/id = -1
 popup/item_1/separator = true
 popup/item_2/text = "Save to CSV..."
-popup/item_2/icon = SubResource("ImageTexture_o25ou")
+popup/item_2/icon = SubResource("ImageTexture_p2y7a")
 popup/item_2/id = 2
 popup/item_3/text = "Import changes from CSV..."
-popup/item_3/icon = SubResource("ImageTexture_o25ou")
+popup/item_3/icon = SubResource("ImageTexture_p2y7a")
 popup/item_3/id = 3
 popup/item_4/text = ""
 popup/item_4/id = -1
 popup/item_4/separator = true
 popup/item_5/text = "Save to PO..."
-popup/item_5/icon = SubResource("ImageTexture_o25ou")
+popup/item_5/icon = SubResource("ImageTexture_p2y7a")
 popup/item_5/id = 5
 
 [node name="Separator" type="VSeparator" parent="Margin/Content/CodePanel/Toolbar"]
-offset_left = 204.0
-offset_right = 208.0
-offset_bottom = 31.0
+layout_mode = 2
 
 [node name="SearchButton" type="Button" parent="Margin/Content/CodePanel/Toolbar"]
 unique_name_in_owner = true
-offset_left = 212.0
-offset_right = 236.0
-offset_bottom = 31.0
+layout_mode = 2
 tooltip_text = "Search for text"
 disabled = true
 toggle_mode = true
-icon = SubResource("ImageTexture_o25ou")
+icon = SubResource("ImageTexture_p2y7a")
 flat = true
 
 [node name="TestButton" type="Button" parent="Margin/Content/CodePanel/Toolbar"]
 unique_name_in_owner = true
-offset_left = 240.0
-offset_right = 264.0
-offset_bottom = 31.0
+layout_mode = 2
 tooltip_text = "Test dialogue"
 disabled = true
-icon = SubResource("ImageTexture_o25ou")
+icon = SubResource("ImageTexture_p2y7a")
 flat = true
 
 [node name="Spacer2" type="Control" parent="Margin/Content/CodePanel/Toolbar"]
-layout_mode = 3
-anchors_preset = 0
-offset_left = 268.0
-offset_right = 625.0
-offset_bottom = 31.0
+layout_mode = 2
 size_flags_horizontal = 3
 
 [node name="SettingsButton" type="Button" parent="Margin/Content/CodePanel/Toolbar"]
 unique_name_in_owner = true
-offset_left = 629.0
-offset_right = 653.0
-offset_bottom = 31.0
+layout_mode = 2
 tooltip_text = "Settings"
-icon = SubResource("ImageTexture_o25ou")
+icon = SubResource("ImageTexture_p2y7a")
 flat = true
 
 [node name="Separator3" type="VSeparator" parent="Margin/Content/CodePanel/Toolbar"]
-offset_left = 657.0
-offset_right = 661.0
-offset_bottom = 31.0
+layout_mode = 2
 
 [node name="DocsButton" type="Button" parent="Margin/Content/CodePanel/Toolbar"]
 unique_name_in_owner = true
-offset_left = 665.0
-offset_right = 729.0
-offset_bottom = 31.0
+layout_mode = 2
 text = "Docs"
-icon = SubResource("ImageTexture_o25ou")
+icon = SubResource("ImageTexture_p2y7a")
 flat = true
 
 [node name="VersionLabel" type="Label" parent="Margin/Content/CodePanel/Toolbar"]
 unique_name_in_owner = true
 modulate = Color(1, 1, 1, 0.490196)
-offset_left = 733.0
-offset_top = 2.0
-offset_right = 778.0
-offset_bottom = 28.0
-text = "v2.5.2"
+layout_mode = 2
+text = "v2.5.3"
 vertical_alignment = 1
 
 [node name="UpdateButton" parent="Margin/Content/CodePanel/Toolbar" instance=ExtResource("2_ph3vs")]
 unique_name_in_owner = true
-offset_left = 782.0
-offset_right = 908.0
-offset_bottom = 31.0
+layout_mode = 2
 
 [node name="SearchAndReplace" parent="Margin/Content/CodePanel" instance=ExtResource("6_ylh0t")]
 unique_name_in_owner = true
-offset_bottom = 66.0
+layout_mode = 2
 
 [node name="CodeEdit" parent="Margin/Content/CodePanel" instance=ExtResource("2_f73fm")]
 unique_name_in_owner = true
 visible = false
-anchors_preset = 0
-anchor_right = 0.0
-anchor_bottom = 0.0
-offset_top = 35.0
-offset_right = 710.0
-offset_bottom = 595.0
-grow_horizontal = 1
-grow_vertical = 1
+layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
 theme_override_colors/bookmark_color = Color(1, 0.333333, 0.333333, 1)
 text = ""
+wrap_mode = 1
 
 [node name="ErrorsPanel" parent="Margin/Content/CodePanel" instance=ExtResource("7_5cvl4")]
 unique_name_in_owner = true
-offset_top = 529.0
-offset_right = 710.0
-offset_bottom = 560.0
+layout_mode = 2
 
 [node name="NewDialog" type="FileDialog" parent="."]
 size = Vector2i(600, 500)
