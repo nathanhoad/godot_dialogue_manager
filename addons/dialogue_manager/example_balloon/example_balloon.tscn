@@ -1,7 +1,7 @@
 [gd_scene load_steps=5 format=3 uid="uid://73jm5qjy52vq"]
 
 [ext_resource type="Script" path="res://addons/dialogue_manager/example_balloon/example_balloon.gd" id="1_4u26j"]
-[ext_resource type="PackedScene" path="res://addons/dialogue_manager/dialogue_label.tscn" id="2_a8ve6"]
+[ext_resource type="PackedScene" uid="uid://ckvgyvclnwggo" path="res://addons/dialogue_manager/dialogue_label.tscn" id="2_a8ve6"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_5d24i"]
 content_margin_left = 40.0
@@ -17,10 +17,9 @@ content_margin_right = 5.0
 content_margin_bottom = 5.0
 draw_center = false
 
-[node name="ExampleBalloon" type="CanvasLayer" node_paths=PackedStringArray("response_template")]
+[node name="ExampleBalloon" type="CanvasLayer"]
 layer = 100
 script = ExtResource("1_4u26j")
-response_template = NodePath("Balloon/Margin/VBox/ResponseTemplate")
 
 [node name="Balloon" type="ColorRect" parent="."]
 anchors_preset = 10
@@ -72,6 +71,7 @@ offset_bottom = 66.0
 theme_override_constants/separation = 2
 
 [node name="ResponseTemplate" type="RichTextLabel" parent="Balloon/Margin/VBox"]
+unique_name_in_owner = true
 offset_top = 76.0
 offset_right = 1112.0
 offset_bottom = 109.0
