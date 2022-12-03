@@ -178,10 +178,8 @@ func new_file(path: String, content: String = "") -> void:
 		remove_file_from_open_buffers(path)
 	
 	var file: FileAccess = FileAccess.open(path, FileAccess.WRITE)
-	var set_sample_template = DialogueSettings.get_setting("new_with_template",true)
-	
 	if content == "":
-		if set_sample_template:
+		if DialogueSettings.get_setting("new_with_template", true):
 			file.store_string("\n".join([
 				"~ this_is_a_node_title",
 				"",

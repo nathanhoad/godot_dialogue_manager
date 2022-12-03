@@ -11,7 +11,7 @@ const DialogueSettings = preload("res://addons/dialogue_manager/components/setti
 @onready var missing_translations_button: CheckBox = $MissingTranslationsButton
 @onready var wrap_lines_button: Button = $WrapLinesButton
 @onready var include_all_responses_button: Button = $IncludeAllResponsesButton
-@onready var sample_template_button: CheckBox = $SampleTemplate
+@onready var sample_template_button: CheckBox = $SampleTemplateButton
 @onready var states_title: Label = $StatesTitle
 @onready var globals_list: Tree = $GlobalsList
 
@@ -25,7 +25,8 @@ func prepare() -> void:
 	missing_translations_button.set_pressed_no_signal(DialogueSettings.get_setting("missing_translations_are_errors", false))
 	wrap_lines_button.set_pressed_no_signal(DialogueSettings.get_setting("wrap_lines", false))
 	include_all_responses_button.set_pressed_no_signal(DialogueSettings.get_setting("include_all_responses", false))
-	sample_template_button.set_pressed_no_signal(DialogueSettings.get_setting("new_with_template",true))
+	sample_template_button.set_pressed_no_signal(DialogueSettings.get_setting("new_with_template", true))
+	
 	var project = ConfigFile.new()
 	var err = project.load("res://project.godot")
 	assert(err == OK, "Could not find the project file")
