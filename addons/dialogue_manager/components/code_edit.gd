@@ -228,6 +228,18 @@ func insert_bbcode(open_tag: String, close_tag: String = "") -> void:
 		grab_focus()
 		set_caret_column(get_caret_column() - close_tag.length())
 
+# Insert text at current caret position
+# Move Caret down 1 line if not => END
+func insert_text(text: String) -> void:
+	if text != "=> END":
+		insert_text_at_caret(text+"\n")
+		set_caret_line(get_caret_line()+1)
+	else:
+		insert_text_at_caret(text)
+	grab_focus()
+
+
+
 
 # Toggle the selected lines as comments
 func toggle_comment() -> void:
