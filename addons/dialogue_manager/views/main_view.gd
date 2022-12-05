@@ -343,6 +343,18 @@ func apply_theme() -> void:
 		popup.add_icon_item(get_theme_icon("Time", "EditorIcons"), "Typing pause", 3)
 		popup.add_icon_item(get_theme_icon("ViewportSpeed", "EditorIcons"), "Typing speed change", 4)
 		popup.add_icon_item(get_theme_icon("DebugNext", "EditorIcons"), "Auto advance", 5)
+		popup.add_separator("Templates")
+		popup.add_icon_item(get_theme_icon("RichTextEffect", "EditorIcons"), "Title", 6)
+		popup.add_icon_item(get_theme_icon("RichTextEffect", "EditorIcons"), "Dialogue", 7)
+		popup.add_icon_item(get_theme_icon("RichTextEffect", "EditorIcons"), "Response", 8)
+		popup.add_icon_item(get_theme_icon("RichTextEffect", "EditorIcons"), "Random Lines", 9)
+		popup.add_icon_item(get_theme_icon("RichTextEffect", "EditorIcons"), "Random Text", 10)
+		popup.add_separator("Actions")
+		popup.add_icon_item(get_theme_icon("RichTextEffect", "EditorIcons"), "Jump to Title", 11)
+		popup.add_icon_item(get_theme_icon("RichTextEffect", "EditorIcons"), "End Dialogue", 12)
+		
+		
+		
 		
 		# Set up the translations menu
 		popup = translations_button.get_popup()
@@ -710,6 +722,20 @@ func _on_insert_button_menu_id_pressed(id: int) -> void:
 			code_edit.insert_bbcode("[speed=0.2]")
 		5:
 			code_edit.insert_bbcode("[next=auto]")
+		6:
+			code_edit.insert_text("~ title")
+		7:
+			code_edit.insert_text("Nathan: This is Some Dialogue")
+		8:
+			code_edit.insert_text("Nathan: Choose a Response...\n- Option 1\n\tNathan: You chose option 1\n- Option 2\n\tNathan: You chose option 2")
+		9: 
+			code_edit.insert_text("% Nathan: This is random line 1.\n% Nathan: This is random line 2.\n%1 Nathan: This is weighted random line 3.")
+		10:
+			code_edit.insert_text("Nathan: [[Hi|Hello|Howdy]]")
+		11:
+			code_edit.insert_text("=> title")
+		12:
+			code_edit.insert_text("=> END")
 
 
 func _on_translations_button_menu_id_pressed(id: int) -> void:
