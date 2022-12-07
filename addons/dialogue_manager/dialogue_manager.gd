@@ -7,9 +7,6 @@ signal dialogue_finished
 
 const DialogueResource = preload("res://addons/dialogue_manager/dialogue_resource.gd")
 const DialogueConstants = preload("res://addons/dialogue_manager/constants.gd")
-const DialogueLine = preload("res://addons/dialogue_manager/dialogue_line.gd")
-const DialogueResponse = preload("res://addons/dialogue_manager/dialogue_response.gd")
-
 const DialogueSettings = preload("res://addons/dialogue_manager/components/settings.gd")
 const DialogueParser = preload("res://addons/dialogue_manager/components/parser.gd")
 
@@ -26,7 +23,6 @@ var is_dialogue_running := false setget set_is_dialogue_running
 var _node_properties: Array = []
 var _extra_game_states: Array = []
 var _resource_cache: Array = []
-var _trash: Node = Node.new()
 
 
 func _ready() -> void:
@@ -45,16 +41,11 @@ func _ready() -> void:
 		var state = get_node("/root/" + node_name)
 		if state:
 			game_states.append(state)
-	
-	# Add a node for cleaning up
-	add_child(_trash)
 
 
 # Step through lines and run any mutations until we either 
 # hit some dialogue or the end of the conversation
-func get_next_dialogue_line(key: String, override_resource: DialogueResource = null, extra_game_states: Array = []) -> DialogueLine:
-	cleanup()
-	
+func get_next_dialogue_line(key: String, override_resource: DialogueResource = null, extra_game_states: Array = []) -> Dictionary:
 	# Fix up any keys that have spaces in them
 	key = key.replace(" ", "_").strip_edges()
 	
@@ -90,37 +81,36 @@ func get_next_dialogue_line(key: String, override_resource: DialogueResource = n
 	# If our dialogue is nothing then we hit the end
 	if not is_valid(dialogue):
 		self.is_dialogue_running = false
-		return null
+		return create_empty_dialogue_line()
 	
 	# Run the mutation if it is one
 	if dialogue.type == DialogueConstants.TYPE_MUTATION:
 		yield(mutate(dialogue.mutation), "completed")
-		if is_instance_valid(dialogue):
-			dialogue.queue_free()
-			var actual_next_id = Array(dialogue.next_id.split(",")).front()
-			if actual_next_id in [DialogueConstants.ID_END_CONVERSATION, DialogueConstants.ID_NULL, null]:
-				# End the conversation
-				self.is_dialogue_running = false
-				return null
-			else:
-				return get_next_dialogue_line(dialogue.next_id, local_resource, extra_game_states)
-		else:
+		var actual_next_id = Array(dialogue.next_id.split(",")).front()
+		if actual_next_id in [DialogueConstants.ID_END_CONVERSATION, DialogueConstants.ID_NULL, null]:
 			# End the conversation
 			self.is_dialogue_running = false
-			return null
+			return create_empty_dialogue_line()
+		else:
+			return get_next_dialogue_line(dialogue.next_id, local_resource, extra_game_states)
 	else:
 		return dialogue
 
 
-func replace_values(line_or_response) -> String:
-	if line_or_response is DialogueLine:
-		var line: DialogueLine = line_or_response
-		return get_with_replacements(line.dialogue, line.replacements)
-	elif line_or_response is DialogueResponse:
-		var response: DialogueResponse = line_or_response
-		return get_with_replacements(response.prompt, response.replacements)
-	else:
-		return ""
+# Replace any variables, etc in the dialogue with their state values
+func get_resolved_text(text: String, replacements: Array) -> String:
+	for replacement in replacements:
+		var value = resolve(replacement.get("expression").duplicate(true))
+		text = text.replace(replacement.get("value_in_text"), str(value))
+	
+	# Resolve random groups
+	var random_regex: RegEx = RegEx.new()
+	random_regex.compile("\\[\\[(?<options>.*?)\\]\\]")
+	for found in random_regex.search_all(text):
+		var options = found.get_string("options").split("|")
+		text = text.replace("[[%s]]" % found.get_string("options"), options[rand_range(0, options.size())])
+	
+	return text
 
 
 func get_resource_from_text(text: String) -> DialogueResource:
@@ -140,10 +130,10 @@ func get_resource_from_text(text: String) -> DialogueResource:
 
 
 func show_example_dialogue_balloon(title: String, local_resource: DialogueResource = null, extra_game_states: Array = []) -> void:
-	var dialogue = yield(get_next_dialogue_line(title, local_resource, extra_game_states), "completed")
-	if dialogue != null:
+	var dialogue_line = yield(get_next_dialogue_line(title, local_resource, extra_game_states), "completed")
+	if dialogue_line != null:
 		var balloon = preload("res://addons/dialogue_manager/example_balloon/example_balloon.tscn").instance()
-		balloon.dialogue = dialogue
+		balloon.dialogue_line = dialogue_line
 		get_tree().current_scene.add_child(balloon)
 		show_example_dialogue_balloon(yield(balloon, "actioned"), local_resource, extra_game_states)
 	
@@ -169,7 +159,7 @@ func compile_resource(resource: DialogueResource) -> DialogueResource:
 
 
 # Get a line by its ID
-func get_line(key: String, local_resource: DialogueResource) -> DialogueLine:
+func get_line(key: String, local_resource: DialogueResource) -> Dictionary:
 	# See if we were given a stack instead of just the one key
 	var stack: Array = key.split(",")
 	key = stack.pop_front()
@@ -180,9 +170,9 @@ func get_line(key: String, local_resource: DialogueResource) -> DialogueLine:
 		if stack.size() > 0:
 			return get_line(PoolStringArray(stack).join(","), local_resource)
 		else:
-			return null
+			return create_empty_dialogue_line()
 	elif key == DialogueConstants.ID_END_CONVERSATION:
-		return null
+		return create_empty_dialogue_line()
 	
 	# See if it is a title
 	if key.begins_with("~ "):
@@ -214,7 +204,7 @@ func get_line(key: String, local_resource: DialogueResource) -> DialogueLine:
 	# Check condtiions
 	elif data.get("type") == DialogueConstants.TYPE_CONDITION:
 		# "else" will have no actual condition
-		if data.get("condition") == null or check(data.get("condition")):
+		if check(data):
 			return get_line(data.get("next_id") + id_trail, local_resource)
 		else:
 			return get_line(data.get("next_conditional_id") + id_trail, local_resource)
@@ -225,30 +215,89 @@ func get_line(key: String, local_resource: DialogueResource) -> DialogueLine:
 			id_trail = "," + data.get("next_id_after") + id_trail
 		return get_line(data.get("next_id") + id_trail, local_resource)
 	
-	# Set up a line object
-	var line = DialogueLine.new(data, auto_translate, self)
+	# Set up a line
+	var line: Dictionary = create_dialogue_line(data)
 	line.next_id += id_trail
-	
-	# Add as a child so that it gets cleaned up automatically
-	if line.get("type") != DialogueConstants.TYPE_MUTATION:
-		_trash.add_child(line)
 	
 	# If we are the first of a list of responses then get the other ones
 	if data.get("type") == DialogueConstants.TYPE_RESPONSE:
-		line.responses = get_responses(data.get("responses"), local_resource, id_trail, line)
+		line.responses = get_responses(data.get("responses"), local_resource, id_trail)
 		return line
-	
-	# Replace any variables in the dialogue text
-	if data.get("type") == DialogueConstants.TYPE_DIALOGUE and data.has("replacements"):
-		line.character = get_with_replacements(line.character, line.character_replacements)
-		line.dialogue = get_with_replacements(line.dialogue, line.replacements)
 	
 	# Inject the next node's responses if they have any
 	var next_line = local_resource.lines.get(line.next_id)
 	if next_line != null and next_line.get("type") == DialogueConstants.TYPE_RESPONSE:
-		line.responses = get_responses(next_line.get("responses"), local_resource, id_trail, line)
+		line.responses = get_responses(next_line.get("responses"), local_resource, id_trail)
 	
 	return line
+
+
+# Create a line of dialogue
+func create_dialogue_line(data: Dictionary) -> Dictionary:
+	match data.type:
+		DialogueConstants.TYPE_DIALOGUE:
+			# Our bbcodes need to be process after text has been resolved so that the markers are at the correct index
+			var text = get_resolved_text(tr(data.translation_key) if auto_translate else data.text, data.replacements)
+			var parser = DialogueParser.new()
+			var markers = parser.extract_markers(text)
+			parser.free()
+			
+			return {
+				type = DialogueConstants.TYPE_DIALOGUE,
+				next_id = data.next_id,
+				character = get_resolved_text(data.character, data.get("character_replacements", [])),
+				character_replacements = data.get("character_replacements", []),
+				text = markers.text,
+				text_replacements = data.replacements,
+				translation_key = data.translation_key,
+				pauses = markers.pauses,
+				speeds = markers.speeds,
+				inline_mutations = markers.mutations,
+				time = markers.time,
+				responses = []
+			}
+			
+		DialogueConstants.TYPE_RESPONSE:
+			return {
+				type = DialogueConstants.TYPE_DIALOGUE,
+				next_id = data.next_id,
+				character = "",
+				character_replacements = [],
+				text = "",
+				text_replacements = [],
+				translation_key = "",
+				pauses = {},
+				speeds = [],
+				inline_mutations = [],
+				time = null,
+				responses = []
+			}
+			
+		DialogueConstants.TYPE_MUTATION:
+			return {
+				type = DialogueConstants.TYPE_MUTATION,
+				next_id = data.next_id,
+				mutation = data.mutation
+			}
+		
+	return create_empty_dialogue_line()
+
+
+# Create a response
+func create_response(data: Dictionary) -> Dictionary:
+	return {
+		type = DialogueConstants.TYPE_RESPONSE,
+		next_id = data.next_id,
+		is_allowed = check(data),
+		text = get_resolved_text(tr(data.translation_key) if auto_translate else data.text, data.replacements),
+		text_replacements = data.replacements,
+		translation_key = data.translation_key
+	}
+
+
+# Create an empty line
+func create_empty_dialogue_line() -> Dictionary:
+	return {}
 
 
 func set_is_dialogue_running(is_running: bool) -> void:
@@ -271,10 +320,11 @@ func get_game_states() -> Array:
 
 
 # Check if a condition is met
-func check(condition: Dictionary) -> bool:
-	if condition.size() == 0: return true
+func check(data: Dictionary) -> bool:
+	if data.get("condition", null) == null: return true
+	if data.get("condition").size() == 0: return true
 	
-	return resolve(condition.get("expression").duplicate(true))
+	return resolve(data.get("condition").get("expression").duplicate(true))
 
 
 # Make a change to game state or run a method
@@ -331,37 +381,16 @@ func resolve_each(array: Array) -> Array:
 	for item in array:
 		results.append(resolve(item.duplicate(true)))
 	return results
-	
-
-# Replace any variables, etc in the dialogue with their state values
-func get_with_replacements(text: String, replacements: Array) -> String:
-	for replacement in replacements:
-		var value = resolve(replacement.get("expression").duplicate(true))
-		text = text.replace(replacement.get("value_in_text"), str(value))
-	
-	# Resolve random groups
-	var random_regex: RegEx = RegEx.new()
-	random_regex.compile("\\[\\[(?<options>.*?)\\]\\]")
-	for found in random_regex.search_all(text):
-		var options = found.get_string("options").split("|")
-		text = text.replace("[[%s]]" % found.get_string("options"), options[rand_range(0, options.size())])
-	
-	return text
 
 
 # Replace an array of line IDs with their response prompts
-func get_responses(ids: Array, local_resource: DialogueResource, id_trail: String, line: Node) -> Array:
+func get_responses(ids: Array, local_resource: DialogueResource, id_trail: String) -> Array:
 	var responses: Array = []
 	for id in ids:
 		var data = local_resource.lines.get(id)
-		if settings.get_runtime_value("include_all_responses", false) or data.get("condition") == null or check(data.get("condition")):
-			var response = DialogueResponse.new(data, auto_translate)
+		if settings.get_runtime_value("include_all_responses", false) or data.get("condition") == null or check(data):
+			var response: Dictionary = create_response(data)
 			response.next_id += id_trail
-			response.character = get_with_replacements(response.character, response.character_replacements)
-			response.prompt = get_with_replacements(response.prompt, response.replacements)
-			response.is_allowed = data.get("condition") == null or check(data.get("condition"))
-			# Add as a child so that it gets cleaned up automatically
-			line.add_child(response)
 			responses.append(response)
 	
 	return responses
@@ -759,8 +788,8 @@ func apply_operation(operator: String, first_value, second_value):
 
 
 # Check if a dialogue line contains meaningful information
-func is_valid(line: DialogueLine) -> bool:
-	if not line: 
+func is_valid(line: Dictionary) -> bool:
+	if not line:
 		return false
 	if line.type == DialogueConstants.TYPE_MUTATION and line.mutation == null:
 		return false
@@ -782,8 +811,3 @@ func has_property(thing: Object, name: String) -> bool:
 			return true
 	
 	return false
-
-
-func cleanup() -> void:
-	for line in _trash.get_children():
-		line.queue_free()

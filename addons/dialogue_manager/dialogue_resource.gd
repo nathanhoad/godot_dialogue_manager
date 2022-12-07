@@ -2,7 +2,6 @@ extends Resource
 class_name DialogueResource
 
 
-const DialogueLine := preload("res://addons/dialogue_manager/dialogue_line.gd")
 const DialogueConstants := preload("res://addons/dialogue_manager/constants.gd")
 
 
@@ -23,7 +22,7 @@ func _init():
 	lines = {}
 
 
-func get_next_dialogue_line(title: String, extra_game_states: Array = []) -> DialogueLine:
+func get_next_dialogue_line(title: String, extra_game_states: Array = []) -> Dictionary:
 	# NOTE: For some reason get_singleton doesn't work here so we have to get creative
 	var tree: SceneTree = Engine.get_main_loop()
 	if tree:
@@ -32,4 +31,4 @@ func get_next_dialogue_line(title: String, extra_game_states: Array = []) -> Dia
 			return dialogue_manager.get_next_dialogue_line(title, self, extra_game_states)
 
 	assert(false, "The \"DialogueManager\" autoload does not appear to be loaded.")
-	return null
+	return {}

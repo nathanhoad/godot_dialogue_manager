@@ -35,10 +35,10 @@ You need to `yield` this call because it can't guarantee an immediate return. If
 
 There is a third, optional argument for `get_next_dialogue_line` that allows you to pass temporary extra [game states](Settings.md).
 
-The returned line in dialogue is a `DialogueLine` and will have the following properties:
+The returned line in dialogue is a `Dictionary` and will have the following keys:
 
 - **character**: String - The name of the character if there was one
-- **dialogue**: String - The line of dialogue
+- **text**: String - The line of dialogue
 - **translation_key**: String - The [static translation key](Writing_Dialogue.md#translations) (or the dialogue if no key was specified)
 - **replacements**: Array of { expression, value_in_text } Dictionaries (expression is in AST format and can be manually resolved with `DialogueManager.replace_values()`)
 - **pauses**: Dictionary of { index => time }
@@ -49,7 +49,7 @@ The returned line in dialogue is a `DialogueLine` and will have the following pr
 - **responses**: Array of DialogueResponse:
   - **character**: String - The name of the character if there is one
   - **character_replacements**: Array of { expression, value_in_text } Dictionaries (expression is in AST format and can be manually resolved with `DialogueManager.replace_values()`)
-  - **prompt**: String - The text to show a player
+  - **text**: String - The text to show a player
   - **is_allowed**: bool - false if this response has failed its condition check
   - **replacements**: Array of { expression, value_in_text } Dictionaries (expression is in AST format and can be manually resolved with `DialogueManager.replace_values()`)
   - **translation_key**: String - The [static translation key](Writing_Dialogue.md#translations) (or the dialogue if no key was specified)
@@ -61,7 +61,7 @@ Now that you have a line of dialogue you can use a `DialogueLabel` node to show 
 
 The addon provides a `DialogueLabel` node (an extension of the RichTextLabel node) which helps with rendering a line of dialogue text. 
 
-This node is given a `DialogueLine` object (mentioned above) and uses its properties to work out how to handling typing out the dialogue. It will automatically handle any `bb_code`, `wait`, `speed`, and `inline_mutation` references.
+This node is given a dialogue line `Dictionary` (mentioned above) and uses its properties to work out how to handling typing out the dialogue. It will automatically handle any `bb_code`, `wait`, `speed`, and `inline_mutation` references.
 
 Use `type_out()` to start typing out the text. The label will emit a `finished` signal when it has finished typing.
 
@@ -86,6 +86,8 @@ If you have a mutation like `do animate("Character", "cheer")` then you will nee
 ## Signals
 
 When the Dialogue Manager first returns a line of dialogue it will emit a `dialogue_started` signal. When it encounters the end of a sequence of dialogue it will emit a `dialogue_finished` signal.
+
+**NOTE: if you are running multiple dialogues at once you probably can't rely on the `dialogue_finished` signal to mean anything useful.**
 
 
 ## Generating Dialogue Resources at runtime
