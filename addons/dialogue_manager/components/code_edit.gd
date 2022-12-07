@@ -133,10 +133,10 @@ func _drop_data(at_position: Vector2, data) -> void:
 
 
 func _request_code_completion(force: bool) -> void:
-	var cursor = get_cursor()
-	var current_line = get_line(cursor.y)
-	var arrow = current_line.substr(cursor.x - 3, 3)
+	var cursor: Vector2 = get_cursor()
+	var current_line: String = get_line(cursor.y)
 	
+	var arrow: String = current_line.substr(cursor.x - 3, 3)
 	if arrow == "=> " or arrow == ">< ":
 		if arrow == "=> ":
 			add_code_completion_option(CodeEdit.KIND_CLASS, "END", "END", colors.text, get_theme_icon("Stop", "EditorIcons"))
@@ -145,15 +145,23 @@ func _request_code_completion(force: bool) -> void:
 		# Get all titles, including those in imports
 		var parser = DialogueParser.new()
 		parser.prepare(text, false)
-		
 		for title in parser.titles:
 			if "/" in title:
 				add_code_completion_option(CodeEdit.KIND_CLASS, title, title, colors.text, get_theme_icon("CombineLines", "EditorIcons"))
 			else:
 				add_code_completion_option(CodeEdit.KIND_CLASS, title, title, colors.text, get_theme_icon("ArrowRight", "EditorIcons"))
 		update_code_completion_options(true)
-		
 		parser.free()
+		return
+	
+	var last_character: String = current_line.substr(cursor.x - 1, 1)
+	if current_line != "" and current_line.strip_edges() == last_character and last_character.to_upper() == last_character:
+		# Only show names starting with that character
+		var names: PackedStringArray = get_character_names(last_character)
+		if names.size() > 0:
+			for name in names:
+				add_code_completion_option(CodeEdit.KIND_CLASS, name, name.substr(1) + ": ", colors.text, get_theme_icon("Sprite2D", "EditorIcons"))
+			update_code_completion_options(true)
 
 
 func _filter_code_completion_candidates(candidates: Array) -> Array:
@@ -207,6 +215,17 @@ func go_to_title(title: String) -> void:
 			center_viewport_to_caret()
 
 
+func get_character_names(beginning_with: String) -> PackedStringArray:
+	var names: PackedStringArray = []
+	var lines = text.split("\n")
+	for line in lines:
+		if ": " in line:
+			var name: String = line.split(": ")[0].strip_edges()
+			if not name in names and name.begins_with(beginning_with):
+				names.append(name)
+	return names
+
+
 # Mark a line as an error or not
 func mark_line_as_error(line_number: int, is_error: bool) -> void:
 	if is_error:
@@ -237,8 +256,6 @@ func insert_text(text: String) -> void:
 	else:
 		insert_text_at_caret(text)
 	grab_focus()
-
-
 
 
 # Toggle the selected lines as comments
