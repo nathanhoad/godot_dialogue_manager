@@ -6,7 +6,7 @@
 
 - `dialogue()` - emitted when a dialogue line is found.
 - `mutation()` - emitted when a mutation line is about to be run (not including `set` lines).
-- `dialogue_finished()` - emitted when there is no more dialogue to run.
+- `dialogue_finished()` - emitted when the next line of dialogue is empty.
 
 ### Methods
 
