@@ -150,4 +150,4 @@ func mutate_inline_mutations(index: int) -> void:
 			return
 		if inline_mutation[0] == index:
 			# The DialogueManager can't be referenced directly here so we need to get it by its path
-			get_node("/root/DialogueManager").mutate(inline_mutation[1])
+			get_node("/root/DialogueManager").mutate(inline_mutation[1], dialogue_line.extra_game_states)
