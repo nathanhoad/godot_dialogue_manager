@@ -2,7 +2,7 @@
 
 By default, all dialogue and response prompts will be run through Godot's `tr` function to provide translations. 
 
-You can turn this off by setting `DialogueManager.auto_translate = false` but beware, if it is off you may need to handle your own variable replacements if using manual translation keys. You can use `DialogueManager.replace_values(line)` or `DialogueManager.replace_values(response)` to replace text variable markers with their values.
+You can turn this off by setting `DialogueManager.auto_translate = false` but beware, if it is off you may need to handle your own variable replacements if using manual translation keys. You can use `DialogueManager.get_resolved_text(text, replacements, extra_game_states)` to replace text variable markers with their values.
 
 This might be useful for cases where you have audio dialogue files that match up with lines.
 
