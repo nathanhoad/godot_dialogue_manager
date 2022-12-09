@@ -250,7 +250,8 @@ func create_dialogue_line(data: Dictionary, extra_game_states: Array) -> Diction
 				speeds = markers.speeds,
 				inline_mutations = markers.mutations,
 				time = markers.time,
-				responses = []
+				responses = [],
+				extra_game_states = extra_game_states
 			}
 			
 		DialogueConstants.TYPE_RESPONSE:
@@ -266,14 +267,16 @@ func create_dialogue_line(data: Dictionary, extra_game_states: Array) -> Diction
 				speeds = [],
 				inline_mutations = [],
 				time = null,
-				responses = []
+				responses = [],
+				extra_game_states = extra_game_states
 			}
 			
 		DialogueConstants.TYPE_MUTATION:
 			return {
 				type = DialogueConstants.TYPE_MUTATION,
 				next_id = data.next_id,
-				mutation = data.mutation
+				mutation = data.mutation,
+				extra_game_states = extra_game_states
 			}
 		
 	return create_empty_dialogue_line()
