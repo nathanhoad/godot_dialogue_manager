@@ -125,6 +125,7 @@ func type_out() -> void:
 		# Run any inline mutations
 		for i in range(index, get_total_character_count()):
 			mutate_inline_mutations(i)
+		emit_signal("finished")
 	else:
 		percent_per_index = 100.0 / float(get_total_character_count()) / 100.0
 		is_typing = true
