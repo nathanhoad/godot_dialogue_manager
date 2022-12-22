@@ -1,5 +1,7 @@
 class_name DialogueResource extends Resource
 
+@icon("./assets/icon.svg")
+
 
 func get_next_dialogue_line(title: String, extra_game_states: Array = []) -> Dictionary:
 	# NOTE: For some reason get_singleton doesn't work here so we have to get creative
