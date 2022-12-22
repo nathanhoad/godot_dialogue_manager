@@ -8,6 +8,16 @@
 
 config_version=5
 
+_global_script_classes=[{
+"base": "Resource",
+"class": &"DialogueResource",
+"language": &"GDScript",
+"path": "res://addons/dialogue_manager/dialogue_resource.gd"
+}]
+_global_script_class_icons={
+"DialogueResource": ""
+}
+
 [application]
 
 config/name="Dialogue Manager"

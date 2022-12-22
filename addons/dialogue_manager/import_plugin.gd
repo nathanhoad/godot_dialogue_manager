@@ -6,7 +6,8 @@ signal compiled_resource(resource: Resource)
 
 
 const DialogueParser = preload("res://addons/dialogue_manager/components/parser.gd")
-const compiler_version = 3
+const DialogueResource = preload("res://addons/dialogue_manager/dialogue_resource.gd")
+const compiler_version = 4
 
 
 var editor_plugin
@@ -86,7 +87,7 @@ func compile_file(path: String, resource_path: String, will_cascade_cache_data: 
 	var version: String = config.get_value("plugin", "version")
 	
 	# Save the results to a resource
-	var resource = Resource.new()
+	var resource = DialogueResource.new()
 	resource.set_meta("dialogue_manager_version", version)
 	resource.set_meta("titles", data.titles)
 	resource.set_meta("first_title", data.first_title)

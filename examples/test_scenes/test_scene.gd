@@ -4,7 +4,7 @@ extends Node2D
 @export var Balloon: PackedScene
 @export var SmallBalloon: PackedScene
 @export var title: String = "start"
-@export var dialogue_resource: Resource
+@export var dialogue_resource: DialogueResource
 
 
 func _ready():
