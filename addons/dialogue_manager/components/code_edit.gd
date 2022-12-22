@@ -136,38 +136,64 @@ func _request_code_completion(force: bool) -> void:
 	var cursor: Vector2 = get_cursor()
 	var current_line: String = get_line(cursor.y)
 	
-	var arrow: String = current_line.substr(cursor.x - 3, 3)
-	if arrow == "=> " or arrow == ">< ":
-		if arrow == "=> ":
-			add_code_completion_option(CodeEdit.KIND_CLASS, "END", "END", colors.text, get_theme_icon("Stop", "EditorIcons"))
-			add_code_completion_option(CodeEdit.KIND_CLASS, "END!", "END!", colors.text, get_theme_icon("Stop", "EditorIcons"))
+	if ("=> " in current_line or "=>< " in current_line) and (cursor.x > current_line.find("=>")):
+		var prompt: String = current_line.split("=>")[1]
+		if prompt.begins_with("< "):
+			prompt = prompt.substr(2)
+		else:
+			prompt = prompt.substr(1)
+		
+		if "=> " in current_line:
+			if matches_prompt(prompt, "end"):
+				add_code_completion_option(CodeEdit.KIND_CLASS, "END", "END".substr(prompt.length()), colors.text, get_theme_icon("Stop", "EditorIcons"))
+			if matches_prompt(prompt, "end!"):
+				add_code_completion_option(CodeEdit.KIND_CLASS, "END!", "END!".substr(prompt.length()), colors.text, get_theme_icon("Stop", "EditorIcons"))
 		
 		# Get all titles, including those in imports
 		var parser = DialogueParser.new()
 		parser.prepare(text, false)
 		for title in parser.titles:
 			if "/" in title:
-				add_code_completion_option(CodeEdit.KIND_CLASS, title, title, colors.text, get_theme_icon("CombineLines", "EditorIcons"))
-			else:
-				add_code_completion_option(CodeEdit.KIND_CLASS, title, title, colors.text, get_theme_icon("ArrowRight", "EditorIcons"))
+				var bits = title.split("/")
+				if matches_prompt(prompt, bits[0]) or matches_prompt(prompt, bits[1]):
+					add_code_completion_option(CodeEdit.KIND_CLASS, title, title.substr(prompt.length()), colors.text, get_theme_icon("CombineLines", "EditorIcons"))
+			elif matches_prompt(prompt, title):
+				add_code_completion_option(CodeEdit.KIND_CLASS, title, title.substr(prompt.length()), colors.text, get_theme_icon("ArrowRight", "EditorIcons"))
 		update_code_completion_options(true)
 		parser.free()
 		return
 	
-	var last_character: String = current_line.substr(cursor.x - 1, 1)
-	if current_line != "" and current_line.strip_edges() == last_character and last_character.to_upper() == last_character:
+#	var last_character: String = current_line.substr(cursor.x - 1, 1)
+	var name_so_far: String = current_line.strip_edges()
+	if name_so_far != "" and name_so_far[0].to_upper() == name_so_far[0]:
 		# Only show names starting with that character
-		var names: PackedStringArray = get_character_names(last_character)
+		var names: PackedStringArray = get_character_names(name_so_far)
 		if names.size() > 0:
 			for name in names:
-				add_code_completion_option(CodeEdit.KIND_CLASS, name, name.substr(1) + ": ", colors.text, get_theme_icon("Sprite2D", "EditorIcons"))
+				add_code_completion_option(CodeEdit.KIND_CLASS, name + ": ", name.substr(name_so_far.length()) + ": ", colors.text, get_theme_icon("Sprite2D", "EditorIcons"))
 			update_code_completion_options(true)
+		else:
+			cancel_code_completion()
 
 
 func _filter_code_completion_candidates(candidates: Array) -> Array:
 	# Not sure why but if this method isn't overridden then all completions are wrapped in quotes.
 	return candidates
 
+
+func _confirm_code_completion(replace: bool) -> void:
+	var completion = get_code_completion_option(get_code_completion_selected_index())
+	begin_complex_operation()
+	# Delete any part of the text that we've already typed
+	for i in range(0, completion.display_text.length() - completion.insert_text.length()):
+		backspace()
+	# Insert the whole match
+	insert_text_at_caret(completion.display_text)
+	end_complex_operation()
+	
+	# Close the autocomplete menu on the next tick
+	call_deferred("cancel_code_completion")
+	
 
 ### Helpers
 
@@ -181,6 +207,11 @@ func get_cursor() -> Vector2:
 func set_cursor(from_cursor: Vector2) -> void:
 	set_caret_line(from_cursor.y)
 	set_caret_column(from_cursor.x)
+
+
+# Check if a prompt is the start of a string without actually being that string
+func matches_prompt(prompt: String, matcher: String) -> bool:
+	return prompt.length() < matcher.length() and matcher.to_lower().begins_with(prompt.to_lower())
 
 
 ## Get a list of titles from the current text
@@ -221,7 +252,7 @@ func get_character_names(beginning_with: String) -> PackedStringArray:
 	for line in lines:
 		if ": " in line:
 			var name: String = line.split(": ")[0].strip_edges()
-			if not name in names and name.begins_with(beginning_with):
+			if not name in names and matches_prompt(beginning_with, name):
 				names.append(name)
 	return names
 
