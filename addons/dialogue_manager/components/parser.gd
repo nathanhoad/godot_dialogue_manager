@@ -1173,6 +1173,7 @@ func check_next_token(token: Dictionary, next_tokens: Array[Dictionary]) -> int:
 	if next_tokens.size() > 0:
 		next_token_type = next_tokens.front().type
 		
+	var expected_token_types = []
 	var unexpected_token_types = []
 	match token.type:
 		DialogueConstants.TOKEN_FUNCTION, \
@@ -1195,6 +1196,12 @@ func check_next_token(token: Dictionary, next_tokens: Array[Dictionary]) -> int:
 				DialogueConstants.TOKEN_STRING, 
 				DialogueConstants.TOKEN_NUMBER, 
 				DialogueConstants.TOKEN_VARIABLE
+			]
+		
+		DialogueConstants.TOKEN_BRACE_OPEN:
+			expected_token_types = [
+				DialogueConstants.TOKEN_STRING,
+				DialogueConstants.TOKEN_NUMBER
 			]
 		
 		DialogueConstants.TOKEN_PARENS_CLOSE, \
@@ -1259,7 +1266,7 @@ func check_next_token(token: Dictionary, next_tokens: Array[Dictionary]) -> int:
 				DialogueConstants.TOKEN_BRACKET_OPEN
 			]
 
-	if next_token_type in unexpected_token_types:
+	if (expected_token_types.size() > 0 and not next_token_type in expected_token_types or unexpected_token_types.size() > 0 and next_token_type in unexpected_token_types):
 		match next_token_type:
 			null:
 				return DialogueConstants.ERR_UNEXPECTED_END_OF_EXPRESSION
