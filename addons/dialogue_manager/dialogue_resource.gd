@@ -13,3 +13,7 @@ func get_next_dialogue_line(title: String, extra_game_states: Array = []) -> Dic
 
 	assert(false, "The \"DialogueManager\" autoload does not appear to be loaded.")
 	return {}
+
+
+func get_titles() -> PackedStringArray:
+	return get_meta("titles").keys()
