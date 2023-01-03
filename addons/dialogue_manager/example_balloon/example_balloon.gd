@@ -1,6 +1,9 @@
 extends CanvasLayer
 
 
+const DialogueLine = preload("res://addons/dialogue_manager/dialogue_line.gd")
+
+
 @onready var balloon: ColorRect = $Balloon
 @onready var margin: MarginContainer = $Balloon/Margin
 @onready var character_label: RichTextLabel = $Balloon/Margin/VBox/CharacterLabel
@@ -18,11 +21,11 @@ var temporary_game_states: Array = []
 var is_waiting_for_input: bool = false
 
 ## The current line
-var dialogue_line: Dictionary:
+var dialogue_line: DialogueLine:
 	set(next_dialogue_line):
 		is_waiting_for_input = false
 		
-		if next_dialogue_line.size() == 0:
+		if not next_dialogue_line:
 			queue_free()
 			return
 		

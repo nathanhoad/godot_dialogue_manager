@@ -9,13 +9,25 @@
 config_version=5
 
 _global_script_classes=[{
+"base": "RefCounted",
+"class": &"DialogueLine",
+"language": &"GDScript",
+"path": "res://addons/dialogue_manager/dialogue_line.gd"
+}, {
 "base": "Resource",
 "class": &"DialogueResource",
 "language": &"GDScript",
 "path": "res://addons/dialogue_manager/dialogue_resource.gd"
+}, {
+"base": "RefCounted",
+"class": &"DialogueResponse",
+"language": &"GDScript",
+"path": "res://addons/dialogue_manager/dialogue_response.gd"
 }]
 _global_script_class_icons={
-"DialogueResource": "res://addons/dialogue_manager/assets/icon.svg"
+"DialogueLine": "",
+"DialogueResource": "res://addons/dialogue_manager/assets/icon.svg",
+"DialogueResponse": ""
 }
 
 [application]

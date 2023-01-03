@@ -6,6 +6,9 @@ signal paused_typing(duration: float)
 signal finished_typing()
 
 
+const DialogueLine = preload("res://addons/dialogue_manager/dialogue_line.gd")
+
+
 ## The action to press to skip typing
 @export var skip_action: String = "ui_cancel"
 
@@ -16,7 +19,7 @@ signal finished_typing()
 @export var start_with_full_height: bool = true
 
 
-var dialogue_line: Dictionary:
+var dialogue_line: DialogueLine:
 	set(next_dialogue_line):
 		dialogue_line = next_dialogue_line
 		custom_minimum_size = Vector2.ZERO

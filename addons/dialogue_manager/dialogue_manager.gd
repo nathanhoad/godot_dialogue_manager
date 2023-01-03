@@ -10,6 +10,8 @@ signal bridge_get_next_dialogue_line_completed(line)
 const DialogueConstants = preload("res://addons/dialogue_manager/constants.gd")
 const DialogueSettings = preload("res://addons/dialogue_manager/components/settings.gd")
 const DialogueParser = preload("res://addons/dialogue_manager/components/parser.gd")
+const DialogueLine = preload("res://addons/dialogue_manager/dialogue_line.gd")
+const DialogueResponse = preload("res://addons/dialogue_manager/dialogue_response.gd")
 
 
 # The list of globals that dialogue can query
@@ -44,19 +46,19 @@ func _ready() -> void:
 
 
 ## Step through lines and run any mutations until we either hit some dialogue or the end of the conversation
-func get_next_dialogue_line(resource: Resource, key: String = "0", extra_game_states: Array = []) -> Dictionary:
+func get_next_dialogue_line(resource: Resource, key: String = "0", extra_game_states: Array = []) -> DialogueLine:
 	# You have to provide a valid dialogue resource
 	assert(resource != null, "No dialogue resource provided")
 	assert(resource.get_meta("lines").size() > 0, "Dialogue file has no content.")
 	
-	var dialogue: Dictionary = await get_line(resource, key, extra_game_states)
+	var dialogue: DialogueLine = await get_line(resource, key, extra_game_states)
 	
 	await get_tree().process_frame
 	
 	# If our dialogue is nothing then we hit the end
 	if not is_valid(dialogue):
 		emit_signal("dialogue_finished")
-		return create_empty_dialogue_line()
+		return null
 	
 	# Run the mutation if it is one
 	if dialogue.type == DialogueConstants.TYPE_MUTATION:
@@ -65,7 +67,7 @@ func get_next_dialogue_line(resource: Resource, key: String = "0", extra_game_st
 		if actual_next_id in [DialogueConstants.ID_END_CONVERSATION, DialogueConstants.ID_NULL, null]:
 			# End the conversation
 			emit_signal("dialogue_finished")
-			return create_empty_dialogue_line()
+			return null
 		else:
 			return await get_next_dialogue_line(resource, dialogue.next_id, extra_game_states)
 	else:
@@ -134,7 +136,7 @@ func _bridge_get_next_dialogue_line(resource: Resource, key: String, extra_game_
 
 
 # Get a line by its ID
-func get_line(resource: Resource, key: String, extra_game_states: Array) -> Dictionary:
+func get_line(resource: Resource, key: String, extra_game_states: Array) -> DialogueLine:
 	key = key.strip_edges()
 	
 	# See if we were given a stack instead of just the one key
@@ -147,9 +149,9 @@ func get_line(resource: Resource, key: String, extra_game_states: Array) -> Dict
 		if stack.size() > 0:
 			return await get_line(resource, "|".join(stack), extra_game_states)
 		else:
-			return create_empty_dialogue_line()
+			return null
 	elif key == DialogueConstants.ID_END_CONVERSATION:
-		return create_empty_dialogue_line()
+		return null
 	
 	# See if it is a title
 	if key.begins_with("~ "):
@@ -189,7 +191,7 @@ func get_line(resource: Resource, key: String, extra_game_states: Array) -> Dict
 		return await get_line(resource, data.next_id + id_trail, extra_game_states)
 	
 	# Set up a line object
-	var line: Dictionary = await create_dialogue_line(data, extra_game_states)
+	var line: DialogueLine = await create_dialogue_line(data, extra_game_states)
 	
 	# If we are the first of a list of responses then get the other ones
 	if data.type == DialogueConstants.TYPE_RESPONSE:
@@ -207,7 +209,7 @@ func get_line(resource: Resource, key: String, extra_game_states: Array) -> Dict
 
 
 # Create a line of dialogue
-func create_dialogue_line(data: Dictionary, extra_game_states: Array) -> Dictionary:
+func create_dialogue_line(data: Dictionary, extra_game_states: Array) -> DialogueLine:
 	match data.type:
 		DialogueConstants.TYPE_DIALOGUE:
 			# Our bbcodes need to be process after text has been resolved so that the markers are at the correct index
@@ -216,7 +218,7 @@ func create_dialogue_line(data: Dictionary, extra_game_states: Array) -> Diction
 			var markers = parser.extract_markers(text)
 			parser.free()
 			
-			return {
+			return DialogueLine.new({
 				type = DialogueConstants.TYPE_DIALOGUE,
 				next_id = data.next_id,
 				character = await get_resolved_text(data.character, data.character_replacements, extra_game_states),
@@ -228,53 +230,37 @@ func create_dialogue_line(data: Dictionary, extra_game_states: Array) -> Diction
 				speeds = markers.speeds,
 				inline_mutations = markers.mutations,
 				time = markers.time,
-				responses = [],
 				extra_game_states = extra_game_states
-			}
+			})
 			
 		DialogueConstants.TYPE_RESPONSE:
-			return {
+			return DialogueLine.new({
 				type = DialogueConstants.TYPE_DIALOGUE,
 				next_id = data.next_id,
-				character = "",
-				character_replacements = [],
-				text = "",
-				text_replacements = [],
-				translation_key = "",
-				pauses = {},
-				speeds = [],
-				inline_mutations = [],
-				time = null,
-				responses = [],
 				extra_game_states = extra_game_states
-			}
+			})
 			
 		DialogueConstants.TYPE_MUTATION:
-			return {
+			return DialogueLine.new({
 				type = DialogueConstants.TYPE_MUTATION,
 				next_id = data.next_id,
 				mutation = data.mutation,
 				extra_game_states = extra_game_states
-			}
+			})
 		
-	return create_empty_dialogue_line()
+	return null
 
 
 # Create a response
-func create_response(data: Dictionary, extra_game_states: Array) -> Dictionary:
-	return {
+func create_response(data: Dictionary, extra_game_states: Array) -> DialogueResponse:
+	return DialogueResponse.new({
 		type = DialogueConstants.TYPE_RESPONSE,
 		next_id = data.next_id,
 		is_allowed = await check_condition(data, extra_game_states),
 		text = await get_resolved_text(tr(data.translation_key) if auto_translate else data.text, data.text_replacements, extra_game_states),
 		text_replacements = data.text_replacements,
 		translation_key = data.translation_key
-	}
-
-
-# Create an empty line
-func create_empty_dialogue_line() -> Dictionary:
-	return {}
+	})
 
 
 # Get the current game states
@@ -370,7 +356,7 @@ func get_responses(ids: Array, resource: Resource, id_trail: String, extra_game_
 	for id in ids:
 		var data: Dictionary = resource.get_meta("lines").get(id)
 		if DialogueSettings.get_setting("include_all_responses", false) or await check_condition(data, extra_game_states):
-			var response: Dictionary = await create_response(data, extra_game_states)
+			var response: DialogueResponse = await create_response(data, extra_game_states)
 			response.next_id += id_trail
 			responses.append(response)
 	
@@ -838,8 +824,8 @@ func apply_operation(operator: String, first_value, second_value):
 
 
 # Check if a dialogue line contains meaningful information
-func is_valid(line: Dictionary) -> bool:
-	if line.size() == 0 or not line.has("type"):
+func is_valid(line: DialogueLine) -> bool:
+	if line == null:
 		return false
 	if line.type == DialogueConstants.TYPE_MUTATION and line.mutation == null:
 		return false
