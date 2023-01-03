@@ -10,7 +10,7 @@ Once you get to the stage of building your own balloon you'll need to know how t
 
 A global called `DialogueManager` is available to provide lines of dialogue.
 
-To request a line, call `await DialogueManager.get_next_dialogue_line(resource, title)` with a dialogue resource (*.dialogue file) and a starting title. This will traverse each line (running mutations along the way) and returning the first printable line of dialogue.
+To request a line, call `await DialogueManager.get_next_dialogue_line(resource, title)` with a dialogue resource (\*.dialogue file) and a starting title (you can also call `get_next_dialogue_line` on the resource directly, see below). This will traverse each line (running mutations along the way) and returning the first printable line of dialogue.
 
 For example, if you have some dialogue like:
 
@@ -29,7 +29,10 @@ And then in your game:
 
 ```gdscript
 var resource = load("res://some_dialogue.dialogue")
+# then
 var dialogue_line = await DialogueManager.get_next_dialogue_line(resource, "start")
+# or
+var dialogue_line = await resource.get_next_dialogue_line("start")
 ```
 
 Then `dialogue_line` would now hold a dictionary containing information for the line `Nathan: Hi! I'm Nathan`.
@@ -38,6 +41,8 @@ To get the next line of dialogue you can call `get_next_dialogue_line` again wit
 
 ```
 dialogue_line = await DialogueManager.get_next_dialogue_line(resource, dialogue_line.next_id)
+# or
+dialogue_line = await resource.get_next_dialogue_line(dialogue_line.next_id)
 ```
 
 Now `dialogue_line` holds a dictionary containing the information for the line `Nathan: Here are some options.`. This dictionary also contains the list of response options.
@@ -48,7 +53,7 @@ For more information about the dictionary see the [API documentation](API.md).
 
 ## DialogueLabel node
 
-The addon provides a `DialogueLabel` node (an extension of the RichTextLabel node) which helps with rendering a line of dialogue text. 
+The addon provides a `DialogueLabel` node (an extension of the RichTextLabel node) which helps with rendering a line of dialogue text.
 
 This node is given a `dialogue_line` dictionary (mentioned above) and uses its properties to work out how to handling typing out the dialogue. It will automatically handle any `bb_code`, `wait`, `speed`, and `inline_mutation` references.
 

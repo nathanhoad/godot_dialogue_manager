@@ -20,7 +20,7 @@ A node will continue until another title is encountered or the end of the file.
 
 ## Dialogue
 
-A dialogue line is either just text or in the form of "Character: What they say". 
+A dialogue line is either just text or in the form of "Character: What they say".
 
 You can add a bit of random variation with text surrounded by `[[]]`. For example, `Nathan: [[Hi|Hello|Howdy]]! I'm Nathan` would pick one from "Hi", "Hello", or "Howdy".
 
@@ -60,7 +60,7 @@ To weight lines use a `%` followed by a number to weight by. For example a `%2` 
 
 ## Jumps
 
-If you want to redirect flow to another title then you can use a jump line. Assuming the target title is "another_title" your jump line would be 
+If you want to redirect flow to another title then you can use a jump line. Assuming the target title is "another_title" your jump line would be
 
 ```
 => another_title
@@ -154,7 +154,7 @@ If using a condition and a goto on a response line then make sure the goto is pr
 
 ## Mutations
 
-You can modify state with either a "set" or a "do" line. Any variables or functions used must 
+You can modify state with either a "set" or a "do" line. Any variables or functions used must
 
 ```
 if has_met_nathan == false
@@ -200,7 +200,7 @@ Once the conversation is over the scene will close.
 
 ## Translations
 
-You can export tranlsations as CSV from the "Translations" menu in the dialogue editor. 
+You can export tranlsations as CSV from the "Translations" menu in the dialogue editor.
 
 This will find any unique dialogue lines or response prompts and add them to a list. If an ID is specified for the line (eg. `[ID:SOME_KEY]`) then that will be used as the translation key, otherwise the dialogue/prompt itself will be.
 

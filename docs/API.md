@@ -10,19 +10,19 @@
 
 ### Methods
 
-#### `func get_next_dialogue_line(resource: Resource, key: String = "0", extra_game_states: Array = []) -> Dictionary`
+#### `func get_next_dialogue_line(resource: DialogueResource, key: String = "0", extra_game_states: Array = []) -> DialogueLine`
 
-Must be used with `await`.
+**Must be used with `await`.**
 
 Given a resource and title/ID, it will find the next printable line of dialogue (running mutations along the way).
 
-Returns a dialogue line dictionary that looks something like this:
+Returns a `DialogueLine` that looks something like this:
 
 - `next_id: String` - the ID of the next line of dialogue after this one.
 - `character: String` - the name of the character speaking (or `""`).
 - `text: String` - the text that the character is saying.
 - `translation_key: String` - the key used to translate the text (or the whole text again if no ID was specified on the line)
-- `responses: Array[Dictionary]` - the list of responses to this line (or `[]` if none are available).
+- `responses: Array[DialogueResponse]` - the list of responses to this line (or `[]` if none are available).
   - `next_id: String` - the ID of the next line if this response is chosen.
   - `is_allowed: bool` - whether this line passed its condition check (useful if you have "include all responses" enabled)
   - `text: String` - the text for this response.
@@ -32,7 +32,7 @@ If there is no next line of dialogue found then it will return an empty dictiona
 
 Pass an array of nodes as `extra_game_states` in order to temporarily add to the game state shortcuts that are available to conditions and mutations.
 
-#### `func show_example_dialogue_balloon(resource: Resource, title: String = "0", extra_game_states: Array = []) -> void`
+#### `func show_example_dialogue_balloon(resource: DialoueResource, title: String = "0", extra_game_states: Array = []) -> void`
 
 Opens the example balloon.
 
