@@ -8,24 +8,41 @@ signal script_button_pressed(path: String)
 const DialogueSettings = preload("res://addons/dialogue_manager/components/settings.gd")
 
 
+const DEFAULT_TEST_SCENE_PATH = "res://addons/dialogue_manager/test_scene.tscn"
+
+
+@onready var new_template_button: CheckBox = $NewTemplateButton
 @onready var missing_translations_button: CheckBox = $MissingTranslationsButton
 @onready var wrap_lines_button: Button = $WrapLinesButton
+@onready var test_scene_path_input: LineEdit = $CustomTestScene/TestScenePath
+@onready var revert_test_scene_button: Button = $CustomTestScene/RevertTestScene
+@onready var load_test_scene_button: Button = $CustomTestScene/LoadTestScene
+@onready var custom_test_scene_file_dialog: FileDialog = $CustomTestSceneFileDialog
 @onready var include_all_responses_button: Button = $IncludeAllResponsesButton
-@onready var sample_template_button: CheckBox = $SampleTemplateButton
 @onready var states_title: Label = $StatesTitle
 @onready var globals_list: Tree = $GlobalsList
 
+var editor_plugin: EditorPlugin
 var all_globals: Dictionary = {}
 var enabled_globals: Array = []
 
 
 func prepare() -> void:
+	test_scene_path_input.placeholder_text = DialogueSettings.get_setting("custom_test_scene_path", DEFAULT_TEST_SCENE_PATH)
+	revert_test_scene_button.visible = test_scene_path_input.placeholder_text != DEFAULT_TEST_SCENE_PATH
+	revert_test_scene_button.icon = get_theme_icon("RotateLeft", "EditorIcons")
+	revert_test_scene_button.tooltip_text = "Revert to default test scene"
+	load_test_scene_button.icon = get_theme_icon("Load", "EditorIcons")
+	
+	var scale: float = editor_plugin.get_editor_interface().get_editor_scale()
+	custom_test_scene_file_dialog.min_size = Vector2(600, 500) * scale
+	
 	states_title.add_theme_font_override("font", get_theme_font("bold", "EditorFonts"))
 	
 	missing_translations_button.set_pressed_no_signal(DialogueSettings.get_setting("missing_translations_are_errors", false))
 	wrap_lines_button.set_pressed_no_signal(DialogueSettings.get_setting("wrap_lines", false))
 	include_all_responses_button.set_pressed_no_signal(DialogueSettings.get_setting("include_all_responses", false))
-	sample_template_button.set_pressed_no_signal(DialogueSettings.get_setting("new_with_template", true))
+	new_template_button.set_pressed_no_signal(DialogueSettings.get_setting("new_with_template", true))
 	
 	var project = ConfigFile.new()
 	var err = project.load("res://project.godot")
@@ -96,3 +113,19 @@ func _on_globals_list_button_clicked(item: TreeItem, column: int, id: int, mouse
 
 func _on_sample_template_toggled(button_pressed):
 	DialogueSettings.set_setting("new_with_template", button_pressed)
+
+
+func _on_revert_test_scene_pressed() -> void:
+	DialogueSettings.set_setting("custom_test_scene_path", DEFAULT_TEST_SCENE_PATH)
+	test_scene_path_input.placeholder_text = DEFAULT_TEST_SCENE_PATH
+	revert_test_scene_button.visible = test_scene_path_input.placeholder_text != DEFAULT_TEST_SCENE_PATH
+
+
+func _on_load_test_scene_pressed() -> void:
+	custom_test_scene_file_dialog.popup_centered()
+
+
+func _on_custom_test_scene_file_dialog_file_selected(path: String) -> void:
+	DialogueSettings.set_setting("custom_test_scene_path", path)
+	test_scene_path_input.placeholder_text = path
+	revert_test_scene_button.visible = test_scene_path_input.placeholder_text != DEFAULT_TEST_SCENE_PATH

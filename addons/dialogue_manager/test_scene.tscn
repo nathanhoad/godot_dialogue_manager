@@ -1,0 +1,7 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://addons/dialogue_manager/test_scene.gd" id="1_yupoh"]
+
+
+[node name="TestScene" type="Node2D"]
+script = ExtResource("1_yupoh")

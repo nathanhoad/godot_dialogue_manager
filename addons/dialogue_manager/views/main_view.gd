@@ -134,6 +134,8 @@ func _ready() -> void:
 	save_all_button.disabled = true
 	
 	close_confirmation_dialog.add_button("Discard", true, "discard")
+	
+	settings_view.editor_plugin = editor_plugin
 
 
 func _unhandled_input(event: InputEvent) -> void:
@@ -879,7 +881,8 @@ func _on_test_button_pressed() -> void:
 	
 	DialogueSettings.set_user_value("is_running_test_scene", true)
 	DialogueSettings.set_user_value("run_resource_path", current_file_path)
-	editor_plugin.get_editor_interface().play_custom_scene("res://addons/dialogue_manager/views/test_scene.tscn")
+	var test_scene_path: String = DialogueSettings.get_setting("custom_test_scene_path", "res://addons/dialogue_manager/test_scene.tscn")
+	editor_plugin.get_editor_interface().play_custom_scene(test_scene_path)
 
 
 func _on_settings_dialog_confirmed() -> void:

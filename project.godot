@@ -9,6 +9,11 @@
 config_version=5
 
 _global_script_classes=[{
+"base": "Node2D",
+"class": &"BaseDialogueTestScene",
+"language": &"GDScript",
+"path": "res://addons/dialogue_manager/test_scene.gd"
+}, {
 "base": "RefCounted",
 "class": &"DialogueLine",
 "language": &"GDScript",
@@ -25,6 +30,7 @@ _global_script_classes=[{
 "path": "res://addons/dialogue_manager/dialogue_response.gd"
 }]
 _global_script_class_icons={
+"BaseDialogueTestScene": "",
 "DialogueLine": "",
 "DialogueResource": "res://addons/dialogue_manager/assets/icon.svg",
 "DialogueResponse": ""
@@ -49,6 +55,7 @@ states=["State", "Events"]
 missing_translations_are_errors=false
 wrap_lines=true
 new_with_template=true
+custom_test_scene_path="res://addons/dialogue_manager/test_scene.tscn"
 
 [display]
 

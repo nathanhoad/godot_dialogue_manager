@@ -198,6 +198,22 @@ This will boot up a test scene and run the currently active node. Use `ui_up`, `
 
 Once the conversation is over the scene will close.
 
+### Custom test scene
+
+You can override which scene is run when clicking the test button in settings.
+
+Your custom test scene must extend `BaseDialogueTestScene` which will provide you with a `resource` property which is the `DialogueResource` currently open and a `title` property which is the nearest title to the cursor position.
+
+The simplest example custom test scene is something like this (which is pretty much the same as the actual test scene):
+
+```gdscript
+extends BaseDialogueTestScene
+
+func _ready() -> void:
+    # Change this to open your custom balloon
+	DialogueManager.show_example_dialogue_balloon(resource, title)
+```
+
 ## Translations
 
 You can export tranlsations as CSV from the "Translations" menu in the dialogue editor.
