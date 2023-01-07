@@ -1,9 +1,6 @@
 extends CanvasLayer
 
 
-const DialogueLine = preload("res://addons/dialogue_manager/dialogue_line.gd")
-
-
 @onready var balloon: ColorRect = $Balloon
 @onready var margin: MarginContainer = $Balloon/Margin
 @onready var character_label: RichTextLabel = $Balloon/Margin/VBox/CharacterLabel

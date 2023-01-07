@@ -32,6 +32,8 @@ func _enter_tree() -> void:
 		get_editor_interface().get_resource_filesystem().filesystem_changed.connect(_on_filesystem_changed)
 		get_editor_interface().get_file_system_dock().files_moved.connect(_on_files_moved)
 		get_editor_interface().get_file_system_dock().file_removed.connect(_on_file_removed)
+		
+		add_tool_menu_item("Create copy of dialogue example balloon...", _copy_dialogue_balloon)
 
 
 func _exit_tree() -> void:
@@ -46,6 +48,8 @@ func _exit_tree() -> void:
 	
 	get_editor_interface().get_resource_filesystem().filesystem_changed.disconnect(_on_filesystem_changed)
 	get_editor_interface().get_file_system_dock().files_moved.disconnect(_on_files_moved)
+	
+	remove_tool_menu_item("Create copy of dialogue example balloon...")
 
 
 func _has_main_screen() -> bool:
@@ -211,6 +215,45 @@ func _get_dialogue_files_in_filesystem(path: String = "res://") -> PackedStringA
 			file_name = dir.get_next()
 	
 	return files
+
+
+### Callbacks
+
+
+func _copy_dialogue_balloon() -> void:
+	var scale: float = get_editor_interface().get_editor_scale()
+	var directory_dialog: FileDialog = FileDialog.new()
+	var label: Label = Label.new()
+	label.text = "Dialogue balloon files will be copied into chosen directory."
+	directory_dialog.get_vbox().add_child(label)
+	directory_dialog.file_mode = FileDialog.FILE_MODE_OPEN_DIR
+	directory_dialog.min_size = Vector2(600, 500) * scale
+	directory_dialog.dir_selected.connect(func(path):
+		var file: FileAccess = FileAccess.open("res://addons/dialogue_manager/example_balloon/example_balloon.tscn", FileAccess.READ)
+		var file_contents: String = file.get_as_text().replace("res://addons/dialogue_manager/example_balloon/example_balloon.gd", path + "/balloon.gd")
+		file = FileAccess.open(path + "/balloon.tscn", FileAccess.WRITE)
+		file.store_string(file_contents)
+		file.flush()
+		
+		file = FileAccess.open("res://addons/dialogue_manager/example_balloon/small_example_balloon.tscn", FileAccess.READ)
+		file_contents = file.get_as_text().replace("res://addons/dialogue_manager/example_balloon/example_balloon.gd", path + "/balloon.gd")
+		file = FileAccess.open(path + "/small_balloon.tscn", FileAccess.WRITE)
+		file.store_string(file_contents)
+		file.flush()
+		
+		file = FileAccess.open("res://addons/dialogue_manager/example_balloon/example_balloon.gd", FileAccess.READ)
+		file_contents = file.get_as_text()
+		file = FileAccess.open(path + "/balloon.gd", FileAccess.WRITE)
+		file.store_string(file_contents)
+		file.flush()
+		
+		get_editor_interface().get_resource_filesystem().scan()
+		get_editor_interface().get_file_system_dock().call_deferred("navigate_to_path", path + "/balloon.tscn")
+		
+		directory_dialog.queue_free()
+	)
+	get_editor_interface().get_base_control().add_child(directory_dialog)
+	directory_dialog.popup_centered()
 
 
 ### Signals
