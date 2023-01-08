@@ -9,7 +9,7 @@ extends CanvasLayer
 @onready var response_template: RichTextLabel = %ResponseTemplate
 
 ## The dialogue resource
-var resource: Resource
+var resource: DialogueResource
 
 ## Temporary game states
 var temporary_game_states: Array = []
