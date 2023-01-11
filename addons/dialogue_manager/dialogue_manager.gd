@@ -507,7 +507,11 @@ func resolve(tokens: Array, extra_game_states: Array):
 					assert(false, "Missing function on current scene or game state. See Output for details.")
 		
 		elif token.type == DialogueConstants.TOKEN_DICTIONARY_REFERENCE:
-			var value = get_state_value(token.variable, extra_game_states)
+			var value
+			if i > 0 and tokens[i - 1].type == DialogueConstants.TOKEN_DOT:
+				value = tokens[i - 2].value[token.variable]
+			else:
+				value = get_state_value(token.variable, extra_game_states)
 			var index = await resolve(token.value, extra_game_states)
 			if typeof(value) == TYPE_DICTIONARY:
 				if tokens.size() > i + 1 and tokens[i + 1].type == DialogueConstants.TOKEN_ASSIGNMENT:
