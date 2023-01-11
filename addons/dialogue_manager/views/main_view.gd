@@ -148,6 +148,8 @@ func _unhandled_input(event: InputEvent) -> void:
 			"Ctrl+W":
 				get_viewport().set_input_as_handled()
 				close_file(current_file_path)
+			"Ctrl+F5":
+				_on_test_button_pressed()
 
 
 func apply_changes() -> void:
