@@ -65,8 +65,16 @@ func update_file_map() -> void:
 		for key in file_map.keys():
 			if file_map[key] == nice_file:
 				var bit_count = nice_file.count("/") + 2
-				file_map[key] = get_nice_file(key, bit_count)
+				
+				var existing_nice_file = get_nice_file(key, bit_count)
 				nice_file = get_nice_file(file, bit_count)
+				
+				while nice_file == existing_nice_file:
+					bit_count += 1
+					existing_nice_file = get_nice_file(key, bit_count)
+					nice_file = get_nice_file(file, bit_count)
+				
+				file_map[key] = existing_nice_file
 		
 		file_map[file] = nice_file
 
