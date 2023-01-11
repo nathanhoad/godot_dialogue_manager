@@ -865,14 +865,14 @@ func tokenise(text: String, line_type_hint: String) -> Array:
 		else:
 			return [{ "type": "error", "value": "Invalid expression" }]
 	
-	return build_token_tree(tokens, line_type_hint)[0]
+	return build_token_tree(tokens, line_type_hint, "")[0]
 	
 
 func build_token_tree_error(message: String) -> Array:
 	return [{ "type": DialogueConstants.TOKEN_ERROR, "value": message}]
 
 
-func build_token_tree(tokens: Array, line_type_hint: String, expected_close_token: String = "") -> Array:
+func build_token_tree(tokens: Array, line_type_hint: String, expected_close_token: String) -> Array:
 	var tree = []
 	var limit = 0
 	while tokens.size() > 0 and limit < 1000:
@@ -885,7 +885,7 @@ func build_token_tree(tokens: Array, line_type_hint: String, expected_close_toke
 		
 		match token.type:
 			DialogueConstants.TOKEN_FUNCTION:
-				var sub_tree = build_token_tree(tokens, DialogueConstants.TOKEN_PARENS_CLOSE)
+				var sub_tree = build_token_tree(tokens, line_type_hint, DialogueConstants.TOKEN_PARENS_CLOSE)
 				
 				if sub_tree[0].size() > 0 and sub_tree[0][0].get("type") == DialogueConstants.TOKEN_ERROR:
 					return [build_token_tree_error(sub_tree[0][0].get("value")), tokens]
@@ -899,7 +899,7 @@ func build_token_tree(tokens: Array, line_type_hint: String, expected_close_toke
 				tokens = sub_tree[1]
 			
 			DialogueConstants.TOKEN_DICTIONARY_REFERENCE:
-				var sub_tree = build_token_tree(tokens, DialogueConstants.TOKEN_BRACKET_CLOSE)
+				var sub_tree = build_token_tree(tokens, line_type_hint, DialogueConstants.TOKEN_BRACKET_CLOSE)
 				
 				if sub_tree[0].size() > 0 and sub_tree[0][0].get("type") == DialogueConstants.TOKEN_ERROR:
 					return [build_token_tree_error(sub_tree[0][0].get("value")), tokens]
@@ -917,7 +917,7 @@ func build_token_tree(tokens: Array, line_type_hint: String, expected_close_toke
 				tokens = sub_tree[1]
 			
 			DialogueConstants.TOKEN_BRACE_OPEN:
-				var sub_tree = build_token_tree(tokens, DialogueConstants.TOKEN_BRACE_CLOSE)
+				var sub_tree = build_token_tree(tokens, line_type_hint, DialogueConstants.TOKEN_BRACE_CLOSE)
 				
 				if sub_tree[0].size() > 0 and sub_tree[0][0].get("type") == DialogueConstants.TOKEN_ERROR:
 					return [build_token_tree_error(sub_tree[0][0].get("value")), tokens]
@@ -929,7 +929,7 @@ func build_token_tree(tokens: Array, line_type_hint: String, expected_close_toke
 				tokens = sub_tree[1]
 			
 			DialogueConstants.TOKEN_BRACKET_OPEN:
-				var sub_tree = build_token_tree(tokens, DialogueConstants.TOKEN_BRACKET_CLOSE)
+				var sub_tree = build_token_tree(tokens, line_type_hint, DialogueConstants.TOKEN_BRACKET_CLOSE)
 				
 				if sub_tree[0].size() > 0 and sub_tree[0][0].get("type") == DialogueConstants.TOKEN_ERROR:
 					return [build_token_tree_error(sub_tree[0][0].get("value")), tokens]
@@ -951,7 +951,7 @@ func build_token_tree(tokens: Array, line_type_hint: String, expected_close_toke
 				tokens = sub_tree[1]
 
 			DialogueConstants.TOKEN_PARENS_OPEN:
-				var sub_tree = build_token_tree(tokens, DialogueConstants.TOKEN_PARENS_CLOSE)
+				var sub_tree = build_token_tree(tokens, line_type_hint, DialogueConstants.TOKEN_PARENS_CLOSE)
 				
 				if sub_tree[0][0].get("type") == DialogueConstants.TOKEN_ERROR:
 					return [build_token_tree_error(sub_tree[0][0].get("value")), tokens]
