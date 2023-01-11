@@ -26,10 +26,9 @@ content_margin_right = 2.0
 content_margin_bottom = 2.0
 draw_center = false
 
-[node name="ExampleBalloon" type="CanvasLayer" node_paths=PackedStringArray("response_template")]
+[node name="ExampleBalloon" type="CanvasLayer"]
 layer = 100
 script = ExtResource("1_4u26j")
-response_template = NodePath("Balloon/Margin/VBox/ResponseTemplate")
 
 [node name="Balloon" type="ColorRect" parent="."]
 anchors_preset = 10
@@ -51,17 +50,11 @@ metadata/_edit_layout_mode = 1
 
 [node name="VBox" type="VBoxContainer" parent="Balloon/Margin"]
 layout_mode = 2
-offset_left = 20.0
-offset_top = 10.0
-offset_right = 1132.0
-offset_bottom = 65.0
 theme_override_constants/separation = 4
 
 [node name="CharacterLabel" type="RichTextLabel" parent="Balloon/Margin/VBox"]
 modulate = Color(1, 1, 1, 0.501961)
 layout_mode = 2
-offset_right = 1112.0
-offset_bottom = 13.0
 mouse_filter = 1
 theme = SubResource("Theme_isg48")
 bbcode_enabled = true
@@ -71,27 +64,16 @@ scroll_active = false
 
 [node name="DialogueLabel" parent="Balloon/Margin/VBox" instance=ExtResource("2_a8ve6")]
 layout_mode = 2
-anchors_preset = 0
-anchor_right = 0.0
-offset_top = 17.0
-offset_right = 1112.0
-offset_bottom = 30.0
-grow_horizontal = 1
 theme = SubResource("Theme_owda0")
 text = "Dialogue"
 
 [node name="Responses" type="VBoxContainer" parent="Balloon/Margin/VBox"]
 layout_mode = 2
-offset_top = 34.0
-offset_right = 1112.0
-offset_bottom = 34.0
 theme_override_constants/separation = 1
 
 [node name="ResponseTemplate" type="RichTextLabel" parent="Balloon/Margin/VBox"]
+unique_name_in_owner = true
 layout_mode = 2
-offset_top = 38.0
-offset_right = 1112.0
-offset_bottom = 55.0
 focus_mode = 2
 theme = SubResource("Theme_fakos")
 theme_override_styles/focus = SubResource("StyleBoxFlat_5d24i")
