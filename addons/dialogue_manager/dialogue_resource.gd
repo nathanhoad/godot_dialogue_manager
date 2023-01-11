@@ -28,7 +28,7 @@ func get_next_dialogue_line(title: String, extra_game_states: Array = []) -> Dic
 	if tree:
 		var dialogue_manager = tree.current_scene.get_node_or_null("/root/DialogueManager")
 		if dialogue_manager != null:
-			return dialogue_manager.get_next_dialogue_line(title, self, extra_game_states)
+			return yield(dialogue_manager.get_next_dialogue_line(title, self, extra_game_states), "completed")
 
 	assert(false, "The \"DialogueManager\" autoload does not appear to be loaded.")
 	return {}

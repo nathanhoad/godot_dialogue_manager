@@ -27,7 +27,6 @@ content_margin_bottom = 3.0
 [node name="ExampleBalloon" type="CanvasLayer"]
 layer = 128
 script = ExtResource( 1 )
-response_template = NodePath("Balloon/Margin/VBox/ResponseTemplate")
 
 [node name="Balloon" type="NinePatchRect" parent="."]
 margin_right = 1920.0
