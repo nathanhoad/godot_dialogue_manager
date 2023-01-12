@@ -1204,7 +1204,8 @@ func check_next_token(token: Dictionary, next_tokens: Array[Dictionary], line_ty
 		DialogueConstants.TOKEN_BRACE_OPEN:
 			expected_token_types = [
 				DialogueConstants.TOKEN_STRING,
-				DialogueConstants.TOKEN_NUMBER
+				DialogueConstants.TOKEN_NUMBER,
+				DialogueConstants.TOKEN_BRACE_CLOSE
 			]
 		
 		DialogueConstants.TOKEN_PARENS_CLOSE, \
