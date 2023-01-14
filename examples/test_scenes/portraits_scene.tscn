@@ -3,10 +3,10 @@
 [ext_resource type="Script" path="res://examples/test_scenes/test_scene.gd" id="1_nh2pk"]
 [ext_resource type="PackedScene" uid="uid://cryh0kyrps0c4" path="res://examples/portraits_balloon/balloon.tscn" id="2_hxj14"]
 [ext_resource type="PackedScene" uid="uid://bn20f7mq60o72" path="res://examples/portraits_balloon/small_balloon.tscn" id="3_d4u0q"]
-[ext_resource type="Resource" uid="uid://d1mtqcmytv6kp" path="res://examples/dialogue.dialogue" id="4_3xajs"]
+[ext_resource type="Resource" uid="uid://bmjupqmva6r83" path="res://examples/dialogue.dialogue" id="4_w6p5l"]
 
 [node name="PortraitScene" type="Node2D"]
 script = ExtResource("1_nh2pk")
 Balloon = ExtResource("2_hxj14")
 SmallBalloon = ExtResource("3_d4u0q")
-dialogue_resource = ExtResource("4_3xajs")
+dialogue_resource = ExtResource("4_w6p5l")

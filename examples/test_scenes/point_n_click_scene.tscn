@@ -2,7 +2,7 @@
 
 [ext_resource type="Script" path="res://examples/test_scenes/test_scene.gd" id="1_g6mv8"]
 [ext_resource type="PackedScene" uid="uid://chk6py6m8g356" path="res://examples/point_n_click_balloon/balloon.tscn" id="2_pwirw"]
-[ext_resource type="Resource" uid="uid://d1mtqcmytv6kp" path="res://examples/dialogue.dialogue" id="3_ihiqx"]
+[ext_resource type="Resource" uid="uid://bmjupqmva6r83" path="res://examples/dialogue.dialogue" id="3_ihiqx"]
 [ext_resource type="Texture2D" uid="uid://ddhhe6dgk6up8" path="res://examples/point_n_click_balloon/scene.png" id="4"]
 [ext_resource type="Texture2D" uid="uid://wnew0ysrr5df" path="res://examples/point_n_click_balloon/characters/coco.png" id="5"]
 [ext_resource type="Texture2D" uid="uid://dm27r4lh8drrk" path="res://examples/point_n_click_balloon/characters/nathan.png" id="6"]
@@ -30,12 +30,33 @@ region = Rect2(120, 0, 40, 70)
 
 [sub_resource type="SpriteFrames" id="6"]
 animations = [{
-"frames": [SubResource("1")],
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("1")
+}],
 "loop": true,
 "name": &"Default",
 "speed": 5.0
 }, {
-"frames": [SubResource("2"), SubResource("3"), SubResource("4"), SubResource("5"), SubResource("2"), SubResource("5")],
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("2")
+}, {
+"duration": 1.0,
+"texture": SubResource("3")
+}, {
+"duration": 1.0,
+"texture": SubResource("4")
+}, {
+"duration": 1.0,
+"texture": SubResource("5")
+}, {
+"duration": 1.0,
+"texture": SubResource("2")
+}, {
+"duration": 1.0,
+"texture": SubResource("5")
+}],
 "loop": true,
 "name": &"Talking",
 "speed": 12.0

@@ -148,7 +148,6 @@ func get_responses() -> Array:
 
 func _on_mutation() -> void:
 	is_waiting_for_input = false
-#	dialogue_label.hide()
 
 
 func _on_response_mouse_entered(item: Control) -> void:
