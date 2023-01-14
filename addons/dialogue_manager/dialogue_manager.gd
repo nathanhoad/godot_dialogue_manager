@@ -235,7 +235,7 @@ func create_dialogue_line(data: Dictionary, extra_game_states: Array) -> Dialogu
 			
 		DialogueConstants.TYPE_RESPONSE:
 			return DialogueLine.new({
-				type = DialogueConstants.TYPE_DIALOGUE,
+				type = DialogueConstants.TYPE_RESPONSE,
 				next_id = data.next_id,
 				extra_game_states = extra_game_states
 			})
