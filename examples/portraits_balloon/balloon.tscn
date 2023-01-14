@@ -1,7 +1,7 @@
-[gd_scene load_steps=6 format=3 uid="uid://cryh0kyrps0c4"]
+[gd_scene load_steps=6 format=3 uid="uid://yus1loxriev2"]
 
 [ext_resource type="Script" path="res://examples/portraits_balloon/balloon.gd" id="1_bf5nr"]
-[ext_resource type="AudioStream" uid="uid://s3ltpt0lmtyw" path="res://examples/portraits_balloon/talk.wav" id="2_8eqvb"]
+[ext_resource type="AudioStream" uid="uid://cng7ex3hvatxl" path="res://examples/portraits_balloon/talk.wav" id="2_ok7fx"]
 [ext_resource type="PackedScene" uid="uid://ckvgyvclnwggo" path="res://addons/dialogue_manager/dialogue_label.tscn" id="4_m3ccg"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_5d24i"]
@@ -24,7 +24,7 @@ script = ExtResource("1_bf5nr")
 response_template = NodePath("Balloon/Margin/HBox/VBox/ResponseTemplate")
 
 [node name="TalkSound" type="AudioStreamPlayer" parent="."]
-stream = ExtResource("2_8eqvb")
+stream = ExtResource("2_ok7fx")
 
 [node name="Balloon" type="ColorRect" parent="."]
 texture_filter = 2

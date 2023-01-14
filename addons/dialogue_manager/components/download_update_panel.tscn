@@ -1,7 +1,7 @@
 [gd_scene load_steps=3 format=3 uid="uid://qdxrxv3c3hxk"]
 
 [ext_resource type="Script" path="res://addons/dialogue_manager/components/download_update_panel.gd" id="1_4tm1k"]
-[ext_resource type="Texture2D" uid="uid://2t3wrs5obw1v" path="res://addons/dialogue_manager/assets/update.svg" id="2_uf35a"]
+[ext_resource type="Texture2D" uid="uid://d3baj6rygkb3f" path="res://addons/dialogue_manager/assets/update.svg" id="2_4o2m6"]
 
 [node name="DownloadUpdatePanel" type="Control"]
 layout_mode = 3
@@ -32,8 +32,7 @@ unique_name_in_owner = true
 clip_contents = true
 custom_minimum_size = Vector2(300, 80)
 layout_mode = 2
-texture = ExtResource("2_uf35a")
-ignore_texture_size = true
+texture = ExtResource("2_4o2m6")
 stretch_mode = 5
 
 [node name="Label" type="Label" parent="VBox"]

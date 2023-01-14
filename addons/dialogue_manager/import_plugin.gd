@@ -23,11 +23,11 @@ func _get_visible_name() -> String:
 
 
 func _get_import_order() -> int:
-	return IMPORT_ORDER_DEFAULT
+	return -1000
 
 
 func _get_priority() -> float:
-	return 1.0
+	return 1000.0
 
 
 func _get_resource_type():
