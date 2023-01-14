@@ -64,8 +64,9 @@ func _process(delta: float) -> void:
 func reset_height() -> void:
 	# For some reason, RichTextLabels within containers don't resize properly when their content 
 	# changes so we make a clone that isn't bound by a VBox
-	var size_check_label = duplicate(DUPLICATE_USE_INSTANTIATION)
+	var size_check_label: RichTextLabel = duplicate(DUPLICATE_USE_INSTANTIATION)
 	size_check_label.modulate.a = 0
+	size_check_label.anchor_left = 1
 	get_tree().current_scene.add_child(size_check_label)
 	size_check_label.size = Vector2(size.x, 0)
 	

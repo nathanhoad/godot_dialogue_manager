@@ -34,6 +34,8 @@ var dialogue_line: DialogueLine:
 			queue_free()
 			return
 		
+		is_waiting_for_input = false
+		
 		# Remove any previous responses
 		for child in responses_menu.get_children():
 			child.free()
@@ -62,9 +64,6 @@ var dialogue_line: DialogueLine:
 				item.text = response.text
 				item.show()
 				responses_menu.add_child(item)
-
-		# Reset the margin size
-		margin.size = Vector2.ZERO
 		
 		# Show our balloon if it was previously hidden
 		balloon.show()
@@ -155,6 +154,17 @@ func get_responses() -> Array:
 	return items
 
 
+func handle_resize() -> void:
+	if not is_instance_valid(margin):
+		call_deferred("handle_resize")
+		return
+	
+	balloon.custom_minimum_size.y = margin.size.y
+	balloon.size.y = 0
+	var viewport_size = balloon.get_viewport_rect().size
+	balloon.global_position = Vector2((viewport_size.x - balloon.size.x) * 0.5, viewport_size.y - balloon.size.y)
+
+
 ### Signals
 
 
@@ -192,11 +202,7 @@ func _on_balloon_gui_input(event: InputEvent) -> void:
 
 
 func _on_margin_resized() -> void:
-	if is_instance_valid(margin):
-		balloon.custom_minimum_size.y = margin.size.y
-		balloon.size.y = 0
-		var viewport_size = balloon.get_viewport_rect().size
-		balloon.global_position = Vector2((viewport_size.x - balloon.size.x) * 0.5, viewport_size.y - balloon.size.y)
+	handle_resize()
 
 
 func _on_dialogue_label_spoke(letter: String, letter_index: int, speed: float) -> void:
