@@ -37,6 +37,7 @@ func _init(data: Dictionary = {}) -> void:
 				pauses = data.pauses
 				speeds = data.speeds
 				inline_mutations = data.inline_mutations
+				time = data.time
 			
 			DialogueConstants.TYPE_MUTATION:
 				mutation = data.mutation
