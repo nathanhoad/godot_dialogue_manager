@@ -1,6 +1,5 @@
-class_name DialogueResource extends Resource
-
 @icon("./assets/icon.svg")
+class_name DialogueResource extends Resource
 
 
 const DialogueLine = preload("res://addons/dialogue_manager/dialogue_line.gd")
