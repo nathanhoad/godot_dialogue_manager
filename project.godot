@@ -8,34 +8,6 @@
 
 config_version=5
 
-_global_script_classes=[{
-"base": "Node2D",
-"class": &"BaseDialogueTestScene",
-"language": &"GDScript",
-"path": "res://addons/dialogue_manager/test_scene.gd"
-}, {
-"base": "RefCounted",
-"class": &"DialogueLine",
-"language": &"GDScript",
-"path": "res://addons/dialogue_manager/dialogue_line.gd"
-}, {
-"base": "Resource",
-"class": &"DialogueResource",
-"language": &"GDScript",
-"path": "res://addons/dialogue_manager/dialogue_resource.gd"
-}, {
-"base": "RefCounted",
-"class": &"DialogueResponse",
-"language": &"GDScript",
-"path": "res://addons/dialogue_manager/dialogue_response.gd"
-}]
-_global_script_class_icons={
-"BaseDialogueTestScene": "",
-"DialogueLine": "",
-"DialogueResource": "res://addons/dialogue_manager/assets/icon.svg",
-"DialogueResponse": ""
-}
-
 [application]
 
 config/name="Dialogue Manager"
@@ -64,6 +36,10 @@ window/stretch/mode="viewport"
 [dotnet]
 
 project/assembly_name="Dialogue Manager"
+
+[editor]
+
+export/convert_text_resources_to_binary=true
 
 [editor_plugins]
 

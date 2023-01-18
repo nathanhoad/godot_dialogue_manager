@@ -31,9 +31,7 @@ layer = 100
 script = ExtResource("1_4u26j")
 
 [node name="Balloon" type="ColorRect" parent="."]
-anchors_preset = 10
-anchor_right = 1.0
-grow_horizontal = 2
+anchors_preset = -1
 color = Color(0, 0, 0, 1)
 
 [node name="Margin" type="MarginContainer" parent="Balloon"]
