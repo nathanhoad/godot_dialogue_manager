@@ -10,6 +10,11 @@ assignees: nathanhoad
 **Describe the bug**
 A clear and concise description of what the bug is.
 
+**Affected version**
+
+- Dialogue Manager version:
+- Godot version:
+
 **To Reproduce**
 Steps to reproduce the behavior:
 
@@ -20,4 +25,4 @@ Steps to reproduce the behavior:
 A clear and concise description of what you expected to happen.
 
 **Screenshots**
-If applicable, add screenshots to help explain your problem.
+If applicable, add screenshots to help explain your problem. Try to include as much detail as possible.
