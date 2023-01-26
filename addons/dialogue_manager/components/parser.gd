@@ -632,7 +632,7 @@ func extract_response_prompt(line: String) -> String:
 	if translation_key:
 		line = line.replace("[TR:%s]" % translation_key, "")
 	
-	return line.strip_edges()
+	return line.replace("\\n", "\n").strip_edges()
 
 
 func extract_mutation(line: String) -> Dictionary:
