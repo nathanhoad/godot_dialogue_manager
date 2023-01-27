@@ -862,12 +862,11 @@ func extract_goto(line: String) -> String:
 
 
 func extract_markers(line: String) -> Dictionary:
-	var text = line
-	var pauses = {}
-	var speeds = {}
-	var mutations = []
-	var bbcodes = []
-	var index_map = {}
+	var text: String = line
+	var pauses: Dictionary = {}
+	var speeds: Dictionary = {}
+	var mutations: Array[Array] = []
+	var bbcodes: Array = []
 	var time = null
 	
 	# Extract all of the BB codes so that we know the actual text (we could do this easier with
