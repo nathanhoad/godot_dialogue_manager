@@ -1,6 +1,6 @@
 [gd_scene load_steps=7 format=3 uid="uid://chk6py6m8g356"]
 
-[ext_resource type="Script" path="res://addons/dialogue_manager/dialogue_label.gd" id="2"]
+[ext_resource type="PackedScene" uid="uid://ckvgyvclnwggo" path="res://addons/dialogue_manager/dialogue_label.tscn" id="2_bgphs"]
 [ext_resource type="Script" path="res://examples/point_n_click_balloon/balloon.gd" id="3"]
 
 [sub_resource type="Theme" id="Theme_miaqt"]
@@ -21,7 +21,7 @@ script = ExtResource("3")
 
 [node name="AudioStreamPlayer" type="AudioStreamPlayer" parent="."]
 
-[node name="DialogueLabel" type="RichTextLabel" parent="."]
+[node name="DialogueLabel" parent="." instance=ExtResource("2_bgphs")]
 texture_filter = 1
 clip_contents = false
 offset_right = 533.0
@@ -32,12 +32,7 @@ theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
 theme_override_constants/shadow_offset_y = 3
 theme_override_constants/shadow_outline_size = 6
 theme_override_constants/outline_size = 6
-bbcode_enabled = true
 text = "This is some dialogue"
-fit_content_height = true
-scroll_active = false
-meta_underlined = false
-script = ExtResource("2")
 seconds_per_step = 0.0
 
 [node name="Background" type="ColorRect" parent="."]
@@ -72,7 +67,7 @@ theme_override_styles/focus = SubResource("StyleBoxFlat_g8ef4")
 theme_override_styles/normal = SubResource("StyleBoxFlat_ype81")
 bbcode_enabled = true
 text = "Response"
-fit_content_height = true
+fit_content = true
 scroll_active = false
 meta_underlined = false
 hint_underlined = false

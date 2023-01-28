@@ -62,24 +62,7 @@ func _process(delta: float) -> void:
 
 
 func reset_height() -> void:
-	# For some reason, RichTextLabels within containers don't resize properly when their content 
-	# changes so we make a clone that isn't bound by a VBox
-	var size_check_label: RichTextLabel = duplicate(DUPLICATE_USE_INSTANTIATION)
-	size_check_label.modulate.a = 0
-	size_check_label.anchor_left = 1
-	get_tree().current_scene.add_child(size_check_label)
-	size_check_label.size = Vector2(size.x, 0)
-	
-	if start_with_full_height:
-		# Give the size check a chance to resize
-		await get_tree().process_frame
-	
-	# Resize our dialogue label with the new size hint
-	custom_minimum_size = size_check_label.size
-	size = Vector2.ZERO
-	
-	# Destroy our clone
-	size_check_label.free()
+	assert(false, "DialogueLabel.reset_height() has been replaced with the new RichTextLabel \"fit_content\" property. You can remove any calls to reset_height().")
 
 
 # Start typing out the text

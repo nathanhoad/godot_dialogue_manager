@@ -43,6 +43,9 @@ func _ready() -> void:
 		var state: Node = get_node("/root/" + node_name)
 		if state:
 			game_states.append(state)
+	
+	# Make the dialogue manager available as a singleton
+	Engine.register_singleton("DialogueManager", self)
 
 
 ## Step through lines and run any mutations until we either hit some dialogue or the end of the conversation

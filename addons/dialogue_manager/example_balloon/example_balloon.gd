@@ -36,9 +36,8 @@ var dialogue_line: DialogueLine:
 		character_label.text = dialogue_line.character
 		
 		dialogue_label.modulate.a = 0
-		dialogue_label.size.x = dialogue_label.get_parent().size.x - 1
+		dialogue_label.custom_minimum_size.x = dialogue_label.get_parent().size.x - 1
 		dialogue_label.dialogue_line = dialogue_line
-		await dialogue_label.reset_height()
 
 		# Show any responses we have
 		responses_menu.modulate.a = 0
@@ -83,7 +82,7 @@ func _ready() -> void:
 	balloon.hide()
 	balloon.custom_minimum_size.x = balloon.get_viewport_rect().size.x
 	
-	DialogueManager.mutation.connect(_on_mutation)
+	Engine.get_singleton("DialogueManager").mutation.connect(_on_mutation)
 
 
 func _unhandled_input(event: InputEvent) -> void:

@@ -2,10 +2,10 @@
 
 [ext_resource type="Script" path="res://examples/test_scenes/test_scene.gd" id="1_g6mv8"]
 [ext_resource type="PackedScene" uid="uid://chk6py6m8g356" path="res://examples/point_n_click_balloon/balloon.tscn" id="2_pwirw"]
-[ext_resource type="Resource" uid="uid://bmjupqmva6r83" path="res://examples/dialogue.dialogue" id="3_ihiqx"]
-[ext_resource type="Texture2D" uid="uid://ddhhe6dgk6up8" path="res://examples/point_n_click_balloon/scene.png" id="4"]
-[ext_resource type="Texture2D" uid="uid://wnew0ysrr5df" path="res://examples/point_n_click_balloon/characters/coco.png" id="5"]
-[ext_resource type="Texture2D" uid="uid://dm27r4lh8drrk" path="res://examples/point_n_click_balloon/characters/nathan.png" id="6"]
+[ext_resource type="Resource" uid="uid://c7xhr8kec0j4l" path="res://examples/dialogue.dialogue" id="3_ihiqx"]
+[ext_resource type="Texture2D" uid="uid://bgqep1sqb0t3x" path="res://examples/point_n_click_balloon/scene.png" id="4"]
+[ext_resource type="Texture2D" uid="uid://brfryqmfc0vy2" path="res://examples/point_n_click_balloon/characters/coco.png" id="5"]
+[ext_resource type="Texture2D" uid="uid://c0l6o1et1dwqr" path="res://examples/point_n_click_balloon/characters/nathan.png" id="6"]
 [ext_resource type="Script" path="res://examples/point_n_click_balloon/characters/nathan.gd" id="7"]
 
 [sub_resource type="AtlasTexture" id="1"]
@@ -82,8 +82,7 @@ offset = Vector2(-6.0833, 4)
 
 [node name="Nathan" type="AnimatedSprite2D" parent="Scene"]
 position = Vector2(49, -79.25)
-frames = SubResource("6")
+sprite_frames = SubResource("6")
 animation = &"Default"
-playing = true
 offset = Vector2(1.1667, 26.5)
 script = ExtResource("7")

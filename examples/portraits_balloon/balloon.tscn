@@ -67,7 +67,6 @@ layout_mode = 2
 mouse_filter = 1
 bbcode_enabled = true
 text = "Character"
-fit_content_height = true
 scroll_active = false
 
 [node name="DialogueLabel" parent="Balloon/Margin/HBox/VBox" instance=ExtResource("4_m3ccg")]
@@ -84,7 +83,7 @@ theme_override_styles/focus = SubResource("StyleBoxFlat_5d24i")
 theme_override_styles/normal = SubResource("StyleBoxFlat_oj3c8")
 bbcode_enabled = true
 text = "Response"
-fit_content_height = true
+fit_content = true
 scroll_active = false
 shortcut_keys_enabled = false
 meta_underlined = false

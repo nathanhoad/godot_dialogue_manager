@@ -47,9 +47,8 @@ var dialogue_line: DialogueLine:
 		character_portrait.texture = load("res://examples/portraits_balloon/portraits/%s%s.png" % [dialogue_line.character.to_lower(), file_suffix])
 		
 		dialogue_label.modulate.a = 0
-		dialogue_label.size.x = dialogue_label.get_parent().size.x - 1
+		dialogue_label.custom_minimum_size.x = dialogue_label.get_parent().size.x - 1
 		dialogue_label.dialogue_line = dialogue_line
-		await dialogue_label.reset_height()
 		
 		# Show any responses we have
 		responses_menu.modulate.a = 0

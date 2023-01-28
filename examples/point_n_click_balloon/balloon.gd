@@ -43,7 +43,6 @@ var dialogue_line: DialogueLine:
 		
 		dialogue_label.hide()
 		dialogue_label.dialogue_line = dialogue_line
-		await dialogue_label.reset_height()
 		
 		# Set the colour and attach the dialogue to the character
 		dialogue_label.set("theme_override_colors/default_color", Color(COLORS[dialogue_line.character]))
