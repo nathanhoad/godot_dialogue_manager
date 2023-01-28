@@ -74,7 +74,7 @@ func _handles(object) -> bool:
 
 
 func _edit(object) -> void:
-	if is_instance_valid(main_view):
+	if is_instance_valid(main_view) and is_instance_valid(object):
 		main_view.open_resource(object)
 
 
