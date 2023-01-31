@@ -3,6 +3,8 @@
 Thumbs.db
 
 # Godot-specific ignores
+.import
+.mono
 .godot/
 export.cfg
 export_presets.cfg
