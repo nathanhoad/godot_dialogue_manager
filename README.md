@@ -16,6 +16,7 @@ Write your dialogue in a simple script-like way and run it in your game.
 - [Editor and Runtime settings](docs/Settings.md)
 - [Using dialogue in your game](docs/Using_Dialogue.md)
 - [Translations](docs/Translations.md)
+- [C# Wrapper](docs/CSharp.md)
 
 ## Discord
 

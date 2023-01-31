@@ -3,6 +3,7 @@ extends Node
 
 signal dialogue_started
 signal dialogue_finished
+signal bridge_get_next_dialogue_line_completed(line)
 
 
 const DialogueResource = preload("res://addons/dialogue_manager/dialogue_resource.gd")
@@ -132,7 +133,15 @@ func show_example_dialogue_balloon(title: String, local_resource: DialogueResour
 		balloon.dialogue_line = dialogue_line
 		get_tree().current_scene.add_child(balloon)
 		show_example_dialogue_balloon(yield(balloon, "actioned"), local_resource, extra_game_states)
-	
+
+
+### Dotnet bridge
+
+
+func _bridge_get_next_dialogue_line(resource: Resource, key: String, extra_game_states: Array = []) -> void:
+	var line = yield(get_next_dialogue_line(key, resource, extra_game_states), "completed")
+	emit_signal("bridge_get_next_dialogue_line_completed", line)
+
 
 ### Helpers
 
