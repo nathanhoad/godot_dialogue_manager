@@ -11,14 +11,14 @@ using DialogueManagerRuntime;
 Then you can load a dialogue resource and show the example balloon:
 
 ```cs
-var dialogue = GD.Load<Resource>("res://example.dialogue");
-DialogueManager.ShowExampleDialogueBalloon(dialogue, "start");
+var dialogue = GD.Load<Resource>("res://example.tres");
+DialogueManager.ShowExampleDialogueBalloon("start", dialogue);
 ```
 
 Or manually traverse dialogue:
 
 ```cs
-var line = await DialogueManager.GetNextDialogueLine(dialogue, "start");
+var line = await DialogueManager.GetNextDialogueLine("start", dialogue);
 ```
 
 The returned line is a `Godot.Collections.Dictionary`.
