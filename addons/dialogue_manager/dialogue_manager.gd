@@ -355,8 +355,8 @@ func resolve_each(array: Array, extra_game_states: Array) -> Array:
 
 
 # Replace an array of line IDs with their response prompts
-func get_responses(ids: Array, resource: Resource, id_trail: String, extra_game_states: Array) -> Array:
-	var responses: Array = []
+func get_responses(ids: Array, resource: Resource, id_trail: String, extra_game_states: Array) -> Array[DialogueResponse]:
+	var responses: Array[DialogueResponse] = []
 	for id in ids:
 		var data: Dictionary = resource.get_meta("lines").get(id)
 		if DialogueSettings.get_setting("include_all_responses", false) or await check_condition(data, extra_game_states):

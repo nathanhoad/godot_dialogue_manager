@@ -56,7 +56,7 @@ static func get_user_value(key: String, default = null):
 
 
 static func add_recent_file(path: String) -> void:
-	var recent_files: Array[String] = get_user_value("recent_files", [])
+	var recent_files: Array = get_user_value("recent_files", [])
 	if path in recent_files:
 		recent_files.erase(path)
 	recent_files.insert(0, path)
@@ -64,7 +64,7 @@ static func add_recent_file(path: String) -> void:
 
 
 static func move_recent_file(from_path: String, to_path: String) -> void:
-	var recent_files: Array[String] = get_user_value("recent_files", [])
+	var recent_files: Array = get_user_value("recent_files", [])
 	for i in range(0, recent_files.size()):
 		if recent_files[i] == from_path:
 			recent_files[i] = to_path
@@ -72,13 +72,13 @@ static func move_recent_file(from_path: String, to_path: String) -> void:
 
 
 static func remove_recent_file(path: String) -> void:
-	var recent_files: Array[String] = get_user_value("recent_files", [])
+	var recent_files: Array = get_user_value("recent_files", [])
 	if path in recent_files:
 		recent_files.erase(path)
 	set_user_value("recent_files", recent_files)
 
 
-static func get_recent_files() -> Array[String]:
+static func get_recent_files() -> Array:
 	return get_user_value("recent_files", [])
 
 

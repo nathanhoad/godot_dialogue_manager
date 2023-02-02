@@ -195,7 +195,9 @@ func new_file(path: String, content: String = "") -> void:
 					"\tNathan: You picked the second one.",
 				"- Start again => this_is_a_node_title",
 				"- End the conversation => END",
-				"Nathan: For more information see the online documentation."
+				"Nathan: For more information see the online documentation.",
+				"",
+				"=> END"
 			]))
 	else:
 		file.store_string(content)
