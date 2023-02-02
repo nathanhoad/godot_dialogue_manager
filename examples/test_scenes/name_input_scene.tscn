@@ -1,9 +1,9 @@
 [gd_scene load_steps=5 format=3 uid="uid://c3vhnmjnkoem5"]
 
 [ext_resource type="Script" path="res://examples/test_scenes/test_scene.gd" id="1_pjy14"]
-[ext_resource type="PackedScene" uid="uid://cryh0kyrps0c4" path="res://examples/portraits_balloon/balloon.tscn" id="2_qrul3"]
+[ext_resource type="PackedScene" uid="uid://yus1loxriev2" path="res://examples/portraits_balloon/balloon.tscn" id="2_qrul3"]
 [ext_resource type="PackedScene" uid="uid://bn20f7mq60o72" path="res://examples/portraits_balloon/small_balloon.tscn" id="3_ddqeq"]
-[ext_resource type="Resource" uid="uid://ct5wtslc2o7uq" path="res://examples/dialogue_with_input.dialogue" id="4_drtxb"]
+[ext_resource type="Resource" uid="uid://bnya3clsjvb71" path="res://examples/dialogue_with_input.dialogue" id="4_drtxb"]
 
 [node name="NameInputScene" type="Node2D"]
 script = ExtResource("1_pjy14")

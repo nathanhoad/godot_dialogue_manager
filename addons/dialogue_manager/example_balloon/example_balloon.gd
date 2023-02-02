@@ -85,7 +85,7 @@ func _ready() -> void:
 	Engine.get_singleton("DialogueManager").mutation.connect(_on_mutation)
 
 
-func _unhandled_input(event: InputEvent) -> void:
+func _unhandled_input(_event: InputEvent) -> void:
 	# Only the balloon is allowed to handle input while it's showing
 	get_viewport().set_input_as_handled()
 
