@@ -1,0 +1,11 @@
+[gd_scene load_steps=4 format=3 uid="uid://b1pvdk3tk0kps"]
+
+[ext_resource type="Script" path="res://examples/test_scenes/test_scene.gd" id="1_e0ngl"]
+[ext_resource type="PackedScene" uid="uid://cxae2nu1rsyeo" path="res://examples/visual_novel_balloon/visual_novel_balloon.tscn" id="2_k5f7p"]
+[ext_resource type="Resource" uid="uid://dd5gx2wq6xojd" path="res://examples/dialogue_for_visual_novel.dialogue" id="3_5s5n5"]
+
+[node name="VisualNovelScene" type="Node2D"]
+script = ExtResource("1_e0ngl")
+Balloon = ExtResource("2_k5f7p")
+SmallBalloon = ExtResource("2_k5f7p")
+dialogue_resource = ExtResource("3_5s5n5")

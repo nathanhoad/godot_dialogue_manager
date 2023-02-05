@@ -1,22 +1,11 @@
 extends CanvasLayer
 
 
-const DIALOGUE_PITCHES = {
-	Nathan = 0.8,
-	Coco = 1
-}
-
-
-@export var response_template: Node
-@export var file_suffix: String = ""
-
-@onready var talk_sound: AudioStreamPlayer = $TalkSound
-@onready var balloon: ColorRect = $Balloon
-@onready var margin: MarginContainer = $Balloon/Margin
-@onready var character_portrait: Sprite2D = $Balloon/Margin/HBox/Portrait/Sprite2D
-@onready var character_label: RichTextLabel = $Balloon/Margin/HBox/VBox/CharacterLabel
-@onready var dialogue_label := $Balloon/Margin/HBox/VBox/DialogueLabel
-@onready var responses_menu: VBoxContainer = $Balloon/Margin/HBox/VBox/Responses
+@onready var background: TextureRect = $Background
+@onready var balloon: Control = $Balloon
+@onready var dialogue_label := $Balloon/Margin/DialogueLabel
+@onready var responses_menu: VBoxContainer = $Responses
+@onready var response_template: RichTextLabel = $ResponseTemplate
 
 ## The dialogue resource
 var resource: DialogueResource
@@ -26,6 +15,8 @@ var temporary_game_states: Array = []
 
 ## See if we are waiting for the player
 var is_waiting_for_input: bool = false
+
+var portraits: Dictionary = {}
 
 ## The current line
 var dialogue_line: DialogueLine:
@@ -42,12 +33,14 @@ var dialogue_line: DialogueLine:
 		
 		dialogue_line = next_dialogue_line
 		
-		character_label.visible = not dialogue_line.character.is_empty()
-		character_label.text = dialogue_line.character
-		character_portrait.texture = load("res://examples/portraits_balloon/portraits/%s%s.png" % [dialogue_line.character.to_lower(), file_suffix])
-		
+		# Dim all characters except the one talking
+		for portrait in portraits:
+			if portrait == dialogue_line.character.to_lower():
+				portraits[portrait].modulate = Color.WHITE
+			else:
+				portraits[portrait].modulate = Color("757575")
+	
 		dialogue_label.modulate.a = 0
-		dialogue_label.custom_minimum_size.x = dialogue_label.get_parent().size.x - 1
 		dialogue_label.dialogue_line = dialogue_line
 		
 		# Show any responses we have
@@ -63,9 +56,6 @@ var dialogue_line: DialogueLine:
 				item.text = response.text
 				item.show()
 				responses_menu.add_child(item)
-		
-		# Show our balloon if it was previously hidden
-		balloon.show()
 		
 		dialogue_label.modulate.a = 1
 		dialogue_label.type_out()
@@ -89,7 +79,7 @@ var dialogue_line: DialogueLine:
 
 func _ready() -> void:
 	response_template.hide()
-	balloon.hide()
+#	hide()
 	
 	Engine.get_singleton("DialogueManager").mutation.connect(_on_mutation)
 
@@ -101,7 +91,7 @@ func _unhandled_input(_event: InputEvent) -> void:
 
 ## Start some dialogue
 func start(dialogue_resource: DialogueResource, title: String, extra_game_states: Array = []) -> void:
-	temporary_game_states = extra_game_states
+	temporary_game_states = extra_game_states + [self]
 	is_waiting_for_input = false
 	resource = dialogue_resource
 	self.dialogue_line = await resource.get_next_dialogue_line(title, temporary_game_states)
@@ -110,6 +100,42 @@ func start(dialogue_resource: DialogueResource, title: String, extra_game_states
 ## Go to the next line
 func next(next_id: String) -> void:
 	self.dialogue_line = await resource.get_next_dialogue_line(next_id, temporary_game_states)
+
+
+### Mutations
+
+
+func set_background(background_name: String) -> void:
+	background.texture = load("res://examples/visual_novel_balloon/backgrounds/%s.jpg" % background_name)
+
+
+func add_portrait(character: String, slot: int = 0) -> void:
+	# Instantiate the character
+	var slot_marker: Marker2D = get_node("Slot%d" % slot)
+	var portrait = load("res://examples/visual_novel_balloon/portraits/%s.tscn" % character).instantiate()
+	slot_marker.add_child(portrait)
+	
+	portraits[character] = portrait
+	
+	# Character appears
+	var tween: Tween = get_tree().create_tween().set_pause_mode(Tween.TWEEN_PAUSE_PROCESS).set_ease(Tween.EASE_IN_OUT)
+	tween.tween_property(portrait, "position:y", 0.0, 0.5).from(1000.0)
+	await get_tree().create_timer(0.8).timeout
+
+
+func call_portrait(character: String, method: String) -> void:
+	portraits[character].call(method)
+
+
+func remove_portrait(character: String) -> void:
+	var portrait = portraits[character]
+	
+	# Character leaves
+	var tween: Tween = get_tree().create_tween().set_pause_mode(Tween.TWEEN_PAUSE_PROCESS).set_ease(Tween.EASE_IN_OUT)
+	tween.tween_property(portrait, "position:y", 1000.0, 0.5).from(0.0)
+	await get_tree().create_timer(0.8).timeout
+	portraits.erase(character)
+	portrait.queue_free()
 
 
 ### Helpers
@@ -123,6 +149,7 @@ func configure_menu() -> void:
 	for i in items.size():
 		var item: Control = items[i]
 		
+		item.mouse_filter = Control.MOUSE_FILTER_STOP
 		item.focus_mode = Control.FOCUS_ALL
 		
 		item.focus_neighbor_left = item.get_path()
@@ -158,23 +185,12 @@ func get_responses() -> Array:
 	return items
 
 
-func handle_resize() -> void:
-	if not is_instance_valid(margin):
-		call_deferred("handle_resize")
-		return
-	
-	balloon.custom_minimum_size.y = margin.size.y
-	balloon.size.y = 0
-	var viewport_size = balloon.get_viewport_rect().size
-	balloon.global_position = Vector2((viewport_size.x - balloon.size.x) * 0.5, viewport_size.y - balloon.size.y)
-
-
 ### Signals
 
 
 func _on_mutation() -> void:
 	is_waiting_for_input = false
-	balloon.hide()
+	dialogue_label.modulate.a = 0.0
 
 
 func _on_response_mouse_entered(item: Control) -> void:
@@ -187,8 +203,10 @@ func _on_response_gui_input(event: InputEvent, item: Control) -> void:
 	if "Disallowed" in item.name: return
 	
 	if event is InputEventMouseButton and event.is_pressed() and event.button_index == 1:
+		responses_menu.modulate.a = 0.0
 		next(dialogue_line.responses[item.get_index()].next_id)
 	elif event.is_action_pressed("ui_accept") and item in get_responses():
+		responses_menu.modulate.a = 0.0
 		next(dialogue_line.responses[item.get_index()].next_id)
 
 
@@ -203,16 +221,3 @@ func _on_balloon_gui_input(event: InputEvent) -> void:
 		next(dialogue_line.next_id)
 	elif event.is_action_pressed("ui_accept") and get_viewport().gui_get_focus_owner() == balloon:
 		next(dialogue_line.next_id)
-
-
-func _on_margin_resized() -> void:
-	handle_resize()
-
-
-func _on_dialogue_label_spoke(letter: String, letter_index: int, speed: float) -> void:
-	if not letter in [" ", "."]:
-		var actual_speed: int = 4 if speed >= 1 else 2
-		if letter_index % actual_speed == 0:
-			talk_sound.play()
-			var pitch = DIALOGUE_PITCHES.get(dialogue_line.character, 1)
-			talk_sound.pitch_scale = randf_range(pitch - 0.1, pitch + 0.1)

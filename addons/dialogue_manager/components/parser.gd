@@ -995,7 +995,7 @@ func find_bbcode_positions_in_string(string: String, find_all: bool = true) -> A
 	return positions
 
 
-func tokenise(text: String, line_type: String) -> Array[Dictionary]:
+func tokenise(text: String, line_type: String) -> Array:
 	var tokens: Array[Dictionary] = []
 	var limit: int = 0
 	while text.strip_edges() != "" and limit < 1000:

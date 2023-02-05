@@ -1,0 +1,14 @@
+[remap]
+
+importer="dialogue_manager_compiler_4"
+type="Resource"
+uid="uid://dd5gx2wq6xojd"
+path="res://.godot/imported/dialogue_for_visual_novel.dialogue-68b4d7220d88c358e1312ba2f42ceb11.tres"
+
+[deps]
+
+source_file="res://examples/dialogue_for_visual_novel.dialogue"
+dest_files=["res://.godot/imported/dialogue_for_visual_novel.dialogue-68b4d7220d88c358e1312ba2f42ceb11.tres"]
+
+[params]
+

@@ -1,0 +1,56 @@
+[gd_scene load_steps=6 format=3 uid="uid://chur0yqvpxxja"]
+
+[ext_resource type="Script" path="res://examples/visual_novel_balloon/portraits/coco.gd" id="1_lvpqe"]
+[ext_resource type="Texture2D" uid="uid://bg7dngh2kog5f" path="res://examples/visual_novel_balloon/portraits/coco.png" id="2_2nynt"]
+
+[sub_resource type="Animation" id="Animation_j4dkb"]
+resource_name = "Meow"
+length = 0.3
+step = 0.05
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Sprite:scale")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.05, 0.15, 0.25),
+"transitions": PackedFloat32Array(1, 1, 1, 1),
+"update": 0,
+"values": [Vector2(0.5, 0.5), Vector2(0.586207, 0.415458), Vector2(0.413793, 0.596122), Vector2(0.5, 0.5)]
+}
+
+[sub_resource type="Animation" id="Animation_bh7hh"]
+length = 0.001
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Sprite:scale")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector2(0.5, 0.5)]
+}
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_un71v"]
+_data = {
+"Meow": SubResource("Animation_j4dkb"),
+"RESET": SubResource("Animation_bh7hh")
+}
+
+[node name="Coco" type="Node2D"]
+script = ExtResource("1_lvpqe")
+
+[node name="Sprite" type="Sprite2D" parent="."]
+position = Vector2(0, -1)
+scale = Vector2(0.5, 0.5)
+texture = ExtResource("2_2nynt")
+offset = Vector2(0, -190)
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="."]
+libraries = {
+"": SubResource("AnimationLibrary_un71v")
+}
