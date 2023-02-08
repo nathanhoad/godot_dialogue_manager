@@ -12,6 +12,7 @@ Example scenes include:
 - Using a mutation to ask the player for their name.
 - A Point n Click Adventure style interaction that includes voice acting in multiple languages.
 - A Visual Novel style balloon with various character slots and mutations for adding/removing characters in the conversation.
+- A C# Balloon that show how you might write a custom balloon in C#.
 
 To see an example in action, open the scenes in [/examples/test_scenes](../examples/test_scenes/) and run them.
 

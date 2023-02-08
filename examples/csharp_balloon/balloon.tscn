@@ -1,0 +1,69 @@
+[gd_scene load_steps=5 format=3 uid="uid://73jm5qjy52vq"]
+
+[ext_resource type="Script" path="res://examples/csharp_balloon/Balloon.cs" id="1_mb7ia"]
+[ext_resource type="PackedScene" uid="uid://ckvgyvclnwggo" path="res://addons/dialogue_manager/dialogue_label.tscn" id="2_a8ve6"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_5d24i"]
+content_margin_left = 40.0
+content_margin_top = 5.0
+content_margin_right = 5.0
+content_margin_bottom = 5.0
+bg_color = Color(1, 1, 1, 0.25098)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_oj3c8"]
+content_margin_left = 40.0
+content_margin_top = 5.0
+content_margin_right = 5.0
+content_margin_bottom = 5.0
+draw_center = false
+
+[node name="ExampleBalloon" type="CanvasLayer"]
+layer = 100
+script = ExtResource("1_mb7ia")
+
+[node name="Balloon" type="ColorRect" parent="."]
+color = Color(0, 0, 0, 1)
+
+[node name="Margin" type="MarginContainer" parent="Balloon"]
+layout_mode = 0
+anchor_right = 1.0
+offset_bottom = 119.0
+grow_horizontal = 2
+theme_override_constants/margin_left = 20
+theme_override_constants/margin_top = 10
+theme_override_constants/margin_right = 20
+theme_override_constants/margin_bottom = 10
+metadata/_edit_layout_mode = 1
+
+[node name="VBox" type="VBoxContainer" parent="Balloon/Margin"]
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="CharacterLabel" type="RichTextLabel" parent="Balloon/Margin/VBox"]
+modulate = Color(1, 1, 1, 0.501961)
+layout_mode = 2
+mouse_filter = 1
+bbcode_enabled = true
+text = "Character"
+scroll_active = false
+
+[node name="DialogueLabel" parent="Balloon/Margin/VBox" instance=ExtResource("2_a8ve6")]
+layout_mode = 2
+text = "Dialogue"
+
+[node name="Responses" type="VBoxContainer" parent="Balloon/Margin/VBox"]
+layout_mode = 2
+theme_override_constants/separation = 2
+
+[node name="ResponseTemplate" type="RichTextLabel" parent="Balloon/Margin/VBox"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_styles/focus = SubResource("StyleBoxFlat_5d24i")
+theme_override_styles/normal = SubResource("StyleBoxFlat_oj3c8")
+bbcode_enabled = true
+text = "Response"
+fit_content = true
+scroll_active = false
+shortcut_keys_enabled = false
+meta_underlined = false
+hint_underlined = false

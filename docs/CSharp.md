@@ -21,4 +21,4 @@ Or manually traverse dialogue:
 var line = await DialogueManager.GetNextDialogueLine(dialogue, "start");
 ```
 
-The returned line is a `Godot.Collections.Dictionary` and will have a similar shape to that of [the GDScript version](API.md).
+The returned line is a `Godot.RefCounted` and will have the same properties to the [the GDScript version](API.md) (but will need to be manually typed and accessed via `Get(property)`).
