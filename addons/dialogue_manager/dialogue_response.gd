@@ -8,7 +8,7 @@ var type: String = DialogueConstants.TYPE_RESPONSE
 var next_id: String = ""
 var is_allowed: bool = true
 var text: String = ""
-var text_replacements: Array = []
+var text_replacements: Array[Dictionary] = []
 var translation_key: String = ""
 
 

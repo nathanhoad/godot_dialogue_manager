@@ -45,6 +45,7 @@ layout_mode = 2
 mouse_filter = 1
 bbcode_enabled = true
 text = "Character"
+fit_content = true
 scroll_active = false
 
 [node name="DialogueLabel" parent="Balloon/Margin/VBox" instance=ExtResource("2_a8ve6")]
