@@ -56,10 +56,6 @@ It will close once dialogue runs out.
 
 ### Methods
 
-#### `func reset_height() -> void`
-
-Recalculates the minimum height of the label. Useful when the label is a child of a container.
-
 #### `func type_out() -> void`
 
 Starts typing out the text of the label.

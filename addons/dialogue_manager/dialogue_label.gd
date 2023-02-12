@@ -42,7 +42,7 @@ func _process(delta: float) -> void:
 			if Input.is_action_just_pressed(skip_action):
 				# Run any inline mutations that haven't been run yet
 				for i in range(visible_characters, get_total_character_count()):
-					mutate_inline_mutations(i)
+					dialogue_line.mutate_inline_mutations(i)
 				visible_characters = get_total_character_count()
 				has_finished = true
 				emit_signal("finished_typing")
@@ -61,10 +61,6 @@ func _process(delta: float) -> void:
 				emit_signal("finished_typing")
 
 
-func reset_height() -> void:
-	assert(false, "DialogueLabel.reset_height() has been replaced with the new RichTextLabel \"fit_content\" property. You can remove any calls to reset_height().")
-
-
 # Start typing out the text
 func type_out() -> void:
 	text = dialogue_line.text
@@ -81,7 +77,7 @@ func type_out() -> void:
 		is_typing = false
 		# Run any inline mutations
 		for i in range(0, get_total_character_count()):
-			mutate_inline_mutations(i)
+			dialogue_line.mutate_inline_mutations(i)
 		visible_characters = get_total_character_count()
 		emit_signal("finished_typing")
 	else:
@@ -96,45 +92,19 @@ func type_next(delta: float, seconds_needed: float) -> void:
 	
 	if last_mutation_index != visible_characters:
 		last_mutation_index = visible_characters
-		mutate_inline_mutations(visible_characters)
+		dialogue_line.mutate_inline_mutations(visible_characters)
 	
-	if last_wait_index != visible_characters and get_pause(visible_characters) > 0:
+	if last_wait_index != visible_characters and dialogue_line.get_pause(visible_characters) > 0:
 		last_wait_index = visible_characters
-		waiting_seconds += get_pause(visible_characters)
-		emit_signal("paused_typing", get_pause(visible_characters))
+		waiting_seconds += dialogue_line.get_pause(visible_characters)
+		emit_signal("paused_typing", dialogue_line.get_pause(visible_characters))
 	else:
 #		visible_ratio += percent_per_index
 		visible_characters += 1
-		seconds_needed += seconds_per_step * (1.0 / get_speed(visible_characters))
+		seconds_needed += seconds_per_step * (1.0 / dialogue_line.get_speed(visible_characters))
 		if seconds_needed > delta:
 			waiting_seconds += seconds_needed
 			if visible_characters < get_total_character_count():
-				emit_signal("spoke", text[visible_characters - 1], visible_characters - 1, get_speed(visible_characters))
+				emit_signal("spoke", text[visible_characters - 1], visible_characters - 1, dialogue_line.get_speed(visible_characters))
 		else:
 			type_next(delta, seconds_needed)
-
-
-# Get the pause for the current typing position if there is one
-func get_pause(at_index: int) -> float:
-	return dialogue_line.pauses.get(at_index, 0)
-
-
-# Get the speed for the current typing position
-func get_speed(at_index: int) -> float:
-	var speed: float = 1
-	for index in dialogue_line.speeds:
-		if index > at_index:
-			return speed
-		speed = dialogue_line.speeds[index]
-	return speed
-
-
-# Run any mutations at the current typing position
-func mutate_inline_mutations(index: int) -> void:
-	for inline_mutation in dialogue_line.inline_mutations:
-		# inline mutations are an array of arrays in the form of [character index, resolvable function]
-		if inline_mutation[0] > index:
-			return
-		if inline_mutation[0] == index:
-			# The DialogueManager can't be referenced directly here so we need to get it by its path
-			get_node("/root/DialogueManager").mutate(inline_mutation[1], dialogue_line.extra_game_states)
