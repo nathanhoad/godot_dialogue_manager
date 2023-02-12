@@ -2,7 +2,7 @@
 extends Button
 
 
-const REMOTE_CONFIG_URL = "https://raw.githubusercontent.com/nathanhoad/godot_dialogue_manager/main/addons/dialogue_manager/plugin.cfg"
+const REMOTE_RELEASES_URL = "https://github.com/nathanhoad/godot_dialogue_manager/releases/latest"
 const LOCAL_CONFIG_PATH = "res://addons/dialogue_manager/plugin.cfg"
 
 
@@ -23,7 +23,7 @@ func _ready() -> void:
 	apply_theme()
 	
 	# Check for updates on GitHub
-	http_request.request(REMOTE_CONFIG_URL)
+	http_request.request(REMOTE_RELEASES_URL)
 
 
 # Get the current version
@@ -52,8 +52,7 @@ func _on_http_request_request_completed(result: int, response_code: int, headers
 	
 	# Parse the version number from the remote config file
 	var response = body.get_string_from_utf8()
-	var regex = RegEx.new()
-	regex.compile("version=\"(?<version>\\d+\\.\\d+\\.\\d+)\"")
+	var regex = RegEx.create_from_string("/nathanhoad/godot_dialogue_manager/releases/tag/v(?<version>\\d+\\.\\d+\\.\\d+)")
 	var found = regex.search(response)
 	
 	if not found: return
