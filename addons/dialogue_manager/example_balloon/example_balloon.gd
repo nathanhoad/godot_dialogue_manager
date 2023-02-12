@@ -17,6 +17,9 @@ var temporary_game_states: Array = []
 ## See if we are waiting for the player
 var is_waiting_for_input: bool = false
 
+## See if we are running a long mutation and should hide the balloon
+var will_hide_balloon: bool = false
+
 ## The current line
 var dialogue_line: DialogueLine:
 	set(next_dialogue_line):
@@ -54,7 +57,8 @@ var dialogue_line: DialogueLine:
 				responses_menu.add_child(item)
 		
 		# Show our balloon
-		balloon.visible = true
+		balloon.show()
+		will_hide_balloon = false
 		
 		dialogue_label.modulate.a = 1
 		if not dialogue_line.text.is_empty():
@@ -167,7 +171,12 @@ func handle_resize() -> void:
 
 func _on_mutation() -> void:
 	is_waiting_for_input = false
-	balloon.hide()
+	will_hide_balloon = true
+	get_tree().create_timer(0.1).timeout.connect(func():
+		if will_hide_balloon:
+			will_hide_balloon = false
+			balloon.hide()
+	)
 
 
 func _on_response_mouse_entered(item: Control) -> void:
