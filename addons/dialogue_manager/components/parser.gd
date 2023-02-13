@@ -241,7 +241,7 @@ func parse(text: String) -> int:
 				line["text"] = ": ".join(bits).replace("!ESCAPED_COLON!", ":")
 			else:
 				line["character"] = ""
-				line["character_replacements"] = []
+				line["character_replacements"] = [] as Array[Dictionary]
 				line["text"] = l.replace("!ESCAPED_COLON!", ":")
 			
 			line["text_replacements"] = extract_dialogue_replacements(line.text)
