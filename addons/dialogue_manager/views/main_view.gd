@@ -551,8 +551,10 @@ func export_translations_to_csv(path: String) -> void:
 	for line in lines_to_save:
 		file.store_csv_line(line)
 	
+	file.flush()
+	
 	editor_plugin.get_editor_interface().get_resource_filesystem().scan()
-	editor_plugin.get_editor_interface().get_file_system_dock().navigate_to_path(path)
+	editor_plugin.get_editor_interface().get_file_system_dock().call_deferred("navigate_to_path", path)
 
 
 # Import changes back from an exported CSV by matching translation keys
@@ -629,7 +631,7 @@ func export_translations_to_po(path: String) -> void:
 	# If the file exists, keep content except for known entries.
 	var existing_po: String = ""
 	var already_existing_keys: PackedStringArray = PackedStringArray([])
-	if file.file_exists(path):
+	if FileAccess.file_exists(path):
 		file = FileAccess.open(path, FileAccess.READ)
 		var line: String
 		while !file.eof_reached():
@@ -675,9 +677,10 @@ func export_translations_to_po(path: String) -> void:
 	# Start a new file
 	file = FileAccess.open(path, FileAccess.WRITE)
 	file.store_string(existing_po)
-
+	file.flush()
+	
 	editor_plugin.get_editor_interface().get_resource_filesystem().scan()
-	editor_plugin.get_editor_interface().get_file_system_dock().navigate_to_path(path)
+	editor_plugin.get_editor_interface().get_file_system_dock().call_deferred("navigate_to_path", path)
 
 
 # type is supposed to be either msgid or msgstr
