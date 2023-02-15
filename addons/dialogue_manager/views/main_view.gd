@@ -206,7 +206,7 @@ func new_file(path: String, content: String = "") -> void:
 
 
 # Open a dialogue resource for editing
-func open_resource(resource: Resource) -> void:
+func open_resource(resource: DialogueResource) -> void:
 	open_file(resource.resource_path)
 
 

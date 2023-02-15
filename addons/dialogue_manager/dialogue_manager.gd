@@ -49,7 +49,7 @@ func _ready() -> void:
 
 
 ## Step through lines and run any mutations until we either hit some dialogue or the end of the conversation
-func get_next_dialogue_line(resource: Resource, key: String = "0", extra_game_states: Array = []) -> DialogueLine:
+func get_next_dialogue_line(resource: DialogueResource, key: String = "0", extra_game_states: Array = []) -> DialogueLine:
 	# You have to provide a valid dialogue resource
 	assert(resource != null, "No dialogue resource provided")
 	assert(resource.get_meta("lines").size() > 0, "Dialogue file has no content.")
@@ -109,7 +109,7 @@ func create_resource_from_text(text: String) -> Resource:
 			printerr("Line %d: %s" % [error.line_number + 1, DialogueConstants.get_error_message(error.error)])
 		assert(false, "You have errors in your dialogue text. See Output for details.")
 	
-	var resource: Resource = Resource.new()
+	var resource: DialogueResource = DialogueResource.new()
 	resource.set_meta("titles", results.titles)
 	resource.set_meta("lines", results.lines)
 	
@@ -117,7 +117,7 @@ func create_resource_from_text(text: String) -> Resource:
 
 
 ## Show the example balloon
-func show_example_dialogue_balloon(resource: Resource, title: String = "0", extra_game_states: Array = []) -> void:
+func show_example_dialogue_balloon(resource: DialogueResource, title: String = "0", extra_game_states: Array = []) -> void:
 	var ExampleBalloonScene = load("res://addons/dialogue_manager/example_balloon/example_balloon.tscn")
 	var SmallExampleBalloonScene = load("res://addons/dialogue_manager/example_balloon/small_example_balloon.tscn")
 	
@@ -130,7 +130,7 @@ func show_example_dialogue_balloon(resource: Resource, title: String = "0", extr
 ### Dotnet bridge
 
 
-func _bridge_get_next_dialogue_line(resource: Resource, key: String, extra_game_states: Array = []) -> void:
+func _bridge_get_next_dialogue_line(resource: DialogueResource, key: String, extra_game_states: Array = []) -> void:
 	var line = await get_next_dialogue_line(resource, key, extra_game_states)
 	emit_signal("bridge_get_next_dialogue_line_completed", line)
 
@@ -139,7 +139,7 @@ func _bridge_get_next_dialogue_line(resource: Resource, key: String, extra_game_
 
 
 # Get a line by its ID
-func get_line(resource: Resource, key: String, extra_game_states: Array) -> DialogueLine:
+func get_line(resource: DialogueResource, key: String, extra_game_states: Array) -> DialogueLine:
 	key = key.strip_edges()
 	
 	# See if we were given a stack instead of just the one key
@@ -355,7 +355,7 @@ func resolve_each(array: Array, extra_game_states: Array) -> Array:
 
 
 # Replace an array of line IDs with their response prompts
-func get_responses(ids: Array, resource: Resource, id_trail: String, extra_game_states: Array) -> Array[DialogueResponse]:
+func get_responses(ids: Array, resource: DialogueResource, id_trail: String, extra_game_states: Array) -> Array[DialogueResponse]:
 	var responses: Array[DialogueResponse] = []
 	for id in ids:
 		var data: Dictionary = resource.get_meta("lines").get(id)

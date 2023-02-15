@@ -14,7 +14,7 @@ const COLORS = {
 
 
 ## The dialogue resource
-var resource: Resource
+var resource: DialogueResource
 
 ## Temporary game states
 var temporary_game_states: Array = []
