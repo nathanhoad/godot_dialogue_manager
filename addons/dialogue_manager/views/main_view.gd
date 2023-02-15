@@ -492,6 +492,14 @@ func generate_translations_keys() -> void:
 	parser.free()
 
 
+# Add a translation file to the project settings
+func add_path_to_project_translations(path: String) -> void:
+	var translations: PackedStringArray = ProjectSettings.get_setting("internationalization/locale/translations")
+	if not path in translations:
+		translations.append(path)
+		ProjectSettings.save()
+
+
 # Export dialogue and responses to CSV
 func export_translations_to_csv(path: String) -> void:
 	var file: FileAccess
@@ -555,6 +563,10 @@ func export_translations_to_csv(path: String) -> void:
 	
 	editor_plugin.get_editor_interface().get_resource_filesystem().scan()
 	editor_plugin.get_editor_interface().get_file_system_dock().call_deferred("navigate_to_path", path)
+	
+	# Add it to the project l10n settings if it's not already there
+	var translation_path: String = path.replace(".csv", ".en.translation")
+	call_deferred("add_path_to_project_translations", translation_path)
 
 
 # Import changes back from an exported CSV by matching translation keys
@@ -681,6 +693,9 @@ func export_translations_to_po(path: String) -> void:
 	
 	editor_plugin.get_editor_interface().get_resource_filesystem().scan()
 	editor_plugin.get_editor_interface().get_file_system_dock().call_deferred("navigate_to_path", path)
+	
+	# Add it to the project l10n settings if it's not already there
+	call_deferred("add_path_to_project_translations", path)
 
 
 # type is supposed to be either msgid or msgstr
