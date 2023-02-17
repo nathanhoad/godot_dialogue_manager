@@ -6,11 +6,12 @@ Write your dialogue in a simple script-like way and run it in your game.
 
 _**NOTE:** This is for Godot 4. If you are using Godot 3 then have a look at the [v1.x branch](https://github.com/nathanhoad/godot_dialogue_manager/tree/v1.x)._
 
-## Installation
+## Installation & Quick Start
 
 1. Clone or download a copy of this repository.
 2. Copy the contents of `addons/dialogue_manager` into your `res://addons/dialogue_manager` directory.
 3. Enable `Dialogue Manager` in your project plugins.
+4. Open the "Dialogue" Editor (next to "2D", "3D", "Script", ...) to create your first `.dialogue` file. You can immediatly test your dialogue by using the "Test Dialogue" button in the editor.
 
 ## Documentation
 
