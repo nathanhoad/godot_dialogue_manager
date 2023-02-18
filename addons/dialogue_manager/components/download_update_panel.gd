@@ -6,6 +6,8 @@ signal failed()
 signal updated(updated_to_version: String)
 
 
+const DialogueConstants = preload("res://addons/dialogue_manager/constants.gd")
+
 const TEMP_FILE_NAME = "user://temp.zip"
 
 
@@ -17,10 +19,15 @@ const TEMP_FILE_NAME = "user://temp.zip"
 var next_version: String = "":
 	set(next_next_version):
 		next_version = next_next_version
-		label.text = "Version %s is available for download!" % next_version
+		label.text = DialogueConstants.translate("update.is_available_for_download") % next_version
 	get:
 		return next_version
-	
+
+
+func _ready() -> void:
+	$VBox/Center/DownloadButton.text = DialogueConstants.translate("update.download_and_install")
+	$VBox/Center2/NotesButton.text = DialogueConstants.translate("update.release_notes")
+
 
 func save_zip(bytes: PackedByteArray) -> void:
 	var file: FileAccess = FileAccess.open(TEMP_FILE_NAME, FileAccess.WRITE)
@@ -40,7 +47,7 @@ func _on_download_button_pressed() -> void:
 	
 	http_request.request("https://github.com/nathanhoad/godot_dialogue_manager/archive/refs/tags/v%s.zip" % next_version)
 	download_button.disabled = true
-	download_button.text = "Downloading..."
+	download_button.text = DialogueConstants.translate("update.downloading")
 
 
 func _on_http_request_request_completed(result: int, response_code: int, headers: PackedStringArray, body: PackedByteArray) -> void:

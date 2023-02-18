@@ -5,6 +5,7 @@ extends VBoxContainer
 signal script_button_pressed(path: String)
 
 
+const DialogueConstants = preload("res://addons/dialogue_manager/constants.gd")
 const DialogueSettings = preload("res://addons/dialogue_manager/components/settings.gd")
 
 
@@ -27,11 +28,23 @@ var all_globals: Dictionary = {}
 var enabled_globals: Array = []
 
 
+func _ready() -> void:
+	$NewTemplateButton.text = DialogueConstants.translate("settings.new_template")
+	$MissingTranslationsButton.text = DialogueConstants.translate("settings.missing_keys")
+	$MissingTranslationsHint.text = DialogueConstants.translate("settings.missing_keys_hint")
+	$WrapLinesButton.text = DialogueConstants.translate("settings.wrap_long_lines")
+	$IncludeAllResponsesButton.text = DialogueConstants.translate("settings.include_failed_responses")
+	$CustomTestSceneLabel.text = DialogueConstants.translate("settings.custom_test_scene")
+	$StatesTitle.text = DialogueConstants.translate("settings.states_shortcuts")
+	$StatesMessage.text = DialogueConstants.translate("settings.states_message")
+	$StatesHint.text = DialogueConstants.translate("settings.states_hint")
+
+
 func prepare() -> void:
 	test_scene_path_input.placeholder_text = DialogueSettings.get_setting("custom_test_scene_path", DEFAULT_TEST_SCENE_PATH)
 	revert_test_scene_button.visible = test_scene_path_input.placeholder_text != DEFAULT_TEST_SCENE_PATH
 	revert_test_scene_button.icon = get_theme_icon("RotateLeft", "EditorIcons")
-	revert_test_scene_button.tooltip_text = "Revert to default test scene"
+	revert_test_scene_button.tooltip_text = DialogueConstants.translate("settings.revert_to_default_test_scene")
 	load_test_scene_button.icon = get_theme_icon("Load", "EditorIcons")
 	
 	var scale: float = editor_plugin.get_editor_interface().get_editor_scale()
@@ -70,9 +83,9 @@ func prepare() -> void:
 	globals_list.set_column_expand(1, false)
 	globals_list.set_column_custom_minimum_width(1, 40)
 	globals_list.set_column_titles_visible(true)
-	globals_list.set_column_title(0, "Autoload")
+	globals_list.set_column_title(0, DialogueConstants.translate("settings.autoload"))
 	globals_list.set_column_title(1, "")
-	globals_list.set_column_title(2, "Path")
+	globals_list.set_column_title(2, DialogueConstants.translate("settings.path"))
 
 
 ### Signals

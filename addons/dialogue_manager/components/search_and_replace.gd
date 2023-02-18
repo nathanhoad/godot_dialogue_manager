@@ -6,6 +6,9 @@ signal open_requested()
 signal close_requested()
 
 
+const DialogueConstants = preload("res://addons/dialogue_manager/constants.gd")
+
+
 @onready var input: LineEdit = $Search/Input
 @onready var result_label: Label = $Search/ResultLabel
 @onready var previous_button: Button = $Search/PreviousButton
@@ -38,13 +41,21 @@ var result_index: int = -1:
 			if is_instance_valid(code_edit):
 				code_edit.deselect()
 		
-		result_label.text = "%d of %d" % [result_index + 1, results.size()]
+		result_label.text = DialogueConstants.translate("search.n_of_n") % [result_index + 1, results.size()]
 	get:
 		return result_index
 
 
 func _ready() -> void:
 	apply_theme()
+	
+	previous_button.tooltip_text = DialogueConstants.translate("search.previous")
+	next_button.tooltip_text = DialogueConstants.translate("search.next")
+	match_case_button.text = DialogueConstants.translate("search.match_case")
+	$Search/ReplaceCheckButton.text = DialogueConstants.translate("search.toggle_replace")
+	replace_button.text = DialogueConstants.translate("search.replace")
+	replace_all_button.text = DialogueConstants.translate("search.replace_all")
+	$Replace/ReplaceLabel.text = DialogueConstants.translate("search.replace_with")
 	
 	self.result_index = -1
 	
@@ -168,7 +179,7 @@ func _on_replace_all_button_pressed() -> void:
 	search()
 
 
-func _on_replace_check_box_toggled(button_pressed: bool) -> void:
+func _on_replace_check_button_toggled(button_pressed: bool) -> void:
 	replace_panel.visible = button_pressed
 	if button_pressed:
 		replace_input.grab_focus()

@@ -99,74 +99,82 @@ const ERR_UNEXPECTED_ASSIGNMENT = 134
 static func get_error_message(error: int) -> String:
 	match error:
 		ERR_ERRORS_IN_IMPORTED_FILE:
-			return "There are errors in this imported file."
+			return translate("errors.import_errors")
 		ERR_FILE_ALREADY_IMPORTED:
-			return "File already imported."
+			return translate("errors.already_imported")
 		ERR_DUPLICATE_IMPORT_NAME:
-			return "Duplicate import name."
+			return translate("errors.duplicate_import")
 		ERR_EMPTY_TITLE:
-			return "Titles cannot be empty."
+			return translate("errors.empty_title")
 		ERR_DUPLICATE_TITLE:
-			return "There is already a title with that name."
+			return translate("errors.duplicate_title")
 		ERR_NESTED_TITLE:
-			return "Titles cannot be nested."
+			return translate("errors.nested_title")
 		ERR_TITLE_INVALID_CHARACTERS:
-			return "Titles can only contain alphanumeric characters and numbers."
+			return translate("errors.invalid_title_string")
 		ERR_TITLE_BEGINS_WITH_NUMBER:
-			return "Titles cannot begin with a number."
+			return translate("errors.invalid_title_number")
 		ERR_UNKNOWN_TITLE:
-			return "Unknown title."
+			return translate("errors.unknown_title")
 		ERR_INVALID_TITLE_REFERENCE:
-			return "This jump is pointing to an invalid title."
+			return translate("errors.jump_to_invalid_title")
 		ERR_TITLE_REFERENCE_HAS_NO_CONTENT:
-			return "That title has no content. Maybe change this to a \"=> END\"."
+			return translate("errors.title_has_no_content")
 		ERR_INVALID_EXPRESSION:
-			return "Expression is invalid."
+			return translate("errors.invalid_expression")
 		ERR_INVALID_EXPRESSION_IN_CHARACTER_NAME:
-			return "The expression used for a character name is invalid."
+			return translate("errors.invalid_expression_for_character")
 		ERR_DUPLICATE_ID:
-			return "This ID is already on another line."
+			return translate("errors.duplicate_id")
 		ERR_MISSING_ID:
-			return "This line is missing an ID."
+			return translate("errors.missing_id")
 		ERR_INVALID_INDENTATION:
-			return "Invalid indentation."
+			return translate("errors.invalid_indentation")
 		ERR_INVALID_CONDITION_INDENTATION:
-			return "A condition line needs an indented line below it."
+			return translate("errors.condition_has_no_content")
 		ERR_INCOMPLETE_EXPRESSION:
-			return "Incomplate expression."
+			return translate("errors.incomplete_expression")
 		ERR_INVALID_EXPRESSION_FOR_VALUE:
-			return "Invalid expression for value."
+			return translate("errors.invalid_expression_for_value")
 		ERR_FILE_NOT_FOUND:
-			return "File not found."
+			return translate("errors.file_not_found")
 		ERR_UNEXPECTED_END_OF_EXPRESSION:
-			return "Unexpected end of expression."
+			return translate("errors.unexpected_end_of_expression")
 		ERR_UNEXPECTED_FUNCTION:
-			return "Unexpected function."
+			return translate("errors.unexpected_function")
 		ERR_UNEXPECTED_BRACKET:
-			return "Unexpected bracket."
+			return translate("errors.unexpected_bracket")
 		ERR_UNEXPECTED_CLOSING_BRACKET:
-			return "Unexpected closing bracket."
+			return translate("errors.unexpected_closing_bracket")
 		ERR_MISSING_CLOSING_BRACKET:
-			return "Missing closing bracket."
+			return translate("errors.missing_closing_bracket")
 		ERR_UNEXPECTED_OPERATOR:
-			return "Unexpected operator."
+			return translate("errors.unexpected_operator")
 		ERR_UNEXPECTED_COMMA:
-			return "Unexpected comma."
+			return translate("errors.unexpected_comma")
 		ERR_UNEXPECTED_COLON:
-			return "Unexpected colon."
+			return translate("errors.unexpected_colon")
 		ERR_UNEXPECTED_DOT:
-			return "Unexpected dot."
+			return translate("errors.unexpected_dot")
 		ERR_UNEXPECTED_BOOLEAN:
-			return "Unexpected boolean."
+			return translate("errors.unexpected_boolean")
 		ERR_UNEXPECTED_STRING:
-			return "Unexpected string."
+			return translate("errors.unexpected_string")
 		ERR_UNEXPECTED_NUMBER:
-			return "Unexpected number."
+			return translate("errors.unexpected_number")
 		ERR_UNEXPECTED_VARIABLE:
-			return "Unexpected variable."
+			return translate("errors.unexpected_variable")
 		ERR_INVALID_INDEX:
-			return "Invalid index."
+			return translate("errors.invalid_index")
 		ERR_UNEXPECTED_ASSIGNMENT:
-			return "Unexpected assignment."
+			return translate("errors.unexpected_assignment")
 
-	return "Unknown syntax."
+	return translate("errors.unknown")
+
+
+static func translate(string: String) -> String:
+	var language: String = TranslationServer.get_tool_locale().substr(0, 2)
+	var translations_path: String = "res://addons/dialogue_manager/l10n/translations.%s.translation" % language
+	var fallback_translations_path: String = "res://addons/dialogue_manager/l10n/translations.en.translation"
+	var translations: OptimizedTranslation = load(translations_path if FileAccess.file_exists(translations_path) else fallback_translations_path) 
+	return translations.get_message(string)

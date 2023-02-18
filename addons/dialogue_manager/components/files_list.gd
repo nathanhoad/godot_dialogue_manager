@@ -7,6 +7,8 @@ signal file_popup_menu_requested(at_position: Vector2)
 signal file_double_clicked(file_path: String)
 
 
+const DialogueConstants = preload("res://addons/dialogue_manager/constants.gd")
+
 const MODIFIED_SUFFIX = "(*)"
 
 
@@ -38,6 +40,8 @@ var filter: String:
 
 func _ready() -> void:
 	apply_theme()
+	
+	filter_edit.placeholder_text = DialogueConstants.translate("files_list.filter")
 
 
 func select_file(file: String) -> void:

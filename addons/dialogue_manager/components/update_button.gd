@@ -1,6 +1,7 @@
 @tool
 extends Button
 
+const DialogueConstants = preload("res://addons/dialogue_manager/constants.gd")
 
 const REMOTE_RELEASES_URL = "https://github.com/nathanhoad/godot_dialogue_manager/releases/latest"
 const LOCAL_CONFIG_PATH = "res://addons/dialogue_manager/plugin.cfg"
@@ -61,7 +62,7 @@ func _on_http_request_request_completed(result: int, response_code: int, headers
 	var next_version = found.strings[found.names.get("version")]
 	if version_to_number(next_version) > version_to_number(current_version):
 		download_update_panel.next_version = next_version
-		text = "v%s available" % next_version
+		text = DialogueConstants.translate("update.available") % next_version
 		show()
 
 
@@ -82,12 +83,12 @@ func _on_download_update_panel_updated(updated_to_version: String) -> void:
 	
 	var will_refresh = on_before_refresh.call()
 	if will_refresh:
-		print_rich("\n[b]Updated Dialogue Manager to v%s[/b]\n" % updated_to_version)
+		print_rich("\n[b]" + (DialogueConstants.translate("update.latest_version_log") % updated_to_version) +  "[/b]\n")
 		editor_plugin.get_editor_interface().call_deferred("set_plugin_enabled", "dialogue_manager", true)
 		editor_plugin.get_editor_interface().set_plugin_enabled("dialogue_manager", false)
 
 
 func _on_download_update_panel_failed() -> void:
 	download_dialog.hide()
-	update_failed_dialog.dialog_text = "There was a problem downloading the update."
+	update_failed_dialog.dialog_text = DialogueConstants.translate("update.failed")
 	update_failed_dialog.popup_centered()

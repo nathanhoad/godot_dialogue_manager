@@ -1,0 +1,17 @@
+[remap]
+
+importer="csv_translation"
+type="Translation"
+uid="uid://bygk8b5o3kjk6"
+
+[deps]
+
+files=["res://addons/dialogue_manager/l10n/translations.en.translation"]
+
+source_file="res://addons/dialogue_manager/l10n/translations.csv"
+dest_files=["res://addons/dialogue_manager/l10n/translations.en.translation"]
+
+[params]
+
+compress=true
+delimiter=0

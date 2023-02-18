@@ -2,7 +2,7 @@
 
 [ext_resource type="Script" path="res://addons/dialogue_manager/components/search_and_replace.gd" id="1_8oj1f"]
 
-[sub_resource type="Image" id="Image_y83uu"]
+[sub_resource type="Image" id="Image_mirhx"]
 data = {
 "data": PackedByteArray(255, 255, 255, 0, 255, 255, 255, 0, 255, 128, 128, 4, 255, 128, 128, 4, 255, 128, 128, 4, 255, 128, 128, 4, 255, 128, 128, 4, 255, 128, 128, 4, 255, 128, 128, 4, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 93, 93, 255, 255, 93, 93, 255, 255, 93, 93, 255, 255, 93, 93, 255, 255, 93, 93, 255, 255, 93, 93, 255, 255, 93, 93, 255, 255, 255, 255, 0, 255, 93, 93, 131, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 93, 93, 255, 255, 93, 93, 255, 255, 93, 93, 255, 255, 93, 93, 255, 255, 93, 93, 255, 255, 93, 93, 255, 255, 93, 93, 255, 255, 255, 255, 0, 255, 93, 93, 255, 255, 93, 93, 131, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 93, 93, 255, 255, 93, 93, 255, 255, 93, 93, 255, 255, 93, 93, 255, 255, 93, 93, 255, 255, 93, 93, 255, 255, 93, 93, 255, 255, 255, 255, 0, 255, 93, 93, 255, 255, 93, 93, 255, 255, 93, 93, 131, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 93, 93, 255, 255, 93, 93, 255, 255, 93, 93, 255, 255, 93, 93, 255, 255, 93, 93, 255, 255, 93, 93, 255, 255, 93, 93, 255, 255, 255, 255, 0, 255, 93, 93, 252, 255, 93, 93, 252, 255, 93, 93, 252, 255, 94, 94, 127, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 93, 93, 255, 255, 93, 93, 255, 255, 93, 93, 255, 255, 93, 93, 255, 255, 93, 93, 255, 255, 93, 93, 255, 255, 93, 93, 255, 255, 128, 128, 4, 255, 128, 128, 4, 255, 128, 128, 4, 255, 128, 128, 4, 255, 128, 128, 4, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 93, 93, 255, 255, 93, 93, 255, 255, 93, 93, 255, 255, 93, 93, 255, 255, 93, 93, 255, 255, 93, 93, 255, 255, 93, 93, 255, 255, 93, 93, 255, 255, 93, 93, 255, 255, 93, 93, 255, 255, 93, 93, 255, 255, 93, 93, 255, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 93, 93, 255, 255, 93, 93, 255, 255, 93, 93, 255, 255, 93, 93, 255, 255, 93, 93, 255, 255, 93, 93, 255, 255, 93, 93, 255, 255, 93, 93, 255, 255, 93, 93, 255, 255, 93, 93, 255, 255, 93, 93, 255, 255, 93, 93, 255, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 93, 93, 231, 255, 93, 93, 55, 255, 97, 97, 58, 255, 93, 93, 233, 255, 93, 93, 255, 255, 93, 93, 255, 255, 93, 93, 231, 255, 94, 94, 54, 255, 94, 94, 57, 255, 93, 93, 233, 255, 93, 93, 255, 255, 93, 93, 255, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 97, 97, 42, 255, 255, 255, 0, 255, 255, 255, 0, 255, 97, 97, 42, 255, 93, 93, 233, 255, 93, 93, 232, 255, 93, 93, 41, 255, 255, 255, 0, 255, 255, 255, 0, 255, 97, 97, 42, 255, 93, 93, 233, 255, 93, 93, 232, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 96, 96, 45, 255, 97, 97, 42, 255, 255, 255, 0, 255, 97, 97, 42, 255, 97, 97, 42, 255, 255, 255, 0, 255, 98, 98, 47, 255, 97, 97, 42, 255, 255, 255, 0, 255, 97, 97, 42, 255, 97, 97, 42, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 96, 96, 45, 255, 93, 93, 235, 255, 93, 93, 233, 255, 97, 97, 42, 255, 255, 255, 0, 255, 255, 255, 0, 255, 94, 94, 46, 255, 93, 93, 236, 255, 93, 93, 233, 255, 97, 97, 42, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 93, 93, 235, 255, 93, 93, 255, 255, 93, 93, 255, 255, 93, 93, 233, 255, 95, 95, 59, 255, 96, 96, 61, 255, 93, 93, 235, 255, 93, 93, 255, 255, 93, 93, 255, 255, 93, 93, 233, 255, 95, 95, 59, 255, 96, 96, 61, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 93, 93, 255, 255, 93, 93, 255, 255, 93, 93, 255, 255, 93, 93, 255, 255, 93, 93, 255, 255, 93, 93, 255, 255, 93, 93, 255, 255, 93, 93, 255, 255, 93, 93, 255, 255, 93, 93, 255, 255, 93, 93, 255, 255, 93, 93, 255, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 93, 93, 252, 255, 93, 93, 252, 255, 93, 93, 252, 255, 93, 93, 252, 255, 93, 93, 252, 255, 93, 93, 252, 255, 93, 93, 252, 255, 93, 93, 252, 255, 93, 93, 252, 255, 93, 93, 252, 255, 93, 93, 252, 255, 93, 93, 252, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0),
 "format": "RGBA8",
@@ -11,11 +11,10 @@ data = {
 "width": 16
 }
 
-[sub_resource type="ImageTexture" id="ImageTexture_dv1id"]
-image = SubResource("Image_y83uu")
+[sub_resource type="ImageTexture" id="ImageTexture_wy68i"]
+image = SubResource("Image_mirhx")
 
 [node name="SearchAndReplace" type="VBoxContainer"]
-visible = false
 anchors_preset = 10
 anchor_right = 1.0
 offset_bottom = 31.0
@@ -24,85 +23,61 @@ size_flags_horizontal = 3
 script = ExtResource("1_8oj1f")
 
 [node name="Search" type="HBoxContainer" parent="."]
-offset_right = 1024.0
-offset_bottom = 31.0
+layout_mode = 2
 
 [node name="Input" type="LineEdit" parent="Search"]
-offset_right = 701.0
-offset_bottom = 31.0
-grow_horizontal = 2
-grow_vertical = 2
+layout_mode = 2
 size_flags_horizontal = 3
 metadata/_edit_use_custom_anchors = true
 
+[node name="MatchCaseCheckBox" type="CheckBox" parent="Search"]
+layout_mode = 2
+text = "Match case"
+
+[node name="VSeparator" type="VSeparator" parent="Search"]
+layout_mode = 2
+
 [node name="PreviousButton" type="Button" parent="Search"]
-offset_left = 705.0
-offset_right = 729.0
-offset_bottom = 31.0
-icon = SubResource("ImageTexture_dv1id")
+layout_mode = 2
+icon = SubResource("ImageTexture_wy68i")
 flat = true
 
 [node name="ResultLabel" type="Label" parent="Search"]
-offset_left = 733.0
-offset_top = 2.0
-offset_right = 776.0
-offset_bottom = 28.0
+layout_mode = 2
 text = "0 of 0"
 
 [node name="NextButton" type="Button" parent="Search"]
-offset_left = 780.0
-offset_right = 804.0
-offset_bottom = 31.0
-icon = SubResource("ImageTexture_dv1id")
+layout_mode = 2
+icon = SubResource("ImageTexture_wy68i")
 flat = true
 
-[node name="VSeparator" type="VSeparator" parent="Search"]
-offset_left = 808.0
-offset_right = 812.0
-offset_bottom = 31.0
+[node name="VSeparator2" type="VSeparator" parent="Search"]
+layout_mode = 2
 
-[node name="MatchCaseCheckBox" type="CheckBox" parent="Search"]
-offset_left = 816.0
-offset_right = 931.0
-offset_bottom = 31.0
-text = "Match case"
-
-[node name="ReplaceCheckBox" type="CheckBox" parent="Search"]
-offset_left = 935.0
-offset_right = 1024.0
-offset_bottom = 31.0
+[node name="ReplaceCheckButton" type="CheckButton" parent="Search"]
+layout_mode = 2
 text = "Replace"
 
 [node name="Replace" type="HBoxContainer" parent="."]
 visible = false
-offset_top = 35.0
-offset_right = 1024.0
-offset_bottom = 66.0
+layout_mode = 2
 
 [node name="ReplaceLabel" type="Label" parent="Replace"]
-offset_top = 2.0
-offset_right = 103.0
-offset_bottom = 28.0
+layout_mode = 2
 text = "Replace with:"
 
 [node name="Input" type="LineEdit" parent="Replace"]
-offset_left = 107.0
-offset_right = 1000.0
-offset_bottom = 31.0
+layout_mode = 2
 size_flags_horizontal = 3
 
 [node name="ReplaceButton" type="Button" parent="Replace"]
-offset_left = 1004.0
-offset_right = 1012.0
-offset_bottom = 31.0
+layout_mode = 2
 disabled = true
 text = "Replace"
 flat = true
 
 [node name="ReplaceAllButton" type="Button" parent="Replace"]
-offset_left = 1016.0
-offset_right = 1024.0
-offset_bottom = 31.0
+layout_mode = 2
 disabled = true
 text = "Replace All"
 flat = true
@@ -112,10 +87,10 @@ flat = true
 [connection signal="focus_entered" from="Search/Input" to="." method="_on_input_focus_entered"]
 [connection signal="gui_input" from="Search/Input" to="." method="_on_input_gui_input"]
 [connection signal="text_changed" from="Search/Input" to="." method="_on_input_text_changed"]
+[connection signal="toggled" from="Search/MatchCaseCheckBox" to="." method="_on_match_case_check_box_toggled"]
 [connection signal="pressed" from="Search/PreviousButton" to="." method="_on_previous_button_pressed"]
 [connection signal="pressed" from="Search/NextButton" to="." method="_on_next_button_pressed"]
-[connection signal="toggled" from="Search/MatchCaseCheckBox" to="." method="_on_match_case_check_box_toggled"]
-[connection signal="toggled" from="Search/ReplaceCheckBox" to="." method="_on_replace_check_box_toggled"]
+[connection signal="toggled" from="Search/ReplaceCheckButton" to="." method="_on_replace_check_button_toggled"]
 [connection signal="focus_entered" from="Replace/Input" to="." method="_on_input_focus_entered"]
 [connection signal="gui_input" from="Replace/Input" to="." method="_on_input_gui_input"]
 [connection signal="pressed" from="Replace/ReplaceButton" to="." method="_on_replace_button_pressed"]
