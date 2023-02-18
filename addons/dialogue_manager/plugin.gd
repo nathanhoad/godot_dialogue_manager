@@ -4,11 +4,13 @@ extends EditorPlugin
 
 const DialogueConstants = preload("res://addons/dialogue_manager/constants.gd")
 const DialogueImportPlugin = preload("res://addons/dialogue_manager/import_plugin.gd")
+const DialogueTranslationParserPlugin = preload("res://addons/dialogue_manager/editor_translation_parser_plugin.gd")
 const DialogueSettings = preload("res://addons/dialogue_manager/components/settings.gd")
 const MainView = preload("res://addons/dialogue_manager/views/main_view.tscn")
 
 
 var import_plugin: DialogueImportPlugin
+var translation_parser_plugin: DialogueTranslationParserPlugin
 var main_view
 
 var dialogue_file_cache: Dictionary = {}
@@ -22,6 +24,9 @@ func _enter_tree() -> void:
 		import_plugin = DialogueImportPlugin.new()
 		import_plugin.editor_plugin = self
 		add_import_plugin(import_plugin)
+		
+		translation_parser_plugin = DialogueTranslationParserPlugin.new()
+		add_translation_parser_plugin(translation_parser_plugin)
 		
 		main_view = MainView.instantiate()
 		main_view.editor_plugin = self
@@ -42,6 +47,9 @@ func _exit_tree() -> void:
 	
 	remove_import_plugin(import_plugin)
 	import_plugin = null
+	
+	remove_translation_parser_plugin(translation_parser_plugin)
+	translation_parser_plugin = null
 	
 	if is_instance_valid(main_view):
 		main_view.queue_free()

@@ -278,7 +278,7 @@ func close_file(file: String) -> void:
 	if buffer.text == buffer.pristine_text:
 		remove_file_from_open_buffers(file)
 	else:
-		close_confirmation_dialog.dialog_text = "Save changes to '%s'?" % file.get_file()
+		close_confirmation_dialog.dialog_text = DialogueConstants.translate("confirm_close") % file.get_file()
 		close_confirmation_dialog.popup_centered()
 
 
