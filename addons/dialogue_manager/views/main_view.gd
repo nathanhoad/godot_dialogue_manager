@@ -372,8 +372,6 @@ func apply_theme() -> void:
 		popup.add_separator()
 		popup.add_icon_item(get_theme_icon("FileList", "EditorIcons"), DialogueConstants.translate("save_to_csv"), 2)
 		popup.add_icon_item(get_theme_icon("AssetLib", "EditorIcons"), DialogueConstants.translate("import_from_csv"), 3)
-		popup.add_separator()
-		popup.add_icon_item(get_theme_icon("FileList", "EditorIcons"), DialogueConstants.translate("save_to_po"), 5)
 		
 		# Dialog sizes
 		var scale: float = editor_plugin.get_editor_interface().get_editor_scale()
@@ -625,100 +623,6 @@ func import_translations_from_csv(path: String) -> void:
 	parser.free()
 
 
-# Export dialogue and response text to PO format
-func export_translations_to_po(path: String) -> void:
-	var id_str: Dictionary = {}
-	
-	var parser: DialogueParser = DialogueParser.new()
-	parser.parse(code_edit.text)
-	var dialogue = parser.get_data().lines
-	parser.free()
-
-	for key in dialogue.keys():
-		var line: Dictionary = dialogue.get(key)
-
-		if not line.type in [DialogueConstants.TYPE_DIALOGUE, DialogueConstants.TYPE_RESPONSE]: continue
-		if line.translation_key in id_str: continue
-
-		id_str[line.translation_key] = line.text
-
-	var file: FileAccess
-
-	# If the file exists, keep content except for known entries.
-	var existing_po: String = ""
-	var already_existing_keys: PackedStringArray = PackedStringArray([])
-	if FileAccess.file_exists(path):
-		file = FileAccess.open(path, FileAccess.READ)
-		var line: String
-		while !file.eof_reached():
-			line = file.get_line().strip_edges()
-
-			if line.begins_with("msgid"): # Extract msgid
-				var msgid = line.trim_prefix("msgid \"").trim_suffix("\"").c_unescape()
-				existing_po += line + "\n"
-				line = file.get_line().strip_edges()
-				while not line.begins_with("msgstr") and not file.eof_reached():
-					if line.begins_with("\""):
-						msgid += line.trim_prefix("\"").trim_suffix("\"").c_unescape()
-					existing_po += line + "\n"
-					line = file.get_line().strip_edges()
-
-				already_existing_keys.append(msgid)
-				if msgid in id_str:
-					existing_po += _generate_po_line("msgstr", id_str[msgid])
-					# skip old msgstr
-					while not file.eof_reached() and not line.is_empty() and (line.begins_with("msgstr") or line.begins_with("\"")):
-						line = file.get_line().strip_edges()
-					existing_po += line + "\n"
-				else: # keep unknown msgstr
-					existing_po += line + "\n"
-					while not file.eof_reached() and not line.is_empty() and (line.begins_with("msgstr") or line.begins_with("\"")):
-						line = file.get_line().strip_edges()
-						existing_po += line + "\n"
-			else: # keep old lines
-				existing_po += line + "\n"
-
-	# Godot requires the config in the PO regardless of whether it constains anything relevant.
-	if !("" in already_existing_keys):
-		existing_po += _generate_po_line("msgid", "")
-		existing_po += "msgstr \"\"\n\"Content-Type: text/plain; charset=UTF-8\\n\"" + "\n" + "\n"
-
-	for key in id_str:
-		if !(key in already_existing_keys):
-			existing_po += _generate_po_line("msgid", key)
-			existing_po += _generate_po_line("msgstr", id_str[key]) + "\n"
-
-	existing_po = existing_po.trim_suffix("\n")
-
-	# Start a new file
-	file = FileAccess.open(path, FileAccess.WRITE)
-	file.store_string(existing_po)
-	file.flush()
-	
-	editor_plugin.get_editor_interface().get_resource_filesystem().scan()
-	editor_plugin.get_editor_interface().get_file_system_dock().call_deferred("navigate_to_path", path)
-	
-	# Add it to the project l10n settings if it's not already there
-	call_deferred("add_path_to_project_translations", path)
-
-
-# type is supposed to be either msgid or msgstr
-func _generate_po_line(type: String, line) -> String:
-	var result: String
-	if "\n" in line: # multiline
-		result += type + " \"\"\n"
-		var lines: PackedStringArray = line.split("\n")
-		for i in len(lines):
-			if i != len(lines) - 1:
-				# c_espace also escapes "?" and "'". msgfmt doesn't like that.
-				result += "\"" + lines[i].c_escape().replace("\\?", "?").replace("\\'", "'") + "\\n\"\n"
-			else:
-				result += "\"" + lines[i].c_escape().replace("\\?", "?").replace("\\'", "'") + "\"\n"
-	else: # singleline
-		result += type + " \"" + line.c_escape().replace("\\?", "?").replace("\\'", "'") + "\"\n"
-	return result
-
-
 ### Signals
 
 
@@ -778,10 +682,6 @@ func _on_translations_button_menu_id_pressed(id: int) -> void:
 		3:
 			import_dialog.current_path = get_last_export_path("csv")
 			import_dialog.popup_centered()
-		5:
-			export_dialog.filters = PackedStringArray(["*.po ; Translation"])
-			export_dialog.current_path = get_last_export_path("po")
-			export_dialog.popup_centered()
 
 
 func _on_main_view_theme_changed():
@@ -863,8 +763,6 @@ func _on_export_dialog_file_selected(path: String) -> void:
 	match path.get_extension():
 		"csv":
 			export_translations_to_csv(path)
-		"po":
-			export_translations_to_po(path)
 
 
 func _on_import_dialog_file_selected(path: String) -> void:

@@ -60,7 +60,7 @@ locale/translation_remaps={
 locale/translations=PackedStringArray("res://examples/l10n/dialogue.en.translation", "res://examples/l10n/de.po")
 locale/language_filter=["de", "en"]
 locale/locale_filter_mode=1
-locale/translations_pot_files=PackedStringArray("res://examples/dialogue.dialogue")
+locale/translations_pot_files=PackedStringArray("res://examples/dialogue.dialogue", "res://examples/dialogue_for_visual_novel.dialogue", "res://examples/dialogue_with_input.dialogue")
 
 [rendering]
 

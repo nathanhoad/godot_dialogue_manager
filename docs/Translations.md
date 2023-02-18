@@ -8,7 +8,7 @@ This might be useful for cases where you have audio dialogue files that match up
 
 ## Generating POT files
 
-You can add any `.dialogue` files to the "POT Generation" list in **Project Settings > Localization** for them to be included in the general PO template.
+All `.dialogue` files are automatically added to the POT Generation list in **Project Settings > Localization** for them to be included in the general PO template.
 
 ![Adding dialogue files to the POT generation list](pot-generation.jpg)
 

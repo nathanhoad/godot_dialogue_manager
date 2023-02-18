@@ -190,11 +190,29 @@ func update_dialogue_file_cache() -> void:
 	# Scan for dialogue files
 	var current_files: PackedStringArray = _get_dialogue_files_in_filesystem()
 	
+	# Add any files to POT generation
+	var files_for_pot: PackedStringArray = ProjectSettings.get_setting("internationalization/locale/translations_pot_files", [])
+	var files_for_pot_changed: bool = false
+	for path in current_files:
+		if not files_for_pot.has(path):
+			files_for_pot.append(path)
+			files_for_pot_changed = true
+	
 	# Remove any files that don't exist any more
 	for path in cache.keys():
 		if not path in current_files:
 			cache.erase(path)
 			DialogueSettings.remove_recent_file(path)
+			
+			# Remove missing files from POT generation
+			if files_for_pot.has(path):
+				files_for_pot.remove_at(files_for_pot.find(path))
+				files_for_pot_changed = true
+	
+	# Update project settings if POT changed
+	if files_for_pot_changed:
+		ProjectSettings.set_setting("internationalization/locale/translations_pot_files", files_for_pot)
+		ProjectSettings.save()
 	
 	dialogue_file_cache = cache
 
