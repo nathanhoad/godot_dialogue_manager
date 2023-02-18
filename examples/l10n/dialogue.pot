@@ -1,0 +1,67 @@
+# LANGUAGE translation for Dialogue Manager for the following files:
+# res://examples/dialogue.dialogue
+#
+# FIRST AUTHOR < EMAIL @ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: Dialogue Manager\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8-bit\n"
+
+#: examples/dialogue.dialogue
+msgctxt "Hi, I'm Nathan and this is Coco."
+msgid "tf885328afb"
+msgstr ""
+
+#: examples/dialogue.dialogue
+msgctxt "Meow."
+msgid "t4c11347656"
+msgstr ""
+
+#: examples/dialogue.dialogue
+msgctxt "Here are some response options."
+msgid "tba678dd331"
+msgstr ""
+
+#: examples/dialogue.dialogue
+msgctxt "First one"
+msgid "tec2831274f"
+msgstr ""
+
+#: examples/dialogue.dialogue
+msgctxt "You picked the first one."
+msgid "ted9b57f70f"
+msgstr ""
+
+#: examples/dialogue.dialogue
+msgctxt "Second one"
+msgid "te9670331c2"
+msgstr ""
+
+#: examples/dialogue.dialogue
+msgctxt "You picked the second one."
+msgid "t14bc171a9f"
+msgstr ""
+
+#: examples/dialogue.dialogue
+msgctxt "Start again"
+msgid "ta04a1307f6"
+msgstr ""
+
+#: examples/dialogue.dialogue
+msgctxt "End the conversation"
+msgid "t3211e3adf8"
+msgstr ""
+
+#: examples/dialogue.dialogue
+msgctxt "I hope this example is helpful."
+msgid "t643e01443b"
+msgstr ""
+
+#: examples/dialogue.dialogue
+msgctxt "Meow."
+msgid "tb75d1c7a40"
+msgstr ""

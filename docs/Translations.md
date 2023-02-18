@@ -6,6 +6,14 @@ You can turn this off by setting `DialogueManager.auto_translate = false` but be
 
 This might be useful for cases where you have audio dialogue files that match up with lines.
 
+## Generating POT files
+
+You can add any `.dialogue` files to the "POT Generation" list in **Project Settings > Localization** for them to be included in the general PO template.
+
+![Adding dialogue files to the POT generation list](pot-generation.jpg)
+
+It is recommended that you use _static translation keys_ (line IDs) when tranlsating to make it easier on yourself and your translaters if/when line content changes.
+
 ## Static translation keys in dialogue
 
 You can export translations as CSV from the "Translations" menu in the dialogue editor. 
