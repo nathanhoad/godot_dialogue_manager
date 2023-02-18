@@ -40,7 +40,7 @@ func _ready() -> void:
 	
 	# Add any other state shortcuts from settings
 	for node_name in DialogueSettings.get_setting("states", []):
-		var state: Node = get_node("/root/" + node_name)
+		var state: Node = get_node_or_null("/root/" + node_name)
 		if state:
 			game_states.append(state)
 	
