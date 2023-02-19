@@ -4,12 +4,12 @@
 [ext_resource type="PackedScene" uid="uid://qdxrxv3c3hxk" path="res://addons/dialogue_manager/components/download_update_panel.tscn" id="2_iwm7r"]
 
 [node name="UpdateButton" type="Button"]
-visible = false
 offset_right = 8.0
 offset_bottom = 8.0
 theme_override_colors/font_color = Color(0, 0, 0, 1)
 theme_override_colors/font_hover_color = Color(0, 0, 0, 1)
-text = "v2.5.1 available"
+theme_override_colors/font_focus_color = Color(0, 0, 0, 1)
+text = "v2.9.0 available"
 flat = true
 script = ExtResource("1_d2tpb")
 
@@ -18,6 +18,7 @@ script = ExtResource("1_d2tpb")
 [node name="DownloadDialog" type="AcceptDialog" parent="."]
 title = "Download update"
 size = Vector2i(400, 300)
+unresizable = true
 min_size = Vector2i(300, 250)
 ok_button_text = "Close"
 
@@ -26,8 +27,11 @@ ok_button_text = "Close"
 [node name="UpdateFailedDialog" type="AcceptDialog" parent="."]
 dialog_text = "You have been updated to version 2.4.3"
 
+[node name="NeedsReloadDialog" type="ConfirmationDialog" parent="."]
+
 [connection signal="pressed" from="." to="." method="_on_update_button_pressed"]
 [connection signal="request_completed" from="HTTPRequest" to="." method="_on_http_request_request_completed"]
 [connection signal="close_requested" from="DownloadDialog" to="." method="_on_download_dialog_close_requested"]
 [connection signal="failed" from="DownloadDialog/DownloadUpdatePanel" to="." method="_on_download_update_panel_failed"]
 [connection signal="updated" from="DownloadDialog/DownloadUpdatePanel" to="." method="_on_download_update_panel_updated"]
+[connection signal="confirmed" from="NeedsReloadDialog" to="." method="_on_needs_reload_dialog_confirmed"]

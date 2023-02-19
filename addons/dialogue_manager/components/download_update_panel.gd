@@ -25,7 +25,7 @@ var next_version: String = "":
 
 
 func _ready() -> void:
-	$VBox/Center/DownloadButton.text = DialogueConstants.translate("update.download_and_install")
+	$VBox/Center/DownloadButton.text = DialogueConstants.translate("update.download_update")
 	$VBox/Center2/NotesButton.text = DialogueConstants.translate("update.release_notes")
 
 

@@ -179,7 +179,7 @@ func load_from_version_refresh(just_refreshed: Dictionary) -> void:
 	else:
 		editor_plugin.get_editor_interface().set_main_screen_editor("Dialogue")
 	
-	updated_dialog.dialog_text = DialogueConstants.translate("update.success")
+	updated_dialog.dialog_text = DialogueConstants.translate("update.success") % update_button.get_version()
 	updated_dialog.popup_centered()
 
 
