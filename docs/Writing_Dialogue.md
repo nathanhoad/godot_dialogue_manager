@@ -140,7 +140,16 @@ else
     Nathan: If neither are true I'll say this.
 ```
 
-Responses can also have conditions. Wrap these in "[" and "]".
+You can also start a conditional block with "while". These blocks will loop as long as the condition is true.
+
+```
+while SomeGlobal.some_property < 10
+    Nathan: The property is still less than 10 - specifically, it is {{SomeGlobal.some_property}}.
+    do SomeGlobal.some_property += 1
+Nathan: Now, we can move on.
+```
+
+Responses can also have "if" conditions. Wrap these in "[" and "]".
 
 ```
 Nathan: What would you like?
