@@ -63,7 +63,6 @@ func parse(text: String) -> int:
 	# Parse all of the content
 	var known_translations = {}
 	
-	
 	# Then parse all lines
 	for id in range(0, raw_lines.size()):
 		var raw_line: String = raw_lines[id]
@@ -338,7 +337,6 @@ func parse(text: String) -> int:
 	
 	if errors.size() > 0:
 		return ERR_PARSE_ERROR
-	
 	
 	return OK
 
