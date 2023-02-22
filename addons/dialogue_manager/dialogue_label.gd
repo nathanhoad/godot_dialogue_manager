@@ -6,17 +6,14 @@ signal paused_typing(duration: float)
 signal finished_typing()
 
 
-const DialogueLine = preload("res://addons/dialogue_manager/dialogue_line.gd")
-
-
 ## The action to press to skip typing
 @export var skip_action: String = "ui_cancel"
 
 ## The speed with which the text types out
 @export var seconds_per_step: float = 0.02
 
-## When off, the label will grow in height as the text types out
-@export var start_with_full_height: bool = true
+## Automatically have a brief pause when these characters are encountered
+@export var pause_at_characters: String = "."
 
 
 var dialogue_line: DialogueLine:
@@ -94,12 +91,15 @@ func type_next(delta: float, seconds_needed: float) -> void:
 		last_mutation_index = visible_characters
 		dialogue_line.mutate_inline_mutations(visible_characters)
 	
-	if last_wait_index != visible_characters and dialogue_line.get_pause(visible_characters) > 0:
+	var additional_waiting_seconds: float = dialogue_line.get_pause(visible_characters)
+	if visible_characters > 0 and text[visible_characters -1] in pause_at_characters.split():
+		additional_waiting_seconds += seconds_per_step * 10
+	
+	if last_wait_index != visible_characters and additional_waiting_seconds > 0:
 		last_wait_index = visible_characters
-		waiting_seconds += dialogue_line.get_pause(visible_characters)
+		waiting_seconds += additional_waiting_seconds
 		emit_signal("paused_typing", dialogue_line.get_pause(visible_characters))
 	else:
-#		visible_ratio += percent_per_index
 		visible_characters += 1
 		seconds_needed += seconds_per_step * (1.0 / dialogue_line.get_speed(visible_characters))
 		if seconds_needed > delta:

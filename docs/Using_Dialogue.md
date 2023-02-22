@@ -35,7 +35,7 @@ var dialogue_line = await DialogueManager.get_next_dialogue_line(resource, "star
 var dialogue_line = await resource.get_next_dialogue_line("start")
 ```
 
-Then `dialogue_line` would now hold a dictionary containing information for the line `Nathan: Hi! I'm Nathan`.
+Then `dialogue_line` would now hold a `DialogueLine` containing information for the line `Nathan: Hi! I'm Nathan`.
 
 To get the next line of dialogue you can call `get_next_dialogue_line` again with `dialogue_line.next_id` as the title:
 
@@ -45,7 +45,7 @@ dialogue_line = await DialogueManager.get_next_dialogue_line(resource, dialogue_
 dialogue_line = await resource.get_next_dialogue_line(dialogue_line.next_id)
 ```
 
-Now `dialogue_line` holds a dictionary containing the information for the line `Nathan: Here are some options.`. This dictionary also contains the list of response options.
+Now `dialogue_line` holds a `DialogueLine` containing the information for the line `Nathan: Here are some options.`. This object also contains the list of response options.
 
 Each option also contains a `next_id` property that can be used to continue along that branch.
 
@@ -55,11 +55,13 @@ For more information about the dictionary see the [API documentation](API.md).
 
 The addon provides a `DialogueLabel` node (an extension of the RichTextLabel node) which helps with rendering a line of dialogue text.
 
-This node is given a `dialogue_line` dictionary (mentioned above) and uses its properties to work out how to handling typing out the dialogue. It will automatically handle any `bb_code`, `wait`, `speed`, and `inline_mutation` references.
+This node is given a `dialogue_line` (mentioned above) and uses its properties to work out how to handling typing out the dialogue. It will automatically handle any `bb_code`, `wait`, `speed`, and `inline_mutation` references.
 
 Use `type_out()` to start typing out the text. The label will emit a `finished_typing` signal when it has finished typing.
 
 The label will emit a `paused_typing` signal (along with the duration of the pause) when there is a pause in the typing and a `spoke` signal (along with the letter typed and the current speed) when a letter was just typed.
+
+The `DialogueLabel` typing speed can be configured in your balloon by changing the `seconds_per_step` property. It will also automatically wait for a brief time when it encounters characters specified in the `pause_at_characters` property (by default, just ".").
 
 ## Generating Dialogue Resources at runtime
 
