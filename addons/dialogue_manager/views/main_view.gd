@@ -179,7 +179,7 @@ func load_from_version_refresh(just_refreshed: Dictionary) -> void:
 	else:
 		editor_plugin.get_editor_interface().set_main_screen_editor("Dialogue")
 	
-	updated_dialog.dialog_text = DialogueConstants.translate("update.success") % update_button.get_version()
+	updated_dialog.dialog_text = DialogueConstants.translate("update.success").format({ version = update_button.get_version() })
 	updated_dialog.popup_centered()
 
 
@@ -278,7 +278,7 @@ func close_file(file: String) -> void:
 	if buffer.text == buffer.pristine_text:
 		remove_file_from_open_buffers(file)
 	else:
-		close_confirmation_dialog.dialog_text = DialogueConstants.translate("confirm_close") % file.get_file()
+		close_confirmation_dialog.dialog_text = DialogueConstants.translate("confirm_close").format({ path = file.get_file() })
 		close_confirmation_dialog.popup_centered()
 
 

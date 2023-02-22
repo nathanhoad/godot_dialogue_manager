@@ -174,7 +174,7 @@ static func get_error_message(error: int) -> String:
 
 static func translate(string: String) -> String:
 	var language: String = TranslationServer.get_tool_locale().substr(0, 2)
-	var translations_path: String = "res://addons/dialogue_manager/l10n/translations.%s.translation" % language
-	var fallback_translations_path: String = "res://addons/dialogue_manager/l10n/translations.en.translation"
-	var translations: OptimizedTranslation = load(translations_path if FileAccess.file_exists(translations_path) else fallback_translations_path) 
+	var translations_path: String = "res://addons/dialogue_manager/l10n/%s.po" % language
+	var fallback_translations_path: String = "res://addons/dialogue_manager/l10n/en.po"
+	var translations = load(translations_path if FileAccess.file_exists(translations_path) else fallback_translations_path) 
 	return translations.get_message(string)

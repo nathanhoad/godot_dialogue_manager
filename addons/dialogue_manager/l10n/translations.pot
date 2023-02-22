@@ -1,0 +1,333 @@
+msgid ""
+msgstr "
+"Project-Id-Version: Dialogue Manager\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8-bit\n"
+
+msgid "start_a_new_file"
+msgstr ""
+
+msgid "open_a_file"
+msgstr ""
+
+msgid "open.open"
+msgstr ""
+
+msgid "open.no_recent_files"
+msgstr ""
+
+msgid "open.clear_recent_files"
+msgstr ""
+
+msgid "save_all_files"
+msgstr ""
+
+msgid "test_dialogue"
+msgstr ""
+
+msgid "search_for_text"
+msgstr ""
+
+msgid "insert"
+msgstr ""
+
+msgid "translations"
+msgstr ""
+
+msgid "settings"
+msgstr ""
+
+msgid "docs"
+msgstr ""
+
+msgid "insert.wave_bbcode"
+msgstr ""
+
+msgid "insert.shake_bbcode"
+msgstr ""
+
+msgid "insert.typing_pause"
+msgstr ""
+
+msgid "insert.typing_speed_change"
+msgstr ""
+
+msgid "insert.auto_advance"
+msgstr ""
+
+msgid "insert.templates"
+msgstr ""
+
+msgid "insert.title"
+msgstr ""
+
+msgid "insert.dialogue"
+msgstr ""
+
+msgid "insert.response"
+msgstr ""
+
+msgid "insert.random_lines"
+msgstr ""
+
+msgid "insert.random_text"
+msgstr ""
+
+msgid "insert.actions"
+msgstr ""
+
+msgid "insert.jump"
+msgstr ""
+
+msgid "insert.end_dialogue"
+msgstr ""
+
+msgid "generate_line_ids"
+msgstr ""
+
+msgid "save_to_csv"
+msgstr ""
+
+msgid "import_from_csv"
+msgstr ""
+
+msgid "confirm_close"
+msgstr ""
+
+msgid "confirm_close.discard"
+msgstr ""
+
+msgid "buffer.save"
+msgstr ""
+
+msgid "buffer.save_as"
+msgstr ""
+
+msgid "buffer.close"
+msgstr ""
+
+msgid "buffer.close_all"
+msgstr ""
+
+msgid "buffer.close_other_files"
+msgstr ""
+
+msgid "buffer.copy_file_path"
+msgstr ""
+
+msgid "buffer.show_in_filesystem"
+msgstr ""
+
+msgid "settings.revert_to_default_test_scene"
+msgstr ""
+
+msgid "settings.autoload"
+msgstr ""
+
+msgid "settings.path"
+msgstr ""
+
+msgid "settings.new_template"
+msgstr ""
+
+msgid "settings.missing_keys"
+msgstr ""
+
+msgid "settings.missing_keys_hint"
+msgstr ""
+
+msgid "settings.wrap_long_lines"
+msgstr ""
+
+msgid "settings.include_failed_responses"
+msgstr ""
+
+msgid "settings.custom_test_scene"
+msgstr ""
+
+msgid "settings.states_shortcuts"
+msgstr ""
+
+msgid "settings.states_message"
+msgstr ""
+
+msgid "settings.states_hint"
+msgstr ""
+
+msgid "search.n_of_n"
+msgstr ""
+
+msgid "search.previous"
+msgstr ""
+
+msgid "search.next"
+msgstr ""
+
+msgid "search.match_case"
+msgstr ""
+
+msgid "search.toggle_replace"
+msgstr ""
+
+msgid "search.replace_with"
+msgstr ""
+
+msgid "search.replace"
+msgstr ""
+
+msgid "search.replace_all"
+msgstr ""
+
+msgid "files_list.filter"
+msgstr ""
+
+msgid "titles_list.filter"
+msgstr ""
+
+msgid "errors_in_script"
+msgstr ""
+
+msgid "errors_with_build"
+msgstr ""
+
+msgid "errors.import_errors"
+msgstr ""
+
+msgid "errors.already_imported"
+msgstr ""
+
+msgid "errors.duplicate_import"
+msgstr ""
+
+msgid "errors.empty_title"
+msgstr ""
+
+msgid "errors.duplicate_title"
+msgstr ""
+
+msgid "errors.nested_title"
+msgstr ""
+
+msgid "errors.invalid_title_string"
+msgstr ""
+
+msgid "errors.invalid_title_number"
+msgstr ""
+
+msgid "errors.unknown_title"
+msgstr ""
+
+msgid "errors.jump_to_invalid_title"
+msgstr ""
+
+msgid "errors.title_has_no_content"
+msgstr ""
+
+msgid "errors.invalid_expression"
+msgstr ""
+
+msgid "errors.invalid_expression_for_character"
+msgstr ""
+
+msgid "errors.duplicate_id"
+msgstr ""
+
+msgid "errors.missing_id"
+msgstr ""
+
+msgid "errors.invalid_indentation"
+msgstr ""
+
+msgid "errors.condition_has_no_content"
+msgstr ""
+
+msgid "errors.incomplete_expression"
+msgstr ""
+
+msgid "errors.invalid_expression_for_value"
+msgstr ""
+
+msgid "errors.file_not_found"
+msgstr ""
+
+msgid "errors.unexpected_end_of_expression"
+msgstr ""
+
+msgid "errors.unexpected_function"
+msgstr ""
+
+msgid "errors.unexpected_bracket"
+msgstr ""
+
+msgid "errors.unexpected_closing_bracket"
+msgstr ""
+
+msgid "errors.missing_closing_bracket"
+msgstr ""
+
+msgid "errors.unexpected_operator"
+msgstr ""
+
+msgid "errors.unexpected_comma"
+msgstr ""
+
+msgid "errors.unexpected_colon"
+msgstr ""
+
+msgid "errors.unexpected_dot"
+msgstr ""
+
+msgid "errors.unexpected_boolean"
+msgstr ""
+
+msgid "errors.unexpected_string"
+msgstr ""
+
+msgid "errors.unexpected_number"
+msgstr ""
+
+msgid "errors.unexpected_variable"
+msgstr ""
+
+msgid "errors.invalid_index"
+msgstr ""
+
+msgid "errors.unexpected_assignment"
+msgstr ""
+
+msgid "errors.unknown"
+msgstr ""
+
+msgid "update.available"
+msgstr ""
+
+msgid "update.is_available_for_download"
+msgstr ""
+
+msgid "update.downloading"
+msgstr ""
+
+msgid "update.download_update"
+msgstr ""
+
+msgid "update.needs_reload"
+msgstr ""
+
+msgid "update.reload_ok_button"
+msgstr ""
+
+msgid "update.reload_cancel_button"
+msgstr ""
+
+msgid "update.reload_project"
+msgstr ""
+
+msgid "update.release_notes"
+msgstr ""
+
+msgid "update.success"
+msgstr ""
+
+msgid "update.failed"
+msgstr ""

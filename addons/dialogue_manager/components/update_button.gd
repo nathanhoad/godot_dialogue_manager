@@ -75,7 +75,7 @@ func _on_http_request_request_completed(result: int, response_code: int, headers
 	var next_version = found.strings[found.names.get("version")]
 	if version_to_number(next_version) > version_to_number(current_version):
 		download_update_panel.next_version = next_version
-		text = DialogueConstants.translate("update.available") % next_version
+		text = DialogueConstants.translate("update.available").format({ version = next_version })
 		show()
 
 

@@ -1,0 +1,340 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: Dialogue Manager\n"
+"POT-Creation-Date: \n"
+"PO-Revision-Date: \n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"Language: de\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Generator: Poedit 3.2.2\n"
+
+msgid "start_a_new_file"
+msgstr "Start a new file"
+
+msgid "open_a_file"
+msgstr "Open a file"
+
+msgid "open.open"
+msgstr "Open..."
+
+msgid "open.no_recent_files"
+msgstr "No recent files"
+
+msgid "open.clear_recent_files"
+msgstr "Clear recent files"
+
+msgid "save_all_files"
+msgstr "Save all files"
+
+msgid "test_dialogue"
+msgstr "Test dialogue"
+
+msgid "search_for_text"
+msgstr "Search for text"
+
+msgid "insert"
+msgstr "Insert"
+
+msgid "translations"
+msgstr "Translations"
+
+msgid "settings"
+msgstr "Settings"
+
+msgid "docs"
+msgstr "Docs"
+
+msgid "insert.wave_bbcode"
+msgstr "Wave BBCode"
+
+msgid "insert.shake_bbcode"
+msgstr "Shake BBCode"
+
+msgid "insert.typing_pause"
+msgstr "Typing pause"
+
+msgid "insert.typing_speed_change"
+msgstr "Typing speed change"
+
+msgid "insert.auto_advance"
+msgstr "Auto advance"
+
+msgid "insert.templates"
+msgstr "Templates"
+
+msgid "insert.title"
+msgstr "Title"
+
+msgid "insert.dialogue"
+msgstr "Dialogue"
+
+msgid "insert.response"
+msgstr "Response"
+
+msgid "insert.random_lines"
+msgstr "Random lines"
+
+msgid "insert.random_text"
+msgstr "Random text"
+
+msgid "insert.actions"
+msgstr "Actions"
+
+msgid "insert.jump"
+msgstr "Jump to title"
+
+msgid "insert.end_dialogue"
+msgstr "End dialogue"
+
+msgid "generate_line_ids"
+msgstr "Generate line IDs"
+
+msgid "save_to_csv"
+msgstr "Save to CSV..."
+
+msgid "import_from_csv"
+msgstr "Import changes from CSV..."
+
+msgid "confirm_close"
+msgstr "Save changes to '{path}'?"
+
+msgid "confirm_close.discard"
+msgstr "Discard"
+
+msgid "buffer.save"
+msgstr "Save"
+
+msgid "buffer.save_as"
+msgstr "Save as..."
+
+msgid "buffer.close"
+msgstr "Close"
+
+msgid "buffer.close_all"
+msgstr "Close all"
+
+msgid "buffer.close_other_files"
+msgstr "Close other files"
+
+msgid "buffer.copy_file_path"
+msgstr "Copy file path"
+
+msgid "buffer.show_in_filesystem"
+msgstr "Show in FileSystem"
+
+msgid "settings.revert_to_default_test_scene"
+msgstr "Revert to default test scene"
+
+msgid "settings.autoload"
+msgstr "Autload"
+
+msgid "settings.path"
+msgstr "Path"
+
+msgid "settings.new_template"
+msgstr "New dialogue files will start with template text"
+
+msgid "settings.missing_keys"
+msgstr "Treat missing translation keys as errors"
+
+msgid "settings.missing_keys_hint"
+msgstr "If you are using static translation keys then having this enabled will help you find any lines that you haven't added a key to yet."
+
+msgid "settings.wrap_long_lines"
+msgstr "Wrap long lines"
+
+msgid "settings.include_failed_responses"
+msgstr "Include responses with failed conditions"
+
+msgid "settings.custom_test_scene"
+msgstr "Custom test scene (must extend BaseDialogueTestScene)"
+
+msgid "settings.states_shortcuts"
+msgstr "State Shortcuts"
+
+msgid "settings.states_message"
+msgstr "If an autoload is enabled here you can refer to its properties and methods without having to use its name."
+
+msgid "settings.states_hint"
+msgstr "ie. Instead of \"SomeState.some_property\" you could just use \"some_property\""
+
+msgid "search.n_of_n"
+msgstr "{index} of {total}"
+
+msgid "search.previous"
+msgstr "Previous"
+
+msgid "search.next"
+msgstr "Next"
+
+msgid "search.match_case"
+msgstr "Match case"
+
+msgid "search.toggle_replace"
+msgstr "Replace"
+
+msgid "search.replace_with"
+msgstr "Replace with:"
+
+msgid "search.replace"
+msgstr "Replace"
+
+msgid "search.replace_all"
+msgstr "Replace all"
+
+msgid "files_list.filter"
+msgstr "Filter files"
+
+msgid "titles_list.filter"
+msgstr "Filter titles"
+
+msgid "errors_in_script"
+msgstr "You have errors in your script. Fix them and then try again."
+
+msgid "errors_with_build"
+msgstr "You need to fix dialogue errors before you can run your game."
+
+msgid "errors.import_errors"
+msgstr "There are errors in this imported file."
+
+msgid "errors.already_imported"
+msgstr "File already imported."
+
+msgid "errors.duplicate_import"
+msgstr "Duplicate import name."
+
+msgid "errors.empty_title"
+msgstr "Titles cannot be empty."
+
+msgid "errors.duplicate_title"
+msgstr "There is already a title with that name."
+
+msgid "errors.nested_title"
+msgstr "Titles cannot be nested."
+
+msgid "errors.invalid_title_string"
+msgstr "Titles can only contain alphanumeric characters and numbers."
+
+msgid "errors.invalid_title_number"
+msgstr "Titles cannot begin with a number."
+
+msgid "errors.unknown_title"
+msgstr "Unknown title."
+
+msgid "errors.jump_to_invalid_title"
+msgstr "This jump is pointing to an invalid title."
+
+msgid "errors.title_has_no_content"
+msgstr "That title has no content. Maybe change this to a \"=> END\"."
+
+msgid "errors.invalid_expression"
+msgstr "Expression is invalid."
+
+msgid "errors.invalid_expression_for_character"
+msgstr "The expression used for a character name is invalid."
+
+msgid "errors.duplicate_id"
+msgstr "This ID is already on another line."
+
+msgid "errors.missing_id"
+msgstr "This line is missing an ID."
+
+msgid "errors.invalid_indentation"
+msgstr "Invalid indentation."
+
+msgid "errors.condition_has_no_content"
+msgstr "A condition line needs an indented line below it."
+
+msgid "errors.incomplete_expression"
+msgstr "Incomplate expression."
+
+msgid "errors.invalid_expression_for_value"
+msgstr "Invalid expression for value."
+
+msgid "errors.file_not_found"
+msgstr "File not found."
+
+msgid "errors.unexpected_end_of_expression"
+msgstr "Unexpected end of expression."
+
+msgid "errors.unexpected_function"
+msgstr "Unexpected function."
+
+msgid "errors.unexpected_bracket"
+msgstr "Unexpected bracket."
+
+msgid "errors.unexpected_closing_bracket"
+msgstr "Unexpected closing bracket."
+
+msgid "errors.missing_closing_bracket"
+msgstr "Missing closing bracket."
+
+msgid "errors.unexpected_operator"
+msgstr "Unexpected operator."
+
+msgid "errors.unexpected_comma"
+msgstr "Unexpected comma."
+
+msgid "errors.unexpected_colon"
+msgstr "Unexpected colon."
+
+msgid "errors.unexpected_dot"
+msgstr "Unexpected dot."
+
+msgid "errors.unexpected_boolean"
+msgstr "Unexpected boolean."
+
+msgid "errors.unexpected_string"
+msgstr "Unexpected string."
+
+msgid "errors.unexpected_number"
+msgstr "Unexpected number."
+
+msgid "errors.unexpected_variable"
+msgstr "Unexpected variable."
+
+msgid "errors.invalid_index"
+msgstr "Invalid index."
+
+msgid "errors.unexpected_assignment"
+msgstr "Unexpected assignment."
+
+msgid "errors.unknown"
+msgstr "Unknown syntax."
+
+msgid "update.available"
+msgstr "v{version} available"
+
+msgid "update.is_available_for_download"
+msgstr "Version %s is available for download!"
+
+msgid "update.downloading"
+msgstr "Downloading..."
+
+msgid "update.download_update"
+msgstr "Download update"
+
+msgid "update.needs_reload"
+msgstr "The project needs to be reloaded to install the update."
+
+msgid "update.reload_ok_button"
+msgstr "Reload project"
+
+msgid "update.reload_cancel_button"
+msgstr "Do it later"
+
+msgid "update.reload_project"
+msgstr "Reload project"
+
+msgid "update.release_notes"
+msgstr "Read release notes"
+
+msgid "update.success"
+msgstr "Dialogue Manager is now v{version}."
+
+msgid "update.failed"
+msgstr "There was a problem downloading the update."
