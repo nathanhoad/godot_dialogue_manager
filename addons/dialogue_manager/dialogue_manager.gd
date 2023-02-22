@@ -211,12 +211,23 @@ func get_line(resource: DialogueResource, key: String, extra_game_states: Array)
 	return line
 
 
+# Translate a string
+func translate(data: Dictionary) -> String:
+	if not auto_translate:
+		return data.text
+	
+	if data.translation_key == "" or data.translation_key == data.text:
+		return tr(data.text)
+	else:
+		return tr(data.translation_key, StringName(data.text))
+
+
 # Create a line of dialogue
 func create_dialogue_line(data: Dictionary, extra_game_states: Array) -> DialogueLine:
 	match data.type:
 		DialogueConstants.TYPE_DIALOGUE:
 			# Our bbcodes need to be process after text has been resolved so that the markers are at the correct index
-			var text = await get_resolved_text(tr(data.translation_key, StringName(data.text)) if auto_translate else data.text, data.text_replacements, extra_game_states)
+			var text = await get_resolved_text(translate(data), data.text_replacements, extra_game_states)
 			var parser = DialogueParser.new()
 			var markers = parser.extract_markers(text)
 			parser.free()
@@ -260,7 +271,7 @@ func create_response(data: Dictionary, extra_game_states: Array) -> DialogueResp
 		type = DialogueConstants.TYPE_RESPONSE,
 		next_id = data.next_id,
 		is_allowed = await check_condition(data, extra_game_states),
-		text = await get_resolved_text(tr(data.translation_key, StringName(data.text)) if auto_translate else data.text, data.text_replacements, extra_game_states),
+		text = await get_resolved_text(translate(data), data.text_replacements, extra_game_states),
 		text_replacements = data.text_replacements,
 		translation_key = data.translation_key
 	})
