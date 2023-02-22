@@ -390,7 +390,7 @@ func prepare(text: String, include_imported_titles_hashes: bool = true) -> void:
 				
 				# Import the file content
 				if not import_data.path.hash() in known_imports:
-					var error = import_content(import_data.path, import_data.prefix, known_imports)
+					var error: Error = import_content(import_data.path, import_data.prefix, known_imports)
 					if error != OK:
 						errors.append({ line_number = id, error = error })
 	
@@ -732,7 +732,7 @@ func find_next_line_after_responses(line_number: int) -> String:
 
 
 ## Import content from another dialogue file or return an ERR
-func import_content(path: String, prefix: String, known_imports: Dictionary) -> int:
+func import_content(path: String, prefix: String, known_imports: Dictionary) -> Error:
 	if FileAccess.file_exists(path):
 		var file = FileAccess.open(path, FileAccess.READ)
 		var content: PackedStringArray = file.get_as_text().split("\n")
