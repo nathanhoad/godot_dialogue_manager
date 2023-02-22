@@ -35,6 +35,7 @@ var colors: Dictionary:
 		syntax_highlighter.add_keyword_color("if", colors.conditions)
 		syntax_highlighter.add_keyword_color("elif", colors.conditions)
 		syntax_highlighter.add_keyword_color("else", colors.conditions)
+		syntax_highlighter.add_keyword_color("while", colors.conditions)
 		syntax_highlighter.add_keyword_color("endif", colors.conditions)
 		syntax_highlighter.add_keyword_color("in", colors.conditions)
 		syntax_highlighter.add_keyword_color("and", colors.conditions)

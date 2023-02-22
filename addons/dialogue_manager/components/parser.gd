@@ -11,7 +11,7 @@ var VALID_TITLE_REGEX: RegEx = RegEx.create_from_string("^[^\\!\\@\\#\\$\\%\\^\\
 var BEGINS_WITH_NUMBER_REGEX: RegEx = RegEx.create_from_string("^\\d")
 var TRANSLATION_REGEX: RegEx = RegEx.create_from_string("\\[ID:(?<tr>.*?)\\]")
 var MUTATION_REGEX: RegEx = RegEx.create_from_string("(do|set) (?<mutation>.*)")
-var CONDITION_REGEX: RegEx = RegEx.create_from_string("(if|elif) (?<condition>.*)")
+var CONDITION_REGEX: RegEx = RegEx.create_from_string("(if|elif|while) (?<condition>.*)")
 var WRAPPED_CONDITION_REGEX: RegEx = RegEx.create_from_string("\\[if (?<condition>.*)\\]")
 var REPLACEMENTS_REGEX: RegEx = RegEx.create_from_string("{{(.*?)}}")
 var GOTO_REGEX: RegEx = RegEx.create_from_string("=><? (?<jump_to_title>.*)")
@@ -54,6 +54,7 @@ var errors: Array[Dictionary] = []
 var _imported_line_map: Array[Dictionary] = []
 var _imported_line_count: int = 0
 
+var while_loopbacks: Array[String] = []
 
 ## Parse some raw dialogue text. Returns a dictionary containing parse results
 func parse(text: String) -> int:
@@ -206,6 +207,13 @@ func parse(text: String) -> int:
 			line["type"] = DialogueConstants.TYPE_CONDITION
 			line["next_id_after"] = find_next_line_after_conditions(id)
 			line["next_conditional_id"] = line["next_id_after"]
+		elif is_while_condition_line(raw_line):
+			parent_stack.append(str(id))
+			line["type"] = DialogueConstants.TYPE_CONDITION
+			line["condition"] = extract_condition(raw_line)
+			line["next_id_after"] = find_next_line_after_conditions(id)
+			while_loopbacks.append(find_last_line_within_conditions(id))
+			line["next_conditional_id"] = line["next_id_after"]
 		
 		# Mutation
 		elif is_mutation_line(raw_line):
@@ -310,6 +318,19 @@ func parse(text: String) -> int:
 		# If there are no titles then use the first actual line
 		if first_title == "" and  not is_import_line(raw_line):
 			first_title = str(id)
+			
+		# If this line is the last line of a while loop, edit the id of its next line
+		if str(id) in while_loopbacks:
+			if is_goto_snippet_line(raw_line):
+				line["next_id_after"] = line["parent_id"]
+			elif is_condition_line(raw_line, true) or is_while_condition_line(raw_line):
+				line["next_conditional_id"] = line["parent_id"]
+				line["next_id_after"] = line["parent_id"]
+			elif is_goto_line(raw_line) or is_title_line(raw_line):
+				pass
+			else:
+				line["next_id"] = line["parent_id"]
+				
 		
 		# Done!
 		parsed_lines[str(id)] = line
@@ -339,6 +360,7 @@ func prepare(text: String, include_imported_titles_hashes: bool = true) -> void:
 	errors = []
 	imported_paths = []
 	_imported_line_map = []
+	while_loopbacks = []
 	titles = {}
 	first_title = ""
 	raw_lines = text.split("\n")
@@ -433,6 +455,11 @@ func is_condition_line(line: String, include_else: bool = true) -> bool:
 	line = line.strip_edges(true, false)
 	if line.begins_with("if ") or line.begins_with("elif "): return true
 	if include_else and line.begins_with("else"): return true
+	return false
+	
+func is_while_condition_line(line: String) -> bool:
+	line = line.strip_edges(true, false)
+	if line.begins_with("while "): return true
 	return false
 
 
@@ -630,6 +657,30 @@ func find_next_line_after_conditions(line_number: int) -> String:
 	
 	return DialogueConstants.ID_END_CONVERSATION
 
+func find_last_line_within_conditions(line_number: int) -> String:
+	var line = raw_lines[line_number]
+	var expected_indent = get_indent(line)
+	
+	var candidate = DialogueConstants.ID_NULL
+	
+	# Look down the list for the last line that has an indent level 1 more than this line
+	# Ending the search when you find a line the same or less indent level
+	for i in range(line_number + 1, raw_lines.size()):
+		line = raw_lines[i]
+		
+		if is_line_empty(line): continue
+		
+		var line_indent = get_indent(line)
+		line = line.strip_edges()
+		
+		if line_indent > expected_indent + 1:
+			continue
+		elif line_indent == (expected_indent + 1):
+			candidate = i
+		else:
+			break
+			
+	return str(candidate)
 
 func find_next_line_after_responses(line_number: int) -> String:
 	var line = raw_lines[line_number]
