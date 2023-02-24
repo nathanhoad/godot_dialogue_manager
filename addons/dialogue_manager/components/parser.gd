@@ -547,10 +547,11 @@ func find_previous_response_id(line_number: int) -> String:
 	while i >= 0:
 		line = raw_lines[i]
 		
-		if is_line_empty(line): continue
+		if is_line_empty(line): 
+			pass
 		
 		# If its a response at the same indent level then its a match
-		if get_indent(line) == indent_size:
+		elif get_indent(line) == indent_size:
 			if line.strip_edges().begins_with("- "):
 				last_found_response_id = str(i)
 			else:
@@ -576,7 +577,7 @@ func apply_weighted_random(id: int, raw_line: String, indent_size: int, line: Di
 	var n: int = id
 	while n > 0:
 		if not raw_lines[n].strip_edges().begins_with("%") or get_indent(raw_lines[n]) != indent_size:
-			break
+			pass
 		elif parsed_lines.has(str(n)) and parsed_lines[str(n)].has("siblings"):
 			original_random_line = parsed_lines[str(n)]
 		n -= 1
@@ -664,10 +665,12 @@ func find_next_line_after_conditions(line_number: int) -> String:
 			var p: int = line_number - 1
 			while p >= 0:
 				line = raw_lines[p]
-				if is_line_empty(line): continue
-				line_indent = get_indent(line)
-				if line_indent < expected_indent:
-					return parsed_lines[str(p)].next_id_after
+				if is_line_empty(line): 
+					pass
+				else:
+					line_indent = get_indent(line)
+					if line_indent < expected_indent:
+						return parsed_lines[str(p)].next_id_after
 				p -= 1
 	
 	return DialogueConstants.ID_END_CONVERSATION
@@ -733,10 +736,12 @@ func find_next_line_after_responses(line_number: int) -> String:
 			var p: int = line_number - 1
 			while p >= 0:
 				line = raw_lines[p]
-				if is_line_empty(line): continue
-				var line_indent = get_indent(line)
-				if line_indent < expected_indent:
-					return parsed_lines[str(p)].next_id_after
+				if is_line_empty(line):
+					pass
+				else:
+					var line_indent = get_indent(line)
+					if line_indent < expected_indent:
+						return parsed_lines[str(p)].next_id_after
 				p -= 1
 		
 		# Otherwise check the indent for an outdent
