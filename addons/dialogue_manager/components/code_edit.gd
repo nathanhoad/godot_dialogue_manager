@@ -230,14 +230,10 @@ func check_active_title() -> void:
 	var line_number = get_caret_line()
 	var lines = text.split("\n")
 	# Look at each line above this one to find the next title line
-	# NOTE: this would normally be an reverse range (for i in range(line_number, -1, -1):) 
-	# but Godot 4 RC 4 has a regression with those so here's a temporary workaround
-	var i: int = line_number
-	while i >= 0:
+	for i in range(line_number, -1, -1):
 		if lines[i].begins_with("~ "):
 			emit_signal("active_title_change", lines[i].replace("~ ", ""))
 			return
-		i -= 1
 	
 	emit_signal("active_title_change", "0")
 
