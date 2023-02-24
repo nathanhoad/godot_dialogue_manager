@@ -540,7 +540,11 @@ func find_previous_response_id(line_number: int) -> String:
 	
 	# Look back up the list to find the previous response
 	var last_found_response_id: String = str(line_number)
-	for i in range(line_number - 1, -1, -1):
+	
+	# NOTE: this would normally be an reverse range (for i in range(line_number - 1, -1, -1):) 
+	# but Godot 4 RC 4 has a regression with those so here's a temporary workaround
+	var i: int = line_number - 1
+	while i >= 0:
 		line = raw_lines[i]
 		
 		if is_line_empty(line): continue
@@ -551,7 +555,9 @@ func find_previous_response_id(line_number: int) -> String:
 				last_found_response_id = str(i)
 			else:
 				return last_found_response_id
-				
+		
+		i -= 1
+		
 	# Return itself if nothing was found
 	return last_found_response_id
 
@@ -564,11 +570,16 @@ func apply_weighted_random(id: int, raw_line: String, indent_size: int, line: Di
 	
 	# Look back up the list to find the first weighted random line in this group
 	var original_random_line: Dictionary = {}
-	for i in range(id, 0, -1):
-		if not raw_lines[i].strip_edges().begins_with("%") or get_indent(raw_lines[i]) != indent_size:
+	
+	# NOTE: this would normally be an reverse range (for i in range(id, 0, -1):) 
+	# but Godot 4 RC 4 has a regression with those so here's a temporary workaround
+	var n: int = id
+	while n > 0:
+		if not raw_lines[n].strip_edges().begins_with("%") or get_indent(raw_lines[n]) != indent_size:
 			break
-		elif parsed_lines.has(str(i)) and parsed_lines[str(i)].has("siblings"):
-			original_random_line = parsed_lines[str(i)]
+		elif parsed_lines.has(str(n)) and parsed_lines[str(n)].has("siblings"):
+			original_random_line = parsed_lines[str(n)]
+		n -= 1
 	
 	# Attach it to the original random line and work out where to go after the line
 	if original_random_line.size() > 0:
@@ -648,12 +659,16 @@ func find_next_line_after_conditions(line_number: int) -> String:
 				
 		elif line_indent < expected_indent:
 			# We have to check the parent of this block
-			for p in range(line_number - 1, -1, -1):
+			# NOTE: this would normally be an reverse range (for p in range(line_number - 1, -1, -1):) 
+			# but Godot 4 RC 4 has a regression with those so here's a temporary workaround
+			var p: int = line_number - 1
+			while p >= 0:
 				line = raw_lines[p]
 				if is_line_empty(line): continue
 				line_indent = get_indent(line)
 				if line_indent < expected_indent:
 					return parsed_lines[str(p)].next_id_after
+				p -= 1
 	
 	return DialogueConstants.ID_END_CONVERSATION
 
@@ -713,12 +728,16 @@ func find_next_line_after_responses(line_number: int) -> String:
 		
 		# We're at the end of a conditional so jump back up to see what's after it
 		elif line.begins_with("elif ") or line.begins_with("else"):
-			for p in range(line_number - 1, -1, -1):
+			# NOTE: this would normally be an reverse range (for p in range(line_number - 1, -1, -1):) 
+			# but Godot 4 RC 4 has a regression with those so here's a temporary workaround
+			var p: int = line_number - 1
+			while p >= 0:
 				line = raw_lines[p]
 				if is_line_empty(line): continue
 				var line_indent = get_indent(line)
 				if line_indent < expected_indent:
 					return parsed_lines[str(p)].next_id_after
+				p -= 1
 		
 		# Otherwise check the indent for an outdent
 		else:
