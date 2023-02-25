@@ -282,7 +282,7 @@ func get_game_states(extra_game_states: Array) -> Array:
 	var current_scene: Node = get_tree().current_scene
 	var unique_states: Array = []
 	for state in extra_game_states + [current_scene] + game_states:
-		if not unique_states.has(state):
+		if state != null and not unique_states.has(state):
 			unique_states.append(state)
 	return unique_states
 
