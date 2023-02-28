@@ -815,7 +815,7 @@ func extract_translation(line: String) -> String:
 
 func extract_response_prompt(line: String) -> String:
 	# Find just the text prompt from a response, ignoring any conditions or gotos
-	line = line.replace("- ", "")
+	line = line.substr(2)
 	if " [if " in line:
 		line = line.substr(0, line.find(" [if "))
 	if " =>" in line:
