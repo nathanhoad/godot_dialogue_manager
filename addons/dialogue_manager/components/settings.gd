@@ -8,14 +8,28 @@ const DialogueConstants = preload("res://addons/dialogue_manager/constants.gd")
 ### Editor config
 
 
+static func migrate_settings() -> void:
+	for key in [
+		"states", 
+		"missing_translations_are_errors", 
+		"wrap_lines", 
+		"new_with_template", 
+		"custom_test_scene_path"
+	]:
+		if ProjectSettings.has_setting("dialogue_manager/%s" % key):
+			var value = ProjectSettings.get_setting("dialogue_manager/%s" % key)
+			ProjectSettings.set_setting("dialogue_manager/%s" % key, null)
+			set_setting(key, value)
+
+
 static func set_setting(key: String, value) -> void:
-	ProjectSettings.set_setting("dialogue_manager/%s" % key, value)
+	ProjectSettings.set_setting("dialogue_manager/general/%s" % key, value)
 	ProjectSettings.save()
 
 
 static func get_setting(key: String, default):
-	if ProjectSettings.has_setting("dialogue_manager/%s" % key):
-		return ProjectSettings.get_setting("dialogue_manager/%s" % key)
+	if ProjectSettings.has_setting("dialogue_manager/general/%s" % key):
+		return ProjectSettings.get_setting("dialogue_manager/general/%s" % key)
 	else:
 		return default
 
