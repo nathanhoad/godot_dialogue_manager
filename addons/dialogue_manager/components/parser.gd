@@ -69,6 +69,7 @@ func parse(content: String) -> Dictionary:
 	var errors: Array = []
 	
 	var titles: Dictionary = {}
+	var character_names: PoolStringArray = []
 	var known_translations = {}
 	
 	var parent_stack: Array = []
@@ -190,6 +191,8 @@ func parse(content: String) -> Dictionary:
 				first_child["text"] = PoolStringArray(bits).join(": ").replace("!ESCAPED_COLON!", ":")
 				
 				line["character"] = first_child.get("character")
+				if not line["character"] in character_names:
+					character_names.append(line["character"])
 				line["text"] = first_child.get("text")
 				
 				if first_child.get("translation_key") == null:
@@ -250,6 +253,8 @@ func parse(content: String) -> Dictionary:
 			if ": " in l:
 				var bits = Array(l.strip_edges().split(": "))
 				line["character"] = bits.pop_front()
+				if not line["character"] in character_names:
+					character_names.append(line["character"])
 				# You can use variables in the character's name
 				line["character_replacements"] = extract_dialogue_replacements(line.get("character"))
 				if line.get("character_replacements").size() > 0 and line.get("character_replacements")[0].has("error"):
@@ -325,6 +330,7 @@ func parse(content: String) -> Dictionary:
 	
 	return {
 		"titles": titles,
+		"character_names": character_names,
 		"lines": dialogue,
 		"errors": errors
 	}

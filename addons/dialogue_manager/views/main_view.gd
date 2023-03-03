@@ -38,6 +38,7 @@ var current_resource: DialogueResource
 var has_changed: bool = false
 var recent_resources: Array
 var pristine_raw_text: String = ""
+var translation_source: String = "lines"
 
 
 func _ready() -> void:
@@ -74,10 +75,14 @@ func _ready() -> void:
 	insert_menu.get_popup().connect("id_pressed", self, "_on_insert_menu_id_pressed")
 	
 	popup = translations_menu.get_popup()
-	popup.set_item_icon(0, get_icon("Translation", "EditorIcons"))
-	popup.set_item_icon(1, get_icon("FileList", "EditorIcons"))
-	popup.set_item_icon(2, get_icon("FileList", "EditorIcons"))
-	popup.set_item_icon(4, get_icon("AssetLib", "EditorIcons"))
+	popup.clear()
+	popup.add_icon_item(get_icon("Translation", "EditorIcons"), "Generate line IDs", 10)
+	popup.add_separator()
+	popup.add_icon_item(get_icon("FileList", "EditorIcons"), "Save character names CSV...", 11)
+	popup.add_icon_item(get_icon("FileList", "EditorIcons"), "Save lines to CSV...", 12)
+	popup.add_icon_item(get_icon("AssetLib", "EditorIcons"), "Import lines changes from CSV...", 13)
+	popup.add_separator()
+	popup.add_icon_item(get_icon("FileList", "EditorIcons"), "Save lines to PO...", 14)
 	translations_menu.get_popup().connect("id_pressed", self, "_on_translation_menu_id_pressed")
 	
 	search_toolbar.visible = false
@@ -369,6 +374,63 @@ func save_translations(path: String) -> void:
 	plugin.get_editor_interface().get_file_system_dock().navigate_to_path(path)
 
 
+func save_character_names_csv(path: String) -> void:
+	var file = File.new()
+	
+	# If the file exists, open it first and work out which keys are already in it
+	var existing_csv = {}
+	var commas = []
+	if file.file_exists(path):
+		file.open(path, File.READ)
+		var is_first_line = true
+		var line: Array
+		while !file.eof_reached():
+			line = file.get_csv_line()
+			if is_first_line:
+				is_first_line = false
+				for i in range(2, line.size()):
+					commas.append("")
+			if line.size() > 0 and line[0].strip_edges() != "":
+				existing_csv[line[0]] = line
+		file.close()
+		
+	# Start a new file
+	file.open(path, File.WRITE)
+	
+	if not file.file_exists(path):
+		file.store_csv_line(["keys", "en"])
+
+	# Write our translations to file	
+	var known_keys: PoolStringArray = []
+	var character_names = parser.parse(editor.text).get("character_names")
+	
+	# Make a list of stuff that needs to go into the file
+	var lines_to_save = []
+	for character_name in character_names:
+		if character_name in known_keys: continue
+		
+		known_keys.append(character_name)
+		
+		if existing_csv.has(character_name):
+			var existing_line = existing_csv.get(character_name)
+			existing_line[1] = character_name
+			lines_to_save.append(existing_line)
+			existing_csv.erase(character_name)
+		else:
+			lines_to_save.append(PoolStringArray([character_name, character_name] + commas))
+	
+	# Store lines in the file, starting with anything that already exists that hasn't been touched
+	for line in existing_csv.values():
+		file.store_csv_line(line)
+	for line in lines_to_save:
+		file.store_csv_line(line)
+	
+	file.close()
+	
+	plugin.get_editor_interface().get_resource_filesystem().scan()
+	plugin.get_editor_interface().get_file_system_dock().navigate_to_path(path)
+
+
 func save_translations_po(path: String) -> void:
 	var id_str: Dictionary = {}
 	var dialogue = parser.parse(editor.text).get("lines")
@@ -489,17 +551,25 @@ func _on_insert_menu_id_pressed(id):
 
 func _on_translation_menu_id_pressed(id):
 	match id:
-		0:
+		10:
 			generate_translations_keys()
-		1:
+		
+		11:
+			translation_source = "character_names"
 			save_translations_dialog.current_path = get_last_csv_path()
 			save_translations_dialog.popup_centered()
-		2:
-			save_translations_dialog_po.current_path = get_last_csv_path().replace(".csv", ".po")
-			save_translations_dialog_po.popup_centered()
-		4:
+		12:
+			translation_source = "lines"
+			save_translations_dialog.current_path = get_last_csv_path()
+			save_translations_dialog.popup_centered()
+		13:
 			import_translations_dialog.current_path = get_last_csv_path()
 			import_translations_dialog.popup_centered()
+			
+		14:
+			translation_source = "lines"
+			save_translations_dialog_po.current_path = get_last_csv_path().replace(".csv", ".po")
+			save_translations_dialog_po.popup_centered()
 
 
 func _on_CodeEditor_text_changed():
@@ -576,7 +646,11 @@ func _on_HelpButton_pressed():
 
 func _on_SaveTranslationsDialog_file_selected(path):
 	settings.set_user_value("last_csv_path", path.get_base_dir())
-	save_translations(path)
+	match translation_source:
+		"character_names":
+			save_character_names_csv(path)
+		"lines":
+			save_translations(path)
 
 
 func _on_SaveTranslationsDialogPO_file_selected(path):
