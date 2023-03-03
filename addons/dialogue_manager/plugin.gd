@@ -112,7 +112,7 @@ func _build() -> bool:
 
 
 ## Keep track of known files and their dependencies
-func add_to_dialogue_file_cache(path: String, resource_path: String, parse_results: Dictionary) -> void:
+func add_to_dialogue_file_cache(path: String, resource_path: String, parse_results: DialogueManagerParseResult) -> void:
 	dialogue_file_cache[path] = {
 		path = path,
 		resource_path = resource_path,
