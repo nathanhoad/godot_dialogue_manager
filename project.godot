@@ -20,7 +20,7 @@ _global_script_class_icons={
 
 [application]
 
-config/name="godot_dialogue_manager"
+config/name="Dialogue Manager"
 config/icon="res://icon.svg"
 
 [autoload]

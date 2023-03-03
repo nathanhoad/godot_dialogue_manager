@@ -9,7 +9,7 @@ onready var margin := $Balloon/Margin
 onready var character_label := $Balloon/Margin/VBox/Character
 onready var dialogue_label := $Balloon/Margin/VBox/Dialogue
 onready var responses_menu := $Balloon/Margin/VBox/Responses
-onready var response_template := $Balloon/Margin/VBox/ResponseTemplate
+onready var response_template := $ResponseTemplate
 
 
 var dialogue_line: Dictionary
@@ -22,15 +22,17 @@ func _ready() -> void:
 		return
 	
 	response_template.hide()
-	balloon.hide()
+	balloon.modulate.a = 0
 	
 	var viewport_size = balloon.get_viewport_rect().size
-	margin.rect_size.x = viewport_size.x * 0.9
+	balloon.anchor_right = 1
+	balloon.rect_min_size = Vector2(viewport_size.x * 0.9, 0)
+	balloon.rect_size = Vector2.ZERO
 	
 	character_label.visible = dialogue_line.character != ""
 	character_label.bbcode_text = dialogue_line.character
 	
-	dialogue_label.rect_size.x = margin.rect_size.x - margin.get("custom_constants/margin_left") - margin.get("custom_constants/margin_right")
+	dialogue_label.rect_size.x = balloon.rect_size.x - margin.get("custom_constants/margin_left") - margin.get("custom_constants/margin_right")
 	dialogue_label.dialogue_line = dialogue_line
 	yield(dialogue_label.reset_height(), "completed")
 	
@@ -62,7 +64,7 @@ func _ready() -> void:
 	responses_menu.visible = false
 	
 	# Show our box
-	balloon.visible = true
+	balloon.modulate.a = 1
 	
 	if dialogue_line.text != "":
 		dialogue_label.type_out()
