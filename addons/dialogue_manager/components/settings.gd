@@ -8,7 +8,15 @@ const DialogueConstants = preload("res://addons/dialogue_manager/constants.gd")
 ### Editor config
 
 
-static func migrate_settings() -> void:
+static func prepare() -> void:
+	# Set up defaults
+	ProjectSettings.set_initial_value("dialogue_manager/general/states", [])
+	ProjectSettings.set_initial_value("dialogue_manager/general/missing_translations_are_errors", false)
+	ProjectSettings.set_initial_value("dialogue_manager/general/wrap_lines", false)
+	ProjectSettings.set_initial_value("dialogue_manager/general/new_with_template", true)
+	ProjectSettings.set_initial_value("dialogue_manager/general/custom_test_scene_path", "res://addons/dialogue_manager/test_scene.tscn")
+	
+	# Migrate previous keys
 	for key in [
 		"states", 
 		"missing_translations_are_errors", 

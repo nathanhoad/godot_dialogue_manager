@@ -93,11 +93,14 @@ msgstr "End dialogue"
 msgid "generate_line_ids"
 msgstr "Generate line IDs"
 
+msgid "save_characters_to_csv"
+msgstr "Save character names to CSV..."
+
 msgid "save_to_csv"
-msgstr "Save to CSV..."
+msgstr "Save lines to CSV..."
 
 msgid "import_from_csv"
-msgstr "Import changes from CSV..."
+msgstr "Import line changes from CSV..."
 
 msgid "confirm_close"
 msgstr "Save changes to '{path}'?"

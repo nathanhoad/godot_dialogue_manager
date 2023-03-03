@@ -24,10 +24,6 @@ DialogueManager="*res://addons/dialogue_manager/dialogue_manager.gd"
 [dialogue_manager]
 
 general/states=["State", "Events"]
-general/missing_translations_are_errors=false
-general/wrap_lines=true
-general/new_with_template=true
-general/custom_test_scene_path="res://addons/dialogue_manager/test_scene.tscn"
 
 [display]
 

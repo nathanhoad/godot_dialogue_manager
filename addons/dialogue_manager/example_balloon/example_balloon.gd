@@ -36,7 +36,7 @@ var dialogue_line: DialogueLine:
 		dialogue_line = next_dialogue_line
 		
 		character_label.visible = not dialogue_line.character.is_empty()
-		character_label.text = dialogue_line.character
+		character_label.text = tr(dialogue_line.character, "dialogue")
 		
 		dialogue_label.modulate.a = 0
 		dialogue_label.custom_minimum_size.x = dialogue_label.get_parent().size.x - 1

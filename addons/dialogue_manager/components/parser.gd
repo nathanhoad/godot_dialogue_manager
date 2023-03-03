@@ -1,5 +1,6 @@
 @tool
-extends Object
+
+class_name DialogueManagerParser extends Object
 
 
 const DialogueConstants = preload("res://addons/dialogue_manager/constants.gd")
@@ -48,6 +49,7 @@ var parent_stack: Array[String] = []
 var parsed_lines: Dictionary = {}
 var imported_paths: PackedStringArray = []
 var titles: Dictionary = {}
+var character_names: PackedStringArray = []
 var first_title: String = ""
 var errors: Array[Dictionary] = []
 
@@ -56,8 +58,31 @@ var _imported_line_count: int = 0
 
 var while_loopbacks: Array[String] = []
 
+
 ## Parse some raw dialogue text. Returns a dictionary containing parse results
-func parse(text: String) -> int:
+static func parse_string(string: String) -> DialogueManagerParseResult:
+	var parser: DialogueManagerParser = DialogueManagerParser.new()
+	var error: Error = parser.parse(string)
+	var data: DialogueManagerParseResult = parser.get_data()
+	parser.free()
+	
+	if error == OK:
+		return data
+	else:
+		return null
+
+
+## Extract bbcode and other markers from a string
+static func extract_markers_from_string(string: String) -> Dictionary:
+	var parser: DialogueManagerParser = DialogueManagerParser.new()
+	var markers: Dictionary = parser.extract_markers(string)
+	parser.free()
+	
+	return markers
+
+
+## Parse some raw dialogue text. Returns a dictionary containing parse results
+func parse(text: String) -> Error:
 	prepare(text)
 	
 	# Parse all of the content
@@ -169,6 +194,8 @@ func parse(text: String) -> int:
 				first_child["text"] = ": ".join(bits).replace("!ESCAPED_COLON!", ":")
 				
 				line["character"] = first_child.character.strip_edges()
+				if not line["character"] in character_names:
+					character_names.append(line["character"])
 				line["text"] = first_child.text.strip_edges()
 				
 				if first_child.translation_key == null:
@@ -242,6 +269,8 @@ func parse(text: String) -> int:
 			if ": " in l:
 				var bits = Array(l.strip_edges().split(": "))
 				line["character"] = bits.pop_front().strip_edges()
+				if not line["character"] in character_names:
+					character_names.append(line["character"])
 				# You can use variables in the character's name
 				line["character_replacements"] = extract_dialogue_replacements(line.character)
 				if line.character_replacements.size() > 0 and line.character_replacements[0].has("error"):
@@ -341,13 +370,14 @@ func parse(text: String) -> int:
 	return OK
 
 
-func get_data() -> Dictionary:
-	return {
-		imported_paths = imported_paths,
-		titles = titles,
-		first_title = first_title,
-		lines = parsed_lines
-	}
+func get_data() -> DialogueManagerParseResult:
+	var data: DialogueManagerParseResult = DialogueManagerParseResult.new()
+	data.imported_paths = imported_paths
+	data.titles = titles
+	data.character_names = character_names
+	data.first_title = first_title
+	data.lines = parsed_lines
+	return data
 
 
 ## Get the last parse errors
@@ -362,6 +392,7 @@ func prepare(text: String, include_imported_titles_hashes: bool = true) -> void:
 	_imported_line_map = []
 	while_loopbacks = []
 	titles = {}
+	character_names = []
 	first_title = ""
 	raw_lines = text.split("\n")
 	

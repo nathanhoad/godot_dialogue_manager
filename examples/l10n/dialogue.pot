@@ -1,5 +1,7 @@
 # LANGUAGE translation for Dialogue Manager for the following files:
 # res://examples/dialogue.dialogue
+# res://examples/dialogue_for_visual_novel.dialogue
+# res://examples/dialogue_with_input.dialogue
 #
 # FIRST AUTHOR < EMAIL @ADDRESS>, YEAR.
 #
@@ -12,56 +14,93 @@ msgstr ""
 "Content-Transfer-Encoding: 8-bit\n"
 
 #: examples/dialogue.dialogue
+#: examples/dialogue_for_visual_novel.dialogue
+#: examples/dialogue_with_input.dialogue
+msgctxt "dialogue"
+msgid "Nathan"
+msgstr ""
+
+#: examples/dialogue.dialogue
+#: examples/dialogue_for_visual_novel.dialogue
+#: examples/dialogue_with_input.dialogue
+msgctxt "dialogue"
+msgid "Coco"
+msgstr ""
+
+#: examples/dialogue.dialogue
+#: examples/dialogue_for_visual_novel.dialogue
 msgctxt "Hi, I'm Nathan and this is Coco."
 msgid "tf885328afb"
 msgstr ""
 
 #: examples/dialogue.dialogue
+#: examples/dialogue_for_visual_novel.dialogue
 msgctxt "Meow."
 msgid "t4c11347656"
 msgstr ""
 
 #: examples/dialogue.dialogue
+#: examples/dialogue_for_visual_novel.dialogue
 msgctxt "Here are some response options."
 msgid "tba678dd331"
 msgstr ""
 
 #: examples/dialogue.dialogue
+#: examples/dialogue_for_visual_novel.dialogue
 msgctxt "First one"
 msgid "tec2831274f"
 msgstr ""
 
 #: examples/dialogue.dialogue
+#: examples/dialogue_for_visual_novel.dialogue
 msgctxt "You picked the first one."
 msgid "ted9b57f70f"
 msgstr ""
 
 #: examples/dialogue.dialogue
+#: examples/dialogue_for_visual_novel.dialogue
 msgctxt "Second one"
 msgid "te9670331c2"
 msgstr ""
 
 #: examples/dialogue.dialogue
+#: examples/dialogue_for_visual_novel.dialogue
 msgctxt "You picked the second one."
 msgid "t14bc171a9f"
 msgstr ""
 
 #: examples/dialogue.dialogue
+#: examples/dialogue_for_visual_novel.dialogue
 msgctxt "Start again"
 msgid "ta04a1307f6"
 msgstr ""
 
 #: examples/dialogue.dialogue
+#: examples/dialogue_for_visual_novel.dialogue
 msgctxt "End the conversation"
 msgid "t3211e3adf8"
 msgstr ""
 
 #: examples/dialogue.dialogue
+#: examples/dialogue_for_visual_novel.dialogue
 msgctxt "I hope this example is helpful."
 msgid "t643e01443b"
 msgstr ""
 
 #: examples/dialogue.dialogue
+#: examples/dialogue_for_visual_novel.dialogue
 msgctxt "Meow."
 msgid "tb75d1c7a40"
+msgstr ""
+
+#: examples/dialogue_with_input.dialogue
+msgid "I am Nathan. What is your name?"
+msgstr ""
+
+#: examples/dialogue_with_input.dialogue
+msgid "Hi {{player_name}}! It is nice to meet you."
+msgstr ""
+
+#: examples/dialogue_with_input.dialogue
+msgid "Meow."
 msgstr ""

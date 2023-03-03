@@ -3,7 +3,6 @@ extends Control
 
 
 const DialogueConstants = preload("res://addons/dialogue_manager/constants.gd")
-const DialogueParser = preload("res://addons/dialogue_manager/components/parser.gd")
 const DialogueSettings = preload("res://addons/dialogue_manager/components/settings.gd")
 
 const OPEN_OPEN = 100
@@ -16,6 +15,11 @@ const ITEM_CLOSE_ALL = 103
 const ITEM_CLOSE_OTHERS = 104
 const ITEM_COPY_PATH = 200
 const ITEM_SHOW_IN_FILESYSTEM = 201
+
+enum TranslationSource {
+	CharacterNames,
+	Lines
+}
 
 
 @onready var parse_timer := $ParseTimer
@@ -99,6 +103,9 @@ var current_file_path: String = "":
 
 # A reference to the currently open files and their last saved text
 var open_buffers: Dictionary = {}
+
+# Which thing are we exporting translations for?
+var translation_source: TranslationSource = TranslationSource.Lines
 
 
 func _ready() -> void:
@@ -370,8 +377,9 @@ func apply_theme() -> void:
 		popup.clear()
 		popup.add_icon_item(get_theme_icon("Translation", "EditorIcons"), DialogueConstants.translate("generate_line_ids"), 0)
 		popup.add_separator()
-		popup.add_icon_item(get_theme_icon("FileList", "EditorIcons"), DialogueConstants.translate("save_to_csv"), 2)
-		popup.add_icon_item(get_theme_icon("AssetLib", "EditorIcons"), DialogueConstants.translate("import_from_csv"), 3)
+		popup.add_icon_item(get_theme_icon("FileList", "EditorIcons"), DialogueConstants.translate("save_characters_to_csv"), 2)
+		popup.add_icon_item(get_theme_icon("FileList", "EditorIcons"), DialogueConstants.translate("save_to_csv"), 3)
+		popup.add_icon_item(get_theme_icon("AssetLib", "EditorIcons"), DialogueConstants.translate("import_from_csv"), 4)
 		
 		# Dialog sizes
 		var scale: float = editor_plugin.get_editor_interface().get_editor_scale()
@@ -419,12 +427,13 @@ func parse() -> void:
 	# Skip if nothing to parse
 	if current_file_path == "": return
 	
-	var parser = DialogueParser.new()
+	var parser = DialogueManagerParser.new()
 	var errors: Array[Dictionary] = []
 	if parser.parse(code_edit.text) != OK:
 		errors = parser.get_errors()
 	code_edit.errors = errors
 	errors_panel.errors = errors
+	parser.free()
 
 
 func show_build_error_dialog() -> void:
@@ -437,7 +446,7 @@ func generate_translations_keys() -> void:
 	randomize()
 	seed(Time.get_unix_time_from_system())
 	
-	var parser = DialogueParser.new()
+	var parser = DialogueManagerParser.new()
 	
 	var cursor: Vector2 = code_edit.get_cursor()
 	var lines: PackedStringArray = code_edit.text.split("\n")
@@ -530,12 +539,9 @@ func export_translations_to_csv(path: String) -> void:
 		file.store_csv_line(["keys", "en"])
 
 	# Write our translations to file
-	var known_keys := PackedStringArray([])
+	var known_keys: PackedStringArray = []
 	
-	var parser = DialogueParser.new()
-	parser.parse(code_edit.text)
-	var dialogue = parser.get_data().lines
-	parser.free()
+	var dialogue: Dictionary = DialogueManagerParser.parse_string(code_edit.text).lines
 	
 	# Make a list of stuff that needs to go into the file
 	var lines_to_save = []
@@ -571,6 +577,68 @@ func export_translations_to_csv(path: String) -> void:
 	call_deferred("add_path_to_project_translations", translation_path)
 
 
+func export_character_names_to_csv(path: String) -> void:
+	var file: FileAccess
+	
+	# If the file exists, open it first and work out which keys are already in it
+	var existing_csv = {}
+	var commas = []
+	if FileAccess.file_exists(path):
+		file = FileAccess.open(path, FileAccess.READ)
+		var is_first_line = true
+		var line: Array
+		while !file.eof_reached():
+			line = file.get_csv_line()
+			if is_first_line:
+				is_first_line = false
+				for i in range(2, line.size()):
+					commas.append("")
+			# Make sure the line isn't empty before adding it
+			if line.size() > 0 and line[0].strip_edges() != "":
+				existing_csv[line[0]] = line
+		
+	# Start a new file
+	file = FileAccess.open(path, FileAccess.WRITE)
+	
+	if not file.file_exists(path):
+		file.store_csv_line(["keys", "en"])
+
+	# Write our translations to file
+	var known_keys: PackedStringArray = []
+	
+	var character_names: PackedStringArray = DialogueManagerParser.parse_string(code_edit.text).character_names
+	
+	# Make a list of stuff that needs to go into the file
+	var lines_to_save = []
+	for character_name in character_names:
+		if character_name in known_keys: continue
+		
+		known_keys.append(character_name)
+		
+		if existing_csv.has(character_name):
+			var existing_line = existing_csv.get(character_name)
+			existing_line[1] = character_name
+			lines_to_save.append(existing_line)
+			existing_csv.erase(character_name)
+		else:
+			lines_to_save.append(PackedStringArray([character_name, character_name] + commas))
+	
+	# Store lines in the file, starting with anything that already exists that hasn't been touched
+	for line in existing_csv.values():
+		file.store_csv_line(line)
+	for line in lines_to_save:
+		file.store_csv_line(line)
+	
+	file.flush()
+	
+	editor_plugin.get_editor_interface().get_resource_filesystem().scan()
+	editor_plugin.get_editor_interface().get_file_system_dock().call_deferred("navigate_to_path", path)
+	
+	# Add it to the project l10n settings if it's not already there
+	var translation_path: String = path.replace(".csv", ".en.translation")
+	call_deferred("add_path_to_project_translations", translation_path)
+
+
 # Import changes back from an exported CSV by matching translation keys
 func import_translations_from_csv(path: String) -> void:
 	var cursor: Vector2 = code_edit.get_cursor()
@@ -586,7 +654,7 @@ func import_translations_from_csv(path: String) -> void:
 		if csv_line.size() > 1:
 			keys[csv_line[0]] = csv_line[1]
 	
-	var parser: DialogueParser = DialogueParser.new()
+	var parser: DialogueManagerParser = DialogueManagerParser.new()
 	
 	# Now look over each line in the dialogue and replace the content for matched keys
 	var lines: PackedStringArray = code_edit.text.split("\n")
@@ -675,7 +743,13 @@ func _on_translations_button_menu_id_pressed(id: int) -> void:
 	match id:
 		0:
 			generate_translations_keys()
+		1:
+			translation_source = TranslationSource.CharacterNames
+			export_dialog.filters = PackedStringArray(["*.csv ; Translation CSV"])
+			export_dialog.current_path = get_last_export_path("csv")
+			export_dialog.popup_centered()
 		2:
+			translation_source = TranslationSource.Lines
 			export_dialog.filters = PackedStringArray(["*.csv ; Translation CSV"])
 			export_dialog.current_path = get_last_export_path("csv")
 			export_dialog.popup_centered()
@@ -762,7 +836,11 @@ func _on_export_dialog_file_selected(path: String) -> void:
 	DialogueSettings.set_user_value("last_export_path", path.get_base_dir())
 	match path.get_extension():
 		"csv":
-			export_translations_to_csv(path)
+			match translation_source:
+				TranslationSource.CharacterNames:
+					export_translations_to_csv(path)
+				TranslationSource.Lines:
+					export_character_names_to_csv(path)
 
 
 func _on_import_dialog_file_selected(path: String) -> void:

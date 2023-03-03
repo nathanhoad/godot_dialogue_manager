@@ -21,7 +21,7 @@ func _enter_tree() -> void:
 	add_custom_type("DialogueLabel", "RichTextLabel", preload("res://addons/dialogue_manager/dialogue_label.gd"), _get_plugin_icon())
 	
 	if Engine.is_editor_hint():
-		DialogueSettings.migrate_settings()
+		DialogueSettings.prepare()
 		
 		import_plugin = DialogueImportPlugin.new()
 		import_plugin.editor_plugin = self

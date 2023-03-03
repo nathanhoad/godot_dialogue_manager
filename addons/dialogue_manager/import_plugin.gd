@@ -5,7 +5,6 @@ extends EditorImportPlugin
 signal compiled_resource(resource: Resource)
 
 
-const DialogueParser = preload("res://addons/dialogue_manager/components/parser.gd")
 const DialogueResource = preload("res://addons/dialogue_manager/dialogue_resource.gd")
 const compiler_version = 6
 
@@ -70,9 +69,9 @@ func compile_file(path: String, resource_path: String, will_cascade_cache_data: 
 	var raw_text: String = file.get_as_text()
 	
 	# Parse the text
-	var parser: DialogueParser = DialogueParser.new()
+	var parser: DialogueManagerParser = DialogueManagerParser.new()
 	var err: Error = parser.parse(raw_text)
-	var data: Dictionary = parser.get_data()
+	var data: DialogueManagerParseResult = parser.get_data()
 	var errors: Array[Dictionary] = parser.get_errors()
 	parser.free()
 	

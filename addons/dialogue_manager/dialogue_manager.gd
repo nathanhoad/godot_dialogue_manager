@@ -9,7 +9,6 @@ signal bridge_get_next_dialogue_line_completed(line)
 
 const DialogueConstants = preload("res://addons/dialogue_manager/constants.gd")
 const DialogueSettings = preload("res://addons/dialogue_manager/components/settings.gd")
-const DialogueParser = preload("res://addons/dialogue_manager/components/parser.gd")
 const DialogueLine = preload("res://addons/dialogue_manager/dialogue_line.gd")
 const DialogueResponse = preload("res://addons/dialogue_manager/dialogue_response.gd")
 
@@ -97,9 +96,9 @@ func get_resolved_text(text: String, replacements: Array, extra_game_states: Arr
 
 ## Generate a dialogue resource on the fly from some text
 func create_resource_from_text(text: String) -> Resource:
-	var parser: DialogueParser = DialogueParser.new()
+	var parser: DialogueManagerParser = DialogueManagerParser.new()
 	parser.parse(text)
-	var results: Dictionary = parser.get_data()
+	var results: DialogueManagerParseResult = parser.get_data()
 	var errors: Array[Dictionary] = parser.get_errors()
 	parser.free()
 	
@@ -227,10 +226,8 @@ func create_dialogue_line(data: Dictionary, extra_game_states: Array) -> Dialogu
 	match data.type:
 		DialogueConstants.TYPE_DIALOGUE:
 			# Our bbcodes need to be process after text has been resolved so that the markers are at the correct index
-			var text = await get_resolved_text(translate(data), data.text_replacements, extra_game_states)
-			var parser = DialogueParser.new()
-			var markers = parser.extract_markers(text)
-			parser.free()
+			var text: String = await get_resolved_text(translate(data), data.text_replacements, extra_game_states)
+			var markers: Dictionary = DialogueManagerParser.extract_markers_from_string(text)
 			
 			return DialogueLine.new({
 				type = DialogueConstants.TYPE_DIALOGUE,

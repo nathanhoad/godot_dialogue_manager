@@ -1,7 +1,6 @@
 extends EditorTranslationParserPlugin
 
 
-const DialogueParser = preload("res://addons/dialogue_manager/components/parser.gd")
 const DialogueConstants = preload("res://addons/dialogue_manager/constants.gd")
 
 
@@ -9,14 +8,20 @@ func _parse_file(path: String, msgids: Array, msgids_context_plural: Array) -> v
 	var file: FileAccess = FileAccess.open(path, FileAccess.READ)
 	var text: String = file.get_as_text()
 	
-	var parser = DialogueParser.new()
-	parser.parse(text)
-	var dialogue = parser.get_data().lines
-	parser.free()
-	
+	var data: DialogueManagerParseResult = DialogueManagerParser.parse_string(text)
 	var known_keys: PackedStringArray = PackedStringArray([])
 	
-	var translatable_lines: Dictionary = {}
+	# Add all character names
+	var character_names: PackedStringArray = data.character_names
+	for character_name in character_names:
+		if character_name in known_keys: continue
+		
+		known_keys.append(character_name)
+		
+		msgids_context_plural.append([character_name, "dialogue", ""])
+	
+	# Add all dialogue lines and responses
+	var dialogue: Dictionary = data.lines
 	for key in dialogue.keys():
 		var line: Dictionary = dialogue.get(key)
 		

@@ -12,8 +12,6 @@ All `.dialogue` files are automatically added to the POT Generation list in **Pr
 
 ![Adding dialogue files to the POT generation list](pot-generation.jpg)
 
-It is recommended that you use _static translation keys_ (line IDs) when tranlsating to make it easier on yourself and your translaters if/when line content changes.
-
 ## Static translation keys in dialogue
 
 You can export translations as CSV from the "Translations" menu in the dialogue editor. 
@@ -27,3 +25,9 @@ If the target CSV file already exists, it will be merged with.
 If you've made changes in the exported CSV to the original lines then you can reimport them from the translations menu.
 
 This will match lines using static keys and replace the dialogue/response content with the text found in the CSV.
+
+## Translating character names
+
+Characters' names generally show up in more than just dialogue so it is assumed that they are translated by your game. There is an option to export all character names in a dialogue file to CSV from the Translations menu.
+
+Character names will also be added to the POT Generation list with a context of "dialogue".
