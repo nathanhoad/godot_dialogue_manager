@@ -24,10 +24,9 @@ var will_hide_balloon: bool = false
 var dialogue_line: DialogueLine:
 	set(next_dialogue_line):
 		is_waiting_for_input = false
-		response_template.hide()
 		
 		if not next_dialogue_line:
-			player.dialogue_menu_close()
+			queue_free()
 			return
 		
 		dialogue_line = next_dialogue_line
