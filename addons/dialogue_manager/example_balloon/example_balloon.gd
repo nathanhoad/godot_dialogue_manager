@@ -24,37 +24,19 @@ var will_hide_balloon: bool = false
 var dialogue_line: DialogueLine:
 	set(next_dialogue_line):
 		is_waiting_for_input = false
+		response_template.hide()
 		
 		if not next_dialogue_line:
-			queue_free()
+			player.dialogue_menu_close()
 			return
-		
-		# Remove any previous responses
-		for child in responses_menu.get_children():
-			child.free()
 		
 		dialogue_line = next_dialogue_line
 		
-		character_label.visible = not dialogue_line.character.is_empty()
-		character_label.text = tr(dialogue_line.character, "dialogue")
+		# Remove any previous responses
+		remove_previous_responses()
 		
-		dialogue_label.modulate.a = 0
-		dialogue_label.custom_minimum_size.x = dialogue_label.get_parent().size.x - 1
-		dialogue_label.dialogue_line = dialogue_line
-
 		# Show any responses we have
-		responses_menu.modulate.a = 0
-		if dialogue_line.responses.size() > 0:
-			for response in dialogue_line.responses:
-				# Duplicate the template so we can grab the fonts, sizing, etc
-				var item: RichTextLabel = response_template.duplicate(0)
-				item.name = "Response%d" % responses_menu.get_child_count()
-				if not response.is_allowed:
-					item.name = String(item.name) + "Disallowed"
-					item.modulate.a = 0.4
-				item.text = response.text
-				item.show()
-				responses_menu.add_child(item)
+		display_responses()
 		
 		# Show our balloon
 		balloon.show()
@@ -66,20 +48,47 @@ var dialogue_line: DialogueLine:
 			await dialogue_label.finished_typing
 		
 		# Wait for input
-		if dialogue_line.responses.size() > 0:
-			responses_menu.modulate.a = 1
-			configure_menu()
-		elif dialogue_line.time != null:
-			var time = dialogue_line.text.length() * 0.02 if dialogue_line.time == "auto" else dialogue_line.time.to_float()
-			await get_tree().create_timer(time).timeout
-			next(dialogue_line.next_id)
-		else:
-			is_waiting_for_input = true
-			balloon.focus_mode = Control.FOCUS_ALL
-			balloon.grab_focus()
+		wait_for_input()
 	get:
 		return dialogue_line
 
+func remove_previous_responses() -> void:
+	for child in responses_menu.get_children():
+		child.free()
+		
+	character_label.visible = not dialogue_line.character.is_empty()
+	character_label.text = dialogue_line.character
+	
+	dialogue_label.modulate.a = 0
+	dialogue_label.dialogue_line = dialogue_line
+	
+func display_responses() -> void:
+	responses_menu.modulate.a = 0
+	if dialogue_line.responses.size() > 0:
+		for response in dialogue_line.responses:
+			# Duplicate the template so we can grab the fonts, sizing, etc
+			var item: RichTextLabel = response_template.duplicate(0)
+			item.name = "Response%d" % responses_menu.get_child_count()
+			if not response.is_allowed:
+				item.name = String(item.name) + "Disallowed"
+				item.modulate.a = 0.4
+			item.text = response.text
+			item.show()
+			responses_menu.add_child(item)
+			
+func wait_for_input() -> void:
+	if dialogue_line.responses.size() > 0:
+		response_template.hide()
+		responses_menu.modulate.a = 1
+		configure_menu()
+	elif dialogue_line.time != null:
+		var time = dialogue_line.text.length() * 0.02 if dialogue_line.time == "auto" else dialogue_line.time.to_float()
+		await get_tree().create_timer(time).timeout
+		next(dialogue_line.next_id)
+	else:
+		is_waiting_for_input = true
+		balloon.focus_mode = Control.FOCUS_ALL
+		balloon.grab_focus()
 
 func _ready() -> void:
 	response_template.hide()
@@ -116,30 +125,25 @@ func configure_menu() -> void:
 	balloon.focus_mode = Control.FOCUS_NONE
 	
 	var items = get_responses()
+	var path_next
+	var path_previous
 	for i in items.size():
-		var item: Control = items[i]
+		#Setup response parameters
+		items[i].focus_mode = Control.FOCUS_ALL
+		items[i].focus_neighbor_left = items[i].get_path()
+		items[i].focus_neighbor_right = items[i].get_path()
+		items[i].mouse_entered.connect(_on_response_mouse_entered.bind(items[i]))
+		items[i].gui_input.connect(_on_response_gui_input.bind(items[i]))
 		
-		item.focus_mode = Control.FOCUS_ALL
+		# link above (previous) response, if it exists
+		path_previous = items[max(0,i-1)].get_path()
+		items[i].focus_neighbor_top = path_previous
+		items[i].focus_previous = path_previous
 		
-		item.focus_neighbor_left = item.get_path()
-		item.focus_neighbor_right = item.get_path()
-		
-		if i == 0:
-			item.focus_neighbor_top = item.get_path()
-			item.focus_previous = item.get_path()
-		else:
-			item.focus_neighbor_top = items[i - 1].get_path()
-			item.focus_previous = items[i - 1].get_path()
-		
-		if i == items.size() - 1:
-			item.focus_neighbor_bottom = item.get_path()
-			item.focus_next = item.get_path()
-		else:
-			item.focus_neighbor_bottom = items[i + 1].get_path()
-			item.focus_next = items[i + 1].get_path()
-		
-		item.mouse_entered.connect(_on_response_mouse_entered.bind(item))
-		item.gui_input.connect(_on_response_gui_input.bind(item))
+		# link below (next) response, if it exists
+		path_next = items[min(i+1, items.size()-1)].get_path()
+		items[i].focus_neighbor_bottom = path_next
+		items[i].focus_next = path_next
 	
 	items[0].grab_focus()
 
