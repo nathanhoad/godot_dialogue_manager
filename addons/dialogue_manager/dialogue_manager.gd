@@ -293,7 +293,7 @@ func check_condition(data: Dictionary, extra_game_states: Array) -> bool:
 
 
 # Make a change to game state or run a method
-func mutate(mutation: Dictionary, extra_game_states: Array) -> void:
+func mutate(mutation: Dictionary, extra_game_states: Array, is_inline_mutation: bool = false) -> void:
 	var expression: Array[Dictionary] = mutation.expression
 	
 	# Handle built in mutations
@@ -338,7 +338,7 @@ func mutate(mutation: Dictionary, extra_game_states: Array) -> void:
 	
 	# Or pass through to the resolver
 	else:
-		if not mutation_contains_assignment(mutation.expression):
+		if not mutation_contains_assignment(mutation.expression) and not is_inline_mutation:
 			emit_signal("mutation")
 		
 		await resolve(mutation.expression.duplicate(true), extra_game_states)

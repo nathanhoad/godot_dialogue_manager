@@ -66,4 +66,4 @@ func mutate_inline_mutations(index: int) -> void:
 			return
 		if inline_mutation[0] == index:
 			# The DialogueManager can't be referenced directly here so we need to get it by its path
-			Engine.get_singleton("DialogueManager").mutate(inline_mutation[1], extra_game_states)
+			Engine.get_singleton("DialogueManager").mutate(inline_mutation[1], extra_game_states, true)
