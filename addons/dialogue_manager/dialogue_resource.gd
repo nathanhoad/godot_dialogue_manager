@@ -3,7 +3,10 @@
 class_name DialogueResource extends Resource
 
 
-const DialogueLine = preload("res://addons/dialogue_manager/dialogue_line.gd")
+@export var titles: Dictionary = {}
+@export var character_names: PackedStringArray = []
+@export var first_title: String = ""
+@export var lines: Dictionary = {}
 
 
 func get_next_dialogue_line(title: String, extra_game_states: Array = []) -> DialogueLine:
@@ -11,4 +14,4 @@ func get_next_dialogue_line(title: String, extra_game_states: Array = []) -> Dia
 
 
 func get_titles() -> PackedStringArray:
-	return get_meta("titles").keys()
+	return titles.keys()

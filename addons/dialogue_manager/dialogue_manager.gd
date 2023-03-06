@@ -51,7 +51,7 @@ func _ready() -> void:
 func get_next_dialogue_line(resource: DialogueResource, key: String = "0", extra_game_states: Array = []) -> DialogueLine:
 	# You have to provide a valid dialogue resource
 	assert(resource != null, "No dialogue resource provided")
-	assert(resource.get_meta("lines").size() > 0, "Dialogue file has no content.")
+	assert(resource.lines.size() > 0, "Dialogue file has no content.")
 	
 	var dialogue: DialogueLine = await get_line(resource, key, extra_game_states)
 	
@@ -158,14 +158,14 @@ func get_line(resource: DialogueResource, key: String, extra_game_states: Array)
 	# See if it is a title
 	if key.begins_with("~ "):
 		key = key.substr(2)
-	if resource.get_meta("titles", {}).has(key):
-		key = resource.get_meta("titles").get(key)
+	if resource.titles.has(key):
+		key = resource.titles.get(key)
 	
 	# Key not found, just use the first title
-	if not resource.get_meta("lines").has(key):
-		key = resource.get_meta("first_title")
+	if not resource.lines.has(key):
+		key = resource.first_title
 	
-	var data: Dictionary = resource.get_meta("lines").get(key)
+	var data: Dictionary = resource.lines.get(key)
 	
 	# Check for weighted random lines
 	if data.has("siblings"):
@@ -173,7 +173,7 @@ func get_line(resource: DialogueResource, key: String, extra_game_states: Array)
 		var cummulative_weight = 0
 		for sibling in data.siblings:
 			if result < cummulative_weight + sibling.weight:
-				data = resource.get_meta("lines").get(sibling.id)
+				data = resource.lines.get(sibling.id)
 				break
 			else:
 				cummulative_weight += sibling.weight
@@ -201,8 +201,8 @@ func get_line(resource: DialogueResource, key: String, extra_game_states: Array)
 		return line
 	
 	# Inject the next node's responses if they have any
-	if resource.get_meta("lines").has(line.next_id):
-		var next_line: Dictionary = resource.get_meta("lines").get(line.next_id)
+	if resource.lines.has(line.next_id):
+		var next_line: Dictionary = resource.lines.get(line.next_id)
 		if next_line != null and next_line.type == DialogueConstants.TYPE_RESPONSE:
 			line.responses = await get_responses(next_line.responses, resource, id_trail, extra_game_states)
 	
@@ -366,7 +366,7 @@ func resolve_each(array: Array, extra_game_states: Array) -> Array:
 func get_responses(ids: Array, resource: DialogueResource, id_trail: String, extra_game_states: Array) -> Array[DialogueResponse]:
 	var responses: Array[DialogueResponse] = []
 	for id in ids:
-		var data: Dictionary = resource.get_meta("lines").get(id)
+		var data: Dictionary = resource.lines.get(id)
 		if DialogueSettings.get_setting("include_all_responses", false) or await check_condition(data, extra_game_states):
 			var response: DialogueResponse = await create_response(data, extra_game_states)
 			response.next_id += id_trail
