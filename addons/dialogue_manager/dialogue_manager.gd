@@ -241,6 +241,7 @@ func create_dialogue_line(data: Dictionary, extra_game_states: Array) -> Dialogu
 				speeds = markers.speeds,
 				inline_mutations = markers.mutations,
 				time = markers.time,
+				tags = markers.tags,
 				extra_game_states = extra_game_states
 			})
 			

@@ -14,6 +14,7 @@ var text_replacements: Array[Dictionary] = []
 var translation_key: String = ""
 var pauses: Dictionary = {}
 var speeds: Dictionary = {}
+var tags: Dictionary = {}
 var inline_mutations: Array[Array] = []
 var responses: Array[DialogueResponse] = []
 var extra_game_states: Array = []
@@ -36,6 +37,7 @@ func _init(data: Dictionary = {}) -> void:
 				translation_key = data.translation_key
 				pauses = data.pauses
 				speeds = data.speeds
+				tags = data.tags
 				inline_mutations = data.inline_mutations
 				time = data.time
 			
