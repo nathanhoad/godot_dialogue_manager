@@ -86,10 +86,13 @@ func get_resolved_text(text: String, replacements: Array, extra_game_states: Arr
 	
 	# Resolve random groups
 	var random_regex: RegEx = RegEx.new()
-	random_regex.compile("\\[\\[(?<options>.*?)\\]\\]")
-	for found in random_regex.search_all(text):
-		var options = found.get_string("options").split("|")
-		text = text.replace("[[%s]]" % found.get_string("options"), options[randi_range(0, options.size() - 1)])
+	random_regex.compile("\\[\\[(?<options>[^\\[\\]]*|(?R))\\]\\]")
+	var found:Array = random_regex.search_all(text)
+	while found.size() > 0:
+		for f in found:
+			var options = f.get_string("options").split("|")
+			text = text.replace("[[%s]]" % f.get_string("options"), options[randi_range(0, options.size() - 1)] )
+		found = random_regex.search_all(text)
 	
 	return text
 
