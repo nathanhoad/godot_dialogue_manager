@@ -87,12 +87,24 @@ func get_resolved_text(text: String, replacements: Array, extra_game_states: Arr
 	# Resolve random groups
 	var random_regex: RegEx = RegEx.new()
 	random_regex.compile("\\[\\[(?<options>[^\\[\\]]*|(?R))\\]\\]")
+	
+	# Single square brackets need to be escaped before resolving
+	var escape_l_bracket: RegEx = RegEx.new()
+	var escape_r_bracket: RegEx = RegEx.new()
+	escape_l_bracket.compile("(?<!\\[)\\[(?!\\[)")
+	escape_r_bracket.compile("(?<!\\])\\](?!\\])")
+	text = escape_l_bracket.sub(text,"!ESCAPED_LBRACKET!",true)
+	text = escape_r_bracket.sub(text,"!ESCAPED_RBRACKET!",true)
+	
 	var found:Array = random_regex.search_all(text)
 	while found.size() > 0:
 		for f in found:
 			var options = f.get_string("options").split("|")
 			text = text.replace("[[%s]]" % f.get_string("options"), options[randi_range(0, options.size() - 1)] )
 		found = random_regex.search_all(text)
+	
+	text = text.replace("!ESCAPED_LBRACKET!","[")
+	text = text.replace("!ESCAPED_RBRACKET!","]")
 	
 	return text
 
