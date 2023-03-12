@@ -8,6 +8,11 @@ const DialogueSettings = preload("res://addons/dialogue_manager/components/setti
 const OPEN_OPEN = 100
 const OPEN_CLEAR = 101
 
+const TRANSLATIONS_GENERATE_LINE_IDS = 100
+const TRANSLATIONS_SAVE_CHARACTERS_TO_CSV = 201
+const TRANSLATIONS_SAVE_TO_CSV = 202
+const TRANSLATIONS_IMPORT_FROM_CSV = 203
+
 const ITEM_SAVE = 100
 const ITEM_SAVE_AS = 101
 const ITEM_CLOSE = 102
@@ -375,11 +380,11 @@ func apply_theme() -> void:
 		# Set up the translations menu
 		popup = translations_button.get_popup()
 		popup.clear()
-		popup.add_icon_item(get_theme_icon("Translation", "EditorIcons"), DialogueConstants.translate("generate_line_ids"), 0)
+		popup.add_icon_item(get_theme_icon("Translation", "EditorIcons"), DialogueConstants.translate("generate_line_ids"), TRANSLATIONS_GENERATE_LINE_IDS)
 		popup.add_separator()
-		popup.add_icon_item(get_theme_icon("FileList", "EditorIcons"), DialogueConstants.translate("save_characters_to_csv"), 2)
-		popup.add_icon_item(get_theme_icon("FileList", "EditorIcons"), DialogueConstants.translate("save_to_csv"), 3)
-		popup.add_icon_item(get_theme_icon("AssetLib", "EditorIcons"), DialogueConstants.translate("import_from_csv"), 4)
+		popup.add_icon_item(get_theme_icon("FileList", "EditorIcons"), DialogueConstants.translate("save_characters_to_csv"), TRANSLATIONS_SAVE_CHARACTERS_TO_CSV)
+		popup.add_icon_item(get_theme_icon("FileList", "EditorIcons"), DialogueConstants.translate("save_to_csv"), TRANSLATIONS_SAVE_TO_CSV)
+		popup.add_icon_item(get_theme_icon("AssetLib", "EditorIcons"), DialogueConstants.translate("import_from_csv"), TRANSLATIONS_IMPORT_FROM_CSV)
 		
 		# Dialog sizes
 		var scale: float = editor_plugin.get_editor_interface().get_editor_scale()
@@ -741,21 +746,40 @@ func _on_insert_button_menu_id_pressed(id: int) -> void:
 
 func _on_translations_button_menu_id_pressed(id: int) -> void:
 	match id:
-		0:
+		TRANSLATIONS_GENERATE_LINE_IDS:
 			generate_translations_keys()
-		1:
+			
+		TRANSLATIONS_SAVE_CHARACTERS_TO_CSV:
 			translation_source = TranslationSource.CharacterNames
 			export_dialog.filters = PackedStringArray(["*.csv ; Translation CSV"])
 			export_dialog.current_path = get_last_export_path("csv")
 			export_dialog.popup_centered()
-		2:
+			
+		TRANSLATIONS_SAVE_TO_CSV:
 			translation_source = TranslationSource.Lines
 			export_dialog.filters = PackedStringArray(["*.csv ; Translation CSV"])
 			export_dialog.current_path = get_last_export_path("csv")
 			export_dialog.popup_centered()
-		3:
+			
+		TRANSLATIONS_IMPORT_FROM_CSV:
 			import_dialog.current_path = get_last_export_path("csv")
 			import_dialog.popup_centered()
+
+
+func _on_export_dialog_file_selected(path: String) -> void:
+	DialogueSettings.set_user_value("last_export_path", path.get_base_dir())
+	match path.get_extension():
+		"csv":
+			match translation_source:
+				TranslationSource.CharacterNames:
+					export_character_names_to_csv(path)
+				TranslationSource.Lines:
+					export_translations_to_csv(path)
+
+
+func _on_import_dialog_file_selected(path: String) -> void:
+	DialogueSettings.set_user_value("last_export_path", path.get_base_dir())
+	import_translations_from_csv(path)
 
 
 func _on_main_view_theme_changed():
@@ -830,22 +854,6 @@ func _on_parse_timer_timeout() -> void:
 func _on_errors_panel_error_pressed(line_number: int) -> void:
 	code_edit.set_caret_line(line_number)
 	code_edit.grab_focus()
-
-
-func _on_export_dialog_file_selected(path: String) -> void:
-	DialogueSettings.set_user_value("last_export_path", path.get_base_dir())
-	match path.get_extension():
-		"csv":
-			match translation_source:
-				TranslationSource.CharacterNames:
-					export_translations_to_csv(path)
-				TranslationSource.Lines:
-					export_character_names_to_csv(path)
-
-
-func _on_import_dialog_file_selected(path: String) -> void:
-	DialogueSettings.set_user_value("last_export_path", path.get_base_dir())
-	import_translations_from_csv(path)
 
 
 func _on_search_button_toggled(button_pressed: bool) -> void:
