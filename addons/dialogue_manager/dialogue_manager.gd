@@ -218,7 +218,23 @@ func translate(data: Dictionary) -> String:
 	if data.translation_key == "" or data.translation_key == data.text:
 		return tr(data.text)
 	else:
-		return tr(data.translation_key, StringName(data.text))
+		# Line IDs work slightly differently depending on whether the translation came
+		# from a CSV or a PO file. CSVs use the line ID as the translatable string
+		# whereas POs use the ID as context and the line itself as the translatable string.
+		#
+		# eg.
+		# 	line = { translation_key: "123", text: "Hello", ... }
+		# 	CSV = 123,Hello
+		# 	PO = msgctxt "123", msgid "Hello", msgstr "Hello"
+		var csv_string: String = tr(data.translation_key)
+		if csv_string == "" or csv_string == data.text:
+			var po_string = tr(data.text, StringName(data.translation_key))
+			if po_string == "":
+				return csv_string
+			else:
+				return po_string
+		else:
+			return csv_string
 
 
 # Create a line of dialogue

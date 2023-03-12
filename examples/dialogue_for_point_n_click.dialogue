@@ -1,0 +1,15 @@
+~ start
+
+Nathan: Hi, I'm Nathan and this is Coco. [ID:tf885328afb]
+Coco: Meow. [ID:t4c11347656]
+Nathan: Here are some response options. [ID:tba678dd331]
+- First one [ID:tec2831274f]
+	Nathan: You picked the first one. [ID:ted9b57f70f]
+- Second one [ID:te9670331c2]
+	Nathan: You picked the second one. [ID:t14bc171a9f]
+- Start again [ID:ta04a1307f6] => start
+- End the conversation [ID:t3211e3adf8] => END
+Nathan: I hope this example is helpful. [ID:t643e01443b]
+Coco: Meow. [ID:tb75d1c7a40]
+
+=> END
