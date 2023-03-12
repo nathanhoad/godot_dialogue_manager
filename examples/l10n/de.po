@@ -17,57 +17,174 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "X-Generator: Poedit 3.2.2\n"
 
-#: examples/dialogue.dialogue
-msgctxt "Hi, I'm Nathan and this is Coco."
-msgid "tf885328afb"
-msgstr "Hallo, ich bin Nathan und das ist Coco."
+#: examples/dialogue.dialogue examples/dialogue_for_visual_novel.dialogue
+#: examples/dialogue_with_input.dialogue
+#: examples/dialogue_for_point_n_click.dialogue
+msgctxt "dialogue"
+msgid "Nathan"
+msgstr "Nathan"
+
+#: examples/dialogue.dialogue examples/dialogue_for_visual_novel.dialogue
+#: examples/dialogue_with_input.dialogue
+#: examples/dialogue_for_point_n_click.dialogue
+msgctxt "dialogue"
+msgid "Coco"
+msgstr "Coco"
 
 #: examples/dialogue.dialogue
-msgctxt "Meow."
-msgid "t4c11347656"
+msgid "Hi, I'm Nathan and this is Coco."
+msgstr "Hallo, ich bin Nathan und das ist Coco."
+
+#: examples/dialogue_for_visual_novel.dialogue
+#: examples/dialogue_for_point_n_click.dialogue
+msgctxt "tf885328afb"
+msgid "Hi, I'm Nathan and this is Coco."
+msgstr "Hallo, ich bin Nathan und das ist Coco."
+
+#: examples/dialogue.dialogue examples/dialogue_with_input.dialogue
+msgid "Meow."
+msgstr "Miau."
+
+#: examples/dialogue_for_visual_novel.dialogue
+#: examples/dialogue_for_point_n_click.dialogue
+msgctxt "t4c11347656"
+msgid "Meow."
+msgstr "Miau."
+
+#: examples/dialogue_for_visual_novel.dialogue
+#: examples/dialogue_for_point_n_click.dialogue
+msgctxt "tb75d1c7a40"
+msgid "Meow."
 msgstr "Miau."
 
 #: examples/dialogue.dialogue
-msgctxt "Here are some response options."
-msgid "tba678dd331"
+msgid "Here are some response options."
+msgstr "Hier sind einige Optionen."
+
+#: examples/dialogue_for_visual_novel.dialogue
+#: examples/dialogue_for_point_n_click.dialogue
+msgctxt "tba678dd331"
+msgid "Here are some response options."
 msgstr "Hier sind einige Optionen."
 
 #: examples/dialogue.dialogue
-msgctxt "First one"
-msgid "tec2831274f"
+msgid "First one"
+msgstr "Erster"
+
+#: examples/dialogue_for_visual_novel.dialogue
+#: examples/dialogue_for_point_n_click.dialogue
+msgctxt "tec2831274f"
+msgid "First one"
 msgstr "Erster"
 
 #: examples/dialogue.dialogue
-msgctxt "You picked the first one."
-msgid "ted9b57f70f"
+msgid "You picked the first one."
+msgstr "Sie haben sich für die erste entschieden."
+
+#: examples/dialogue_for_visual_novel.dialogue
+#: examples/dialogue_for_point_n_click.dialogue
+msgctxt "ted9b57f70f"
+msgid "You picked the first one."
 msgstr "Sie haben sich für die erste entschieden."
 
 #: examples/dialogue.dialogue
-msgctxt "Second one"
-msgid "te9670331c2"
+msgid "Second one"
+msgstr "Zweiter"
+
+#: examples/dialogue_for_visual_novel.dialogue
+#: examples/dialogue_for_point_n_click.dialogue
+msgctxt "te9670331c2"
+msgid "Second one"
 msgstr "Zweiter"
 
 #: examples/dialogue.dialogue
-msgctxt "You picked the second one."
-msgid "t14bc171a9f"
+msgid "You picked the second one."
+msgstr "Sie haben sich für das Zweite entschieden."
+
+#: examples/dialogue_for_visual_novel.dialogue
+#: examples/dialogue_for_point_n_click.dialogue
+msgctxt "t14bc171a9f"
+msgid "You picked the second one."
 msgstr "Sie haben sich für das Zweite entschieden."
 
 #: examples/dialogue.dialogue
-msgctxt "Start again"
-msgid "ta04a1307f6"
+msgid "Start again"
+msgstr "Fang nochmal an"
+
+#: examples/dialogue_for_visual_novel.dialogue
+#: examples/dialogue_for_point_n_click.dialogue
+msgctxt "ta04a1307f6"
+msgid "Start again"
 msgstr "Fang nochmal an"
 
 #: examples/dialogue.dialogue
-msgctxt "End the conversation"
-msgid "t3211e3adf8"
+msgid "End the conversation"
+msgstr "Beenden Sie das Gespräch"
+
+#: examples/dialogue_for_visual_novel.dialogue
+#: examples/dialogue_for_point_n_click.dialogue
+msgctxt "t3211e3adf8"
+msgid "End the conversation"
 msgstr "Beenden Sie das Gespräch"
 
 #: examples/dialogue.dialogue
-msgctxt "I hope this example is helpful."
-msgid "t643e01443b"
+msgid "I hope this example is helpful."
 msgstr "Ich hoffe, das ist hilfreich."
 
-#: examples/dialogue.dialogue
-msgctxt "Meow."
-msgid "tb75d1c7a40"
-msgstr "Miau."
+#: examples/dialogue_for_visual_novel.dialogue
+#: examples/dialogue_for_point_n_click.dialogue
+msgctxt "t643e01443b"
+msgid "I hope this example is helpful."
+msgstr "Ich hoffe, das ist hilfreich."
+
+#: examples/dialogue_with_input.dialogue
+msgid "I am Nathan. What is your name?"
+msgstr "Ich bin Nathan. Wie heissen Sie?"
+
+#: examples/dialogue_with_input.dialogue
+msgid "Hi {{player_name}}! It is nice to meet you."
+msgstr "Hallo {{player_name}}. Es ist schön, Sie kennenzulernen."
+
+#~ msgctxt "Hi, I'm Nathan and this is Coco."
+#~ msgid "tf885328afb"
+#~ msgstr "Hallo, ich bin Nathan und das ist Coco."
+
+#~ msgctxt "Meow."
+#~ msgid "t4c11347656"
+#~ msgstr "Miau."
+
+#~ msgctxt "Here are some response options."
+#~ msgid "tba678dd331"
+#~ msgstr "Hier sind einige Optionen."
+
+#~ msgctxt "First one"
+#~ msgid "tec2831274f"
+#~ msgstr "Erster"
+
+#~ msgctxt "You picked the first one."
+#~ msgid "ted9b57f70f"
+#~ msgstr "Sie haben sich für die erste entschieden."
+
+#~ msgctxt "Second one"
+#~ msgid "te9670331c2"
+#~ msgstr "Zweiter"
+
+#~ msgctxt "You picked the second one."
+#~ msgid "t14bc171a9f"
+#~ msgstr "Sie haben sich für das Zweite entschieden."
+
+#~ msgctxt "Start again"
+#~ msgid "ta04a1307f6"
+#~ msgstr "Fang nochmal an"
+
+#~ msgctxt "End the conversation"
+#~ msgid "t3211e3adf8"
+#~ msgstr "Beenden Sie das Gespräch"
+
+#~ msgctxt "I hope this example is helpful."
+#~ msgid "t643e01443b"
+#~ msgstr "Ich hoffe, das ist hilfreich."
+
+#~ msgctxt "Meow."
+#~ msgid "tb75d1c7a40"
+#~ msgstr "Miau."

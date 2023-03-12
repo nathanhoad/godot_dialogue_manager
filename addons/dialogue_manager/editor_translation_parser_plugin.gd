@@ -33,7 +33,7 @@ func _parse_file(path: String, msgids: Array, msgids_context_plural: Array) -> v
 		if line.translation_key == "" or line.translation_key == line.text:
 			msgids_context_plural.append([line.text, "", ""])
 		else:
-			msgids_context_plural.append([line.translation_key, line.text, ""])
+			msgids_context_plural.append([line.text, line.translation_key, ""])
 
 
 func _get_recognized_extensions() -> PackedStringArray:
