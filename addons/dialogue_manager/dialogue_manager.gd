@@ -103,10 +103,10 @@ func create_resource_from_text(text: String) -> Resource:
 	parser.free()
 	
 	if errors.size() > 0:
-		printerr("You have errors in your dialogue text.")
+		printerr("You have {count} errors in your dialogue text.".format({ count = errors.size() }))
 		for error in errors:
 			printerr("Line %d: %s" % [error.line_number + 1, DialogueConstants.get_error_message(error.error)])
-		assert(false, "You have errors in your dialogue text. See Output for details.")
+		assert(false, "You have {count} errors in your dialogue text. See Output for details.".format({ count = errors.size() }))
 	
 	var resource: DialogueResource = DialogueResource.new()
 	resource.set_meta("titles", results.titles)
@@ -346,8 +346,7 @@ func mutate(mutation: Dictionary, extra_game_states: Array, is_inline_mutation: 
 						return
 				
 				# The signal hasn't been found anywhere
-				printerr("\"%s\" is not a signal on any game states (%s)" % [args[0], str(get_game_states(extra_game_states))])
-				assert(false, "Missing signal on calling object. See Output for details.")
+				assert(false, "\"{signal_name}\" is not a signal on any game states ({states})".format({ signal_name = args[0], states = str(get_game_states(extra_game_states)) }))
 				
 			"debug":
 				prints("Debug:", args)
@@ -395,8 +394,7 @@ func get_responses(ids: Array, resource: DialogueResource, id_trail: String, ext
 func get_state_value(property: String, extra_game_states: Array):
 	var expression = Expression.new()
 	if expression.parse(property) != OK:
-		printerr("'%s' is not a valid expression: %s" % [property, expression.get_error_text()])
-		assert(false, "Invalid expression. See Output for details.")
+		assert(false, "\"{expression}\" is not a valid expression: {error}".format({ expression = property, error = expression.get_error_text() }))
 	
 	for state in get_game_states(extra_game_states):
 		if typeof(state) == TYPE_DICTIONARY:
@@ -406,9 +404,8 @@ func get_state_value(property: String, extra_game_states: Array):
 			var result = expression.execute([], state, false)
 			if not expression.has_execute_failed():
 				return result
-
-	printerr("'%s' is not a property on any game states (%s)." % [property, str(get_game_states(extra_game_states))])
-	assert(false, "Missing property on current scene or game state. See Output for details.")
+	
+	assert(false, "\"{property}\" is not a property on any game states ({states}).".format({ property = property, states = str(get_game_states(extra_game_states)) }))
 
 
 # Set a value on the current scene or game state
@@ -422,8 +419,7 @@ func set_state_value(property: String, value, extra_game_states: Array) -> void:
 			state.set(property, value)
 			return
 	
-	printerr("'%s' is not a property on any game states (%s)." % [property, str(get_game_states(extra_game_states))])
-	assert(false, "Missing property on current scene or game state. See Output for details.")
+	assert(false, "\"{property}\" is not a property on any game states ({states}).".format({ property = property, states = str(get_game_states(extra_game_states)) }))
 
 
 # Collapse any expressions
@@ -491,8 +487,7 @@ func resolve(tokens: Array, extra_game_states: Array):
 					tokens.remove_at(i-1)
 					i -= 2
 				else:
-					printerr("\"%s\" is not a callable method on \"%s\"" % [function_name, str(caller)])
-					assert(false, "Missing callable method on calling object. See Output for details.")
+					assert(false, "\"{method}\" is not a callable method on \"{object}\"".format({ method = function_name, object = str(caller) }))
 			else:
 				var found: bool = false
 				for state in get_game_states(extra_game_states):
@@ -530,8 +525,7 @@ func resolve(tokens: Array, extra_game_states: Array):
 						found = true
 				
 				if not found:
-					printerr("\"%s\" is not a method on any game states (%s)" % [function_name, str(get_game_states(extra_game_states))])
-					assert(false, "Missing function on current scene or game state. See Output for details.")
+					assert(false, "\"{method}\" is not a method on any game states ({states})".format({ method = function_name, states = str(get_game_states(extra_game_states)) }))
 		
 		elif token.type == DialogueConstants.TOKEN_DICTIONARY_REFERENCE:
 			var value
@@ -552,8 +546,7 @@ func resolve(tokens: Array, extra_game_states: Array):
 						token["type"] = "value"
 						token["value"] = value[index]
 					else:
-						printerr("Key \"%s\" not found in dictionary \"%s\"" % [str(index), token.variable])
-						assert(false, "Key not found in dictionary. See Output for details.")
+						assert(false, "Key \"{key}\" not found in dictionary \"{dictionary}\"".format({ key = str(index), dictionary = token.variable }))
 			elif typeof(value) == TYPE_ARRAY:
 				if tokens.size() > i + 1 and tokens[i + 1].type == DialogueConstants.TOKEN_ASSIGNMENT:
 					# If the next token is an assignment then we need to leave this as a reference
@@ -566,8 +559,7 @@ func resolve(tokens: Array, extra_game_states: Array):
 						token["type"] = "value"
 						token["value"] = value[index]
 					else:
-						printerr("Index %d out of bounds of array \"%s\"" % [index, token.variable])
-						assert(false, "Index out of bounds of array. See Output for details.")
+						assert(false, "Index {index} out of bounds of array \"{array}\"".format({ index = index, array = token.variable }))
 		
 		elif token.type == DialogueConstants.TOKEN_DICTIONARY_NESTED_REFERENCE:
 			var dictionary: Dictionary = tokens[i - 1]
@@ -588,8 +580,7 @@ func resolve(tokens: Array, extra_game_states: Array):
 						tokens.remove_at(i)
 						i -= 1
 					else:
-						printerr("Key \"%s\" not found in dictionary \"%s\"" % [str(index), value])
-						assert(false, "Key not found in dictionary. See Output for details.")
+						assert(false, "Key \"{key}\" not found in dictionary \"{dictionary}\"".format({ key = str(index), dictionary = value }))
 			elif typeof(value) == TYPE_ARRAY:
 				if tokens.size() > i + 1 and tokens[i + 1].type == DialogueConstants.TOKEN_ASSIGNMENT:
 					# If the next token is an assignment then we need to leave this as a reference
@@ -605,8 +596,7 @@ func resolve(tokens: Array, extra_game_states: Array):
 						tokens.remove_at(i)
 						i -= 1
 					else:
-						printerr("Index %d out of bounds of array \"%s\"" % [index, value])
-						assert(false, "Index out of bounds of array. See Output for details.")
+						assert(false, "Index {index} out of bounds of array \"{array}\"".format({ index = index, array = value }))
 		
 		elif token.type == DialogueConstants.TOKEN_ARRAY:
 			token["type"] = "value"
