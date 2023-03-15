@@ -229,11 +229,13 @@ func parse(text: String) -> Error:
 			line["next_id_after"] = find_next_line_after_conditions(id)
 			var next_sibling_id = find_next_condition_sibling(id)
 			line["next_conditional_id"] = next_sibling_id if is_valid_id(next_sibling_id) else line.next_id_after
+			
 		elif is_condition_line(raw_line, true):
 			parent_stack.append(str(id))
 			line["type"] = DialogueConstants.TYPE_CONDITION
 			line["next_id_after"] = find_next_line_after_conditions(id)
 			line["next_conditional_id"] = line["next_id_after"]
+			
 		elif is_while_condition_line(raw_line):
 			parent_stack.append(str(id))
 			line["type"] = DialogueConstants.TYPE_CONDITION
@@ -880,6 +882,8 @@ func extract_mutation(line: String) -> Dictionary:
 
 
 func extract_condition(raw_line: String, is_wrapped: bool = false) -> Dictionary:
+	raw_line = raw_line.strip_edges().trim_suffix(":")
+	
 	var condition := {}
 	
 	var regex = WRAPPED_CONDITION_REGEX if is_wrapped else CONDITION_REGEX
