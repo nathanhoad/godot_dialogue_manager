@@ -1,10 +1,13 @@
 extends Node
 
-
+signal got_dialogue(line)
+signal mutated(mutation)
+signal dialogue_ended(resource)
+signal bridge_get_next_dialogue_line_completed(line)
+# Deprecated signals
 signal dialogue()
 signal mutation()
 signal dialogue_finished()
-signal bridge_get_next_dialogue_line_completed(line)
 
 
 const DialogueConstants = preload("res://addons/dialogue_manager/constants.gd")
@@ -64,6 +67,8 @@ func get_next_dialogue_line(resource: DialogueResource, key: String = "0", extra
 	
 	# If our dialogue is nothing then we hit the end
 	if not is_valid(dialogue):
+		dialogue_ended.emit(resource)
+		# Deprecated
 		emit_signal("dialogue_finished")
 		return null
 	
@@ -79,11 +84,15 @@ func get_next_dialogue_line(resource: DialogueResource, key: String = "0", extra
 				pass
 		if actual_next_id in [DialogueConstants.ID_END_CONVERSATION, DialogueConstants.ID_NULL, null]:
 			# End the conversation
+			dialogue_ended.emit(resource)
+			# Deprecated
 			emit_signal("dialogue_finished")
 			return null
 		else:
 			return await get_next_dialogue_line(resource, dialogue.next_id, extra_game_states, mutation_behaviour)
 	else:
+		got_dialogue.emit(dialogue)
+		# Deprecated
 		emit_signal("dialogue")
 		return dialogue
 
@@ -120,8 +129,9 @@ func create_resource_from_text(text: String) -> Resource:
 		assert(false, "You have {count} errors in your dialogue text. See Output for details.".format({ count = errors.size() }))
 	
 	var resource: DialogueResource = DialogueResource.new()
-	resource.set_meta("titles", results.titles)
-	resource.set_meta("lines", results.lines)
+	resource.titles = results.titles
+	resource.character_names = results.character_names
+	resource.lines = results.lines
 	
 	return resource
 
@@ -142,7 +152,7 @@ func show_example_dialogue_balloon(resource: DialogueResource, title: String = "
 
 func _bridge_get_next_dialogue_line(resource: DialogueResource, key: String, extra_game_states: Array = []) -> void:
 	var line = await get_next_dialogue_line(resource, key, extra_game_states)
-	emit_signal("bridge_get_next_dialogue_line_completed", line)
+	bridge_get_next_dialogue_line_completed.emit(line)
 
 
 ### Helpers
@@ -328,6 +338,8 @@ func mutate(mutation: Dictionary, extra_game_states: Array, is_inline_mutation: 
 		var args: Array = await resolve_each(expression[0].value, extra_game_states)
 		match expression[0].function:
 			"wait":
+				mutated.emit(mutation)
+				# Deprecated
 				emit_signal("mutation")
 				await get_tree().create_timer(float(args[0])).timeout
 				return
@@ -365,6 +377,8 @@ func mutate(mutation: Dictionary, extra_game_states: Array, is_inline_mutation: 
 	# Or pass through to the resolver
 	else:
 		if not mutation_contains_assignment(mutation.expression) and not is_inline_mutation:
+			mutated.emit(mutation)
+			# Deprecated
 			emit_signal("mutation")
 		
 		await resolve(mutation.expression.duplicate(true), extra_game_states)

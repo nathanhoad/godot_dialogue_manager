@@ -4,9 +4,9 @@
 
 ### Signals
 
-- `dialogue()` - emitted when a dialogue line is found.
-- `mutation()` - emitted when a mutation line is about to be run (not including `set` lines).
-- `dialogue_finished()` - emitted when the next line of dialogue is empty.
+- `got_dialogue(line: DialogueLine)` - emitted when a dialogue line is found.
+- `mutated(mutation: Dictionary)` - emitted when a mutation line is about to be run (not including `set` lines).
+- `dialogue_ended(resource: DialogueResource)` - emitted when the next line of dialogue is empty and provides the calling resource.
 
 ### Methods
 

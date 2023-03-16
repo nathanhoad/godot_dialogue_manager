@@ -87,7 +87,7 @@ func _ready() -> void:
 	balloon.hide()
 	balloon.custom_minimum_size.x = balloon.get_viewport_rect().size.x
 	
-	Engine.get_singleton("DialogueManager").mutation.connect(_on_mutation)
+	Engine.get_singleton("DialogueManager").mutated.connect(_on_mutated)
 
 
 func _unhandled_input(_event: InputEvent) -> void:
@@ -170,7 +170,7 @@ func handle_resize() -> void:
 ### Signals
 
 
-func _on_mutation() -> void:
+func _on_mutated(mutation: Dictionary) -> void:
 	is_waiting_for_input = false
 	will_hide_balloon = true
 	get_tree().create_timer(0.1).timeout.connect(func():
