@@ -13,6 +13,13 @@ const DialogueLine = preload("res://addons/dialogue_manager/dialogue_line.gd")
 const DialogueResponse = preload("res://addons/dialogue_manager/dialogue_response.gd")
 
 
+enum MutationBehaviour {
+	Wait,
+	DoNotWait,
+	Skip
+}
+
+
 # The list of globals that dialogue can query
 var game_states: Array = []
 
@@ -48,14 +55,12 @@ func _ready() -> void:
 
 
 ## Step through lines and run any mutations until we either hit some dialogue or the end of the conversation
-func get_next_dialogue_line(resource: DialogueResource, key: String = "0", extra_game_states: Array = []) -> DialogueLine:
+func get_next_dialogue_line(resource: DialogueResource, key: String = "0", extra_game_states: Array = [], mutation_behaviour: MutationBehaviour = MutationBehaviour.Wait) -> DialogueLine:
 	# You have to provide a valid dialogue resource
 	assert(resource != null, "No dialogue resource provided")
 	assert(resource.lines.size() > 0, "Dialogue file has no content.")
 	
 	var dialogue: DialogueLine = await get_line(resource, key, extra_game_states)
-	
-	await get_tree().process_frame
 	
 	# If our dialogue is nothing then we hit the end
 	if not is_valid(dialogue):
@@ -64,14 +69,20 @@ func get_next_dialogue_line(resource: DialogueResource, key: String = "0", extra
 	
 	# Run the mutation if it is one
 	if dialogue.type == DialogueConstants.TYPE_MUTATION:
-		await mutate(dialogue.mutation, extra_game_states)
 		var actual_next_id: String = dialogue.next_id.split(",")[0]
+		match mutation_behaviour:
+			MutationBehaviour.Wait:
+				await mutate(dialogue.mutation, extra_game_states)
+			MutationBehaviour.DoNotWait:
+				mutate(dialogue.mutation, extra_game_states)
+			MutationBehaviour.Skip:
+				pass
 		if actual_next_id in [DialogueConstants.ID_END_CONVERSATION, DialogueConstants.ID_NULL, null]:
 			# End the conversation
 			emit_signal("dialogue_finished")
 			return null
 		else:
-			return await get_next_dialogue_line(resource, dialogue.next_id, extra_game_states)
+			return await get_next_dialogue_line(resource, dialogue.next_id, extra_game_states, mutation_behaviour)
 	else:
 		emit_signal("dialogue")
 		return dialogue

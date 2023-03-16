@@ -31,7 +31,8 @@ var dialogue_line: DialogueLine:
 		
 		# Remove any previous responses
 		for child in responses_menu.get_children():
-			child.free()
+			responses_menu.remove_child(child)
+			child.queue_free()
 		
 		dialogue_line = next_dialogue_line
 		

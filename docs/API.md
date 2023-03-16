@@ -10,7 +10,7 @@
 
 ### Methods
 
-#### `func get_next_dialogue_line(resource: DialogueResource, key: String = "0", extra_game_states: Array = []) -> DialogueLine`
+#### `func get_next_dialogue_line(resource: DialogueResource, key: String = "0", extra_game_states: Array = [], mutation_behaviour: MutationBehaviour = MutationBehaviour.Wait) -> DialogueLine`
 
 **Must be used with `await`.**
 
@@ -31,6 +31,8 @@ Returns a `DialogueLine` that looks something like this:
 If there is no next line of dialogue found then it will return an empty dictionary (`{}`).
 
 Pass an array of nodes as `extra_game_states` in order to temporarily add to the game state shortcuts that are available to conditions and mutations.
+
+You can specify `mutation_behaviour` to be one of the values provided in the `DialogueManager.MutationBehaviour` enum. `Wait` is the default and will `await` any mutation lines. `DoNoWait` will run the mutations but not wait for them before moving to the next line. `Skip` will skip mutations entirely. In most cases you should leave this as the default. _The example balloon only supports `Wait`_.
 
 #### `func show_example_dialogue_balloon(resource: DialoueResource, title: String = "0", extra_game_states: Array = []) -> void`
 
