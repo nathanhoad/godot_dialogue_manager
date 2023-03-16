@@ -6,7 +6,7 @@ signal compiled_resource(resource: Resource)
 
 
 const DialogueResource = preload("res://addons/dialogue_manager/dialogue_resource.gd")
-const compiler_version = 7
+const compiler_version = 8
 
 
 var editor_plugin

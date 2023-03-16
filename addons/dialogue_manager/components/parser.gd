@@ -600,7 +600,7 @@ func apply_weighted_random(id: int, raw_line: String, indent_size: int, line: Di
 	var original_random_line: Dictionary = {}
 	for i in range(id, 0, -1):
 		if not raw_lines[i].strip_edges().begins_with("%") or get_indent(raw_lines[i]) != indent_size:
-			continue
+			break
 		elif parsed_lines.has(str(i)) and parsed_lines[str(i)].has("siblings"):
 			original_random_line = parsed_lines[str(i)]
 	
