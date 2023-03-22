@@ -8,7 +8,7 @@ extends Node2D
 
 
 func _ready():
-	DialogueManager.dialogue_finished.connect(_on_dialogue_finished)
+	DialogueManager.dialogue_ended.connect(_on_dialogue_ended)
 	
 	await get_tree().create_timer(0.4).timeout
 	show_dialogue(title)
@@ -26,6 +26,6 @@ func show_dialogue(key: String) -> void:
 ### Signals
 
 
-func _on_dialogue_finished():
+func _on_dialogue_ended(_resource: DialogueResource):
 	await get_tree().create_timer(0.4).timeout
 	get_tree().quit()

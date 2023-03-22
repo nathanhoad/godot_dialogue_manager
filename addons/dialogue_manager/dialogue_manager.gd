@@ -4,10 +4,6 @@ signal got_dialogue(line)
 signal mutated(mutation)
 signal dialogue_ended(resource)
 signal bridge_get_next_dialogue_line_completed(line)
-# Deprecated signals
-signal dialogue()
-signal mutation()
-signal dialogue_finished()
 
 
 const DialogueConstants = preload("res://addons/dialogue_manager/constants.gd")
@@ -75,8 +71,6 @@ func get_next_dialogue_line(resource: DialogueResource, key: String = "0", extra
 	# If our dialogue is nothing then we hit the end
 	if not is_valid(dialogue):
 		dialogue_ended.emit(resource)
-		# Deprecated
-		emit_signal("dialogue_finished")
 		return null
 
 	# Run the mutation if it is one
@@ -92,15 +86,11 @@ func get_next_dialogue_line(resource: DialogueResource, key: String = "0", extra
 		if actual_next_id in [DialogueConstants.ID_END_CONVERSATION, DialogueConstants.ID_NULL, null]:
 			# End the conversation
 			dialogue_ended.emit(resource)
-			# Deprecated
-			emit_signal("dialogue_finished")
 			return null
 		else:
 			return await get_next_dialogue_line(resource, dialogue.next_id, extra_game_states, mutation_behaviour)
 	else:
 		got_dialogue.emit(dialogue)
-		# Deprecated
-		emit_signal("dialogue")
 		return dialogue
 
 
@@ -349,8 +339,6 @@ func mutate(mutation: Dictionary, extra_game_states: Array, is_inline_mutation: 
 		match expression[0].function:
 			"wait":
 				mutated.emit(mutation)
-				# Deprecated
-				emit_signal("mutation")
 				await get_tree().create_timer(float(args[0])).timeout
 				return
 
@@ -388,8 +376,6 @@ func mutate(mutation: Dictionary, extra_game_states: Array, is_inline_mutation: 
 	else:
 		if not mutation_contains_assignment(mutation.expression) and not is_inline_mutation:
 			mutated.emit(mutation)
-			# Deprecated
-			emit_signal("mutation")
 
 		await resolve(mutation.expression.duplicate(true), extra_game_states)
 		return

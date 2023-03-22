@@ -81,7 +81,7 @@ func _ready() -> void:
 	response_template.hide()
 	dialogue_label.hide()
 	
-	DialogueManager.mutation.connect(_on_mutation)
+	Engine.get_singleton("DialogueManager").mutated.connect(_on_mutated)
 
 
 func _unhandled_input(_event: InputEvent) -> void:
@@ -151,7 +151,7 @@ func get_responses() -> Array:
 ### Signals
 
 
-func _on_mutation() -> void:
+func _on_mutated(_mutation: Dictionary) -> void:
 	is_waiting_for_input = false
 
 

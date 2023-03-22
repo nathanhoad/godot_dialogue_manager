@@ -170,7 +170,7 @@ func handle_resize() -> void:
 ### Signals
 
 
-func _on_mutated(mutation: Dictionary) -> void:
+func _on_mutated(_mutation: Dictionary) -> void:
 	is_waiting_for_input = false
 	will_hide_balloon = true
 	get_tree().create_timer(0.1).timeout.connect(func():
