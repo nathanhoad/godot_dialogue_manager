@@ -22,12 +22,19 @@ enum MutationBehaviour {
 	Skip
 }
 
+enum TranslationSource {
+	None,
+	Guess,
+	CSV,
+	PO
+}
+
 
 # The list of globals that dialogue can query
 var game_states: Array = []
 
-# Auto tr() lines
-var auto_translate: bool = true
+# Manage translation behaviour
+var translation_source: TranslationSource = TranslationSource.Guess
 
 var _node_properties: Array = []
 
@@ -233,29 +240,32 @@ func get_line(resource: DialogueResource, key: String, extra_game_states: Array)
 
 # Translate a string
 func translate(data: Dictionary) -> String:
-	if not auto_translate:
+	if translation_source == TranslationSource.None:
 		return data.text
 
 	if data.translation_key == "" or data.translation_key == data.text:
 		return tr(data.text)
 	else:
-		# Line IDs work slightly differently depending on whether the translation came
-		# from a CSV or a PO file. CSVs use the line ID as the translatable string
+		# Line IDs work slightly differently depending on whether the translation came from a 
+		# CSV or a PO file. CSVs use the line ID (or the line itself) as the translatable string
 		# whereas POs use the ID as context and the line itself as the translatable string.
-		#
-		# eg.
-		# 	line = { translation_key: "123", text: "Hello", ... }
-		# 	CSV = 123,Hello
-		# 	PO = msgctxt "123", msgid "Hello", msgstr "Hello"
-		var csv_string: String = tr(data.translation_key)
-		if csv_string == "" or not csv_string == data.text:
-			var po_string = tr(data.text, StringName(data.translation_key))
-			if po_string == "":
-				return csv_string
-			else:
-				return po_string
-		else:
-			return csv_string
+		match translation_source:
+			TranslationSource.PO:
+				return tr(data.text, StringName(data.translation_key))
+			
+			TranslationSource.CSV:
+				return tr(data.translation_key)
+			
+			TranslationSource.Guess:
+				var translation_files: Array = ProjectSettings.get_setting("internationalization/locale/translations")
+				if translation_files.filter(func(f: String): return f.get_extension() == "po").size() > 0:
+					# Assume PO
+					return tr(data.text, StringName(data.translation_key))
+				else:
+					# Assume CSV
+					return tr(data.translation_key)
+	
+	return tr(data.translation_key)
 
 
 # Create a line of dialogue

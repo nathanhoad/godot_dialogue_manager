@@ -2,17 +2,25 @@
 
 By default, all dialogue and response prompts will be run through Godot's `tr` function to provide translations. 
 
-You can turn this off by setting `DialogueManager.auto_translate = false` but beware, if it is off you may need to handle your own variable replacements if using manual translation keys. You can use `DialogueManager.get_resolved_text(dialogue_line.text, dialogue_line.text_replacements)` to replace text variable markers with their values.
+Translations in dialogue work slightly differently depending on whether you're using CSV files or PO files to define your translated phrases.
 
-This might be useful for cases where you have audio dialogue files that match up with lines.
+By default Dialogue Manager will try to guess which one you're using based on the files that you have set up in the locale project settings. If a PO file is found it will assume you're using PO files and if not it will fall back to assuming CSV.
 
-## Generating POT files
+You can override this behaviour by setting `DialogueManager.translation_source` to be one of the values provided by `DialogueManager.TranslationSource`. `None` will turn off translations altogether, meaning you'll have to handle them yourself. `CSV` tells Dialogue Manager that you're using CSVs for translations. `PO` tells it that you're using PO files for translations. `Guess` is the default behaviour and will attempt to guess either CSV or PO.
+
+## Static translation keys in dialogue
+
+Dialogue lines and response lines can specify a unique ID per line in the form of `[ID:SOME_KEY]` where "SOME_KEY" is a unique string identifying that line/response.
+
+Static line keys are useful if you need to match up lines with voice acted dialogue.
+
+## Generating POT files for gettext (PO) translation
 
 All `.dialogue` files are automatically added to the POT Generation list in **Project Settings > Localization** for them to be included in the general PO template.
 
 ![Adding dialogue files to the POT generation list](pot-generation.jpg)
 
-## Static translation keys in dialogue
+## Exporting lines as CSV
 
 You can export translations as CSV from the "Translations" menu in the dialogue editor. 
 
