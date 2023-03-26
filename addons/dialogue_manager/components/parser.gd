@@ -18,8 +18,8 @@ var REPLACEMENTS_REGEX: RegEx = RegEx.create_from_string("{{(.*?)}}")
 var GOTO_REGEX: RegEx = RegEx.create_from_string("=><? (?<jump_to_title>.*)")
 
 var TOKEN_DEFINITIONS: Dictionary = {
-	DialogueConstants.TOKEN_FUNCTION: RegEx.create_from_string("^[a-zA-Z_][a-zA-Z_0-9]+\\("),
-	DialogueConstants.TOKEN_DICTIONARY_REFERENCE: RegEx.create_from_string("^[a-zA-Z_][a-zA-Z_0-9]+\\["),
+	DialogueConstants.TOKEN_FUNCTION: RegEx.create_from_string("^[a-zA-Z_][a-zA-Z_0-9]*\\("),
+	DialogueConstants.TOKEN_DICTIONARY_REFERENCE: RegEx.create_from_string("^[a-zA-Z_][a-zA-Z_0-9]*\\["),
 	DialogueConstants.TOKEN_PARENS_OPEN: RegEx.create_from_string("^\\("),
 	DialogueConstants.TOKEN_PARENS_CLOSE: RegEx.create_from_string("^\\)"),
 	DialogueConstants.TOKEN_BRACKET_OPEN: RegEx.create_from_string("^\\["),
