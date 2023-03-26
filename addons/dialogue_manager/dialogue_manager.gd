@@ -29,6 +29,9 @@ enum TranslationSource {
 # The list of globals that dialogue can query
 var game_states: Array = []
 
+# Allow dialogue to call singletons
+var include_singletons: bool = true
+
 # Manage translation behaviour
 var translation_source: TranslationSource = TranslationSource.Guess
 
@@ -425,6 +428,9 @@ func get_state_value(property: String, extra_game_states: Array):
 			var result = expression.execute([], state, false)
 			if not expression.has_execute_failed():
 				return result
+	
+	if include_singletons and Engine.has_singleton(property):
+		return Engine.get_singleton(property)
 
 	assert(false, "\"{property}\" is not a property on any game states ({states}).".format({ property = property, states = str(get_game_states(extra_game_states)) }))
 
