@@ -44,7 +44,6 @@ var colors: Dictionary:
 		syntax_highlighter.add_keyword_color("false", colors.numbers)
 		syntax_highlighter.number_color = colors.numbers
 		syntax_highlighter.add_color_region("\"", "\"", colors.strings)
-		syntax_highlighter.add_color_region("\'", "\'", colors.strings)
 		
 		# Mutations
 		syntax_highlighter.add_keyword_color("do", colors.mutations)
