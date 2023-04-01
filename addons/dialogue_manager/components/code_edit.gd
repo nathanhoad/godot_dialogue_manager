@@ -10,61 +10,63 @@ signal external_file_requested(path: String, title: String)
 # A link back to the owner MainView
 var main_view
 
-# Theme colours for syntax highlighting, etc
-var colors: Dictionary:
-	set(next_colors):
-		colors = next_colors
+# Theme overrides for syntax highlighting, etc
+var theme_overrides: Dictionary:
+	set(value):
+		theme_overrides = value
 		
 		syntax_highlighter.clear_color_regions()
 		syntax_highlighter.clear_keyword_colors()
 		
 		# Imports
-		syntax_highlighter.add_keyword_color("import", colors.conditions)
-		syntax_highlighter.add_keyword_color("as", colors.conditions)
+		syntax_highlighter.add_keyword_color("import", theme_overrides.conditions_color)
+		syntax_highlighter.add_keyword_color("as", theme_overrides.conditions_color)
 		
 		# Titles
-		syntax_highlighter.add_color_region("~", "~", colors.titles, true)
+		syntax_highlighter.add_color_region("~", "~", theme_overrides.titles_color, true)
 		
 		# Comments
-		syntax_highlighter.add_color_region("#", "##", colors.comments, true)
+		syntax_highlighter.add_color_region("#", "##", theme_overrides.comments_color, true)
 		
 		# Conditions
-		syntax_highlighter.add_keyword_color("if", colors.conditions)
-		syntax_highlighter.add_keyword_color("elif", colors.conditions)
-		syntax_highlighter.add_keyword_color("else", colors.conditions)
-		syntax_highlighter.add_keyword_color("while", colors.conditions)
-		syntax_highlighter.add_keyword_color("endif", colors.conditions)
-		syntax_highlighter.add_keyword_color("in", colors.conditions)
-		syntax_highlighter.add_keyword_color("and", colors.conditions)
-		syntax_highlighter.add_keyword_color("or", colors.conditions)
-		syntax_highlighter.add_keyword_color("not", colors.conditions)
+		syntax_highlighter.add_keyword_color("if", theme_overrides.conditions_color)
+		syntax_highlighter.add_keyword_color("elif", theme_overrides.conditions_color)
+		syntax_highlighter.add_keyword_color("else", theme_overrides.conditions_color)
+		syntax_highlighter.add_keyword_color("while", theme_overrides.conditions_color)
+		syntax_highlighter.add_keyword_color("endif", theme_overrides.conditions_color)
+		syntax_highlighter.add_keyword_color("in", theme_overrides.conditions_color)
+		syntax_highlighter.add_keyword_color("and", theme_overrides.conditions_color)
+		syntax_highlighter.add_keyword_color("or", theme_overrides.conditions_color)
+		syntax_highlighter.add_keyword_color("not", theme_overrides.conditions_color)
 		
 		# Values
-		syntax_highlighter.add_keyword_color("true", colors.numbers)
-		syntax_highlighter.add_keyword_color("false", colors.numbers)
-		syntax_highlighter.number_color = colors.numbers
-		syntax_highlighter.add_color_region("\"", "\"", colors.strings)
+		syntax_highlighter.add_keyword_color("true", theme_overrides.numbers_color)
+		syntax_highlighter.add_keyword_color("false", theme_overrides.numbers_color)
+		syntax_highlighter.number_color = theme_overrides.numbers_color
+		syntax_highlighter.add_color_region("\"", "\"", theme_overrides.strings_color)
 		
 		# Mutations
-		syntax_highlighter.add_keyword_color("do", colors.mutations)
-		syntax_highlighter.add_keyword_color("set", colors.mutations)
-		syntax_highlighter.function_color = colors.mutations
-		syntax_highlighter.member_variable_color = colors.members
+		syntax_highlighter.add_keyword_color("do", theme_overrides.mutations_color)
+		syntax_highlighter.add_keyword_color("set", theme_overrides.mutations_color)
+		syntax_highlighter.function_color = theme_overrides.mutations_color
+		syntax_highlighter.member_variable_color = theme_overrides.members_color
 		
 		# Jumps
-		syntax_highlighter.add_color_region("=>", "<=", colors.jumps, true)
+		syntax_highlighter.add_color_region("=>", "<=", theme_overrides.jumps_color, true)
 		
 		# Dialogue
-		syntax_highlighter.add_color_region(": ", "::", colors.text, true)
+		syntax_highlighter.add_color_region(": ", "::", theme_overrides.text_color, true)
 		
 		# General UI
-		syntax_highlighter.symbol_color = colors.symbols
-		add_theme_color_override("font_color", colors.text)
-		add_theme_color_override("background_color", colors.background)
-		add_theme_color_override("current_line_color", colors.current_line)
+		syntax_highlighter.symbol_color = theme_overrides.symbols_color
+		add_theme_color_override("font_color", theme_overrides.text_color)
+		add_theme_color_override("background_color", theme_overrides.background_color)
+		add_theme_color_override("current_line_color", theme_overrides.current_line_color)
 		add_theme_font_override("font", get_theme_font("source", "EditorFonts"))
+		add_theme_font_size_override("font_size", theme_overrides.font_size * theme_overrides.scale)
+		font_size = round(theme_overrides.font_size)
 	get:
-		return colors
+		return theme_overrides
 
 # Any parse errors
 var errors: Array:
@@ -83,6 +85,8 @@ var errors: Array:
 # The last selection (if there was one) so we can remember it for refocusing
 var last_selected_text: String
 
+var font_size: int
+
 
 func _ready() -> void:
 	# Add error gutter
@@ -90,17 +94,25 @@ func _ready() -> void:
 	set_gutter_type(0, TextEdit.GUTTER_TYPE_ICON)
 
 
-func _gui_input(event):
-	if not event is InputEventKey: return
-	if not event.is_pressed(): return
-	
-	match event.as_text():
-		"Ctrl+K":
-			toggle_comment()
-		"Alt+Up":
-			move_line(-1)
-		"Alt+Down":
-			move_line(1)
+func _gui_input(event: InputEvent) -> void:
+	if event is InputEventKey and event.is_pressed():
+		prints("event", event.as_text())
+		match event.as_text():
+			"Ctrl+Equal":
+				font_size += 1
+				add_theme_font_size_override("font_size", font_size * theme_overrides.scale)
+			"Ctrl+Minus":
+				font_size -= 1
+				add_theme_font_size_override("font_size", font_size * theme_overrides.scale)
+			"Ctrl+0":
+				font_size = theme_overrides.font_size
+				add_theme_font_size_override("font_size", font_size * theme_overrides.scale)
+			"Ctrl+K":
+				toggle_comment()
+			"Alt+Up":
+				move_line(-1)
+			"Alt+Down":
+				move_line(1)
 
 
 func _can_drop_data(at_position: Vector2, data) -> bool:
@@ -142,9 +154,9 @@ func _request_code_completion(force: bool) -> void:
 		
 		if "=> " in current_line:
 			if matches_prompt(prompt, "end"):
-				add_code_completion_option(CodeEdit.KIND_CLASS, "END", "END".substr(prompt.length()), colors.text, get_theme_icon("Stop", "EditorIcons"))
+				add_code_completion_option(CodeEdit.KIND_CLASS, "END", "END".substr(prompt.length()), theme_overrides.text_color, get_theme_icon("Stop", "EditorIcons"))
 			if matches_prompt(prompt, "end!"):
-				add_code_completion_option(CodeEdit.KIND_CLASS, "END!", "END!".substr(prompt.length()), colors.text, get_theme_icon("Stop", "EditorIcons"))
+				add_code_completion_option(CodeEdit.KIND_CLASS, "END!", "END!".substr(prompt.length()), theme_overrides.text_color, get_theme_icon("Stop", "EditorIcons"))
 		
 		# Get all titles, including those in imports
 		var parser: DialogueManagerParser = DialogueManagerParser.new()
@@ -153,9 +165,9 @@ func _request_code_completion(force: bool) -> void:
 			if "/" in title:
 				var bits = title.split("/")
 				if matches_prompt(prompt, bits[0]) or matches_prompt(prompt, bits[1]):
-					add_code_completion_option(CodeEdit.KIND_CLASS, title, title.substr(prompt.length()), colors.text, get_theme_icon("CombineLines", "EditorIcons"))
+					add_code_completion_option(CodeEdit.KIND_CLASS, title, title.substr(prompt.length()), theme_overrides.text_color, get_theme_icon("CombineLines", "EditorIcons"))
 			elif matches_prompt(prompt, title):
-				add_code_completion_option(CodeEdit.KIND_CLASS, title, title.substr(prompt.length()), colors.text, get_theme_icon("ArrowRight", "EditorIcons"))
+				add_code_completion_option(CodeEdit.KIND_CLASS, title, title.substr(prompt.length()), theme_overrides.text_color, get_theme_icon("ArrowRight", "EditorIcons"))
 		update_code_completion_options(true)
 		parser.free()
 		return
@@ -167,7 +179,7 @@ func _request_code_completion(force: bool) -> void:
 		var names: PackedStringArray = get_character_names(name_so_far)
 		if names.size() > 0:
 			for name in names:
-				add_code_completion_option(CodeEdit.KIND_CLASS, name + ": ", name.substr(name_so_far.length()) + ": ", colors.text, get_theme_icon("Sprite2D", "EditorIcons"))
+				add_code_completion_option(CodeEdit.KIND_CLASS, name + ": ", name.substr(name_so_far.length()) + ": ", theme_overrides.text_color, get_theme_icon("Sprite2D", "EditorIcons"))
 			update_code_completion_options(true)
 		else:
 			cancel_code_completion()
@@ -257,10 +269,10 @@ func get_character_names(beginning_with: String) -> PackedStringArray:
 # Mark a line as an error or not
 func mark_line_as_error(line_number: int, is_error: bool) -> void:
 	if is_error:
-		set_line_background_color(line_number, colors.error_line)
+		set_line_background_color(line_number, theme_overrides.or_line_color)
 		set_line_gutter_icon(line_number, 0, get_theme_icon("StatusError", "EditorIcons"))
 	else:
-		set_line_background_color(line_number, colors.background)
+		set_line_background_color(line_number, theme_overrides.background_color)
 		set_line_gutter_icon(line_number, 0, null)
 
 

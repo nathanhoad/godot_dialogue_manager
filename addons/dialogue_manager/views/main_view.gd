@@ -311,22 +311,27 @@ func remove_file_from_open_buffers(file: String) -> void:
 # Apply theme colors and icons to the UI
 func apply_theme() -> void:
 	if is_instance_valid(editor_plugin) and is_instance_valid(code_edit):
+		var scale: float = editor_plugin.get_editor_interface().get_editor_scale()
 		var editor_settings = editor_plugin.get_editor_interface().get_editor_settings()
-		code_edit.colors = {
-			background = editor_settings.get_setting("text_editor/theme/highlighting/background_color"),
-			current_line = editor_settings.get_setting("text_editor/theme/highlighting/current_line_color"),
-			error_line = editor_settings.get_setting("text_editor/theme/highlighting/mark_color"),
+		code_edit.theme_overrides = {
+			scale = scale,
+			
+			background_color = editor_settings.get_setting("text_editor/theme/highlighting/background_color"),
+			current_line_color = editor_settings.get_setting("text_editor/theme/highlighting/current_line_color"),
+			error_line_color = editor_settings.get_setting("text_editor/theme/highlighting/mark_color"),
 		
-			titles = editor_settings.get_setting("text_editor/theme/highlighting/control_flow_keyword_color"),
-			text = editor_settings.get_setting("text_editor/theme/highlighting/text_color"),
-			conditions = editor_settings.get_setting("text_editor/theme/highlighting/keyword_color"),
-			mutations = editor_settings.get_setting("text_editor/theme/highlighting/function_color"),
-			members = editor_settings.get_setting("text_editor/theme/highlighting/member_variable_color"),
-			strings = editor_settings.get_setting("text_editor/theme/highlighting/string_color"),
-			numbers = editor_settings.get_setting("text_editor/theme/highlighting/number_color"),
-			symbols = editor_settings.get_setting("text_editor/theme/highlighting/symbol_color"),
-			comments = editor_settings.get_setting("text_editor/theme/highlighting/comment_color"),
-			jumps = Color(editor_settings.get_setting("text_editor/theme/highlighting/control_flow_keyword_color"), 0.7),
+			titles_color = editor_settings.get_setting("text_editor/theme/highlighting/control_flow_keyword_color"),
+			text_color = editor_settings.get_setting("text_editor/theme/highlighting/text_color"),
+			conditions_color = editor_settings.get_setting("text_editor/theme/highlighting/keyword_color"),
+			mutations_color = editor_settings.get_setting("text_editor/theme/highlighting/function_color"),
+			members_color = editor_settings.get_setting("text_editor/theme/highlighting/member_variable_color"),
+			strings_color = editor_settings.get_setting("text_editor/theme/highlighting/string_color"),
+			numbers_color = editor_settings.get_setting("text_editor/theme/highlighting/number_color"),
+			symbols_color = editor_settings.get_setting("text_editor/theme/highlighting/symbol_color"),
+			comments_color = editor_settings.get_setting("text_editor/theme/highlighting/comment_color"),
+			jumps_color = Color(editor_settings.get_setting("text_editor/theme/highlighting/control_flow_keyword_color"), 0.7),
+			
+			font_size = editor_settings.get_setting("interface/editor/code_font_size")
 		}
 		
 		new_button.icon = get_theme_icon("New", "EditorIcons")
@@ -387,7 +392,6 @@ func apply_theme() -> void:
 		popup.add_icon_item(get_theme_icon("AssetLib", "EditorIcons"), DialogueConstants.translate("import_from_csv"), TRANSLATIONS_IMPORT_FROM_CSV)
 		
 		# Dialog sizes
-		var scale: float = editor_plugin.get_editor_interface().get_editor_scale()
 		new_dialog.min_size = Vector2(600, 500) * scale
 		save_dialog.min_size = Vector2(600, 500) * scale
 		open_dialog.min_size = Vector2(600, 500) * scale
