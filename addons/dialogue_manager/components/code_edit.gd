@@ -85,7 +85,12 @@ var errors: Array:
 # The last selection (if there was one) so we can remember it for refocusing
 var last_selected_text: String
 
-var font_size: int
+var font_size: int:
+	set(value):
+		font_size = value
+		add_theme_font_size_override("font_size", font_size * theme_overrides.scale)
+	get:
+		return font_size
 
 
 func _ready() -> void:
@@ -96,23 +101,26 @@ func _ready() -> void:
 
 func _gui_input(event: InputEvent) -> void:
 	if event is InputEventKey and event.is_pressed():
-		prints("event", event.as_text())
 		match event.as_text():
 			"Ctrl+Equal":
-				font_size += 1
-				add_theme_font_size_override("font_size", font_size * theme_overrides.scale)
+				self.font_size += 1
 			"Ctrl+Minus":
-				font_size -= 1
-				add_theme_font_size_override("font_size", font_size * theme_overrides.scale)
+				self.font_size -= 1
 			"Ctrl+0":
-				font_size = theme_overrides.font_size
-				add_theme_font_size_override("font_size", font_size * theme_overrides.scale)
+				self.font_size = theme_overrides.font_size
 			"Ctrl+K":
 				toggle_comment()
 			"Alt+Up":
 				move_line(-1)
 			"Alt+Down":
 				move_line(1)
+	
+	elif event is InputEventMouse:
+		match event.as_text():
+			"Ctrl+Mouse Wheel Up":
+				self.font_size += 1
+			"Ctrl+Mouse Wheel Down":
+				self.font_size -= 1
 
 
 func _can_drop_data(at_position: Vector2, data) -> bool:
