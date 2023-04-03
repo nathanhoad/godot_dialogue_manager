@@ -80,7 +80,7 @@ func _get_plugin_icon() -> Texture2D:
 
 
 func _handles(object) -> bool:
-	return object is Resource and object.has_meta("dialogue_manager_version")
+	return object is DialogueResource
 
 
 func _edit(object) -> void:
@@ -261,19 +261,19 @@ func _copy_dialogue_balloon() -> void:
 		var file_contents: String = file.get_as_text().replace("res://addons/dialogue_manager/example_balloon/example_balloon.gd", path + "/balloon.gd")
 		file = FileAccess.open(path + "/balloon.tscn", FileAccess.WRITE)
 		file.store_string(file_contents)
-		file.flush()
+		file.close()
 		
 		file = FileAccess.open("res://addons/dialogue_manager/example_balloon/small_example_balloon.tscn", FileAccess.READ)
 		file_contents = file.get_as_text().replace("res://addons/dialogue_manager/example_balloon/example_balloon.gd", path + "/balloon.gd")
 		file = FileAccess.open(path + "/small_balloon.tscn", FileAccess.WRITE)
 		file.store_string(file_contents)
-		file.flush()
+		file.close()
 		
 		file = FileAccess.open("res://addons/dialogue_manager/example_balloon/example_balloon.gd", FileAccess.READ)
 		file_contents = file.get_as_text()
 		file = FileAccess.open(path + "/balloon.gd", FileAccess.WRITE)
 		file.store_string(file_contents)
-		file.flush()
+		file.close()
 		
 		get_editor_interface().get_resource_filesystem().scan()
 		get_editor_interface().get_file_system_dock().call_deferred("navigate_to_path", path + "/balloon.tscn")

@@ -255,11 +255,15 @@ func show_file_in_filesystem(path: String) -> void:
 
 # Save any open files
 func save_files() -> void:
+	var saved_files: PackedStringArray = []
 	for path in open_buffers:
+		if open_buffers[path].text != open_buffers[path].pristine_text:
+			saved_files.append(path)
 		save_file(path)
-		
+	
 	# Make sure we reimport/recompile the changes
-	editor_plugin.get_editor_interface().get_resource_filesystem().scan()
+	if saved_files.size() > 0:
+		editor_plugin.get_editor_interface().get_resource_filesystem().reimport_files(saved_files)
 	save_all_button.disabled = true
 
 
@@ -279,7 +283,7 @@ func save_file(path: String) -> void:
 	# Save the current text
 	var file: FileAccess = FileAccess.open(path, FileAccess.WRITE)
 	file.store_string(buffer.text)
-	file.flush()
+	file.close()
 
 
 func close_file(file: String) -> void:
@@ -576,7 +580,7 @@ func export_translations_to_csv(path: String) -> void:
 	for line in lines_to_save:
 		file.store_csv_line(line)
 	
-	file.flush()
+	file.close()
 	
 	editor_plugin.get_editor_interface().get_resource_filesystem().scan()
 	editor_plugin.get_editor_interface().get_file_system_dock().call_deferred("navigate_to_path", path)
@@ -638,7 +642,7 @@ func export_character_names_to_csv(path: String) -> void:
 	for line in lines_to_save:
 		file.store_csv_line(line)
 	
-	file.flush()
+	file.close()
 	
 	editor_plugin.get_editor_interface().get_resource_filesystem().scan()
 	editor_plugin.get_editor_interface().get_file_system_dock().call_deferred("navigate_to_path", path)

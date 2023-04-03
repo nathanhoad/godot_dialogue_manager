@@ -32,7 +32,7 @@ func _ready() -> void:
 func save_zip(bytes: PackedByteArray) -> void:
 	var file: FileAccess = FileAccess.open(TEMP_FILE_NAME, FileAccess.WRITE)
 	file.store_buffer(bytes)
-	file.flush()
+	file.close()
 
 
 ### Signals
