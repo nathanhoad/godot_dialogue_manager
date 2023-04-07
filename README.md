@@ -1,10 +1,6 @@
 ![Dialogue Manager for Godot](docs/hero.png)
 
-A stateless branching dialogue manager for the [Godot Game Engine](https://godotengine.org/).
-
-Write your dialogue in a simple script-like way and run it in your game.
-
-_**NOTE:** This is for Godot 4. If you are using Godot 3 then have a look at the [v1.x branch](https://github.com/nathanhoad/godot_dialogue_manager/tree/v1.x)._
+A stateless branching dialogue manager for [Godot 4](https://godotengine.org/). Write your dialogue in a simple script-like way and run it in your game.
 
 ## Installation & Quick Start
 
@@ -22,10 +18,12 @@ _**NOTE:** This is for Godot 4. If you are using Godot 3 then have a look at the
 - [Translations](docs/Translations.md)
 - [API](docs/API.md)
 - [C# wrapper](docs/CSharp.md)
+- [Godot 3 version](https://github.com/nathanhoad/godot_dialogue_manager/tree/v1.x)
 
-## Discord
+## Community
 
-[![Join the Discord](docs/discord.svg)](https://discord.gg/zwBVQdJchX)
+[![Join my Discord](docs/discord.svg)](https://discord.gg/zwBVQdJchX)
+[![Become a Patron](docs/patreon.svg)](https://www.patreon.com/nathanhoad)
 
 ## Guides
 
