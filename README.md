@@ -24,6 +24,7 @@ A stateless branching dialogue manager for [Godot 4](https://godotengine.org/). 
 
 [![Join my Discord](docs/discord.svg)](https://discord.gg/zwBVQdJchX)
 [![Become a Patron](docs/patreon.svg)](https://www.patreon.com/nathanhoad)
+[![Buy me a coffee](docs/kofi.svg)](https://ko-fi.com/nathanhoad)
 
 ## Guides
 
