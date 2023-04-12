@@ -102,13 +102,13 @@ func _ready() -> void:
 func _gui_input(event: InputEvent) -> void:
 	if event is InputEventKey and event.is_pressed():
 		match event.as_text():
-			"Ctrl+Equal":
+			"Ctrl+Equal", "Command+Equal":
 				self.font_size += 1
-			"Ctrl+Minus":
+			"Ctrl+Minus", "Command+Minud":
 				self.font_size -= 1
-			"Ctrl+0":
+			"Ctrl+0", "Command+0":
 				self.font_size = theme_overrides.font_size
-			"Ctrl+K":
+			"Ctrl+K", "Command+K":
 				toggle_comment()
 			"Alt+Up":
 				move_line(-1)
@@ -117,9 +117,9 @@ func _gui_input(event: InputEvent) -> void:
 	
 	elif event is InputEventMouse:
 		match event.as_text():
-			"Ctrl+Mouse Wheel Up":
+			"Ctrl+Mouse Wheel Up", "Command+Mouse Wheel Up":
 				self.font_size += 1
-			"Ctrl+Mouse Wheel Down":
+			"Ctrl+Mouse Wheel Down", "Command+Mouse Wheel Down":
 				self.font_size -= 1
 
 
