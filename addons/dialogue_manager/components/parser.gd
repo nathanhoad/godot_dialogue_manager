@@ -33,6 +33,7 @@ var TOKEN_DEFINITIONS: Dictionary = {
 	DialogueConstants.TOKEN_OPERATOR: RegEx.create_from_string("^(\\+|\\-|\\*|/|%)"),
 	DialogueConstants.TOKEN_COMMA: RegEx.create_from_string("^,"),
 	DialogueConstants.TOKEN_DOT: RegEx.create_from_string("^\\."),
+	DialogueConstants.TOKEN_CONDITION: RegEx.create_from_string("^(if|elif|else)"),
 	DialogueConstants.TOKEN_BOOL: RegEx.create_from_string("^(true|false)"),
 	DialogueConstants.TOKEN_NOT: RegEx.create_from_string("^(not( |$)|!)"),
 	DialogueConstants.TOKEN_AND_OR: RegEx.create_from_string("^(and|or)( |$)"),
@@ -170,8 +171,9 @@ func parse(text: String) -> Error:
 						line["next_id"] = next_nonempty_line_id
 				
 			line["text_replacements"] = extract_dialogue_replacements(line.get("text"))
-			if line.text_replacements.size() > 0 and line.text_replacements[0].has("error"):
-				add_error(id, DialogueConstants.ERR_INVALID_EXPRESSION)
+			for replacement in line.text_replacements:
+				if replacement.has("error"):
+					add_error(id, replacement.error)
 			
 			# If this response has a character name in it then it will automatically be
 			# injected as a line of dialogue if the player selects it
@@ -189,8 +191,9 @@ func parse(text: String) -> Error:
 				first_child["character"] = bits.pop_front()
 				# You can use variables in the character's name
 				first_child["character_replacements"] = extract_dialogue_replacements(first_child.character)
-				if first_child.character_replacements.size() > 0 and first_child.character_replacements[0].has("error"):
-					add_error(id, DialogueConstants.ERR_INVALID_EXPRESSION_IN_CHARACTER_NAME)
+				for replacement in first_child.character_replacements:
+					if replacement.has("error"):
+						add_error(id, replacement.error)
 				first_child["text"] = ": ".join(bits).replace("!ESCAPED_COLON!", ":")
 				
 				line["character"] = first_child.character.strip_edges()
@@ -275,8 +278,9 @@ func parse(text: String) -> Error:
 					character_names.append(line["character"])
 				# You can use variables in the character's name
 				line["character_replacements"] = extract_dialogue_replacements(line.character)
-				if line.character_replacements.size() > 0 and line.character_replacements[0].has("error"):
-					add_error(id, DialogueConstants.ERR_INVALID_EXPRESSION_IN_CHARACTER_NAME)
+				for replacement in line.character_replacements:
+					if replacement.has("error"):
+						add_error(id, replacement.error)
 				line["text"] = ": ".join(bits).replace("!ESCAPED_COLON!", ":")
 			else:
 				line["character"] = ""
@@ -284,8 +288,9 @@ func parse(text: String) -> Error:
 				line["text"] = l.replace("!ESCAPED_COLON!", ":")
 			
 			line["text_replacements"] = extract_dialogue_replacements(line.text)
-			if line.text_replacements.size() > 0 and line.text_replacements[0].has("error"):
-				add_error(id, DialogueConstants.ERR_INVALID_EXPRESSION)
+			for replacement in line.text_replacements:
+				if replacement.has("error"):
+					add_error(id, replacement.error)
 			
 			# Unescape any newlines
 			line["text"] = line.text.replace("\\n", "\n").strip_edges()
@@ -1239,6 +1244,9 @@ func build_token_tree(tokens: Array[Dictionary], line_type: String, expected_clo
 					type = token.type,
 					value = token.value.substr(1, token.value.length() - 2)
 				})
+			
+			DialogueConstants.TOKEN_CONDITION:
+				return [build_token_tree_error(DialogueConstants.ERR_UNEXPECTED_CONDITION), token]
 			
 			DialogueConstants.TOKEN_BOOL:
 				tree.append({

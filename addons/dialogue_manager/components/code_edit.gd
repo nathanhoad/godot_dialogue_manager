@@ -277,7 +277,7 @@ func get_character_names(beginning_with: String) -> PackedStringArray:
 # Mark a line as an error or not
 func mark_line_as_error(line_number: int, is_error: bool) -> void:
 	if is_error:
-		set_line_background_color(line_number, theme_overrides.or_line_color)
+		set_line_background_color(line_number, theme_overrides.error_line_color)
 		set_line_gutter_icon(line_number, 0, get_theme_icon("StatusError", "EditorIcons"))
 	else:
 		set_line_background_color(line_number, theme_overrides.background_color)

@@ -24,6 +24,7 @@ const TOKEN_ASSIGNMENT = "assignment"
 const TOKEN_OPERATOR = "operator"
 const TOKEN_COMMA = "comma"
 const TOKEN_DOT = "dot"
+const TOKEN_CONDITION = "condition"
 const TOKEN_BOOL = "bool"
 const TOKEN_NOT = "not"
 const TOKEN_AND_OR = "and_or"
@@ -69,7 +70,7 @@ const ERR_UNKNOWN_TITLE = 107
 const ERR_INVALID_TITLE_REFERENCE = 108
 const ERR_TITLE_REFERENCE_HAS_NO_CONTENT = 109
 const ERR_INVALID_EXPRESSION = 110
-const ERR_INVALID_EXPRESSION_IN_CHARACTER_NAME = 111
+const ERR_UNEXPECTED_CONDITION = 111
 const ERR_DUPLICATE_ID = 112
 const ERR_MISSING_ID = 113
 const ERR_INVALID_INDENTATION = 114
@@ -122,8 +123,8 @@ static func get_error_message(error: int) -> String:
 			return translate("errors.title_has_no_content")
 		ERR_INVALID_EXPRESSION:
 			return translate("errors.invalid_expression")
-		ERR_INVALID_EXPRESSION_IN_CHARACTER_NAME:
-			return translate("errors.invalid_expression_for_character")
+		ERR_UNEXPECTED_CONDITION:
+			return translate("errors.unexpected_condition")
 		ERR_DUPLICATE_ID:
 			return translate("errors.duplicate_id")
 		ERR_MISSING_ID:

@@ -237,8 +237,8 @@ msgstr "That title has no content. Maybe change this to a \"=> END\"."
 msgid "errors.invalid_expression"
 msgstr "Expression is invalid."
 
-msgid "errors.invalid_expression_for_character"
-msgstr "The expression used for a character name is invalid."
+msgid "errors.unexpected_condition"
+msgstr "Unexpected condition."
 
 msgid "errors.duplicate_id"
 msgstr "This ID is already on another line."

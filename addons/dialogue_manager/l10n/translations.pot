@@ -227,7 +227,7 @@ msgstr ""
 msgid "errors.invalid_expression"
 msgstr ""
 
-msgid "errors.invalid_expression_for_character"
+msgid "errors.unexpected_condition"
 msgstr ""
 
 msgid "errors.duplicate_id"
