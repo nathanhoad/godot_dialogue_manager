@@ -859,8 +859,9 @@ func _on_parse_timer_timeout() -> void:
 	parse()
 
 
-func _on_errors_panel_error_pressed(line_number: int) -> void:
+func _on_errors_panel_error_pressed(line_number: int, column_number: int) -> void:
 	code_edit.set_caret_line(line_number)
+	code_edit.set_caret_column(column_number)
 	code_edit.grab_focus()
 
 

@@ -155,7 +155,7 @@ msgstr ""
 msgid "settings.states_hint"
 msgstr ""
 
-msgid "search.n_of_n"
+msgid "n_of_n"
 msgstr ""
 
 msgid "search.previous"
@@ -183,6 +183,9 @@ msgid "files_list.filter"
 msgstr ""
 
 msgid "titles_list.filter"
+msgstr ""
+
+msgid "errors.line_and_message"
 msgstr ""
 
 msgid "errors_in_script"

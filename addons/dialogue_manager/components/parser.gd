@@ -128,7 +128,7 @@ func parse(text: String) -> Error:
 			parent_stack.append(str(id))
 			line["type"] = DialogueConstants.TYPE_RESPONSE
 			if " [if " in raw_line:
-				line["condition"] = extract_condition(raw_line, true)
+				line["condition"] = extract_condition(raw_line, true, indent_size)
 			if " =>" in raw_line:
 				line["next_id"] = extract_goto(raw_line)
 			if " =><" in raw_line:
@@ -170,10 +170,10 @@ func parse(text: String) -> Error:
 					else:
 						line["next_id"] = next_nonempty_line_id
 				
-			line["text_replacements"] = extract_dialogue_replacements(line.get("text"))
+			line["text_replacements"] = extract_dialogue_replacements(line.get("text"), indent_size + 2)
 			for replacement in line.text_replacements:
 				if replacement.has("error"):
-					add_error(id, replacement.error)
+					add_error(id, replacement.index, replacement.error)
 			
 			# If this response has a character name in it then it will automatically be
 			# injected as a line of dialogue if the player selects it
@@ -190,10 +190,10 @@ func parse(text: String) -> Error:
 				var bits = Array(l.strip_edges().split(": "))
 				first_child["character"] = bits.pop_front()
 				# You can use variables in the character's name
-				first_child["character_replacements"] = extract_dialogue_replacements(first_child.character)
+				first_child["character_replacements"] = extract_dialogue_replacements(first_child.character, first_child.character.length() + 2 + indent_size)
 				for replacement in first_child.character_replacements:
 					if replacement.has("error"):
-						add_error(id, replacement.error)
+						add_error(id, replacement.index, replacement.error)
 				first_child["text"] = ": ".join(bits).replace("!ESCAPED_COLON!", ":")
 				
 				line["character"] = first_child.character.strip_edges()
@@ -212,23 +212,23 @@ func parse(text: String) -> Error:
 		# Title
 		elif is_title_line(raw_line):
 			if not raw_lines[id].begins_with("~"):
-				add_error(id, DialogueConstants.ERR_NESTED_TITLE)
+				add_error(id, indent_size + 2, DialogueConstants.ERR_NESTED_TITLE)
 			else:
 				line["type"] = DialogueConstants.TYPE_TITLE
 				line["text"] = extract_title(raw_line)
 				# Titles can't have numbers as the first letter (unless they are external titles which get replaced with hashes)
 				if id >= _imported_line_count and BEGINS_WITH_NUMBER_REGEX.search(line.text):
-					add_error(id, DialogueConstants.ERR_TITLE_BEGINS_WITH_NUMBER)
+					add_error(id, 2, DialogueConstants.ERR_TITLE_BEGINS_WITH_NUMBER)
 				# Only import titles are allowed to have "/" in them
 				var valid_title = VALID_TITLE_REGEX.search(raw_line.replace("/", "").substr(2).strip_edges())
 				if not valid_title:
-					add_error(id, DialogueConstants.ERR_TITLE_INVALID_CHARACTERS)
+					add_error(id, 2, DialogueConstants.ERR_TITLE_INVALID_CHARACTERS)
 				
 		# Condition
 		elif is_condition_line(raw_line, false):
 			parent_stack.append(str(id))
 			line["type"] = DialogueConstants.TYPE_CONDITION
-			line["condition"] = extract_condition(raw_line)
+			line["condition"] = extract_condition(raw_line, false, indent_size)
 			line["next_id_after"] = find_next_line_after_conditions(id)
 			var next_sibling_id = find_next_condition_sibling(id)
 			line["next_conditional_id"] = next_sibling_id if is_valid_id(next_sibling_id) else line.next_id_after
@@ -242,7 +242,7 @@ func parse(text: String) -> Error:
 		elif is_while_condition_line(raw_line):
 			parent_stack.append(str(id))
 			line["type"] = DialogueConstants.TYPE_CONDITION
-			line["condition"] = extract_condition(raw_line)
+			line["condition"] = extract_condition(raw_line, false, indent_size)
 			line["next_id_after"] = find_next_line_after_conditions(id)
 			while_loopbacks.append(find_last_line_within_conditions(id))
 			line["next_conditional_id"] = line["next_id_after"]
@@ -277,20 +277,20 @@ func parse(text: String) -> Error:
 				if not line["character"] in character_names:
 					character_names.append(line["character"])
 				# You can use variables in the character's name
-				line["character_replacements"] = extract_dialogue_replacements(line.character)
+				line["character_replacements"] = extract_dialogue_replacements(line.character, indent_size)
 				for replacement in line.character_replacements:
 					if replacement.has("error"):
-						add_error(id, replacement.error)
+						add_error(id, replacement.index, replacement.error)
 				line["text"] = ": ".join(bits).replace("!ESCAPED_COLON!", ":")
 			else:
 				line["character"] = ""
 				line["character_replacements"] = [] as Array[Dictionary]
 				line["text"] = l.replace("!ESCAPED_COLON!", ":")
 			
-			line["text_replacements"] = extract_dialogue_replacements(line.text)
+			line["text_replacements"] = extract_dialogue_replacements(line.text, line.character.length() + 2 + indent_size)
 			for replacement in line.text_replacements:
 				if replacement.has("error"):
-					add_error(id, replacement.error)
+					add_error(id, replacement.index, replacement.error)
 			
 			# Unescape any newlines
 			line["text"] = line.text.replace("\\n", "\n").strip_edges()
@@ -303,53 +303,55 @@ func parse(text: String) -> Error:
 		if line.type in [DialogueConstants.TYPE_DIALOGUE, DialogueConstants.TYPE_RESPONSE]:
 			if line.has("translation_key"):
 				if known_translations.has(line.translation_key) and known_translations.get(line.translation_key) != line.text:
-					add_error(id, DialogueConstants.ERR_DUPLICATE_ID)
+					add_error(id, indent_size, DialogueConstants.ERR_DUPLICATE_ID)
 				else:
 					known_translations[line.translation_key] = line.text
 			else:
 				# Default translations key
 				if DialogueSettings.get_setting("missing_translations_are_errors", false):
-					add_error(id, DialogueConstants.ERR_MISSING_ID)
+					add_error(id, indent_size, DialogueConstants.ERR_MISSING_ID)
 				else:
 					line["translation_key"] = line.text
 		
 		## Error checking
 		
 		# Can't find goto
+		var jump_index: int = raw_line.find("=>")
 		match line.next_id:
 			DialogueConstants.ID_ERROR:
-				add_error(id, DialogueConstants.ERR_UNKNOWN_TITLE)
+				add_error(id, jump_index, DialogueConstants.ERR_UNKNOWN_TITLE)
 			DialogueConstants.ID_ERROR_INVALID_TITLE:
-				add_error(id, DialogueConstants.ERR_INVALID_TITLE_REFERENCE)
+				add_error(id, jump_index, DialogueConstants.ERR_INVALID_TITLE_REFERENCE)
 			DialogueConstants.ID_ERROR_TITLE_HAS_NO_BODY:
-				add_error(id, DialogueConstants.ERR_TITLE_REFERENCE_HAS_NO_CONTENT)
+				add_error(id, jump_index, DialogueConstants.ERR_TITLE_REFERENCE_HAS_NO_CONTENT)
 		
 		# Line after condition isn't indented once to the right
 		if line.type == DialogueConstants.TYPE_CONDITION:
 			if is_valid_id(line.next_id):
-				var next_line = raw_lines[line.next_id.to_int()]
-				if get_indent(next_line) != indent_size + 1:
-					add_error(id, DialogueConstants.ERR_INVALID_INDENTATION)
+				var next_line: String = raw_lines[line.next_id.to_int()]
+				var next_indent: int = get_indent(next_line)
+				if next_indent != indent_size + 1:
+					add_error(line.next_id.to_int(), next_indent, DialogueConstants.ERR_INVALID_INDENTATION)
 			else:
-				add_error(id, DialogueConstants.ERR_INVALID_CONDITION_INDENTATION)
+				add_error(id, indent_size, DialogueConstants.ERR_INVALID_CONDITION_INDENTATION)
 			
 		# Line after normal line is indented to the right
 		elif line.type in [DialogueConstants.TYPE_TITLE, DialogueConstants.TYPE_DIALOGUE, DialogueConstants.TYPE_MUTATION, DialogueConstants.TYPE_GOTO] and is_valid_id(line.next_id):
 			var next_line = raw_lines[line.next_id.to_int()]
 			if next_line != null and get_indent(next_line) > indent_size:
-				add_error(id, DialogueConstants.ERR_INVALID_INDENTATION)
+				add_error(id, indent_size, DialogueConstants.ERR_INVALID_INDENTATION)
 		
 		# Parsing condition failed
 		if line.has("condition") and line.condition.has("error"):
-			add_error(id, line.condition.error)
+			add_error(id, line.condition.index, line.condition.error)
 			
 		# Parsing mutation failed
 		elif line.has("mutation") and line.mutation.has("error"):
-			add_error(id, line.mutation.error)
+			add_error(id, line.mutation.index, line.mutation.error)
 		
 		# Line failed to parse at all
 		if line.get("type") == DialogueConstants.TYPE_UNKNOWN:
-			add_error(id, DialogueConstants.ERR_UNKNOWN_LINE_SYNTAX)
+			add_error(id, 0, DialogueConstants.ERR_UNKNOWN_LINE_SYNTAX)
 			
 		# If there are no titles then use the first actual line
 		if first_title == "" and  not is_import_line(raw_line):
@@ -390,7 +392,6 @@ func get_data() -> DialogueManagerParseResult:
 ## Get the last parse errors
 func get_errors() -> Array[Dictionary]:
 	return errors
-
 
 ## Prepare the parser by collecting all lines and titles
 func prepare(text: String, include_imported_titles_hashes: bool = true) -> void:
@@ -452,9 +453,9 @@ func prepare(text: String, include_imported_titles_hashes: bool = true) -> void:
 		if raw_lines[id].begins_with("~ "):
 			var title: String = extract_title(raw_lines[id])
 			if title == "":
-				add_error(id, DialogueConstants.ERR_EMPTY_TITLE)
+				add_error(id, 2, DialogueConstants.ERR_EMPTY_TITLE)
 			elif titles.has(title):
-				add_error(id, DialogueConstants.ERR_DUPLICATE_TITLE)
+				add_error(id, 2, DialogueConstants.ERR_DUPLICATE_TITLE)
 			else:
 				var next_nonempty_line_id: String = get_next_nonempty_line_id(id)
 				if next_nonempty_line_id != DialogueConstants.ID_NULL:
@@ -472,13 +473,23 @@ func prepare(text: String, include_imported_titles_hashes: bool = true) -> void:
 					titles[title] = DialogueConstants.ID_ERROR_TITLE_HAS_NO_BODY
 
 
-func add_error(line_number: int, error: int) -> void:
+func add_error(line_number: int, column_number: int, error: int) -> void:
+	# See if the error was in an imported file
 	for item in _imported_line_map:
 		if line_number < item.to_line:
-			errors.append({ line_number = item.imported_on_line_number, error = DialogueConstants.ERR_ERRORS_IN_IMPORTED_FILE })
+			errors.append({ 
+				line_number = item.imported_on_line_number,
+				column_number = 0, 
+				error = DialogueConstants.ERR_ERRORS_IN_IMPORTED_FILE 
+			})
 			return
 	
-	errors.append({ line_number = line_number - _imported_line_count, error = error })
+	# Otherwise, it's in this file
+	errors.append({ 
+		line_number = line_number - _imported_line_count, 
+		column_number = column_number, 
+		error = error 
+	})
 
 
 func is_import_line(line: String) -> bool:
@@ -844,7 +855,7 @@ func extract_title(line: String) -> String:
 
 func extract_translation(line: String) -> String:
 	# Find a static translation key, eg. [ID:something]
-	var found = TRANSLATION_REGEX.search(line)
+	var found: RegExMatch = TRANSLATION_REGEX.search(line)
 	if found:
 		return found.strings[found.names.tr]
 	else:
@@ -860,7 +871,7 @@ func extract_response_prompt(line: String) -> String:
 		line = line.substr(0, line.find(" =>"))
 	
 	# Without the translation key if there is one
-	var translation_key = extract_translation(line)
+	var translation_key: String = extract_translation(line)
 	if translation_key:
 		line = line.replace("[ID:%s]" % translation_key, "")
 	
@@ -868,48 +879,71 @@ func extract_response_prompt(line: String) -> String:
 
 
 func extract_mutation(line: String) -> Dictionary:
-	var found = MUTATION_REGEX.search(line)
+	var found: RegExMatch = MUTATION_REGEX.search(line)
 	
 	if not found:
-		return { error = DialogueConstants.ERR_INCOMPLETE_EXPRESSION }
+		return { 
+			index = 0,
+			error = DialogueConstants.ERR_INCOMPLETE_EXPRESSION 
+		}
 	
 	if found.names.has("mutation"):
-		var expression = tokenise(found.strings[found.names.mutation], DialogueConstants.TYPE_MUTATION)
+		var expression: Array = tokenise(found.strings[found.names.mutation], DialogueConstants.TYPE_MUTATION, found.get_start("mutation"))
 		if expression.size() == 0:
-			return { error = DialogueConstants.ERR_INCOMPLETE_EXPRESSION }
+			return { 
+				index = found.get_start("mutation"),
+				error = DialogueConstants.ERR_INCOMPLETE_EXPRESSION 
+			}
 		elif expression[0].type == DialogueConstants.TYPE_ERROR:
-			return { error = expression[0].value }
+			return { 
+				index = expression[0].index,
+				error = expression[0].value 
+			}
 		else:
-			return { expression = expression }
+			return { 
+				expression = expression 
+			}
 	
 	else:
-		return { error = DialogueConstants.ERR_INCOMPLETE_EXPRESSION }
+		return {
+			index = found.get_start(), 
+			error = DialogueConstants.ERR_INCOMPLETE_EXPRESSION 
+		}
 
 
-func extract_condition(raw_line: String, is_wrapped: bool = false) -> Dictionary:
-	raw_line = raw_line.strip_edges().trim_suffix(":")
+func extract_condition(raw_line: String, is_wrapped: bool, index: int) -> Dictionary:
+	var condition: Dictionary = {}
 	
-	var condition := {}
-	
-	var regex = WRAPPED_CONDITION_REGEX if is_wrapped else CONDITION_REGEX
-	var found = regex.search(raw_line)
+	var regex: RegEx = WRAPPED_CONDITION_REGEX if is_wrapped else CONDITION_REGEX
+	var found: RegExMatch = regex.search(raw_line)
 	
 	if found == null:
-		return { error = DialogueConstants.ERR_INCOMPLETE_EXPRESSION }
+		return {
+			index = 0, 
+			error = DialogueConstants.ERR_INCOMPLETE_EXPRESSION 
+		}
 	
-	var raw_condition = found.strings[found.names.condition]
-	var expression = tokenise(raw_condition, DialogueConstants.TYPE_CONDITION)
+	var raw_condition: String = found.strings[found.names.condition]
+	var expression: Array = tokenise(raw_condition, DialogueConstants.TYPE_CONDITION, index + found.get_start("condition"))
 	
 	if expression.size() == 0:
-		return { error = DialogueConstants.ERR_INCOMPLETE_EXPRESSION }
+		return {
+			index = index + found.get_start("condition"),
+			error = DialogueConstants.ERR_INCOMPLETE_EXPRESSION 
+		}
 	elif expression[0].type == DialogueConstants.TYPE_ERROR:
-		return { error = expression[0].value }
+		return { 
+			index = expression[0].index,
+			error = expression[0].value 
+		}
 	else:
-		return { expression = expression }
+		return { 
+			expression = expression 
+		}
 
 
-func extract_dialogue_replacements(text: String) -> Array[Dictionary]:
-	var founds = REPLACEMENTS_REGEX.search_all(text)
+func extract_dialogue_replacements(text: String, index: int) -> Array[Dictionary]:
+	var founds: Array[RegExMatch] = REPLACEMENTS_REGEX.search_all(text)
 	
 	if founds == null or founds.size() == 0: 
 		return []
@@ -917,12 +951,18 @@ func extract_dialogue_replacements(text: String) -> Array[Dictionary]:
 	var replacements: Array[Dictionary] = []
 	for found in founds:
 		var replacement: Dictionary = {}
-		var value_in_text = found.strings[1]
-		var expression = tokenise(value_in_text, DialogueConstants.TYPE_DIALOGUE)
+		var value_in_text: String = found.strings[1]
+		var expression: Array = tokenise(value_in_text, DialogueConstants.TYPE_DIALOGUE, index + found.get_start(1))
 		if expression.size() == 0:
-			replacement = { error = DialogueConstants.ERR_INCOMPLETE_EXPRESSION }
+			replacement = {
+				index = index + found.get_start(1),
+				error = DialogueConstants.ERR_INCOMPLETE_EXPRESSION 
+			}
 		elif expression[0].type == DialogueConstants.TYPE_ERROR:
-			replacement = { error = expression[0].value }
+			replacement = {
+				index = expression[0].index, 
+				error = expression[0].value 
+			}
 		else:
 			replacement = {
 				value_in_text = "{{%s}}" % value_in_text,
@@ -934,11 +974,11 @@ func extract_dialogue_replacements(text: String) -> Array[Dictionary]:
 	
 
 func extract_goto(line: String) -> String:
-	var found = GOTO_REGEX.search(line)
+	var found: RegExMatch = GOTO_REGEX.search(line)
 	
 	if found == null: return DialogueConstants.ID_ERROR
 	
-	var title = found.strings[found.names.jump_to_title].strip_edges()
+	var title: String = found.strings[found.names.jump_to_title].strip_edges()
 	
 	if " " in title or title == "":
 		return DialogueConstants.ID_ERROR_INVALID_TITLE
@@ -1091,7 +1131,7 @@ func find_bbcode_positions_in_string(string: String, find_all: bool = true) -> A
 	return positions
 
 
-func tokenise(text: String, line_type: String) -> Array:
+func tokenise(text: String, line_type: String, index: int) -> Array:
 	var tokens: Array[Dictionary] = []
 	var limit: int = 0
 	while text.strip_edges() != "" and limit < 1000:
@@ -1099,20 +1139,23 @@ func tokenise(text: String, line_type: String) -> Array:
 		var found = find_match(text)
 		if found.size() > 0:
 			tokens.append({
+				index = index,
 				type = found.type,
 				value = found.value
 			})
+			index += found.value.length()
 			text = found.remaining_text
 		elif text.begins_with(" "):
+			index += 1
 			text = text.substr(1)
 		else:
-			return build_token_tree_error(DialogueConstants.ERR_INVALID_EXPRESSION)
+			return build_token_tree_error(DialogueConstants.ERR_INVALID_EXPRESSION, index)
 	
 	return build_token_tree(tokens, line_type, "")[0]
 	
 
-func build_token_tree_error(error: int) -> Array:
-	return [{ type = DialogueConstants.TOKEN_ERROR, value = error }]
+func build_token_tree_error(error: int, index: int) -> Array:
+	return [{ type = DialogueConstants.TOKEN_ERROR, value = error, index = index }]
 
 
 func build_token_tree(tokens: Array[Dictionary], line_type: String, expected_close_token: String) -> Array:
@@ -1124,14 +1167,14 @@ func build_token_tree(tokens: Array[Dictionary], line_type: String, expected_clo
 		
 		var error = check_next_token(token, tokens, line_type)
 		if error != OK:
-			return [build_token_tree_error(error), tokens]
+			return [build_token_tree_error(error, token.index), tokens]
 		
 		match token.type:
 			DialogueConstants.TOKEN_FUNCTION:
 				var sub_tree = build_token_tree(tokens, line_type, DialogueConstants.TOKEN_PARENS_CLOSE)
 				
 				if sub_tree[0].size() > 0 and sub_tree[0][0].type == DialogueConstants.TOKEN_ERROR:
-					return [build_token_tree_error(sub_tree[0][0].value), tokens]
+					return [build_token_tree_error(sub_tree[0][0].value, token.index), tokens]
 				
 				tree.append({
 					type = DialogueConstants.TOKEN_FUNCTION,
@@ -1145,11 +1188,11 @@ func build_token_tree(tokens: Array[Dictionary], line_type: String, expected_clo
 				var sub_tree = build_token_tree(tokens, line_type, DialogueConstants.TOKEN_BRACKET_CLOSE)
 				
 				if sub_tree[0].size() > 0 and sub_tree[0][0].type == DialogueConstants.TOKEN_ERROR:
-					return [build_token_tree_error(sub_tree[0][0].value), tokens]
+					return [build_token_tree_error(sub_tree[0][0].value, token.index), tokens]
 				
 				var args = tokens_to_list(sub_tree[0])
 				if args.size() != 1:
-					return [build_token_tree_error(DialogueConstants.ERR_INVALID_INDEX), tokens]
+					return [build_token_tree_error(DialogueConstants.ERR_INVALID_INDEX, token.index), tokens]
 				
 				tree.append({
 					type = DialogueConstants.TOKEN_DICTIONARY_REFERENCE,
@@ -1163,7 +1206,7 @@ func build_token_tree(tokens: Array[Dictionary], line_type: String, expected_clo
 				var sub_tree = build_token_tree(tokens, line_type, DialogueConstants.TOKEN_BRACE_CLOSE)
 				
 				if sub_tree[0].size() > 0 and sub_tree[0][0].type == DialogueConstants.TOKEN_ERROR:
-					return [build_token_tree_error(sub_tree[0][0].value), tokens]
+					return [build_token_tree_error(sub_tree[0][0].value, token.index), tokens]
 				
 				tree.append({
 					type = DialogueConstants.TOKEN_DICTIONARY,
@@ -1175,7 +1218,7 @@ func build_token_tree(tokens: Array[Dictionary], line_type: String, expected_clo
 				var sub_tree = build_token_tree(tokens, line_type, DialogueConstants.TOKEN_BRACKET_CLOSE)
 				
 				if sub_tree[0].size() > 0 and sub_tree[0][0].type == DialogueConstants.TOKEN_ERROR:
-					return [build_token_tree_error(sub_tree[0][0].value), tokens]
+					return [build_token_tree_error(sub_tree[0][0].value, token.index), tokens]
 				
 				var type = DialogueConstants.TOKEN_ARRAY
 				var value = tokens_to_list(sub_tree[0])
@@ -1197,7 +1240,7 @@ func build_token_tree(tokens: Array[Dictionary], line_type: String, expected_clo
 				var sub_tree = build_token_tree(tokens, line_type, DialogueConstants.TOKEN_PARENS_CLOSE)
 				
 				if sub_tree[0][0].type == DialogueConstants.TOKEN_ERROR:
-					return [build_token_tree_error(sub_tree[0][0].value), tokens]
+					return [build_token_tree_error(sub_tree[0][0].value, token.index), tokens]
 				
 				tree.append({
 					type = DialogueConstants.TOKEN_GROUP,
@@ -1209,7 +1252,7 @@ func build_token_tree(tokens: Array[Dictionary], line_type: String, expected_clo
 			DialogueConstants.TOKEN_BRACE_CLOSE, \
 			DialogueConstants.TOKEN_BRACKET_CLOSE:
 				if token.type != expected_close_token:
-					return [build_token_tree_error(DialogueConstants.ERR_UNEXPECTED_CLOSING_BRACKET), tokens]
+					return [build_token_tree_error(DialogueConstants.ERR_UNEXPECTED_CLOSING_BRACKET, token.index), tokens]
 				
 				return [tree, tokens]
 			
@@ -1246,7 +1289,7 @@ func build_token_tree(tokens: Array[Dictionary], line_type: String, expected_clo
 				})
 			
 			DialogueConstants.TOKEN_CONDITION:
-				return [build_token_tree_error(DialogueConstants.ERR_UNEXPECTED_CONDITION), token]
+				return [build_token_tree_error(DialogueConstants.ERR_UNEXPECTED_CONDITION, token.index), token]
 			
 			DialogueConstants.TOKEN_BOOL:
 				tree.append({
@@ -1261,7 +1304,7 @@ func build_token_tree(tokens: Array[Dictionary], line_type: String, expected_clo
 				})
 	
 	if expected_close_token != "":
-		return [build_token_tree_error(DialogueConstants.ERR_MISSING_CLOSING_BRACKET), tokens] 
+		return [build_token_tree_error(DialogueConstants.ERR_MISSING_CLOSING_BRACKET, tokens[0].index), tokens] 
 
 	return [tree, tokens]
 
@@ -1314,19 +1357,33 @@ func check_next_token(token: Dictionary, next_tokens: Array[Dictionary], line_ty
 				DialogueConstants.TOKEN_BOOL, 
 				DialogueConstants.TOKEN_STRING, 
 				DialogueConstants.TOKEN_NUMBER, 
-				DialogueConstants.TOKEN_VARIABLE
+				DialogueConstants.TOKEN_VARIABLE,
+				DialogueConstants.TOKEN_COLON
 			]
 
 		DialogueConstants.TOKEN_COMPARISON, \
 		DialogueConstants.TOKEN_OPERATOR, \
 		DialogueConstants.TOKEN_COMMA, \
-		DialogueConstants.TOKEN_COLON, \
 		DialogueConstants.TOKEN_DOT, \
 		DialogueConstants.TOKEN_NOT, \
 		DialogueConstants.TOKEN_AND_OR, \
 		DialogueConstants.TOKEN_DICTIONARY_REFERENCE:
 			unexpected_token_types = [
 				null, 
+				DialogueConstants.TOKEN_COMMA, 
+				DialogueConstants.TOKEN_COLON, 
+				DialogueConstants.TOKEN_COMPARISON, 
+				DialogueConstants.TOKEN_ASSIGNMENT,
+				DialogueConstants.TOKEN_OPERATOR, 
+				DialogueConstants.TOKEN_AND_OR, 
+				DialogueConstants.TOKEN_PARENS_CLOSE, 
+				DialogueConstants.TOKEN_BRACE_CLOSE, 
+				DialogueConstants.TOKEN_BRACKET_CLOSE,
+				DialogueConstants.TOKEN_DOT
+			]
+		
+		DialogueConstants.TOKEN_COLON:
+			unexpected_token_types = [
 				DialogueConstants.TOKEN_COMMA, 
 				DialogueConstants.TOKEN_COLON, 
 				DialogueConstants.TOKEN_COMPARISON, 
