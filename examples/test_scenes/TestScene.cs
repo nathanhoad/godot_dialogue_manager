@@ -17,7 +17,7 @@ public partial class TestScene : Node2D
 
   public async override void _Ready()
   {
-    Engine.GetSingleton("DialogueManager").Connect("dialogue_finished", new Callable(this, "OnDialogueFinished"));
+    Engine.GetSingleton("DialogueManager").Connect("dialogue_ended", new Callable(this, "OnDialogueEnded"));
 
     await ToSignal(GetTree().CreateTimer(0.4), "timeout");
 
@@ -29,7 +29,7 @@ public partial class TestScene : Node2D
   }
 
 
-  private async void OnDialogueFinished()
+  private async void OnDialogueEnded(Resource resource)
   {
     await ToSignal(GetTree().CreateTimer(0.4), "timeout");
     GetTree().Quit();

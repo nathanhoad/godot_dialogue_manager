@@ -151,6 +151,9 @@ func show_example_dialogue_balloon(resource: DialogueResource, title: String = "
 
 
 func _bridge_get_next_dialogue_line(resource: DialogueResource, key: String, extra_game_states: Array = []) -> void:
+	# dotnet needs at least one await tick of the signal gets called too quickly
+	await get_tree().process_frame
+	
 	var line = await get_next_dialogue_line(resource, key, extra_game_states)
 	bridge_get_next_dialogue_line_completed.emit(line)
 

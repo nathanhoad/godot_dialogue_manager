@@ -41,7 +41,7 @@ public partial class Balloon : CanvasLayer
   }
 
 
-  public override async void _Ready()
+  public override void _Ready()
   {
     balloon = GetNode<ColorRect>("Balloon");
     margin = GetNode<MarginContainer>("Balloon/Margin");
@@ -75,7 +75,7 @@ public partial class Balloon : CanvasLayer
 
     margin.Resized += () => HandleResize();
 
-    Engine.GetSingleton("DialogueManager").Connect("mutation", Callable.From(() =>
+    Engine.GetSingleton("DialogueManager").Connect("mutated", Callable.From(() =>
     {
       isWaitingForInput = false;
       balloon.Hide();
