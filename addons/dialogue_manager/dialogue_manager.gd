@@ -445,7 +445,7 @@ func set_state_value(property: String, value, extra_game_states: Array) -> void:
 			if state.has(property):
 				state[property] = value
 				return
-		elif has_property(state, property):
+		elif thing_has_property(state, property):
 			state.set(property, value)
 			return
 
@@ -510,7 +510,7 @@ func resolve(tokens: Array, extra_game_states: Array):
 					tokens.remove_at(i)
 					tokens.remove_at(i-1)
 					i -= 2
-				elif caller.value.has_method(function_name):
+				elif thing_has_method(caller.value, function_name, args):
 					caller["type"] = "value"
 					caller["value"] = await caller.value.callv(function_name, args)
 					tokens.remove_at(i)
@@ -549,13 +549,19 @@ func resolve(tokens: Array, extra_game_states: Array):
 								token["type"] = "value"
 								token["value"] = state.size()
 								found = true
-					elif state.has_method(function_name):
+					elif thing_has_method(state, function_name, args):
 						token["type"] = "value"
 						token["value"] = await state.callv(function_name, args)
 						found = true
+					
+					if found:
+						break
 
 				if not found:
-					assert(false, "\"{method}\" is not a method on any game states ({states})".format({ method = function_name, states = str(get_game_states(extra_game_states)) }))
+					assert(false, "\"{method}\" is not a method on any game states ({states})".format({ 
+						method = args[0] if function_name in ["call", "call_deferred"] else function_name, 
+						states = str(get_game_states(extra_game_states)) 
+					}))
 
 		elif token.type == DialogueConstants.TOKEN_DICTIONARY_REFERENCE:
 			var value
@@ -886,16 +892,23 @@ func is_valid(line: DialogueLine) -> bool:
 	return true
 
 
+func thing_has_method(thing: Object, method: String, args: Array) -> bool:
+	if method in ["call", "call_deferred"]:
+		return thing.has_method(args[0])
+	else:
+		return thing.has_method(method)
+	
+
 # Check if a given property exists
-func has_property(thing: Object, name: String) -> bool:
+func thing_has_property(thing: Object, property: String) -> bool:
 	if thing == null:
 		return false
 
 	for p in thing.get_property_list():
-		if _node_properties.has(p.name):
+		if _node_properties.has(p.property):
 			# Ignore any properties on the base Node
 			continue
-		if p.name == name:
+		if p.property == property:
 			return true
 
 	return false
