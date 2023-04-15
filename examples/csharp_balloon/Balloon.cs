@@ -75,7 +75,7 @@ public partial class Balloon : CanvasLayer
 
     margin.Resized += () => HandleResize();
 
-    Engine.GetSingleton("DialogueManager").Connect("mutated", Callable.From(() =>
+    Engine.GetSingleton("DialogueManager").Connect("mutated", Callable.From((Dictionary mutation) =>
     {
       isWaitingForInput = false;
       balloon.Hide();
