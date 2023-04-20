@@ -13,7 +13,7 @@ signal finished_typing()
 @export var seconds_per_step: float = 0.02
 
 ## Automatically have a brief pause when these characters are encountered
-@export var pause_at_characters: String = "."
+@export var pause_at_characters: String = ".?!"
 
 
 var dialogue_line: DialogueLine:
