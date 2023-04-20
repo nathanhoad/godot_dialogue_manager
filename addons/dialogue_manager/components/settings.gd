@@ -12,6 +12,7 @@ const DEFAULT_SETTINGS = {
 	"missing_translations_are_errors" = false,
 	"wrap_lines" = false,
 	"new_with_template" = true,
+	"include_all_responses" = false,
 	"custom_test_scene_path" = "res://addons/dialogue_manager/test_scene.tscn"
 }
 
@@ -23,6 +24,7 @@ static func prepare() -> void:
 		"missing_translations_are_errors", 
 		"wrap_lines", 
 		"new_with_template", 
+		"include_all_responses", 
 		"custom_test_scene_path"
 	]:
 		if ProjectSettings.has_setting("dialogue_manager/%s" % key):
