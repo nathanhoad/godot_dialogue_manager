@@ -95,6 +95,9 @@ msgstr ""
 msgid "confirm_close"
 msgstr ""
 
+msgid "confirm_close.save"
+msgstr ""
+
 msgid "confirm_close.discard"
 msgstr ""
 

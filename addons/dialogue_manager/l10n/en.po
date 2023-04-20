@@ -105,6 +105,9 @@ msgstr "Import line changes from CSV..."
 msgid "confirm_close"
 msgstr "Save changes to '{path}'?"
 
+msgid "confirm_close.save"
+msgstr "Save changes"
+
 msgid "confirm_close.discard"
 msgstr "Discard"
 

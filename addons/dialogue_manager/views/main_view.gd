@@ -148,7 +148,8 @@ func _ready() -> void:
 	
 	save_all_button.disabled = true
 	
-	close_confirmation_dialog.add_button(DialogueConstants.translate("close_confirm.discard"), true, "discard")
+	close_confirmation_dialog.ok_button_text = DialogueConstants.translate("confirm_close.save")
+	close_confirmation_dialog.add_button(DialogueConstants.translate("confirm_close.discard"), true, "discard")
 	
 	settings_view.editor_plugin = editor_plugin
 	
