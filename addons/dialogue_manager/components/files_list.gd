@@ -118,17 +118,18 @@ func _on_filter_edit_text_changed(new_text: String) -> void:
 
 
 func _on_list_item_clicked(index: int, at_position: Vector2, mouse_button_index: int) -> void:
-	var item_text = list.get_item_text(index).replace(MODIFIED_SUFFIX, "")
-	var file = file_map.find_key(item_text)
-	select_file(file)
-	emit_signal("file_selected", file)
+	if mouse_button_index == MOUSE_BUTTON_LEFT:
+		var item_text = list.get_item_text(index).replace(MODIFIED_SUFFIX, "")
+		var file = file_map.find_key(item_text)
+		select_file(file)
+		file_selected.emit(file)
 	
-	if mouse_button_index == 2:
-		emit_signal("file_popup_menu_requested", at_position)
+	if mouse_button_index == MOUSE_BUTTON_RIGHT:
+		file_popup_menu_requested.emit(at_position)
 
 
 func _on_list_item_activated(index: int) -> void:
 	var item_text = list.get_item_text(index).replace(MODIFIED_SUFFIX, "")
 	var file = file_map.find_key(item_text)
 	select_file(file)
-	emit_signal("file_double_clicked", file)
+	file_double_clicked.emit(file)
