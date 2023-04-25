@@ -104,7 +104,7 @@ func _gui_input(event: InputEvent) -> void:
 		match event.as_text():
 			"Ctrl+Equal", "Command+Equal":
 				self.font_size += 1
-			"Ctrl+Minus", "Command+Minud":
+			"Ctrl+Minus", "Command+Minus":
 				self.font_size -= 1
 			"Ctrl+0", "Command+0":
 				self.font_size = theme_overrides.font_size
