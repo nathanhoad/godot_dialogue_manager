@@ -905,10 +905,10 @@ func thing_has_property(thing: Object, property: String) -> bool:
 		return false
 
 	for p in thing.get_property_list():
-		if _node_properties.has(p.property):
+		if _node_properties.has(p.name):
 			# Ignore any properties on the base Node
 			continue
-		if p.property == property:
+		if p.name == property:
 			return true
 
 	return false
