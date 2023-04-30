@@ -422,16 +422,16 @@ func prepare(text: String, include_imported_titles_hashes: bool = true) -> void:
 				
 				# Keep track of titles so we can add imported ones later
 				if str(import_data.path.hash()) in imported_titles.keys():
-					errors.append({ line_number = id, error = DialogueConstants.ERR_FILE_ALREADY_IMPORTED })
+					errors.append({ line_number = id, column_number = 0, error = DialogueConstants.ERR_FILE_ALREADY_IMPORTED })
 				if import_data.prefix in imported_titles.values():
-					errors.append({ line_number = id, error = DialogueConstants.ERR_DUPLICATE_IMPORT_NAME })
+					errors.append({ line_number = id, column_number = 0, error = DialogueConstants.ERR_DUPLICATE_IMPORT_NAME })
 				imported_titles[str(import_data.path.hash())] = import_data.prefix
 				
 				# Import the file content
 				if not import_data.path.hash() in known_imports:
 					var error: Error = import_content(import_data.path, import_data.prefix, known_imports)
 					if error != OK:
-						errors.append({ line_number = id, error = error })
+						errors.append({ line_number = id, column_number = 0, error = error })
 	
 	var imported_content: String =  ""
 	var cummulative_line_number: int = 0
