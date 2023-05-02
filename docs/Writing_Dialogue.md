@@ -163,13 +163,13 @@ If using a condition and a goto on a response line then make sure the goto is pr
 
 ## Mutations
 
-You can modify state with either a "set" or a "do" line. Any variables or functions used must
+You can modify state with either a "set" or a "do" line.
 
 ```
-if has_met_nathan == false
+if SomeGlobal.has_met_nathan == false
     do SomeGlobal.animate("Nathan", "Wave")
     Nathan: Hi, I'm Nathan.
-    set has_met_nathan = true
+    set SomeGlobal.has_met_nathan = true
 Nathan: What can I do for you?
 - Tell me more about this dialogue editor
 ```
@@ -192,6 +192,10 @@ Nathan: I can also emit signals[do emit("some_signal")] inline.
 ```
 
 One thing to note is that _inline mutations_ that use `await` won't be awaited so the dialogue will continue right away.
+
+### State shortcuts
+
+If you want to shorten your references to state from something like `SomeGlobal.some_property` to just `some_property` then you can set up global state shortcuts in [Settings](./Settings.md).
 
 ## Error checking
 
