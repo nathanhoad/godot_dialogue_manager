@@ -14,20 +14,20 @@ var main_view
 var theme_overrides: Dictionary:
 	set(value):
 		theme_overrides = value
-		
+
 		syntax_highlighter.clear_color_regions()
 		syntax_highlighter.clear_keyword_colors()
-		
+
 		# Imports
 		syntax_highlighter.add_keyword_color("import", theme_overrides.conditions_color)
 		syntax_highlighter.add_keyword_color("as", theme_overrides.conditions_color)
-		
+
 		# Titles
 		syntax_highlighter.add_color_region("~", "~", theme_overrides.titles_color, true)
-		
+
 		# Comments
 		syntax_highlighter.add_color_region("#", "##", theme_overrides.comments_color, true)
-		
+
 		# Conditions
 		syntax_highlighter.add_keyword_color("if", theme_overrides.conditions_color)
 		syntax_highlighter.add_keyword_color("elif", theme_overrides.conditions_color)
@@ -38,25 +38,25 @@ var theme_overrides: Dictionary:
 		syntax_highlighter.add_keyword_color("and", theme_overrides.conditions_color)
 		syntax_highlighter.add_keyword_color("or", theme_overrides.conditions_color)
 		syntax_highlighter.add_keyword_color("not", theme_overrides.conditions_color)
-		
+
 		# Values
 		syntax_highlighter.add_keyword_color("true", theme_overrides.numbers_color)
 		syntax_highlighter.add_keyword_color("false", theme_overrides.numbers_color)
 		syntax_highlighter.number_color = theme_overrides.numbers_color
 		syntax_highlighter.add_color_region("\"", "\"", theme_overrides.strings_color)
-		
+
 		# Mutations
 		syntax_highlighter.add_keyword_color("do", theme_overrides.mutations_color)
 		syntax_highlighter.add_keyword_color("set", theme_overrides.mutations_color)
 		syntax_highlighter.function_color = theme_overrides.mutations_color
 		syntax_highlighter.member_variable_color = theme_overrides.members_color
-		
+
 		# Jumps
 		syntax_highlighter.add_color_region("=>", "<=", theme_overrides.jumps_color, true)
-		
+
 		# Dialogue
 		syntax_highlighter.add_color_region(": ", "::", theme_overrides.text_color, true)
-		
+
 		# General UI
 		syntax_highlighter.symbol_color = theme_overrides.symbols_color
 		add_theme_color_override("font_color", theme_overrides.text_color)
@@ -104,41 +104,49 @@ func _gui_input(event: InputEvent) -> void:
 		match event.as_text():
 			"Ctrl+Equal", "Command+Equal":
 				self.font_size += 1
+				get_viewport().set_input_as_handled()
 			"Ctrl+Minus", "Command+Minus":
 				self.font_size -= 1
+				get_viewport().set_input_as_handled()
 			"Ctrl+0", "Command+0":
 				self.font_size = theme_overrides.font_size
+				get_viewport().set_input_as_handled()
 			"Ctrl+K", "Command+K":
 				toggle_comment()
+				get_viewport().set_input_as_handled()
 			"Alt+Up":
 				move_line(-1)
+				get_viewport().set_input_as_handled()
 			"Alt+Down":
 				move_line(1)
-	
+				get_viewport().set_input_as_handled()
+
 	elif event is InputEventMouse:
 		match event.as_text():
 			"Ctrl+Mouse Wheel Up", "Command+Mouse Wheel Up":
 				self.font_size += 1
+				get_viewport().set_input_as_handled()
 			"Ctrl+Mouse Wheel Down", "Command+Mouse Wheel Down":
 				self.font_size -= 1
+				get_viewport().set_input_as_handled()
 
 
 func _can_drop_data(at_position: Vector2, data) -> bool:
 	if typeof(data) != TYPE_DICTIONARY: return false
 	if data.type != "files": return false
-	
+
 	var files: PackedStringArray = Array(data.files).filter(func(f): return f.get_extension() == "dialogue")
 	return files.size() > 0
 
 
 func _drop_data(at_position: Vector2, data) -> void:
 	var replace_regex: RegEx = RegEx.create_from_string("[^a-zA-Z_0-9]+")
-	
+
 	var files: PackedStringArray = Array(data.files).filter(func(f): return f.get_extension() == "dialogue")
 	for file in files:
 		# Don't import the file into itself
 		if file == main_view.current_file_path: continue
-		
+
 		var path = file.replace("res://", "").replace(".dialogue", "")
 		# Find the first non-import line in the file to add our import
 		var lines = text.split("\n")
@@ -152,20 +160,20 @@ func _drop_data(at_position: Vector2, data) -> void:
 func _request_code_completion(force: bool) -> void:
 	var cursor: Vector2 = get_cursor()
 	var current_line: String = get_line(cursor.y)
-	
+
 	if ("=> " in current_line or "=>< " in current_line) and (cursor.x > current_line.find("=>")):
 		var prompt: String = current_line.split("=>")[1]
 		if prompt.begins_with("< "):
 			prompt = prompt.substr(2)
 		else:
 			prompt = prompt.substr(1)
-		
+
 		if "=> " in current_line:
 			if matches_prompt(prompt, "end"):
 				add_code_completion_option(CodeEdit.KIND_CLASS, "END", "END".substr(prompt.length()), theme_overrides.text_color, get_theme_icon("Stop", "EditorIcons"))
 			if matches_prompt(prompt, "end!"):
 				add_code_completion_option(CodeEdit.KIND_CLASS, "END!", "END!".substr(prompt.length()), theme_overrides.text_color, get_theme_icon("Stop", "EditorIcons"))
-		
+
 		# Get all titles, including those in imports
 		var parser: DialogueManagerParser = DialogueManagerParser.new()
 		parser.prepare(text, false)
@@ -179,7 +187,7 @@ func _request_code_completion(force: bool) -> void:
 		update_code_completion_options(true)
 		parser.free()
 		return
-	
+
 #	var last_character: String = current_line.substr(cursor.x - 1, 1)
 	var name_so_far: String = current_line.strip_edges()
 	if name_so_far != "" and name_so_far[0].to_upper() == name_so_far[0]:
@@ -207,10 +215,10 @@ func _confirm_code_completion(replace: bool) -> void:
 	# Insert the whole match
 	insert_text_at_caret(completion.display_text)
 	end_complex_operation()
-	
+
 	# Close the autocomplete menu on the next tick
 	call_deferred("cancel_code_completion")
-	
+
 
 ### Helpers
 
@@ -250,7 +258,7 @@ func check_active_title() -> void:
 		if lines[i].begins_with("~ "):
 			emit_signal("active_title_change", lines[i].replace("~ ", ""))
 			return
-	
+
 	emit_signal("active_title_change", "0")
 
 
@@ -314,12 +322,12 @@ func toggle_comment() -> void:
 	if has_selection():
 		from = get_selection_from_line()
 		to = get_selection_to_line()
-	
+
 	var lines := text.split("\n")
 	var will_comment := not lines[from].begins_with("#")
 	for i in range(from, to + 1):
 		lines[i] = "#" + lines[i] if will_comment else lines[i].substr(1)
-	
+
 	text = "\n".join(lines)
 	select(from, 0, to, get_line_width(to))
 	set_cursor(cursor)
@@ -329,7 +337,7 @@ func toggle_comment() -> void:
 # Move the selected lines up or down
 func move_line(offset: int) -> void:
 	offset = clamp(offset, -1, 1)
-	
+
 	var cursor = get_cursor()
 	var reselect: bool = false
 	var from: int = cursor.y
@@ -338,20 +346,20 @@ func move_line(offset: int) -> void:
 		reselect = true
 		from = get_selection_from_line()
 		to = get_selection_to_line()
-	
+
 	var lines := text.split("\n")
-	
+
 	# We can't move the lines out of bounds
 	if from + offset < 0 or to + offset >= lines.size(): return
-	
+
 	var target_from_index = from - 1 if offset == -1 else to + 1
 	var target_to_index = to if offset == -1 else from
 	var line_to_move = lines[target_from_index]
 	lines.remove_at(target_from_index)
 	lines.insert(target_to_index, line_to_move)
-	
+
 	text = "\n".join(lines)
-	
+
 	cursor.y += offset
 	from += offset
 	to += offset
@@ -368,7 +376,7 @@ func _on_code_edit_symbol_validate(symbol: String) -> void:
 	if symbol.begins_with("res://") and symbol.ends_with(".dialogue"):
 		set_symbol_lookup_word_as_valid(true)
 		return
-	
+
 	for title in get_titles():
 		if symbol == title:
 			set_symbol_lookup_word_as_valid(true)
