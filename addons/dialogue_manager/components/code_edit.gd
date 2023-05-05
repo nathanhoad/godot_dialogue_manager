@@ -98,6 +98,9 @@ func _ready() -> void:
 	add_gutter(0)
 	set_gutter_type(0, TextEdit.GUTTER_TYPE_ICON)
 
+	# Add comment delimiter
+	add_comment_delimiter("#", "", true)
+
 
 func _gui_input(event: InputEvent) -> void:
 	if event is InputEventKey and event.is_pressed():
@@ -316,21 +319,46 @@ func insert_text(text: String) -> void:
 
 # Toggle the selected lines as comments
 func toggle_comment() -> void:
-	var cursor := get_cursor()
-	var from: int = cursor.y
-	var to: int = cursor.y
-	if has_selection():
-		from = get_selection_from_line()
-		to = get_selection_to_line()
+	# Starting complex operation so that the entire toggle comment can be undone in a single step
+	begin_complex_operation()
 
-	var lines := text.split("\n")
-	var will_comment := not lines[from].begins_with("#")
-	for i in range(from, to + 1):
-		lines[i] = "#" + lines[i] if will_comment else lines[i].substr(1)
+	var caret_count: int = get_caret_count()
+	var caret_offsets: Dictionary = {}
 
-	text = "\n".join(lines)
-	select(from, 0, to, get_line_width(to))
-	set_cursor(cursor)
+	for caret_index in caret_count:
+		var caret_line: int = get_caret_line(caret_index)
+		var from: int = caret_line
+		var to: int = caret_line
+
+		if has_selection(caret_index):
+			from = get_selection_from_line(caret_index)
+			to = get_selection_to_line(caret_index)
+
+		for line in range(from, to + 1):
+			if line not in caret_offsets:
+				caret_offsets[line] = 0
+
+			var line_text: String = get_line(line)
+			var comment_delimiter: String = delimiter_comments[0]
+			var is_line_commented: bool = line_text.begins_with(comment_delimiter)
+			set_line(line, line_text.substr(comment_delimiter.length()) if is_line_commented else comment_delimiter + line_text)
+			caret_offsets[line] += (-1 if is_line_commented else 1) * comment_delimiter.length()
+
+		emit_signal("lines_edited_from", from, to)
+
+	# Readjust carets and selection positions after all carets effect have been calculated
+	# Tried making it in the above loop, but that causes a weird behaviour if two carets are on the same line (first caret will move, but not the second one)
+	for caret_index in caret_count:
+		if has_selection(caret_index):
+			var from: int = get_selection_from_line(caret_index)
+			var to: int = get_selection_to_line(caret_index)
+			select(from, get_selection_from_column(caret_index) + caret_offsets[from], to, get_selection_to_column(caret_index) + caret_offsets[to], caret_index)
+
+		set_caret_column(get_caret_column(caret_index) + caret_offsets[get_caret_line(caret_index)], true, caret_index)
+
+	end_complex_operation()
+
+	emit_signal("text_set")
 	emit_signal("text_changed")
 
 
@@ -393,6 +421,10 @@ func _on_code_edit_symbol_lookup(symbol: String, line: int, column: int) -> void
 
 func _on_code_edit_text_changed() -> void:
 	request_code_completion(true)
+
+
+func _on_code_edit_text_set() -> void:
+	queue_redraw()
 
 
 func _on_code_edit_caret_changed() -> void:
