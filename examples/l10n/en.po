@@ -1,0 +1,149 @@
+# LANGUAGE translation for Dialogue Manager for the following files:
+# res://examples/dialogue.dialogue
+# res://examples/dialogue_for_visual_novel.dialogue
+# res://examples/dialogue_with_input.dialogue
+# res://examples/dialogue_for_point_n_click.dialogue
+#
+# FIRST AUTHOR < EMAIL @ADDRESS>, YEAR.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Dialogue Manager\n"
+"POT-Creation-Date: \n"
+"PO-Revision-Date: \n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"Language: en\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Generator: Poedit 3.2.2\n"
+
+#: examples/dialogue.dialogue examples/dialogue_for_visual_novel.dialogue
+#: examples/dialogue_with_input.dialogue
+#: examples/dialogue_for_point_n_click.dialogue
+msgctxt "dialogue"
+msgid "Nathan"
+msgstr "Nathan"
+
+#: examples/dialogue.dialogue examples/dialogue_for_visual_novel.dialogue
+#: examples/dialogue_with_input.dialogue
+#: examples/dialogue_for_point_n_click.dialogue
+msgctxt "dialogue"
+msgid "Coco"
+msgstr "Coco"
+
+#: examples/dialogue.dialogue
+msgid "Hi, I'm Nathan and this is Coco."
+msgstr "Hi, I'm Nathan and this is Coco."
+
+#: examples/dialogue_for_visual_novel.dialogue
+#: examples/dialogue_for_point_n_click.dialogue
+msgctxt "tf885328afb"
+msgid "Hi, I'm Nathan and this is Coco."
+msgstr "Hi, I'm Nathan and this is Coco."
+
+#: examples/dialogue.dialogue examples/dialogue_with_input.dialogue
+msgid "Meow."
+msgstr "Meow."
+
+#: examples/dialogue_for_visual_novel.dialogue
+#: examples/dialogue_for_point_n_click.dialogue
+msgctxt "t4c11347656"
+msgid "Meow."
+msgstr "Meow."
+
+#: examples/dialogue_for_visual_novel.dialogue
+#: examples/dialogue_for_point_n_click.dialogue
+msgctxt "tb75d1c7a40"
+msgid "Meow."
+msgstr "Meow."
+
+#: examples/dialogue.dialogue
+msgid "Here are some response options."
+msgstr "Here are some response options."
+
+#: examples/dialogue_for_visual_novel.dialogue
+#: examples/dialogue_for_point_n_click.dialogue
+msgctxt "tba678dd331"
+msgid "Here are some response options."
+msgstr "Here are some response options."
+
+#: examples/dialogue.dialogue
+msgid "First one"
+msgstr "First one"
+
+#: examples/dialogue_for_visual_novel.dialogue
+#: examples/dialogue_for_point_n_click.dialogue
+msgctxt "tec2831274f"
+msgid "First one"
+msgstr "First one"
+
+#: examples/dialogue.dialogue
+msgid "You picked the first one."
+msgstr "You picked the first one."
+
+#: examples/dialogue_for_visual_novel.dialogue
+#: examples/dialogue_for_point_n_click.dialogue
+msgctxt "ted9b57f70f"
+msgid "You picked the first one."
+msgstr "You picked the first one."
+
+#: examples/dialogue.dialogue
+msgid "Second one"
+msgstr "Second one"
+
+#: examples/dialogue_for_visual_novel.dialogue
+#: examples/dialogue_for_point_n_click.dialogue
+msgctxt "te9670331c2"
+msgid "Second one"
+msgstr "Second one"
+
+#: examples/dialogue.dialogue
+msgid "You picked the second one."
+msgstr "You picked the second one."
+
+#: examples/dialogue_for_visual_novel.dialogue
+#: examples/dialogue_for_point_n_click.dialogue
+msgctxt "t14bc171a9f"
+msgid "You picked the second one."
+msgstr "You picked the second one."
+
+#: examples/dialogue.dialogue
+msgid "Start again"
+msgstr "Start again"
+
+#: examples/dialogue_for_visual_novel.dialogue
+#: examples/dialogue_for_point_n_click.dialogue
+msgctxt "ta04a1307f6"
+msgid "Start again"
+msgstr "Start again"
+
+#: examples/dialogue.dialogue
+msgid "End the conversation"
+msgstr "End the conversation"
+
+#: examples/dialogue_for_visual_novel.dialogue
+#: examples/dialogue_for_point_n_click.dialogue
+msgctxt "t3211e3adf8"
+msgid "End the conversation"
+msgstr "End the conversation"
+
+#: examples/dialogue.dialogue
+msgid "I hope this example is helpful."
+msgstr "I hope this example is helpful."
+
+#: examples/dialogue_for_visual_novel.dialogue
+#: examples/dialogue_for_point_n_click.dialogue
+msgctxt "t643e01443b"
+msgid "I hope this example is helpful."
+msgstr "I hope this example is helpful."
+
+#: examples/dialogue_with_input.dialogue
+msgid "I am Nathan. What is your name?"
+msgstr "I am Nathan. What is your name?"
+
+#: examples/dialogue_with_input.dialogue
+msgid "Hi {{player_name}}! It is nice to meet you."
+msgstr "Hi {{player_name}}! It is nice to meet you."
