@@ -99,7 +99,8 @@ func _ready() -> void:
 	set_gutter_type(0, TextEdit.GUTTER_TYPE_ICON)
 
 	# Add comment delimiter
-	add_comment_delimiter("#", "", true)
+	if not has_comment_delimiter("#"):
+		add_comment_delimiter("#", "", true)
 
 
 func _gui_input(event: InputEvent) -> void:
