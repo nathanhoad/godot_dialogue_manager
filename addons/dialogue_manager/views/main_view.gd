@@ -145,6 +145,9 @@ func _ready() -> void:
 
 	code_edit.main_view = self
 	code_edit.wrap_mode = TextEdit.LINE_WRAPPING_BOUNDARY if DialogueSettings.get_setting("wrap_lines", false) else TextEdit.LINE_WRAPPING_NONE
+	var editor_settings: EditorSettings = editor_plugin.get_editor_interface().get_editor_settings()
+	editor_settings.settings_changed.connect(_on_editor_settings_changed)
+	_on_editor_settings_changed()
 
 	save_all_button.disabled = true
 
@@ -706,6 +709,12 @@ func import_translations_from_csv(path: String) -> void:
 
 
 ### Signals
+
+
+func _on_editor_settings_changed() -> void:
+	var editor_settings: EditorSettings = editor_plugin.get_editor_interface().get_editor_settings()
+	code_edit.minimap_draw = editor_settings.get_setting("text_editor/appearance/minimap/show_minimap")
+	code_edit.minimap_width = editor_settings.get_setting("text_editor/appearance/minimap/minimap_width")
 
 
 func _on_open_menu_id_pressed(id: int) -> void:
