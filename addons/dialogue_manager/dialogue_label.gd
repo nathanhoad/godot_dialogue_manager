@@ -104,7 +104,7 @@ func type_next(delta: float, seconds_needed: float) -> void:
 	else:
 		visible_characters += 1
 		if visible_characters <= get_total_character_count():
-			spoke.emit(text[visible_characters - 1], visible_characters - 1, dialogue_line.get_speed(visible_characters))
+			spoke.emit(get_parsed_text()[visible_characters - 1], visible_characters - 1, dialogue_line.get_speed(visible_characters))
 		# See if there's time to type out some more in this frame
 		seconds_needed += seconds_per_step * (1.0 / dialogue_line.get_speed(visible_characters))
 		if seconds_needed > delta:
