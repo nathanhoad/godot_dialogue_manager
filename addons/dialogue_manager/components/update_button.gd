@@ -31,7 +31,7 @@ func _ready() -> void:
 	check_for_update()
 	
 	# Check again every few hours
-	timer.start(60 * 60 * 4)
+	timer.start(60 * 60 * 12)
 
 
 # Get the current version
@@ -75,7 +75,9 @@ func _on_http_request_request_completed(result: int, response_code: int, headers
 	var current_version: String = get_version()
 	
 	# Work out the next version from the releases information on GitHub
-	var response: Array = JSON.parse_string(body.get_string_from_utf8())
+	var response = JSON.parse_string(body.get_string_from_utf8())
+	if typeof(response) != TYPE_ARRAY: return
+	
 	var next_version: String = response[0].tag_name.substr(1)
 	if version_to_number(next_version) > version_to_number(current_version):
 		download_update_panel.next_version_release = response[0]

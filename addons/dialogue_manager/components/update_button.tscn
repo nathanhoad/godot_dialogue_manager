@@ -31,6 +31,7 @@ dialog_text = "You have been updated to version 2.4.3"
 [node name="NeedsReloadDialog" type="ConfirmationDialog" parent="."]
 
 [node name="Timer" type="Timer" parent="."]
+wait_time = 14400.0
 
 [connection signal="pressed" from="." to="." method="_on_update_button_pressed"]
 [connection signal="request_completed" from="HTTPRequest" to="." method="_on_http_request_request_completed"]
