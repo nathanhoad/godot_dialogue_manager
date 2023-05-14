@@ -347,3 +347,54 @@ msgstr "Dialogue Manager is now v{version}."
 
 msgid "update.failed"
 msgstr "There was a problem downloading the update."
+
+msgid "runtime.no_resource"
+msgstr "No dialogue resource provided."
+
+msgid "runtime.no_content"
+msgstr "\"{file_path}\" has no content."
+
+msgid "runtime.errors"
+msgstr "You have {count} errors in your dialogue text."
+
+msgid "runtime.error_detail"
+msgstr "Line {line}: {message}"
+
+msgid "runtime.errors_see_details"
+msgstr "You have {count} errors in your dialogue text. See Output for details."
+
+msgid "runtime.invalid_expression"
+msgstr "\"{expression}\" is not a valid expression: {error}"
+
+msgid "runtime.unsupported_array_method"
+msgstr "Calling \"{method_name}\" on an array isn't supported."
+
+msgid "runtime.unsupported_dictionary_method"
+msgstr "Calling \"{method_name}\" on a dictionary isn't supported."
+
+msgid "runtime.array_index_out_of_bounds"
+msgstr "Index {index} out of bounds of array \"{array}\"."
+
+msgid "runtime.left_hand_size_cannot_be_assigned_to"
+msgstr "Left hand side of expression cannot be assigned to."
+
+msgid "runtime.key_not_found"
+msgstr "Key \"{key}\" not found in dictionary \"{dictionary}\""
+
+msgid "runtime.property_not_found"
+msgstr "\"{property}\" is not a property on any game states ({states})."
+
+msgid "runtime.method_not_found"
+msgstr "\"{method}\" is not a method on any game states ({states})"
+
+msgid "runtime.signal_not_found"
+msgstr "\"{signal_name}\" is not a signal on any game states ({states})"
+
+msgid "runtime.method_not_callable"
+msgstr "\"{method}\" is not a callable method on \"{object}\""
+
+msgid "runtime.unknown_operator"
+msgstr "Unknown operator."
+
+msgid "runtime.something_went_wrong"
+msgstr "Something went wrong."

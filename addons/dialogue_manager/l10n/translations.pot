@@ -1,5 +1,5 @@
 msgid ""
-msgstr "
+msgstr ""
 "Project-Id-Version: Dialogue Manager\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -336,4 +336,55 @@ msgid "update.success"
 msgstr ""
 
 msgid "update.failed"
+msgstr ""
+
+msgid "runtime.no_resource"
+msgstr ""
+
+msgid "runtime.no_content"
+msgstr ""
+
+msgid "runtime.errors"
+msgstr ""
+
+msgid "runtime.error_detail"
+msgstr ""
+
+msgid "runtime.errors_see_details"
+msgstr ""
+
+msgid "runtime.invalid_expression"
+msgstr ""
+
+msgid "runtime.unsupported_array_method"
+msgstr ""
+
+msgid "runtime.unsupported_dictionary_method"
+msgstr ""
+
+msgid "runtime.array_index_out_of_bounds"
+msgstr ""
+
+msgid "runtime.left_hand_size_cannot_be_assigned_to"
+msgstr ""
+
+msgid "runtime.key_not_found"
+msgstr ""
+
+msgid "runtime.property_not_found"
+msgstr ""
+
+msgid "runtime.method_not_found"
+msgstr ""
+
+msgid "runtime.signal_not_found"
+msgstr ""
+
+msgid "runtime.method_not_callable"
+msgstr ""
+
+msgid "runtime.unknown_operator"
+msgstr ""
+
+msgid "runtime.something_went_wrong"
 msgstr ""
