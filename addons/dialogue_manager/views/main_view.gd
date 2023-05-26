@@ -497,6 +497,7 @@ func generate_translations_keys() -> void:
 		if parser.is_title_line(l): continue
 		if parser.is_mutation_line(l): continue
 		if parser.is_goto_line(l): continue
+		if parser.is_import_line(l): continue
 
 		if "[ID:" in line: continue
 
