@@ -880,7 +880,13 @@ func is_valid(line: DialogueLine) -> bool:
 	return true
 
 
-func thing_has_method(thing: Object, method: String, args: Array) -> bool:
+func thing_has_method(thing, method: String, args: Array) -> bool:
+	match typeof(thing):
+		TYPE_DICTIONARY:
+			return method in SUPPORTED_DICTIONARY_METHODS
+		TYPE_ARRAY:
+			return method in SUPPORTED_ARRAY_METHODS
+	
 	if method in ["call", "call_deferred"]:
 		return thing.has_method(args[0])
 	else:
