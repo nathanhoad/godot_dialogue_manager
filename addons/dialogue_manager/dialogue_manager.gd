@@ -144,7 +144,7 @@ func get_resolved_text(text: String, replacements: Array, extra_game_states: Arr
 ## Generate a dialogue resource on the fly from some text
 func create_resource_from_text(text: String) -> Resource:
 	var parser: DialogueManagerParser = DialogueManagerParser.new()
-	parser.parse(text)
+	parser.parse(text, "")
 	var results: DialogueManagerParseResult = parser.get_data()
 	var errors: Array[Dictionary] = parser.get_errors()
 	parser.free()

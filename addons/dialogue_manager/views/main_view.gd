@@ -446,7 +446,7 @@ func parse() -> void:
 
 	var parser = DialogueManagerParser.new()
 	var errors: Array[Dictionary] = []
-	if parser.parse(code_edit.text) != OK:
+	if parser.parse(code_edit.text, current_file_path) != OK:
 		errors = parser.get_errors()
 	code_edit.errors = errors
 	errors_panel.errors = errors
@@ -558,7 +558,7 @@ func export_translations_to_csv(path: String) -> void:
 	# Write our translations to file
 	var known_keys: PackedStringArray = []
 
-	var dialogue: Dictionary = DialogueManagerParser.parse_string(code_edit.text).lines
+	var dialogue: Dictionary = DialogueManagerParser.parse_string(code_edit.text, current_file_path).lines
 
 	# Make a list of stuff that needs to go into the file
 	var lines_to_save = []
@@ -623,7 +623,7 @@ func export_character_names_to_csv(path: String) -> void:
 	# Write our translations to file
 	var known_keys: PackedStringArray = []
 
-	var character_names: PackedStringArray = DialogueManagerParser.parse_string(code_edit.text).character_names
+	var character_names: PackedStringArray = DialogueManagerParser.parse_string(code_edit.text, current_file_path).character_names
 
 	# Make a list of stuff that needs to go into the file
 	var lines_to_save = []

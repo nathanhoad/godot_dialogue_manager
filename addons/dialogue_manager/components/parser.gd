@@ -61,9 +61,9 @@ var while_loopbacks: Array[String] = []
 
 
 ## Parse some raw dialogue text. Returns a dictionary containing parse results
-static func parse_string(string: String) -> DialogueManagerParseResult:
+static func parse_string(string: String, path: String) -> DialogueManagerParseResult:
 	var parser: DialogueManagerParser = DialogueManagerParser.new()
-	var error: Error = parser.parse(string)
+	var error: Error = parser.parse(string, path)
 	var data: DialogueManagerParseResult = parser.get_data()
 	parser.free()
 	
@@ -83,8 +83,8 @@ static func extract_markers_from_string(string: String) -> Dictionary:
 
 
 ## Parse some raw dialogue text. Returns a dictionary containing parse results
-func parse(text: String) -> Error:
-	prepare(text)
+func parse(text: String, path: String) -> Error:
+	prepare(text, path)
 	
 	# Parse all of the content
 	var known_translations = {}
@@ -394,7 +394,7 @@ func get_errors() -> Array[Dictionary]:
 	return errors
 
 ## Prepare the parser by collecting all lines and titles
-func prepare(text: String, include_imported_titles_hashes: bool = true) -> void:
+func prepare(text: String, path: String, include_imported_titles_hashes: bool = true) -> void:
 	errors = []
 	imported_paths = []
 	_imported_line_map = []
@@ -406,6 +406,10 @@ func prepare(text: String, include_imported_titles_hashes: bool = true) -> void:
 	
 	# Work out imports
 	var known_imports: Dictionary = {}
+	
+	# Include the base file path so that we can get around circular dependencies
+	known_imports[path.hash()] = "."
+	
 	var imported_titles: Dictionary = {}
 	for id in range(0, raw_lines.size()):
 		var line = raw_lines[id]
@@ -797,12 +801,17 @@ func import_content(path: String, prefix: String, known_imports: Dictionary) -> 
 			if is_import_line(line):
 				var import = extract_import_path_and_name(line)
 				if import.size() > 0:
-					if not known_imports.has(import.path):
+					if not known_imports.has(import.path.hash()):
 						# Add an empty record into the keys just so we don't end up with cyclic dependencies
 						known_imports[import.path.hash()] = ""
 						if import_content(import.path, import.prefix, known_imports) != OK:
 							return ERR_LINK_FAILED
-					imported_titles[import.prefix] = str(import.path.hash())
+					imported_titles[import.prefix] = import.path.hash()
+		
+		var origin_hash: int = -1
+		for hash in known_imports.keys():
+			if known_imports[hash] == ".":
+				origin_hash = hash
 		
 		# Replace any titles or jump points with references to the files they point to (event if they point to their own file)
 		for i in range(0, content.size()):
@@ -818,16 +827,26 @@ func import_content(path: String, prefix: String, known_imports: Dictionary) -> 
 			elif "=>< " in line:
 				var jump = line.substr(line.find("=>< ") + "=>< ".length())
 				if "/" in jump:
-					var bits = jump.split("/")
-					content[i] = "%s=>< %s/%s" % [line.split("=>< ")[0], imported_titles[bits[0]], bits[1]]
+					var bits: PackedStringArray = jump.split("/")
+					var title_hash: int = imported_titles[bits[0]]
+					if title_hash == origin_hash:
+						content[i] = "%s=>< %s" % [line.split("=>< ")[0], bits[1]]
+					else:
+						content[i] = "%s=>< %s/%s" % [line.split("=>< ")[0], title_hash, bits[1]]
+						
 				elif not jump in ["END", "END!"]:
 					content[i] = "%s=>< %s/%s" % [line.split("=>< ")[0], str(path.hash()), jump]
 			
 			elif "=> " in line:
 				var jump = line.substr(line.find("=> ") + "=> ".length())
 				if "/" in jump:
-					var bits = jump.split("/")
-					content[i] = "%s=> %s/%s" % [line.split("=> ")[0], imported_titles[bits[0]], bits[1]]
+					var bits: PackedStringArray = jump.split("/")
+					var title_hash: int = imported_titles[bits[0]]
+					if title_hash == origin_hash:
+						content[i] = "%s=> %s" % [line.split("=> ")[0], bits[1]]
+					else:
+						content[i] = "%s=> %s/%s" % [line.split("=> ")[0], title_hash, bits[1]]
+					
 				elif not jump in ["END", "END!"]:
 					content[i] = "%s=> %s/%s" % [line.split("=> ")[0], str(path.hash()), jump]
 		

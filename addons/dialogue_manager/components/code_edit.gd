@@ -180,7 +180,7 @@ func _request_code_completion(force: bool) -> void:
 
 		# Get all titles, including those in imports
 		var parser: DialogueManagerParser = DialogueManagerParser.new()
-		parser.prepare(text, false)
+		parser.prepare(text, main_view.current_file_path, false)
 		for title in parser.titles:
 			if "/" in title:
 				var bits = title.split("/")

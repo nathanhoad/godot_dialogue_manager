@@ -8,7 +8,7 @@ func _parse_file(path: String, msgids: Array, msgids_context_plural: Array) -> v
 	var file: FileAccess = FileAccess.open(path, FileAccess.READ)
 	var text: String = file.get_as_text()
 	
-	var data: DialogueManagerParseResult = DialogueManagerParser.parse_string(text)
+	var data: DialogueManagerParseResult = DialogueManagerParser.parse_string(text, path)
 	var known_keys: PackedStringArray = PackedStringArray([])
 	
 	# Add all character names

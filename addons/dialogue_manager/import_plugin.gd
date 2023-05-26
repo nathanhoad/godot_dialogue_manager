@@ -75,7 +75,7 @@ func compile_file(path: String, resource_path: String, will_cascade_cache_data: 
 
 	# Parse the text
 	var parser: DialogueManagerParser = DialogueManagerParser.new()
-	var err: Error = parser.parse(raw_text)
+	var err: Error = parser.parse(raw_text, path)
 	var data: DialogueManagerParseResult = parser.get_data()
 	var errors: Array[Dictionary] = parser.get_errors()
 	parser.free()
