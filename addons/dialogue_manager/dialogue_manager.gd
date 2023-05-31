@@ -76,8 +76,12 @@ func _ready() -> void:
 	# Add any autoloads to a generic state so we can refer to them by name
 	var autoloads: Dictionary = {}
 	for child in get_tree().root.get_children():
-		if not child.name in [StringName("DialogueManager"), get_tree().current_scene.name]:
-			autoloads[child.name] = child
+		# Ignore the dialogue manager
+		if child.name == StringName("DialogueManager"): continue
+		# Ignore the current main scene
+		if get_tree().current_scene and child.name == get_tree().current_scene.name: continue
+		# Add the node to our known autoloads
+		autoloads[child.name] = child
 	game_states = [autoloads]
 
 	# Add any other state shortcuts from settings
@@ -886,7 +890,7 @@ func thing_has_method(thing, method: String, args: Array) -> bool:
 			return method in SUPPORTED_DICTIONARY_METHODS
 		TYPE_ARRAY:
 			return method in SUPPORTED_ARRAY_METHODS
-	
+
 	if method in ["call", "call_deferred"]:
 		return thing.has_method(args[0])
 	else:
