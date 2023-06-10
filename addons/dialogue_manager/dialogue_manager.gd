@@ -503,57 +503,76 @@ func resolve(tokens: Array, extra_game_states: Array):
 		if token.type == DialogueConstants.TOKEN_FUNCTION:
 			var function_name: String = token.function
 			var args = await resolve_each(token.value, extra_game_states)
-			if function_name == "str":
-				token["type"] = "value"
-				token["value"] = str(args[0])
-			elif tokens[i - 1].type == DialogueConstants.TOKEN_DOT:
-				# If we are calling a deeper function then we need to collapse the
-				# value into the thing we are calling the function on
-				var caller: Dictionary = tokens[i - 2]
-				if typeof(caller.value) == TYPE_DICTIONARY:
-					caller["type"] = "value"
-					caller["value"] = resolve_dictionary_method(caller.value, function_name, args)
-					tokens.remove_at(i)
-					tokens.remove_at(i-1)
-					i -= 2
-				elif typeof(caller.value) == TYPE_ARRAY:
-					caller["type"] = "value"
-					caller["value"] = resolve_array_method(caller.value, function_name, args)
-					tokens.remove_at(i)
-					tokens.remove_at(i-1)
-					i -= 2
-				elif thing_has_method(caller.value, function_name, args):
-					caller["type"] = "value"
-					caller["value"] = await caller.value.callv(function_name, args)
-					tokens.remove_at(i)
-					tokens.remove_at(i-1)
-					i -= 2
-				else:
-					assert(false, DialogueConstants.translate("runtime.method_not_callable").format({ method = function_name, object = str(caller) }))
-			else:
-				var found: bool = false
-				for state in get_game_states(extra_game_states):
-					if typeof(state) == TYPE_DICTIONARY and function_name in SUPPORTED_DICTIONARY_METHODS:
-						token["type"] = "value"
-						token["value"] = resolve_dictionary_method(state, function_name, args)
-						found = true
-					elif typeof(state) == TYPE_ARRAY and function_name in SUPPORTED_ARRAY_METHODS:
-						token["type"] = "value"
-						token["value"] = resolve_array_method(state, function_name, args)
-						found = true
-					elif thing_has_method(state, function_name, args):
-						token["type"] = "value"
-						token["value"] = await state.callv(function_name, args)
-						found = true
+			match function_name:
+				"str":
+					token["type"] = "value"
+					token["value"] = str(args[0])
+				"Vector2":
+					token["type"] = "value"
+					token["value"] = Vector2(args[0], args[1])
+				"Vector2i":
+					token["type"] = "value"
+					token["value"] = Vector2i(args[0], args[1])
+				"Vector3":
+					token["type"] = "value"
+					token["value"] = Vector3(args[0], args[1], args[2])
+				"Vector3i":
+					token["type"] = "value"
+					token["value"] = Vector3i(args[0], args[1], args[2])
+				"Vector4":
+					token["type"] = "value"
+					token["value"] = Vector4(args[0], args[1], args[2], args[3])
+				"Vector4i":
+					token["type"] = "value"
+					token["value"] = Vector4i(args[0], args[1], args[2], args[3])
+				_:
+					if tokens[i - 1].type == DialogueConstants.TOKEN_DOT:
+						# If we are calling a deeper function then we need to collapse the
+						# value into the thing we are calling the function on
+						var caller: Dictionary = tokens[i - 2]
+						if typeof(caller.value) == TYPE_DICTIONARY:
+							caller["type"] = "value"
+							caller["value"] = resolve_dictionary_method(caller.value, function_name, args)
+							tokens.remove_at(i)
+							tokens.remove_at(i-1)
+							i -= 2
+						elif typeof(caller.value) == TYPE_ARRAY:
+							caller["type"] = "value"
+							caller["value"] = resolve_array_method(caller.value, function_name, args)
+							tokens.remove_at(i)
+							tokens.remove_at(i-1)
+							i -= 2
+						elif thing_has_method(caller.value, function_name, args):
+							caller["type"] = "value"
+							caller["value"] = await caller.value.callv(function_name, args)
+							tokens.remove_at(i)
+							tokens.remove_at(i-1)
+							i -= 2
+						else:
+							assert(false, DialogueConstants.translate("runtime.method_not_callable").format({ method = function_name, object = str(caller) }))
+					else:
+						var found: bool = false
+						for state in get_game_states(extra_game_states):
+							if typeof(state) == TYPE_DICTIONARY and function_name in SUPPORTED_DICTIONARY_METHODS:
+								token["type"] = "value"
+								token["value"] = resolve_dictionary_method(state, function_name, args)
+								found = true
+							elif typeof(state) == TYPE_ARRAY and function_name in SUPPORTED_ARRAY_METHODS:
+								token["type"] = "value"
+								token["value"] = resolve_array_method(state, function_name, args)
+								found = true
+							elif thing_has_method(state, function_name, args):
+								token["type"] = "value"
+								token["value"] = await state.callv(function_name, args)
+								found = true
 
-					if found:
-						break
+							if found:
+								break
 
-				if not found:
-					assert(false, DialogueConstants.translate("runtime.method_not_found").format({
-						method = args[0] if function_name in ["call", "call_deferred"] else function_name,
-						states = str(get_game_states(extra_game_states))
-					}))
+						assert(found, DialogueConstants.translate("runtime.method_not_found").format({
+							method = args[0] if function_name in ["call", "call_deferred"] else function_name,
+							states = str(get_game_states(extra_game_states))
+						}))
 
 		elif token.type == DialogueConstants.TOKEN_DICTIONARY_REFERENCE:
 			var value
@@ -683,8 +702,7 @@ func resolve(tokens: Array, extra_game_states: Array):
 			i -= 1
 		i += 1
 
-	if limit >= 1000:
-		assert(false, DialogueConstants.translate("runtime.something_went_wrong"))
+	assert(limit < 1000, DialogueConstants.translate("runtime.something_went_wrong"))
 
 	# Then addition and subtraction
 	i = 0
@@ -700,8 +718,7 @@ func resolve(tokens: Array, extra_game_states: Array):
 			i -= 1
 		i += 1
 
-	if limit >= 1000:
-		assert(false, DialogueConstants.translate("runtime.something_went_wrong"))
+	assert(limit < 1000, DialogueConstants.translate("runtime.something_went_wrong"))
 
 	# Then negations
 	i = 0
@@ -716,8 +733,7 @@ func resolve(tokens: Array, extra_game_states: Array):
 			i -= 1
 		i += 1
 
-	if limit >= 1000:
-		assert(false, DialogueConstants.translate("runtime.something_went_wrong"))
+	assert(limit < 1000, DialogueConstants.translate("runtime.something_went_wrong"))
 
 	# Then comparisons
 	i = 0
@@ -733,8 +749,7 @@ func resolve(tokens: Array, extra_game_states: Array):
 			i -= 1
 		i += 1
 
-	if limit >= 1000:
-		assert(false, DialogueConstants.translate("runtime.something_went_wrong"))
+	assert(limit < 1000, DialogueConstants.translate("runtime.something_went_wrong"))
 
 	# Then and/or
 	i = 0
@@ -750,8 +765,7 @@ func resolve(tokens: Array, extra_game_states: Array):
 			i -= 1
 		i += 1
 
-	if limit >= 1000:
-		assert(false, DialogueConstants.translate("runtime.something_went_wrong"))
+	assert(limit < 1000, DialogueConstants.translate("runtime.something_went_wrong"))
 
 	# Lastly, resolve any assignments
 	i = 0
@@ -790,8 +804,7 @@ func resolve(tokens: Array, extra_game_states: Array):
 			i -= 1
 		i += 1
 
-	if limit >= 1000:
-		assert(false, DialogueConstants.translate("runtime.something_went_wrong"))
+	assert(limit < 1000, DialogueConstants.translate("runtime.something_went_wrong"))
 
 	return tokens[0].value
 
