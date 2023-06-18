@@ -7,8 +7,6 @@ public partial class Balloon : CanvasLayer
   Color VISIBLE = new Color(1f, 1f, 1f, 1f);
   Color INVISIBLE = new Color(1f, 1f, 1f, 0f);
 
-  GDScript DialogueLabel = GD.Load<GDScript>("res://addons/dialogue_manager/dialogue_label.gd");
-
   ColorRect balloon;
   MarginContainer margin;
   RichTextLabel characterLabel;
@@ -20,8 +18,8 @@ public partial class Balloon : CanvasLayer
   Array<Variant> temporaryGameStates = new Array<Variant>();
   bool isWaitingForInput = false;
 
-  GodotObject dialogueLine;
-  GodotObject DialogueLine
+  DialogueLine dialogueLine;
+  DialogueLine DialogueLine
   {
     get => dialogueLine;
     set
@@ -64,11 +62,11 @@ public partial class Balloon : CanvasLayer
 
       if (inputEvent is InputEventMouseButton && inputEvent.IsPressed() && (inputEvent as InputEventMouseButton).ButtonIndex == MouseButton.Left)
       {
-        Next((string)dialogueLine.Get("next_id"));
+        Next(dialogueLine.NextId);
       }
       else if (inputEvent.IsActionPressed("ui_accept") && GetViewport().GuiGetFocusOwner() == balloon)
       {
-        Next((string)dialogueLine.Get("next_id"));
+        Next(dialogueLine.NextId);
       }
 
     };
@@ -157,11 +155,11 @@ public partial class Balloon : CanvasLayer
 
         if (inputEvent is InputEventMouseButton && inputEvent.IsPressed() && (inputEvent as InputEventMouseButton).ButtonIndex == MouseButton.Left)
         {
-          Next((string)((Array<RefCounted>)dialogueLine.Get("responses"))[item.GetIndex()].Get("next_id"));
+          Next(dialogueLine.Responses[item.GetIndex()].NextId);
         }
         else if (inputEvent.IsActionPressed("ui_accept") && GetResponses().Contains(item))
         {
-          Next((string)((Array<RefCounted>)dialogueLine.Get("responses"))[item.GetIndex()].Get("next_id"));
+          Next(dialogueLine.Responses[item.GetIndex()].NextId);
         }
       };
     }
@@ -206,8 +204,8 @@ public partial class Balloon : CanvasLayer
       child.Free();
     }
 
-    characterLabel.Visible = !string.IsNullOrEmpty((string)dialogueLine.Get("character"));
-    characterLabel.Text = (string)(dialogueLine.Get("character"));
+    characterLabel.Visible = !string.IsNullOrEmpty(dialogueLine.Character);
+    characterLabel.Text = dialogueLine.Character;
 
     dialogueLabel.Modulate = INVISIBLE;
     dialogueLabel.CustomMinimumSize = new Vector2(dialogueLabel.GetParent<Control>().Size.X - 1, dialogueLabel.CustomMinimumSize.Y);
@@ -215,16 +213,16 @@ public partial class Balloon : CanvasLayer
 
     // Show any responses we have
     responsesMenu.Modulate = INVISIBLE;
-    foreach (var response in (Array<RefCounted>)dialogueLine.Get("responses"))
+    foreach (var response in dialogueLine.Responses)
     {
       RichTextLabel item = (RichTextLabel)responseTemplate.Duplicate();
       item.Name = $"Response{responsesMenu.GetChildCount()}";
-      if (!(bool)response.Get("is_allowed"))
+      if (!response.IsAllowed)
       {
         item.Name = item.Name + "Disallowed";
         item.Modulate = new Color(item.Modulate, 0.4f);
       }
-      item.Text = (string)response.Get("text");
+      item.Text = response.Text;
       item.Show();
       responsesMenu.AddChild(item);
     }
@@ -233,27 +231,27 @@ public partial class Balloon : CanvasLayer
     balloon.Show();
 
     dialogueLabel.Modulate = VISIBLE;
-    if (!string.IsNullOrEmpty((string)dialogueLine.Get("text")))
+    if (!string.IsNullOrEmpty(dialogueLine.Text))
     {
       dialogueLabel.Call("type_out");
       await ToSignal(dialogueLabel, "finished_typing");
     }
 
     // Wait for input
-    if (((Array<RefCounted>)dialogueLine.Get("responses")).Count > 0)
+    if (dialogueLine.Responses.Count > 0)
     {
       responsesMenu.Modulate = VISIBLE;
       ConfigureMenu();
     }
-    else if (!string.IsNullOrEmpty((string)dialogueLine.Get("time")))
+    else if (!string.IsNullOrEmpty(dialogueLine.Time))
     {
       float time = 0f;
-      if (!float.TryParse((string)dialogueLine.Get("time"), out time))
+      if (!float.TryParse(dialogueLine.Time, out time))
       {
-        time = ((string)dialogueLine.Get("text")).Length * 0.02f;
+        time = dialogueLine.Text.Length * 0.02f;
       }
       await ToSignal(GetTree().CreateTimer(time), "timeout");
-      Next((string)dialogueLine.Get("next_id"));
+      Next(dialogueLine.NextId);
     }
     else
     {
