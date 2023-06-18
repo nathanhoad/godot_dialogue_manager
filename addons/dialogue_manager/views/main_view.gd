@@ -811,6 +811,7 @@ func _on_main_view_visibility_changed() -> void:
 
 
 func _on_new_button_pressed() -> void:
+	new_dialog.current_file = ""
 	new_dialog.popup_centered()
 
 
