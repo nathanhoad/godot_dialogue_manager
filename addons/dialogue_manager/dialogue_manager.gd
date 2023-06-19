@@ -1,5 +1,7 @@
 extends Node
 
+
+signal passed_title(title)
 signal got_dialogue(line)
 signal mutated(mutation)
 signal dialogue_ended(resource)
@@ -219,6 +221,9 @@ func get_line(resource: DialogueResource, key: String, extra_game_states: Array)
 	if resource.titles.has(key):
 		key = resource.titles.get(key)
 
+	if key in resource.titles.values():
+		passed_title.emit(resource.titles.find_key(key))
+
 	# Key not found, just use the first title
 	if not resource.lines.has(key):
 		key = resource.first_title
@@ -252,7 +257,7 @@ func get_line(resource: DialogueResource, key: String, extra_game_states: Array)
 
 	# Set up a line object
 	var line: DialogueLine = await create_dialogue_line(data, extra_game_states)
-	
+
 	# If the jump point somehow has no content then just end
 	if not line: return null
 
