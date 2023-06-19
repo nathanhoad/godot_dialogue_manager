@@ -12,7 +12,7 @@ var VALID_TITLE_REGEX: RegEx = RegEx.create_from_string("^[^\\!\\@\\#\\$\\%\\^\\
 var BEGINS_WITH_NUMBER_REGEX: RegEx = RegEx.create_from_string("^\\d")
 var TRANSLATION_REGEX: RegEx = RegEx.create_from_string("\\[ID:(?<tr>.*?)\\]")
 var MUTATION_REGEX: RegEx = RegEx.create_from_string("(do|set) (?<mutation>.*)")
-var CONDITION_REGEX: RegEx = RegEx.create_from_string("(if|elif|while) (?<condition>.*)")
+var CONDITION_REGEX: RegEx = RegEx.create_from_string("(if|elif|while|else if) (?<condition>.*)")
 var WRAPPED_CONDITION_REGEX: RegEx = RegEx.create_from_string("\\[if (?<condition>.*)\\]")
 var REPLACEMENTS_REGEX: RegEx = RegEx.create_from_string("{{(.*?)}}")
 var GOTO_REGEX: RegEx = RegEx.create_from_string("=><? (?<jump_to_title>.*)")
@@ -506,7 +506,7 @@ func is_title_line(line: String) -> bool:
 
 func is_condition_line(line: String, include_else: bool = true) -> bool:
 	line = line.strip_edges(true, false)
-	if line.begins_with("if ") or line.begins_with("elif "): return true
+	if line.begins_with("if ") or line.begins_with("elif ") or line.begins_with("else if"): return true
 	if include_else and line.begins_with("else"): return true
 	return false
 
