@@ -28,7 +28,7 @@ func _init() -> void:
 	TRANSLATION_REGEX.compile("\\[TR:(?<tr>.*?)\\]")
 	MUTATION_REGEX.compile("(do|set) (?<mutation>.*)")
 	WRAPPED_CONDITION_REGEX.compile("\\[if (?<condition>.*)\\]")
-	CONDITION_REGEX.compile("(if|elif) (?<condition>.*)")
+	CONDITION_REGEX.compile("(if|elif|else if) (?<condition>.*)")
 	REPLACEMENTS_REGEX.compile("{{(.*?)}}")
 	GOTO_REGEX.compile("=><? (?<jump_to_title>.*)")
 	
@@ -356,7 +356,7 @@ func is_title_line(line: String) -> bool:
 
 func is_condition_line(line: String, include_else: bool = true) -> bool:
 	line = line.strip_edges()
-	if line.begins_with("if ") or line.begins_with("elif "): return true
+	if line.begins_with("if ") or line.begins_with("elif ") or line.begins_with("else if"): return true
 	if include_else and line.begins_with("else"): return true
 	return false
 
