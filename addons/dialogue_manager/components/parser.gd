@@ -1376,8 +1376,7 @@ func check_next_token(token: Dictionary, next_tokens: Array[Dictionary], line_ty
 				DialogueConstants.TOKEN_BOOL,
 				DialogueConstants.TOKEN_STRING,
 				DialogueConstants.TOKEN_NUMBER,
-				DialogueConstants.TOKEN_VARIABLE,
-				DialogueConstants.TOKEN_COLON
+				DialogueConstants.TOKEN_VARIABLE
 			]
 
 		DialogueConstants.TOKEN_COMPARISON, \
