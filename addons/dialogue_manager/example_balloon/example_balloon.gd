@@ -82,7 +82,12 @@ func _ready() -> void:
 		is_waiting_for_input = true
 		balloon.focus_mode = Control.FOCUS_ALL
 		balloon.grab_focus()
-		
+
+
+func _unhandled_input(_event: InputEvent) -> void:
+	# Only the balloon is allowed to handle input while it's showing
+	get_tree().set_input_as_handled()
+
 
 func next(next_id: String) -> void:
 	emit_signal("actioned", next_id)
