@@ -26,7 +26,7 @@ func _init(data: Dictionary = {}) -> void:
 		next_id = data.next_id
 		type = data.type
 		extra_game_states = data.extra_game_states
-		
+
 		match type:
 			DialogueConstants.TYPE_DIALOGUE:
 				character = data.character
@@ -38,6 +38,6 @@ func _init(data: Dictionary = {}) -> void:
 				speeds = data.speeds
 				inline_mutations = data.inline_mutations
 				time = data.time
-			
+
 			DialogueConstants.TYPE_MUTATION:
 				mutation = data.mutation
