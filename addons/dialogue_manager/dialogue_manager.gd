@@ -419,6 +419,7 @@ func mutate(mutation: Dictionary, extra_game_states: Array, is_inline_mutation: 
 
 			"debug":
 				prints("Debug:", args)
+				await get_tree().process_frame
 
 	# Or pass through to the resolver
 	else:
@@ -506,6 +507,7 @@ func resolve(tokens: Array, extra_game_states: Array):
 	var i: int = 0
 	var limit: int = 0
 	while i < tokens.size() and limit < 1000:
+		limit += 1
 		var token: Dictionary = tokens[i]
 
 		if token.type == DialogueConstants.TOKEN_FUNCTION:
@@ -585,9 +587,19 @@ func resolve(tokens: Array, extra_game_states: Array):
 		elif token.type == DialogueConstants.TOKEN_DICTIONARY_REFERENCE:
 			var value
 			if i > 0 and tokens[i - 1].type == DialogueConstants.TOKEN_DOT:
+				# If we are deep referencing then we need to get the parent object.
+				# `parent.value` is the actual object and `token.variable` is the name of
+				# the property within it.
 				value = tokens[i - 2].value[token.variable]
+				# Clean up the previous tokens
+				token.erase("variable")
+				tokens.remove_at(i - 1)
+				tokens.remove_at(i - 2)
+				i -= 2
 			else:
+				# Otherwise we can just get this variable as a normal state reference
 				value = get_state_value(token.variable, extra_game_states)
+
 			var index = await resolve(token.value, extra_game_states)
 			if typeof(value) == TYPE_DICTIONARY:
 				if tokens.size() > i + 1 and tokens[i + 1].type == DialogueConstants.TOKEN_ASSIGNMENT:
@@ -666,8 +678,8 @@ func resolve(tokens: Array, extra_game_states: Array):
 				dictionary[resolved_key] = resolved_value
 			token["value"] = dictionary
 
-		elif token.type == DialogueConstants.TOKEN_VARIABLE:
-			if token.value == "null":
+		elif token.type == DialogueConstants.TOKEN_VARIABLE or token.type == DialogueConstants.TOKEN_NUMBER:
+			if str(token.value) == "null":
 				token["type"] = "value"
 				token["value"] = null
 			elif tokens[i - 1].type == DialogueConstants.TOKEN_DOT:
@@ -682,7 +694,10 @@ func resolve(tokens: Array, extra_game_states: Array):
 					# If we are requesting a deeper property then we need to collapse the
 					# value into the thing we are referencing from
 					caller["type"] = "value"
-					caller["value"] = caller.value.get(property)
+					if typeof(caller.value) == TYPE_ARRAY:
+						caller["value"] = caller.value[property]
+					else:
+						caller["value"] = caller.value.get(property)
 				tokens.remove_at(i)
 				tokens.remove_at(i-1)
 				i -= 2
@@ -692,7 +707,7 @@ func resolve(tokens: Array, extra_game_states: Array):
 				token["type"] = "variable"
 			else:
 				token["type"] = "value"
-				token["value"] = get_state_value(token.value, extra_game_states)
+				token["value"] = get_state_value(str(token.value), extra_game_states)
 
 		i += 1
 

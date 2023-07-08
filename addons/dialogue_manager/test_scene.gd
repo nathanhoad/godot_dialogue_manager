@@ -12,9 +12,9 @@ func _ready():
 	var screen_index: int = DisplayServer.get_primary_screen()
 	DisplayServer.window_set_position(Vector2(DisplayServer.screen_get_position(screen_index)) + (DisplayServer.screen_get_size(screen_index) - DisplayServer.window_get_size()) * 0.5)
 	DisplayServer.window_set_mode(DisplayServer.WINDOW_MODE_WINDOWED)
-	
+
 	DialogueManager.dialogue_ended.connect(_on_dialogue_ended)
-	
+
 	DialogueManager.show_example_dialogue_balloon(resource, title)
 
 
