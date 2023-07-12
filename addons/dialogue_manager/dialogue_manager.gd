@@ -968,6 +968,7 @@ func resolve_array_method(array: Array, method_name: String, args: Array):
 			return null
 		"erase":
 			array.erase(args[0])
+			return null
 		"has":
 			return array.has(args[0])
 		"insert":
