@@ -2,7 +2,7 @@
 
 It's up to you to implement the actual dialogue rendering and input control but there are a few example balloons included to get you started.
 
-You can find them in the [/examples](../examples) directory.
+You can find them in the [/examples](../examples) directory. If you want to try out these examples yourself, you'll need to clone the repository, not just download it.
 
 _**NOTE**: The first time you open this project in Godot 4 you'll need to save and then restart Godot (possibly twice) in order to try out the examples. There appears to be an issue with Godot when it initially creates the `.godot` cache folder._
 

@@ -30,9 +30,13 @@ dialog_text = "You have been updated to version 2.4.3"
 
 [node name="NeedsReloadDialog" type="ConfirmationDialog" parent="."]
 
+[node name="Timer" type="Timer" parent="."]
+wait_time = 14400.0
+
 [connection signal="pressed" from="." to="." method="_on_update_button_pressed"]
 [connection signal="request_completed" from="HTTPRequest" to="." method="_on_http_request_request_completed"]
 [connection signal="close_requested" from="DownloadDialog" to="." method="_on_download_dialog_close_requested"]
 [connection signal="failed" from="DownloadDialog/DownloadUpdatePanel" to="." method="_on_download_update_panel_failed"]
 [connection signal="updated" from="DownloadDialog/DownloadUpdatePanel" to="." method="_on_download_update_panel_updated"]
 [connection signal="confirmed" from="NeedsReloadDialog" to="." method="_on_needs_reload_dialog_confirmed"]
+[connection signal="timeout" from="Timer" to="." method="_on_timer_timeout"]

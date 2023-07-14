@@ -14,9 +14,3 @@ func ask_for_name() -> void:
 
 
 var has_met_nathan: bool = false
-
-
-func run_some_animation() -> void:
-	await get_tree().create_timer(1.0).timeout
-
-var apple_count: int = 6

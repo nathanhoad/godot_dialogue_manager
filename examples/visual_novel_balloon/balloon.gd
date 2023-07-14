@@ -29,7 +29,8 @@ var dialogue_line: DialogueLine:
 		
 		# Remove any previous responses
 		for child in responses_menu.get_children():
-			child.free()
+			responses_menu.remove_child(child)
+			child.queue_free()
 		
 		dialogue_line = next_dialogue_line
 		
@@ -81,7 +82,7 @@ func _ready() -> void:
 	response_template.hide()
 #	hide()
 	
-	Engine.get_singleton("DialogueManager").mutation.connect(_on_mutation)
+	Engine.get_singleton("DialogueManager").mutated.connect(_on_mutated)
 
 
 func _unhandled_input(_event: InputEvent) -> void:
@@ -110,8 +111,11 @@ func set_background(background_name: String) -> void:
 
 
 func add_portrait(character: String, slot: int = 0) -> void:
-	# Instantiate the character
 	var slot_marker: Marker2D = get_node("Slot%d" % slot)
+	
+	if slot_marker.get_child_count() > 0: return
+	
+	# Instantiate the character
 	var portrait = load("res://examples/visual_novel_balloon/portraits/%s.tscn" % character).instantiate()
 	slot_marker.add_child(portrait)
 	
@@ -188,7 +192,7 @@ func get_responses() -> Array:
 ### Signals
 
 
-func _on_mutation() -> void:
+func _on_mutated(_mutation: Dictionary) -> void:
 	is_waiting_for_input = false
 	dialogue_label.modulate.a = 0.0
 

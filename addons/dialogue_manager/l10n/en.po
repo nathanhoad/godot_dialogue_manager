@@ -105,6 +105,9 @@ msgstr "Import line changes from CSV..."
 msgid "confirm_close"
 msgstr "Save changes to '{path}'?"
 
+msgid "confirm_close.save"
+msgstr "Save changes"
+
 msgid "confirm_close.discard"
 msgstr "Discard"
 
@@ -165,7 +168,7 @@ msgstr "If an autoload is enabled here you can refer to its properties and metho
 msgid "settings.states_hint"
 msgstr "ie. Instead of \"SomeState.some_property\" you could just use \"some_property\""
 
-msgid "search.n_of_n"
+msgid "n_of_n"
 msgstr "{index} of {total}"
 
 msgid "search.previous"
@@ -194,6 +197,9 @@ msgstr "Filter files"
 
 msgid "titles_list.filter"
 msgstr "Filter titles"
+
+msgid "errors.line_and_message"
+msgstr "Error at {line}, {column}: {message}"
 
 msgid "errors_in_script"
 msgstr "You have errors in your script. Fix them and then try again."
@@ -237,8 +243,8 @@ msgstr "That title has no content. Maybe change this to a \"=> END\"."
 msgid "errors.invalid_expression"
 msgstr "Expression is invalid."
 
-msgid "errors.invalid_expression_for_character"
-msgstr "The expression used for a character name is invalid."
+msgid "errors.unexpected_condition"
+msgstr "Unexpected condition."
 
 msgid "errors.duplicate_id"
 msgstr "This ID is already on another line."
@@ -341,3 +347,54 @@ msgstr "Dialogue Manager is now v{version}."
 
 msgid "update.failed"
 msgstr "There was a problem downloading the update."
+
+msgid "runtime.no_resource"
+msgstr "No dialogue resource provided."
+
+msgid "runtime.no_content"
+msgstr "\"{file_path}\" has no content."
+
+msgid "runtime.errors"
+msgstr "You have {count} errors in your dialogue text."
+
+msgid "runtime.error_detail"
+msgstr "Line {line}: {message}"
+
+msgid "runtime.errors_see_details"
+msgstr "You have {count} errors in your dialogue text. See Output for details."
+
+msgid "runtime.invalid_expression"
+msgstr "\"{expression}\" is not a valid expression: {error}"
+
+msgid "runtime.unsupported_array_method"
+msgstr "Calling \"{method_name}\" on an array isn't supported."
+
+msgid "runtime.unsupported_dictionary_method"
+msgstr "Calling \"{method_name}\" on a dictionary isn't supported."
+
+msgid "runtime.array_index_out_of_bounds"
+msgstr "Index {index} out of bounds of array \"{array}\"."
+
+msgid "runtime.left_hand_size_cannot_be_assigned_to"
+msgstr "Left hand side of expression cannot be assigned to."
+
+msgid "runtime.key_not_found"
+msgstr "Key \"{key}\" not found in dictionary \"{dictionary}\""
+
+msgid "runtime.property_not_found"
+msgstr "\"{property}\" is not a property on any game states ({states})."
+
+msgid "runtime.method_not_found"
+msgstr "\"{method}\" is not a method on any game states ({states})"
+
+msgid "runtime.signal_not_found"
+msgstr "\"{signal_name}\" is not a signal on any game states ({states})"
+
+msgid "runtime.method_not_callable"
+msgstr "\"{method}\" is not a callable method on \"{object}\""
+
+msgid "runtime.unknown_operator"
+msgstr "Unknown operator."
+
+msgid "runtime.something_went_wrong"
+msgstr "Something went wrong."

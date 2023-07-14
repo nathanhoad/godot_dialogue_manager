@@ -57,9 +57,9 @@ func show_error() -> void:
 		hide()
 	else:
 		show()
-		count_label.text = "%d of %d" % [error_index + 1, errors.size()]
+		count_label.text = DialogueConstants.translate("n_of_n").format({ index = error_index + 1, total = errors.size() })
 		var error = errors[error_index]
-		error_button.text = "Line %d: %s" % [error.line_number + 1, DialogueConstants.get_error_message(error.error)]
+		error_button.text = DialogueConstants.translate("errors.line_and_message").format({ line = error.line_number + 1, column = error.column_number, message = DialogueConstants.get_error_message(error.error) })
 
 
 ### Signals
@@ -70,7 +70,7 @@ func _on_errors_panel_theme_changed() -> void:
 
 
 func _on_error_button_pressed() -> void:
-	emit_signal("error_pressed", errors[error_index].line_number)
+	emit_signal("error_pressed", errors[error_index].line_number, errors[error_index].column_number)
 
 
 func _on_previous_button_pressed() -> void:

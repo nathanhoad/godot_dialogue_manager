@@ -1,12 +1,12 @@
 [gd_scene load_steps=5 format=3 uid="uid://c4xv7lldgg0td"]
 
 [ext_resource type="Script" path="res://examples/test_scenes/TestScene.cs" id="1_7wxyp"]
-[ext_resource type="PackedScene" uid="uid://73jm5qjy52vq" path="res://examples/csharp_balloon/balloon.tscn" id="2_mqip1"]
-[ext_resource type="PackedScene" uid="uid://b361p61jmf257" path="res://examples/csharp_balloon/small_balloon.tscn" id="3_hoenq"]
-[ext_resource type="Resource" uid="uid://c7xhr8kec0j4l" path="res://examples/dialogue.dialogue" id="4_cyond"]
+[ext_resource type="PackedScene" uid="uid://73jm5qjy52vq" path="res://examples/csharp_balloon/balloon.tscn" id="2_0ntlt"]
+[ext_resource type="PackedScene" uid="uid://b361p61jmf257" path="res://examples/csharp_balloon/small_balloon.tscn" id="3_gqk1m"]
+[ext_resource type="Resource" uid="uid://c7xhr8kec0j4l" path="res://examples/dialogue.dialogue" id="4_s3b3n"]
 
 [node name="CSharpScene" type="Node2D"]
 script = ExtResource("1_7wxyp")
-Balloon = ExtResource("2_mqip1")
-SmallBalloon = ExtResource("3_hoenq")
-DialogueResource = ExtResource("4_cyond")
+Balloon = ExtResource("2_0ntlt")
+SmallBalloon = ExtResource("3_gqk1m")
+DialogueResource = ExtResource("4_s3b3n")

@@ -9,11 +9,12 @@ const DialogueSettings = preload("res://addons/dialogue_manager/components/setti
 
 
 func _ready():
-	DisplayServer.window_set_position((DisplayServer.screen_get_size() - DisplayServer.window_get_size()) * 0.5)
+	var screen_index: int = DisplayServer.get_primary_screen()
+	DisplayServer.window_set_position(Vector2(DisplayServer.screen_get_position(screen_index)) + (DisplayServer.screen_get_size(screen_index) - DisplayServer.window_get_size()) * 0.5)
 	DisplayServer.window_set_mode(DisplayServer.WINDOW_MODE_WINDOWED)
-	
-	DialogueManager.dialogue_finished.connect(_on_dialogue_finished)
-	
+
+	DialogueManager.dialogue_ended.connect(_on_dialogue_ended)
+
 	DialogueManager.show_example_dialogue_balloon(resource, title)
 
 
@@ -24,5 +25,5 @@ func _enter_tree() -> void:
 ### Signals
 
 
-func _on_dialogue_finished():
+func _on_dialogue_ended(_resource: DialogueResource):
 	get_tree().quit()

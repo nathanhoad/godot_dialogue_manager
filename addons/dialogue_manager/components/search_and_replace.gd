@@ -41,7 +41,7 @@ var result_index: int = -1:
 			if is_instance_valid(code_edit):
 				code_edit.deselect()
 		
-		result_label.text = DialogueConstants.translate("search.n_of_n").format({ index = result_index + 1, total = results.size() })
+		result_label.text = DialogueConstants.translate("n_of_n").format({ index = result_index + 1, total = results.size() })
 	get:
 		return result_index
 

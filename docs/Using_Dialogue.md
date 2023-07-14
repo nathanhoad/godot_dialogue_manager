@@ -49,7 +49,7 @@ Now `dialogue_line` holds a `DialogueLine` containing the information for the li
 
 Each option also contains a `next_id` property that can be used to continue along that branch.
 
-For more information about the dictionary see the [API documentation](API.md).
+For more information about `DialogueLine`s see the [API documentation](API.md).
 
 ## DialogueLabel node
 

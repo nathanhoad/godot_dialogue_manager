@@ -8,15 +8,18 @@ Open some dialogue by clicking the "new dialogue file" button or "open dialogue"
 
 ![New and Open buttons](new-open-buttons.jpg)
 
-## Nodes
-
-All dialogue exists within nodes. A node is started with a line beginning with a "~ ".
+Dialogue generally begins with a title. A title line begins with a "~ " followed by lower-case words with underscores and no spaces.
 
 ```
 ~ talk_to_nathan
 ```
 
-A node will continue until another title is encountered or the end of the file.
+You can have any number of titles in a dialogue file. They are generally used to break up chunks of dialogue and are handy starting points when [using dialogue in your game](./Using_Dialogue.md).
+
+Titles can also be thought of as markers within the dialogue.
+
+Dialogue will run until it hits an `=> END`, `=> END!`, or the end of the file.
+
 
 ## Dialogue
 
@@ -163,13 +166,13 @@ If using a condition and a goto on a response line then make sure the goto is pr
 
 ## Mutations
 
-You can modify state with either a "set" or a "do" line. Any variables or functions used must
+You can modify state with either a "set" or a "do" line.
 
 ```
-if has_met_nathan == false
+if SomeGlobal.has_met_nathan == false
     do SomeGlobal.animate("Nathan", "Wave")
     Nathan: Hi, I'm Nathan.
-    set has_met_nathan = true
+    set SomeGlobal.has_met_nathan = true
 Nathan: What can I do for you?
 - Tell me more about this dialogue editor
 ```
@@ -192,6 +195,10 @@ Nathan: I can also emit signals[do emit("some_signal")] inline.
 ```
 
 One thing to note is that _inline mutations_ that use `await` won't be awaited so the dialogue will continue right away.
+
+### State shortcuts
+
+If you want to shorten your references to state from something like `SomeGlobal.some_property` to just `some_property` then you can set up global state shortcuts in [Settings](./Settings.md).
 
 ## Error checking
 

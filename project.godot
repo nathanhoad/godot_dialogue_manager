@@ -12,7 +12,7 @@ config_version=5
 
 config/name="Dialogue Manager"
 run/main_scene="res://examples/test_scenes/portraits_scene.tscn"
-config/features=PackedStringArray("4.0")
+config/features=PackedStringArray("4.1")
 config/icon="res://icon.svg"
 
 [autoload]
@@ -53,10 +53,10 @@ locale/translation_remaps={
 "res://examples/point_n_click_balloon/voice/en/ted9b57f70f.ogg": PackedStringArray("res://examples/point_n_click_balloon/voice/de/ted9b57f70f.ogg:de"),
 "res://examples/point_n_click_balloon/voice/en/tf885328afb.ogg": PackedStringArray("res://examples/point_n_click_balloon/voice/de/tf885328afb.ogg:de")
 }
-locale/translations=PackedStringArray("res://examples/l10n/dialogue.en.translation", "res://examples/l10n/de.po")
+locale/translations=PackedStringArray("res://examples/l10n/de.po", "res://examples/l10n/en.po")
+locale/translations_pot_files=PackedStringArray("res://examples/dialogue.dialogue", "res://examples/dialogue_for_visual_novel.dialogue", "res://examples/dialogue_with_input.dialogue", "res://examples/dialogue_for_point_n_click.dialogue")
 locale/language_filter=["de", "en"]
 locale/locale_filter_mode=1
-locale/translations_pot_files=PackedStringArray("res://examples/dialogue.dialogue", "res://examples/dialogue_for_visual_novel.dialogue", "res://examples/dialogue_with_input.dialogue")
 
 [rendering]
 

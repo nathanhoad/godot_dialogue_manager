@@ -62,5 +62,6 @@ func _on_filter_edit_text_changed(new_text: String) -> void:
 
 
 func _on_list_item_clicked(index: int, at_position: Vector2, mouse_button_index: int) -> void:
-	var title = list.get_item_text(index)
-	emit_signal("title_selected", title)
+	if mouse_button_index == MOUSE_BUTTON_LEFT:
+		var title = list.get_item_text(index)
+		title_selected.emit(title)
