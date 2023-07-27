@@ -305,6 +305,51 @@ func translate(data: Dictionary) -> String:
 
 	return tr(data.translation_key)
 
+func get_resolved_conditional_text(text: String, conditions: Dictionary, markers: Dictionary, extra_game_states: Array = []) -> String:
+	var resolved_text: String = ""
+	var should_display: bool = true
+	var should_display_stack: Array[bool] = []
+	var last_should_display: bool = true
+	var last_index_written: int = -1
+	for index in range(text.length()):
+		if conditions.has(index):
+			if conditions[index] == null:
+				should_display = should_display_stack[-1]
+				should_display_stack.pop_back()
+			else:
+				var result = await check_condition({"condition": conditions[index]}, extra_game_states)
+				should_display_stack.push_back(should_display)
+				should_display = should_display and result
+		if not last_should_display and should_display:
+			shift_markers(last_index_written, index, markers)
+		elif last_should_display and not should_display:
+			last_index_written = index
+		last_should_display = should_display
+		if should_display:
+			resolved_text += text[index]
+	return resolved_text
+
+func shift_markers(from: int, to: int, markers: Dictionary) -> void:
+	for key in ["pauses", "speeds", "time"]: # mutations
+		if markers[key] == null:
+			continue
+		var marker = markers[key]
+		var new_marker: Dictionary = {}
+		for index in marker:
+			if index < from:
+				new_marker[index] = marker[index]
+			elif index > to:
+				new_marker[index - (to - from)] = marker[index]
+		markers[key] = new_marker
+	var mutations: Array[Array] = markers["mutations"]
+	var new_mutations: Array[Array] = []
+	for mutation in mutations:
+		var index = mutation[0]
+		if index < from:
+			new_mutations.append(mutation)
+		elif index > to:
+			new_mutations.append([index - (to - from), mutation[index]])
+	markers["mutations"] = new_mutations
 
 # Create a line of dialogue
 func create_dialogue_line(data: Dictionary, extra_game_states: Array) -> DialogueLine:
@@ -313,6 +358,7 @@ func create_dialogue_line(data: Dictionary, extra_game_states: Array) -> Dialogu
 			# Our bbcodes need to be process after text has been resolved so that the markers are at the correct index
 			var text: String = await get_resolved_text(translate(data), data.text_replacements, extra_game_states)
 			var markers: Dictionary = DialogueManagerParser.extract_markers_from_string(text)
+			markers.text = await get_resolved_conditional_text(markers.text, markers.conditions, markers, extra_game_states)
 
 			return DialogueLine.new({
 				type = DialogueConstants.TYPE_DIALOGUE,
@@ -325,6 +371,7 @@ func create_dialogue_line(data: Dictionary, extra_game_states: Array) -> Dialogu
 				pauses = markers.pauses,
 				speeds = markers.speeds,
 				inline_mutations = markers.mutations,
+				conditions = markers.conditions,
 				time = markers.time,
 				extra_game_states = extra_game_states
 			})
@@ -419,7 +466,6 @@ func mutate(mutation: Dictionary, extra_game_states: Array, is_inline_mutation: 
 
 			"debug":
 				prints("Debug:", args)
-				await get_tree().process_frame
 
 	# Or pass through to the resolver
 	else:
@@ -507,7 +553,6 @@ func resolve(tokens: Array, extra_game_states: Array):
 	var i: int = 0
 	var limit: int = 0
 	while i < tokens.size() and limit < 1000:
-		limit += 1
 		var token: Dictionary = tokens[i]
 
 		if token.type == DialogueConstants.TOKEN_FUNCTION:
@@ -587,19 +632,9 @@ func resolve(tokens: Array, extra_game_states: Array):
 		elif token.type == DialogueConstants.TOKEN_DICTIONARY_REFERENCE:
 			var value
 			if i > 0 and tokens[i - 1].type == DialogueConstants.TOKEN_DOT:
-				# If we are deep referencing then we need to get the parent object.
-				# `parent.value` is the actual object and `token.variable` is the name of
-				# the property within it.
 				value = tokens[i - 2].value[token.variable]
-				# Clean up the previous tokens
-				token.erase("variable")
-				tokens.remove_at(i - 1)
-				tokens.remove_at(i - 2)
-				i -= 2
 			else:
-				# Otherwise we can just get this variable as a normal state reference
 				value = get_state_value(token.variable, extra_game_states)
-
 			var index = await resolve(token.value, extra_game_states)
 			if typeof(value) == TYPE_DICTIONARY:
 				if tokens.size() > i + 1 and tokens[i + 1].type == DialogueConstants.TOKEN_ASSIGNMENT:
@@ -678,8 +713,8 @@ func resolve(tokens: Array, extra_game_states: Array):
 				dictionary[resolved_key] = resolved_value
 			token["value"] = dictionary
 
-		elif token.type == DialogueConstants.TOKEN_VARIABLE or token.type == DialogueConstants.TOKEN_NUMBER:
-			if str(token.value) == "null":
+		elif token.type == DialogueConstants.TOKEN_VARIABLE:
+			if token.value == "null":
 				token["type"] = "value"
 				token["value"] = null
 			elif tokens[i - 1].type == DialogueConstants.TOKEN_DOT:
@@ -694,10 +729,7 @@ func resolve(tokens: Array, extra_game_states: Array):
 					# If we are requesting a deeper property then we need to collapse the
 					# value into the thing we are referencing from
 					caller["type"] = "value"
-					if typeof(caller.value) == TYPE_ARRAY:
-						caller["value"] = caller.value[property]
-					else:
-						caller["value"] = caller.value.get(property)
+					caller["value"] = caller.value.get(property)
 				tokens.remove_at(i)
 				tokens.remove_at(i-1)
 				i -= 2
@@ -707,7 +739,7 @@ func resolve(tokens: Array, extra_game_states: Array):
 				token["type"] = "variable"
 			else:
 				token["type"] = "value"
-				token["value"] = get_state_value(str(token.value), extra_game_states)
+				token["value"] = get_state_value(token.value, extra_game_states)
 
 		i += 1
 
@@ -968,7 +1000,6 @@ func resolve_array_method(array: Array, method_name: String, args: Array):
 			return null
 		"erase":
 			array.erase(args[0])
-			return null
 		"has":
 			return array.has(args[0])
 		"insert":
