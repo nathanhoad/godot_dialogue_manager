@@ -74,9 +74,9 @@ static func parse_string(string: String, path: String) -> DialogueManagerParseRe
 
 
 ## Extract bbcode and other markers from a string
-static func extract_markers_from_string(string: String) -> Dictionary:
+static func extract_markers_from_string(string: String) -> ResolvedLineData:
 	var parser: DialogueManagerParser = DialogueManagerParser.new()
-	var markers: Dictionary = parser.extract_markers(string)
+	var markers: ResolvedLineData = parser.extract_markers(string)
 	parser.free()
 
 	return markers
@@ -1016,7 +1016,7 @@ func extract_goto(line: String) -> String:
 		return DialogueConstants.ID_ERROR
 
 
-func extract_markers(line: String) -> Dictionary:
+func extract_markers(line: String) -> ResolvedLineData:
 	var text: String = line
 	var pauses: Dictionary = {}
 	var speeds: Dictionary = {}
@@ -1104,14 +1104,14 @@ func extract_markers(line: String) -> Dictionary:
 	for bb in bbcodes:
 		text = text.insert(bb.start, bb.bbcode)
 
-	return {
-		"text": text,
-		"pauses": pauses,
-		"speeds": speeds,
-		"mutations": mutations,
-		"conditions": conditions,
-		"time": time
-	}
+	return ResolvedLineData.new({
+		text = text,
+		pauses = pauses,
+		speeds = speeds,
+		mutations = mutations,
+		conditions = conditions,
+		time = time
+	})
 
 
 func find_bbcode_positions_in_string(string: String, find_all: bool = true) -> Array[Dictionary]:
