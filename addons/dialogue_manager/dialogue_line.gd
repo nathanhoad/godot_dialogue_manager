@@ -19,6 +19,7 @@ var responses: Array[DialogueResponse] = []
 var extra_game_states: Array = []
 var time = null
 var mutation: Dictionary = {}
+var conditions: Dictionary = {}
 
 
 func _init(data: Dictionary = {}) -> void:
@@ -37,6 +38,7 @@ func _init(data: Dictionary = {}) -> void:
 				pauses = data.pauses
 				speeds = data.speeds
 				inline_mutations = data.inline_mutations
+				conditions = data.conditions
 				time = data.time
 
 			DialogueConstants.TYPE_MUTATION:

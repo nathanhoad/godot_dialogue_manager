@@ -164,6 +164,12 @@ Nathan: What would you like?
 
 If using a condition and a goto on a response line then make sure the goto is provided last.
 
+Conditions can also be used inline in a dialogue line when wrapped with "[if predicate]" and "[/if]".
+
+```
+Nathan: I have done this [if aldready_done]once again[/if]
+```
+
 ## Mutations
 
 You can modify state with either a "set" or a "do" line.

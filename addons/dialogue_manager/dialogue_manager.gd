@@ -130,10 +130,11 @@ func get_next_dialogue_line(resource: DialogueResource, key: String = "0", extra
 		return dialogue
 
 
-## Replace any variables, etc in the dialogue with their state values
-func get_resolved_text(text: String, replacements: Array, extra_game_states: Array = []) -> String:
+func get_resolved_line_data(data: Dictionary, extra_game_states: Array = []) -> ResolvedLineData:
+	var text: String = translate(data)
+
 	# Resolve variables
-	for replacement in replacements:
+	for replacement in data.text_replacements:
 		var value = await resolve(replacement.expression.duplicate(true), extra_game_states)
 		text = text.replace(replacement.value_in_text, str(value))
 
@@ -144,7 +145,53 @@ func get_resolved_text(text: String, replacements: Array, extra_game_states: Arr
 		var options = found.get_string("options").split("|")
 		text = text.replace("[[%s]]" % found.get_string("options"), options[randi_range(0, options.size() - 1)])
 
-	return text
+	# Do a pass on the markers to find any conditionals
+	var markers: ResolvedLineData = DialogueManagerParser.extract_markers_from_string(text)
+
+	# Resolve any conditionals and update marker positions as needed
+	var resolved_text: String = ""
+	var should_display: bool = true
+	var should_display_stack: Array[bool] = []
+	var previous_should_display: bool = true
+	var previous_index_written: int = -1
+	for index in range(markers.text.length()):
+		if markers.conditions.has(index):
+			if markers.conditions[index] == null:
+				should_display = should_display_stack[-1]
+				should_display_stack.pop_back()
+			else:
+				var result = await check_condition({ condition = markers.conditions[index] }, extra_game_states)
+				should_display_stack.push_back(should_display)
+				should_display = should_display and result
+		if not previous_should_display and should_display:
+			adjust_marker_indices(previous_index_written, index, markers)
+		elif previous_should_display and not should_display:
+			previous_index_written = index
+		previous_should_display = should_display
+		if should_display:
+			resolved_text += markers.text[index]
+	markers.text = resolved_text
+
+	return markers
+
+
+## Replace any variables, etc in the character name
+func get_resolved_character(data: Dictionary, extra_game_states: Array = []) -> String:
+	var character: String = data.character
+
+	# Resolve variables
+	for replacement in data.character_replacements:
+		var value = await resolve(replacement.expression.duplicate(true), extra_game_states)
+		character = character.replace(replacement.value_in_text, str(value))
+
+	# Resolve random groups
+	var random_regex: RegEx = RegEx.new()
+	random_regex.compile("\\[\\[(?<options>.*?)\\]\\]")
+	for found in random_regex.search_all(character):
+		var options = found.get_string("options").split("|")
+		character = character.replace("[[%s]]" % found.get_string("options"), options[randi_range(0, options.size() - 1)])
+
+	return character
 
 
 ## Generate a dialogue resource on the fly from some text
@@ -310,22 +357,20 @@ func translate(data: Dictionary) -> String:
 func create_dialogue_line(data: Dictionary, extra_game_states: Array) -> DialogueLine:
 	match data.type:
 		DialogueConstants.TYPE_DIALOGUE:
-			# Our bbcodes need to be process after text has been resolved so that the markers are at the correct index
-			var text: String = await get_resolved_text(translate(data), data.text_replacements, extra_game_states)
-			var markers: Dictionary = DialogueManagerParser.extract_markers_from_string(text)
-
+			var resolved_data: ResolvedLineData = await get_resolved_line_data(data, extra_game_states)
 			return DialogueLine.new({
 				type = DialogueConstants.TYPE_DIALOGUE,
 				next_id = data.next_id,
-				character = await get_resolved_text(data.character, data.character_replacements, extra_game_states),
+				character = await get_resolved_character(data, extra_game_states),
 				character_replacements = data.character_replacements,
-				text = markers.text,
+				text = resolved_data.text,
 				text_replacements = data.text_replacements,
 				translation_key = data.translation_key,
-				pauses = markers.pauses,
-				speeds = markers.speeds,
-				inline_mutations = markers.mutations,
-				time = markers.time,
+				pauses = resolved_data.pauses,
+				speeds = resolved_data.speeds,
+				inline_mutations = resolved_data.mutations,
+				conditions = resolved_data.conditions,
+				time = resolved_data.time,
 				extra_game_states = extra_game_states
 			})
 
@@ -349,11 +394,12 @@ func create_dialogue_line(data: Dictionary, extra_game_states: Array) -> Dialogu
 
 # Create a response
 func create_response(data: Dictionary, extra_game_states: Array) -> DialogueResponse:
+	var resolved_data: ResolvedLineData = await get_resolved_line_data(data, extra_game_states)
 	return DialogueResponse.new({
 		type = DialogueConstants.TYPE_RESPONSE,
 		next_id = data.next_id,
 		is_allowed = await check_condition(data, extra_game_states),
-		text = await get_resolved_text(translate(data), data.text_replacements, extra_game_states),
+		text = resolved_data.text,
 		text_replacements = data.text_replacements,
 		translation_key = data.translation_key
 	})
@@ -907,6 +953,31 @@ func apply_operation(operator: String, first_value, second_value):
 			return first_value or second_value
 
 	assert(false, DialogueConstants.translate("runtime.unknown_operator"))
+
+
+# Move the position of any markers after a given position
+func adjust_marker_indices(from: int, to: int, markers: ResolvedLineData) -> void:
+	for key in ["pauses", "speeds", "time"]: # mutations
+		if markers.get(key) == null:
+			continue
+		var marker = markers.get(key)
+		var next_marker: Dictionary = {}
+		for index in marker:
+			if index < from:
+				next_marker[index] = marker[index]
+			elif index > to:
+				next_marker[index - (to - from)] = marker[index]
+		markers.set(key, next_marker)
+
+	var mutations: Array[Array] = markers.mutations
+	var next_mutations: Array[Array] = []
+	for mutation in mutations:
+		var index = mutation[0]
+		if index < from:
+			next_mutations.append(mutation)
+		elif index > to:
+			next_mutations.append([index - (to - from), mutation[index]])
+	markers.mutations = next_mutations
 
 
 # Check if a dialogue line contains meaningful information

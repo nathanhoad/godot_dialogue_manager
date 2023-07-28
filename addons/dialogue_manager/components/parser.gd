@@ -74,9 +74,9 @@ static func parse_string(string: String, path: String) -> DialogueManagerParseRe
 
 
 ## Extract bbcode and other markers from a string
-static func extract_markers_from_string(string: String) -> Dictionary:
+static func extract_markers_from_string(string: String) -> ResolvedLineData:
 	var parser: DialogueManagerParser = DialogueManagerParser.new()
-	var markers: Dictionary = parser.extract_markers(string)
+	var markers: ResolvedLineData = parser.extract_markers(string)
 	parser.free()
 
 	return markers
@@ -1016,11 +1016,12 @@ func extract_goto(line: String) -> String:
 		return DialogueConstants.ID_ERROR
 
 
-func extract_markers(line: String) -> Dictionary:
+func extract_markers(line: String) -> ResolvedLineData:
 	var text: String = line
 	var pauses: Dictionary = {}
 	var speeds: Dictionary = {}
 	var mutations: Array[Array] = []
+	var conditions: Dictionary = {}
 	var bbcodes: Array = []
 	var time = null
 
@@ -1030,7 +1031,7 @@ func extract_markers(line: String) -> Dictionary:
 	var accumulaive_length_offset = 0
 	for position in bbcode_positions:
 		# Ignore our own markers
-		if position.code in ["wait", "speed", "/speed", "do", "set", "next"]:
+		if position.code in ["wait", "speed", "/speed", "do", "set", "next", "if", "/if"]:
 			continue
 
 		bbcodes.append({
@@ -1057,6 +1058,8 @@ func extract_markers(line: String) -> Dictionary:
 		var args = {}
 		if code in ["do", "set"]:
 			args["value"] = extract_mutation("%s %s" % [code, raw_args])
+		elif code == "if":
+			args["value"] = extract_condition(bbcode["bbcode"], true, 0)
 		else:
 			# Could be something like:
 			# 	"=1.0"
@@ -1082,6 +1085,10 @@ func extract_markers(line: String) -> Dictionary:
 				mutations.append([index, args.get("value")])
 			"next":
 				time = args.get("value") if args.has("value") else "0"
+			"if":
+				conditions[index] = args.get("value")
+			"/if":
+				conditions[index] = null
 
 		# Find any BB codes that are after this index and remove the length from their start
 		var length = bbcode.bbcode.length()
@@ -1097,13 +1104,14 @@ func extract_markers(line: String) -> Dictionary:
 	for bb in bbcodes:
 		text = text.insert(bb.start, bb.bbcode)
 
-	return {
-		"text": text,
-		"pauses": pauses,
-		"speeds": speeds,
-		"mutations": mutations,
-		"time": time
-	}
+	return ResolvedLineData.new({
+		text = text,
+		pauses = pauses,
+		speeds = speeds,
+		mutations = mutations,
+		conditions = conditions,
+		time = time
+	})
 
 
 func find_bbcode_positions_in_string(string: String, find_all: bool = true) -> Array[Dictionary]:
