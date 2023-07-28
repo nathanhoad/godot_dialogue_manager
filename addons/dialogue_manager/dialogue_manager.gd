@@ -67,7 +67,10 @@ var translation_source: TranslationSource = TranslationSource.Guess
 var _node_properties: Array = []
 
 
-func _ready() -> void:
+func _init() -> void:
+	# Make the dialogue manager available as a singleton
+	Engine.register_singleton("DialogueManager", self)
+
 	# Cache the known Node2D properties
 	_node_properties = ["Script Variables"]
 	var temp_node: Node2D = Node2D.new()
@@ -75,6 +78,8 @@ func _ready() -> void:
 		_node_properties.append(property.name)
 	temp_node.free()
 
+
+func _ready() -> void:
 	# Add any autoloads to a generic state so we can refer to them by name
 	var autoloads: Dictionary = {}
 	for child in get_tree().root.get_children():
@@ -91,9 +96,6 @@ func _ready() -> void:
 		var state: Node = get_node_or_null("/root/" + node_name)
 		if state:
 			game_states.append(state)
-
-	# Make the dialogue manager available as a singleton
-	Engine.register_singleton("DialogueManager", self)
 
 
 ## Step through lines and run any mutations until we either hit some dialogue or the end of the conversation
