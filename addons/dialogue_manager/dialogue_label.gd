@@ -60,7 +60,6 @@ func _unhandled_input(event: InputEvent) -> void:
 			mutate_inline_mutations(i)
 		visible_characters = get_total_character_count()
 		self.is_typing = false
-		finished_typing.emit()
 
 
 # Start typing out the text
