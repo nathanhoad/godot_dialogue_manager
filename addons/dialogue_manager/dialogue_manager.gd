@@ -61,6 +61,9 @@ var game_states: Array = []
 # Allow dialogue to call singletons
 var include_singletons: bool = true
 
+# Allow dialogue to call static methods/properties on classes
+var include_classes: bool = true
+
 # Manage translation behaviour
 var translation_source: TranslationSource = TranslationSource.Guess
 
@@ -526,6 +529,11 @@ func get_state_value(property: String, extra_game_states: Array):
 	if include_singletons and Engine.has_singleton(property):
 		return Engine.get_singleton(property)
 
+	if include_classes:
+		for class_data in ProjectSettings.get_global_class_list():
+			if class_data.class == property:
+				return load(class_data.path).new()
+
 	assert(false, DialogueConstants.translate("runtime.property_not_found").format({ property = property, states = str(get_game_states(extra_game_states)) }))
 
 
@@ -607,7 +615,7 @@ func resolve(tokens: Array, extra_game_states: Array):
 							tokens.remove_at(i-1)
 							i -= 2
 						else:
-							assert(false, DialogueConstants.translate("runtime.method_not_callable").format({ method = function_name, object = str(caller) }))
+							assert(false, DialogueConstants.translate("runtime.method_not_callable").format({ method = function_name, object = str(caller.value) }))
 					else:
 						var found: bool = false
 						for state in get_game_states(extra_game_states):
