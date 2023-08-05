@@ -591,6 +591,9 @@ func resolve(tokens: Array, extra_game_states: Array):
 				"Vector4i":
 					token["type"] = "value"
 					token["value"] = Vector4i(args[0], args[1], args[2], args[3])
+				"Quaternion":
+					token["type"] = "value"
+					token["value"] = Quaternion(args[0], args[1], args[2], args[3])
 				_:
 					if tokens[i - 1].type == DialogueConstants.TOKEN_DOT:
 						# If we are calling a deeper function then we need to collapse the
