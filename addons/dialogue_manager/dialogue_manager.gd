@@ -39,6 +39,27 @@ const SUPPORTED_ARRAY_METHODS = [
 	"sort"
 ]
 const SUPPORTED_DICTIONARY_METHODS = ["has", "has_all", "get", "keys", "values", "size"]
+const SUPPORTED_QUATERNION_METHODS = [
+	"angle_to",
+	"dot",
+	"exp",
+	"from_euler",
+	"get_angle",
+	"get_axis",
+	"get_euler",
+	"inverse",
+	"is_equal_approx",
+	"is_finite",
+	"is_normalized",
+	"length",
+	"length_squared",
+	"log",
+	"normalized",
+	"slerp",
+	"slerpni",
+	"spherical_cubic_interpolate",
+	"spherical_cubic_interpolate_in_time"
+]
 
 
 enum MutationBehaviour {
@@ -611,6 +632,12 @@ func resolve(tokens: Array, extra_game_states: Array):
 							tokens.remove_at(i)
 							tokens.remove_at(i-1)
 							i -= 2
+						elif typeof(caller.value) == TYPE_QUATERNION:
+							caller["type"] = "value"
+							caller["value"] = resolve_quaternion_method(caller.value, function_name, args)
+							tokens.remove_at(i)
+							tokens.remove_at(i-1)
+							i -= 2
 						elif thing_has_method(caller.value, function_name, args):
 							caller["type"] = "value"
 							caller["value"] = await caller.value.callv(function_name, args)
@@ -629,6 +656,10 @@ func resolve(tokens: Array, extra_game_states: Array):
 							elif typeof(state) == TYPE_ARRAY and function_name in SUPPORTED_ARRAY_METHODS:
 								token["type"] = "value"
 								token["value"] = resolve_array_method(state, function_name, args)
+								found = true
+							elif typeof(state) == TYPE_QUATERNION and function_name in SUPPORTED_QUATERNION_METHODS:
+								token["type"] = "value"
+								token["value"] = resolve_quaternion_method(state, function_name, args)
 								found = true
 							elif thing_has_method(state, function_name, args):
 								token["type"] = "value"
@@ -1111,3 +1142,47 @@ func resolve_dictionary_method(dictionary: Dictionary, method_name: String, args
 			return dictionary.size()
 
 	assert(false, DialogueConstants.translate("runtime.unsupported_dictionary_method").format({ method_name = method_name }))
+
+
+func resolve_quaternion_method(quaternion: Quaternion, method_name: String, args: Array):
+	match method_name:
+		"angle_to":
+			return quaternion.angle_to(args[0])
+		"dot":
+			return quaternion.dot(args[0])
+		"exp":
+			return quaternion.exp()
+		"from_euler":
+			return quaternion.from_euler(args[0])
+		"get_angle":
+			return quaternion.get_angle()
+		"get_axis":
+			return quaternion.get_axis()
+		"get_euler":
+			return quaternion.get_euler() if args.size() == 0 else quaternion.get_euler(args[0])
+		"inverse":
+			return quaternion.inverse()
+		"is_equal_approx":
+			return quaternion.is_equal_approx(args[0])
+		"is_finite":
+			return quaternion.is_finite()
+		"is_normalized":
+			return quaternion.is_normalized()
+		"length":
+			return quaternion.length()
+		"length_squared":
+			return quaternion.length_squared()
+		"log":
+			return quaternion.log()
+		"normalized":
+			return quaternion.normalized()
+		"slerp":
+			return quaternion.slerp(args[0], args[1])
+		"slerpni":
+			return quaternion.slerpni(args[0], args[1])
+		"spherical_cubic_interpolate":
+			return quaternion.spherical_cubic_interpolate(args[0], args[1], args[2], args[3])
+		"spherical_cubic_interpolate_in_time":
+			return quaternion.spherical_cubic_interpolate_in_time(args[0], args[1], args[2], args[3], args[4], args[5], args[6])
+
+	assert(false, DialogueConstants.translate("runtime.unsupported_quaternion_method").format({ method_name = method_name }))
