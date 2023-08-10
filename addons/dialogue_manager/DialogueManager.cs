@@ -6,6 +6,33 @@ namespace DialogueManagerRuntime
 {
   public partial class DialogueManager : Node
   {
+    private static GodotObject singleton;
+
+    public static async Task<GodotObject> GetSingleton()
+    {
+      if (singleton != null) return singleton;
+
+      var tree = Engine.GetMainLoop();
+      int x = 0;
+
+      // Try and find the singleton for a few seconds
+      while (!Engine.HasSingleton("DialogueManager") && x < 300)
+      {
+        await tree.ToSignal(tree, "process_frame");
+        x++;
+      }
+
+      // If it times out something is wrong
+      if (x >= 300)
+      {
+        throw new System.Exception("The DialogueManager singleton is missing.");
+      }
+
+      singleton = Engine.GetSingleton("DialogueManager");
+      return singleton;
+    }
+
+
     public static async Task<DialogueLine> GetNextDialogueLine(Resource dialogueResource, string key = "0", Array<Variant> extraGameStates = null)
     {
       var dialogueManager = Engine.GetSingleton("DialogueManager");
