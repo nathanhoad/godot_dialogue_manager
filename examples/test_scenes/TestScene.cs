@@ -1,4 +1,5 @@
 using Godot;
+using DialogueManagerRuntime;
 
 public partial class TestScene : Node2D
 {
@@ -17,7 +18,9 @@ public partial class TestScene : Node2D
 
   public async override void _Ready()
   {
-    Engine.GetSingleton("DialogueManager").Connect("dialogue_ended", new Callable(this, "OnDialogueEnded"));
+    var dialogueManager = await DialogueManager.GetSingleton();
+
+    dialogueManager.Connect("dialogue_ended", new Callable(this, "OnDialogueEnded"));
 
     await ToSignal(GetTree().CreateTimer(0.4), "timeout");
 
