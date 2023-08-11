@@ -94,7 +94,7 @@ func type_next(delta: float, seconds_needed: float) -> void:
 	var additional_waiting_seconds: float = get_pause(visible_characters)
 
 	# Pause on characters like "."
-	if visible_characters > 0 and get_parsed_text()[visible_characters - 1] in pause_at_characters.split():
+	if _should_auto_pause():
 		additional_waiting_seconds += seconds_per_step * 15
 
 	# Pause at literal [wait] directives
@@ -138,3 +138,17 @@ func mutate_inline_mutations(index: int) -> void:
 		if inline_mutation[0] == index:
 			# The DialogueManager can't be referenced directly here so we need to get it by its path
 			Engine.get_singleton("DialogueManager").mutate(inline_mutation[1], dialogue_line.extra_game_states, true)
+
+
+func _should_auto_pause() -> bool:
+	if visible_characters == 0: return false
+
+	var parsed_text: String = get_parsed_text()
+
+	# Ignore "." if it's between two numbers
+	if visible_characters > 3 and parsed_text[visible_characters - 1] == ".":
+		var possible_number: String = parsed_text.substr(visible_characters - 2, 3)
+		if str(float(possible_number)) == possible_number:
+			return false
+
+	return parsed_text[visible_characters - 1] in pause_at_characters.split()
