@@ -43,7 +43,7 @@ var translation_source: TranslationSource = TranslationSource.Guess
 var _node_properties: Array = []
 
 
-func _init() -> void:
+func _ready() -> void:
 	# Make the dialogue manager available as a singleton
 	Engine.register_singleton("DialogueManager", self)
 
@@ -54,8 +54,6 @@ func _init() -> void:
 		_node_properties.append(property.name)
 	temp_node.free()
 
-
-func _ready() -> void:
 	# Add any autoloads to a generic state so we can refer to them by name
 	var autoloads: Dictionary = {}
 	for child in get_tree().root.get_children():
