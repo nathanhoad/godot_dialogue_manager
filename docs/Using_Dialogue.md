@@ -78,5 +78,5 @@ If there were syntax errors the method will fail.
 If there were no errors then you can use this ephemeral resource like normal:
 
 ```gdscript
-var dialogue_line = await DialogueManager.get_next_dialogue_line("title", resource)
+var dialogue_line = await DialogueManager.get_next_dialogue_line(resource, "title")
 ```
