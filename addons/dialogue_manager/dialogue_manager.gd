@@ -404,40 +404,13 @@ func mutate(mutation: Dictionary, extra_game_states: Array, is_inline_mutation: 
 	var expression: Array[Dictionary] = mutation.expression
 
 	# Handle built in mutations
-	if expression[0].type == DialogueConstants.TOKEN_FUNCTION and expression[0].function in ["wait", "emit", "debug"]:
+	if expression[0].type == DialogueConstants.TOKEN_FUNCTION and expression[0].function in ["wait", "debug"]:
 		var args: Array = await resolve_each(expression[0].value, extra_game_states)
 		match expression[0].function:
 			"wait":
 				mutated.emit(mutation)
 				await get_tree().create_timer(float(args[0])).timeout
 				return
-
-			"emit":
-				for state in get_game_states(extra_game_states):
-					if typeof(state) == TYPE_DICTIONARY:
-						continue
-					elif state.has_signal(args[0]):
-						match args.size():
-							1:
-								state.emit_signal(args[0])
-							2:
-								state.emit_signal(args[0], args[1])
-							3:
-								state.emit_signal(args[0], args[1], args[2])
-							4:
-								state.emit_signal(args[0], args[1], args[2], args[3])
-							5:
-								state.emit_signal(args[0], args[1], args[2], args[3], args[4])
-							6:
-								state.emit_signal(args[0], args[1], args[2], args[3], args[4], args[5])
-							7:
-								state.emit_signal(args[0], args[1], args[2], args[3], args[4], args[5], args[6])
-							8:
-								state.emit_signal(args[0], args[1], args[2], args[3], args[4], args[5], args[6], args[7])
-						return
-
-				# The signal hasn't been found anywhere
-				assert(false, DialogueConstants.translate("runtime.signal_not_found").format({ signal_name = args[0], states = str(get_game_states(extra_game_states)) }))
 
 			"debug":
 				prints("Debug:", args)
@@ -603,18 +576,24 @@ func resolve(tokens: Array, extra_game_states: Array):
 							assert(false, DialogueConstants.translate("runtime.method_not_callable").format({ method = function_name, object = str(caller.value) }))
 					else:
 						var found: bool = false
-						for state in get_game_states(extra_game_states):
-							if typeof(state) in DialogueConstants.SUPPORTED_PRIMITIVES and thing_has_method(state, function_name, args):
-								token["type"] = "value"
-								token["value"] = resolve_primitive_method(state, function_name, args)
-								found = true
-							elif thing_has_method(state, function_name, args):
-								token["type"] = "value"
-								token["value"] = await state.callv(function_name, args)
-								found = true
 
-							if found:
-								break
+						if function_name == "emit":
+							token["type"] = "value"
+							token["value"] = resolve_signal(args, extra_game_states)
+							found = true
+						else:
+							for state in get_game_states(extra_game_states):
+								if typeof(state) in DialogueConstants.SUPPORTED_PRIMITIVES and thing_has_method(state, function_name, args):
+									token["type"] = "value"
+									token["value"] = resolve_primitive_method(state, function_name, args)
+									found = true
+								elif thing_has_method(state, function_name, args):
+									token["type"] = "value"
+									token["value"] = await state.callv(function_name, args)
+									found = true
+
+								if found:
+									break
 
 						assert(found, DialogueConstants.translate("runtime.method_not_found").format({
 							method = args[0] if function_name in ["call", "call_deferred"] else function_name,
@@ -1014,6 +993,34 @@ func thing_has_property(thing: Object, property: String) -> bool:
 			return true
 
 	return false
+
+
+func resolve_signal(args: Array, extra_game_states: Array):
+	for state in get_game_states(extra_game_states):
+		if typeof(state) == TYPE_DICTIONARY:
+			continue
+		elif state.has_signal(args[0]):
+			match args.size():
+				1:
+					state.emit_signal(args[0])
+				2:
+					state.emit_signal(args[0], args[1])
+				3:
+					state.emit_signal(args[0], args[1], args[2])
+				4:
+					state.emit_signal(args[0], args[1], args[2], args[3])
+				5:
+					state.emit_signal(args[0], args[1], args[2], args[3], args[4])
+				6:
+					state.emit_signal(args[0], args[1], args[2], args[3], args[4], args[5])
+				7:
+					state.emit_signal(args[0], args[1], args[2], args[3], args[4], args[5], args[6])
+				8:
+					state.emit_signal(args[0], args[1], args[2], args[3], args[4], args[5], args[6], args[7])
+			return
+
+	# The signal hasn't been found anywhere
+	assert(false, DialogueConstants.translate("runtime.signal_not_found").format({ signal_name = args[0], states = str(get_game_states(extra_game_states)) }))
 
 
 func resolve_primitive_method(primitive, method_name: String, args: Array):
