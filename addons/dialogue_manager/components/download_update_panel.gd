@@ -34,28 +34,27 @@ func _ready() -> void:
 
 func _on_download_button_pressed() -> void:
 	# Safeguard the actual dialogue manager repo from accidentally updating itself
-	if FileAccess.file_exists("res://examples/test_scenes/test_scene.gd"): 
+	if FileAccess.file_exists("res://examples/test_scenes/test_scene.gd"):
 		prints("You can't update the addon from within itself.")
 		failed.emit()
 		return
-	
+
 	http_request.request(next_version_release.zipball_url)
 	download_button.disabled = true
 	download_button.text = DialogueConstants.translate("update.downloading")
 
 
 func _on_http_request_request_completed(result: int, response_code: int, headers: PackedStringArray, body: PackedByteArray) -> void:
-	if result != HTTPRequest.RESULT_SUCCESS: 
+	if result != HTTPRequest.RESULT_SUCCESS:
 		failed.emit()
 		return
-	
+
 	# Save the downloaded zip
 	var zip_file: FileAccess = FileAccess.open(TEMP_FILE_NAME, FileAccess.WRITE)
 	zip_file.store_buffer(body)
 	zip_file.close()
-	
-	if DirAccess.dir_exists_absolute("res://addons/dialogue_manager"):
-		DirAccess.remove_absolute("res://addons/dialogue_manager")
+
+	OS.move_to_trash(ProjectSettings.globalize_path("res://addons/dialogue_manager"))
 
 	var zip_reader: ZIPReader = ZIPReader.new()
 	zip_reader.open(TEMP_FILE_NAME)
@@ -77,7 +76,7 @@ func _on_http_request_request_completed(result: int, response_code: int, headers
 
 	zip_reader.close()
 	DirAccess.remove_absolute(TEMP_FILE_NAME)
-	
+
 	updated.emit(next_version_release.tag_name.substr(1))
 
 
