@@ -151,4 +151,8 @@ func _should_auto_pause() -> bool:
 		if str(float(possible_number)) == possible_number:
 			return false
 
+	# Ignore two non-"." characters next to each other
+	if visible_characters > 1 and parsed_text[visible_characters - 1] in pause_at_characters.replace(".", "").split():
+		return false
+
 	return parsed_text[visible_characters - 1] in pause_at_characters.split()
