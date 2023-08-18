@@ -846,7 +846,7 @@ func resolve(tokens: Array, extra_game_states: Array):
 				"array":
 					show_error_for_missing_state_value(
 						DialogueConstants.translate("runtime.array_index_out_of_bounds").format({ index = lhs.key, array = lhs.value }),
-						lhs.key < lhs.value.size()
+						lhs.key >= lhs.value.size()
 					)
 					value = apply_operation(token.value, lhs.value[lhs.key], tokens[i+1].value)
 					lhs.value[lhs.key] = value
