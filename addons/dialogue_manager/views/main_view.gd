@@ -716,6 +716,7 @@ func _on_editor_settings_changed() -> void:
 	var editor_settings: EditorSettings = editor_plugin.get_editor_interface().get_editor_settings()
 	code_edit.minimap_draw = editor_settings.get_setting("text_editor/appearance/minimap/show_minimap")
 	code_edit.minimap_width = editor_settings.get_setting("text_editor/appearance/minimap/minimap_width")
+	code_edit.scroll_smooth = editor_settings.get_setting("text_editor/behavior/navigation/smooth_scrolling")
 
 
 func _on_open_menu_id_pressed(id: int) -> void:
