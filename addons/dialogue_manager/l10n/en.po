@@ -156,6 +156,9 @@ msgstr "Wrap long lines"
 msgid "settings.include_failed_responses"
 msgstr "Include responses with failed conditions"
 
+msgid "settings.ignore_missing_state_values"
+msgstr "Skip over missing state value errors (not recommended)"
+
 msgid "settings.custom_test_scene"
 msgstr "Custom test scene (must extend BaseDialogueTestScene)"
 
