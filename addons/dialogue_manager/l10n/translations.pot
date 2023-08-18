@@ -146,6 +146,9 @@ msgstr ""
 msgid "settings.include_failed_responses"
 msgstr ""
 
+msgid "settings.ignore_missing_state_values"
+msgstr ""
+
 msgid "settings.custom_test_scene"
 msgstr ""
 

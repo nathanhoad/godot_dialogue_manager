@@ -13,6 +13,7 @@ const DEFAULT_SETTINGS = {
 	"wrap_lines" = false,
 	"new_with_template" = true,
 	"include_all_responses" = false,
+	"ignore_missing_state_values" = false,
 	"custom_test_scene_path" = "res://addons/dialogue_manager/test_scene.tscn"
 }
 
