@@ -19,46 +19,46 @@ var dialogue_file_cache: Dictionary = {}
 func _enter_tree() -> void:
 	add_autoload_singleton("DialogueManager", "res://addons/dialogue_manager/dialogue_manager.gd")
 	add_custom_type("DialogueLabel", "RichTextLabel", preload("res://addons/dialogue_manager/dialogue_label.gd"), _get_plugin_icon())
-	
+
 	if Engine.is_editor_hint():
 		DialogueSettings.prepare()
-		
+
 		import_plugin = DialogueImportPlugin.new()
 		import_plugin.editor_plugin = self
 		add_import_plugin(import_plugin)
-		
+
 		translation_parser_plugin = DialogueTranslationParserPlugin.new()
 		add_translation_parser_plugin(translation_parser_plugin)
-		
+
 		main_view = MainView.instantiate()
 		main_view.editor_plugin = self
 		get_editor_interface().get_editor_main_screen().add_child(main_view)
 		_make_visible(false)
-		
+
 		update_dialogue_file_cache()
 		get_editor_interface().get_resource_filesystem().filesystem_changed.connect(_on_filesystem_changed)
 		get_editor_interface().get_file_system_dock().files_moved.connect(_on_files_moved)
 		get_editor_interface().get_file_system_dock().file_removed.connect(_on_file_removed)
-		
+
 		add_tool_menu_item("Create copy of dialogue example balloon...", _copy_dialogue_balloon)
 
 
 func _exit_tree() -> void:
 	remove_autoload_singleton("DialogueManager")
 	remove_custom_type("DialogueLabel")
-	
+
 	remove_import_plugin(import_plugin)
 	import_plugin = null
-	
+
 	remove_translation_parser_plugin(translation_parser_plugin)
 	translation_parser_plugin = null
-	
+
 	if is_instance_valid(main_view):
 		main_view.queue_free()
-	
+
 	get_editor_interface().get_resource_filesystem().filesystem_changed.disconnect(_on_filesystem_changed)
 	get_editor_interface().get_file_system_dock().files_moved.disconnect(_on_files_moved)
-	
+
 	remove_tool_menu_item("Create copy of dialogue example balloon...")
 
 
@@ -96,11 +96,11 @@ func _apply_changes() -> void:
 func _build() -> bool:
 	# Ignore errors in other files if we are just running the test scene
 	if DialogueSettings.get_user_value("is_running_test_scene", true): return true
-	
+
 	var can_build: bool = true
 	var is_first_file: bool = true
 	for dialogue_file in dialogue_file_cache.values():
-		if dialogue_file.errors.size() > 0:
+		if dialogue_file and dialogue_file.errors.size() > 0:
 			# Open the first file
 			if is_first_file:
 				get_editor_interface().edit_resource(load(dialogue_file.path))
@@ -119,7 +119,7 @@ func add_to_dialogue_file_cache(path: String, resource_path: String, parse_resul
 		dependencies = Array(parse_results.imported_paths).filter(func(d): return d != path),
 		errors = []
 	}
-	
+
 	save_dialogue_cache()
 	recompile_dependent_files(path)
 
@@ -129,11 +129,11 @@ func add_errors_to_dialogue_file_cache(path: String, errors: Array[Dictionary]) 
 	if dialogue_file_cache.has(path):
 		dialogue_file_cache[path]["errors"] = errors
 	else:
-		dialogue_file_cache[path] = { 
+		dialogue_file_cache[path] = {
 			path = path,
-			errors = errors 
+			errors = errors
 		}
-		
+
 	save_dialogue_cache()
 	recompile_dependent_files(path)
 
@@ -144,18 +144,18 @@ func update_import_paths(from_path: String, to_path: String) -> void:
 	if dialogue_file_cache.has(from_path):
 		dialogue_file_cache[to_path] = dialogue_file_cache[from_path].duplicate()
 		dialogue_file_cache.erase(from_path)
-	
+
 	# Reopen the file if it's already open
 	if main_view.current_file_path == from_path:
 		main_view.current_file_path = ""
 		main_view.open_file(to_path)
-	
+
 	# Update any other files that import the moved file
 	var dependents = dialogue_file_cache.values().filter(func(d): return from_path in d.dependencies)
 	for dependent in dependents:
 		dependent.dependencies.erase(from_path)
 		dependent.dependencies.append(to_path)
-		
+
 		# Update the live buffer
 		if main_view.current_file_path == dependent.path:
 			main_view.code_edit.text = main_view.code_edit.text.replace(from_path, to_path)
@@ -164,10 +164,10 @@ func update_import_paths(from_path: String, to_path: String) -> void:
 		# Open the file and update the path
 		var file: FileAccess = FileAccess.open(dependent.path, FileAccess.READ)
 		var text = file.get_as_text().replace(from_path, to_path)
-		
+
 		file = FileAccess.open(dependent.path, FileAccess.WRITE)
 		file.store_string(text)
-	
+
 	save_dialogue_cache()
 
 
@@ -183,15 +183,15 @@ func recompile_dependent_files(path: String) -> void:
 ## Make sure the cache points to real files
 func update_dialogue_file_cache() -> void:
 	var cache: Dictionary = {}
-	
+
 	# Open our cache file if it exists
 	if FileAccess.file_exists(DialogueConstants.CACHE_PATH):
 		var file: FileAccess = FileAccess.open(DialogueConstants.CACHE_PATH, FileAccess.READ)
 		cache = JSON.parse_string(file.get_as_text())
-	
+
 	# Scan for dialogue files
 	var current_files: PackedStringArray = _get_dialogue_files_in_filesystem()
-	
+
 	# Add any files to POT generation
 	var files_for_pot: PackedStringArray = ProjectSettings.get_setting("internationalization/locale/translations_pot_files", [])
 	var files_for_pot_changed: bool = false
@@ -199,23 +199,23 @@ func update_dialogue_file_cache() -> void:
 		if not files_for_pot.has(path):
 			files_for_pot.append(path)
 			files_for_pot_changed = true
-	
+
 	# Remove any files that don't exist any more
 	for path in cache.keys():
-		if not path in current_files:
+		if path == null or not path in current_files:
 			cache.erase(path)
 			DialogueSettings.remove_recent_file(path)
-			
+
 			# Remove missing files from POT generation
 			if files_for_pot.has(path):
 				files_for_pot.remove_at(files_for_pot.find(path))
 				files_for_pot_changed = true
-	
+
 	# Update project settings if POT changed
 	if files_for_pot_changed:
 		ProjectSettings.set_setting("internationalization/locale/translations_pot_files", files_for_pot)
 		ProjectSettings.save()
-	
+
 	dialogue_file_cache = cache
 
 
@@ -228,7 +228,7 @@ func save_dialogue_cache() -> void:
 ## Recursively find any dialogue files in a directory
 func _get_dialogue_files_in_filesystem(path: String = "res://") -> PackedStringArray:
 	var files: PackedStringArray = []
-	
+
 	if DirAccess.dir_exists_absolute(path):
 		var dir = DirAccess.open(path)
 		dir.list_dir_begin()
@@ -241,7 +241,7 @@ func _get_dialogue_files_in_filesystem(path: String = "res://") -> PackedStringA
 			elif file_name.get_extension() == "dialogue":
 				files.append(file_path)
 			file_name = dir.get_next()
-	
+
 	return files
 
 
@@ -262,22 +262,22 @@ func _copy_dialogue_balloon() -> void:
 		file = FileAccess.open(path + "/balloon.tscn", FileAccess.WRITE)
 		file.store_string(file_contents)
 		file.close()
-		
+
 		file = FileAccess.open("res://addons/dialogue_manager/example_balloon/small_example_balloon.tscn", FileAccess.READ)
 		file_contents = file.get_as_text().replace("res://addons/dialogue_manager/example_balloon/example_balloon.gd", path + "/balloon.gd")
 		file = FileAccess.open(path + "/small_balloon.tscn", FileAccess.WRITE)
 		file.store_string(file_contents)
 		file.close()
-		
+
 		file = FileAccess.open("res://addons/dialogue_manager/example_balloon/example_balloon.gd", FileAccess.READ)
 		file_contents = file.get_as_text()
 		file = FileAccess.open(path + "/balloon.gd", FileAccess.WRITE)
 		file.store_string(file_contents)
 		file.close()
-		
+
 		get_editor_interface().get_resource_filesystem().scan()
 		get_editor_interface().get_file_system_dock().call_deferred("navigate_to_path", path + "/balloon.tscn")
-		
+
 		directory_dialog.queue_free()
 	)
 	get_editor_interface().get_base_control().add_child(directory_dialog)
