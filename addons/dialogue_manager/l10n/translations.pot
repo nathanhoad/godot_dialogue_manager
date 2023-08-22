@@ -191,6 +191,9 @@ msgstr ""
 msgid "titles_list.filter"
 msgstr ""
 
+msgid "errors.key_not_found"
+msgstr ""
+
 msgid "errors.line_and_message"
 msgstr ""
 

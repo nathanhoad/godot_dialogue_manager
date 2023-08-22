@@ -201,6 +201,9 @@ msgstr "Filter files"
 msgid "titles_list.filter"
 msgstr "Filter titles"
 
+msgid "errors.key_not_found"
+msgstr "Key \"{key}\" not found."
+
 msgid "errors.line_and_message"
 msgstr "Error at {line}, {column}: {message}"
 
