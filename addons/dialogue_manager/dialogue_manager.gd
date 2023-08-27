@@ -576,7 +576,7 @@ func resolve(tokens: Array, extra_game_states: Array):
 						var caller: Dictionary = tokens[i - 2]
 						if typeof(caller.value) in DialogueConstants.SUPPORTED_PRIMITIVES:
 							caller["type"] = "value"
-							caller["value"] = resolve_primitive_method(caller.value, function_name, args)
+							caller["value"] = resolve_primitive_method(caller.value, function_name, args, extra_game_states)
 							tokens.remove_at(i)
 							tokens.remove_at(i-1)
 							i -= 2
@@ -599,7 +599,7 @@ func resolve(tokens: Array, extra_game_states: Array):
 							for state in get_game_states(extra_game_states):
 								if typeof(state) in DialogueConstants.SUPPORTED_PRIMITIVES and thing_has_method(state, function_name, args):
 									token["type"] = "value"
-									token["value"] = resolve_primitive_method(state, function_name, args)
+									token["value"] = resolve_primitive_method(state, function_name, args, extra_game_states)
 									found = true
 								elif thing_has_method(state, function_name, args):
 									token["type"] = "value"
@@ -990,6 +990,8 @@ func thing_has_method(thing, method: String, args: Array) -> bool:
 			return method in DialogueConstants.SUPPORTED_QUATERNION_METHODS
 		TYPE_COLOR:
 			return method in DialogueConstants.SUPPORTED_COLOR_METHODS
+		TYPE_SIGNAL:
+			return method == "emit"
 
 	if method in ["call", "call_deferred"]:
 		return thing.has_method(args[0])
@@ -1040,7 +1042,7 @@ func resolve_signal(args: Array, extra_game_states: Array):
 	show_error_for_missing_state_value(DialogueConstants.translate("runtime.signal_not_found").format({ signal_name = args[0], states = str(get_game_states(extra_game_states)) }))
 
 
-func resolve_primitive_method(primitive, method_name: String, args: Array):
+func resolve_primitive_method(primitive, method_name: String, args: Array, extra_game_states: Array):
 	match typeof(primitive):
 		TYPE_ARRAY:
 			return resolve_array_method(primitive, method_name, args)
@@ -1050,6 +1052,26 @@ func resolve_primitive_method(primitive, method_name: String, args: Array):
 			return resolve_quaternion_method(primitive, method_name, args)
 		TYPE_COLOR:
 			return resolve_color_method(primitive, method_name, args)
+		TYPE_SIGNAL:
+			match args.size():
+				0:
+					primitive.emit()
+				1:
+					primitive.emit(args[0])
+				2:
+					primitive.emit(args[0], args[1])
+				3:
+					primitive.emit(args[0], args[1], args[2])
+				4:
+					primitive.emit(args[0], args[1], args[2], args[3])
+				5:
+					primitive.emit(args[0], args[1], args[2], args[3], args[4])
+				6:
+					primitive.emit(args[0], args[1], args[2], args[3], args[4], args[5])
+				7:
+					primitive.emit(args[0], args[1], args[2], args[3], args[4], args[5], args[6])
+				8:
+					primitive.emit(args[0], args[1], args[2], args[3], args[4], args[5], args[6], args[7])
 
 	return null
 
