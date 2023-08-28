@@ -340,7 +340,7 @@ msgid "update.reload_project"
 msgstr "重新加载"
 
 msgid "update.release_notes"
-msgstr "发行注记……"
+msgstr "查看发行注记"
 
 msgid "update.success"
 msgstr "v{version} 已成功安装并应用。"
@@ -349,55 +349,55 @@ msgid "update.failed"
 msgstr "更新失败。"
 
 msgid "runtime.no_resource"
-msgstr ""
+msgstr "找不到资源。"
 
 msgid "runtime.no_content"
-msgstr ""
+msgstr "资源“{file_path}”为空。"
 
 msgid "runtime.errors"
-msgstr ""
+msgstr "文件中存在{errrors}个错误。"
 
 msgid "runtime.error_detail"
-msgstr ""
+msgstr "第{index}行：{message}"
 
 msgid "runtime.errors_see_details"
-msgstr ""
+msgstr "文件中存在{errrors}个错误。请查看调试输出。"
 
 msgid "runtime.invalid_expression"
-msgstr ""
+msgstr "表达式“{expression}”非法：{error}"
 
 msgid "runtime.unsupported_array_method"
-msgstr ""
+msgstr "不支持的数组方法{method_name}。"
 
 msgid "runtime.unsupported_dictionary_method"
-msgstr ""
+msgstr "不支持的字典方法{method_name}。"
 
 msgid "runtime.unsupported_quaternion_method"
-msgstr ""
+msgstr "不支持的 Quarternion 方法{method_name}。"
 
 msgid "runtime.array_index_out_of_bounds"
-msgstr ""
+msgstr "数组索引“{index}”越界。（数组名：“{array}”）"
 
 msgid "runtime.left_hand_size_cannot_be_assigned_to"
-msgstr ""
+msgstr "表达式左侧的变量无法被赋值。"
 
 msgid "runtime.key_not_found"
-msgstr ""
+msgstr "键“{key}”在字典“{dictionary}”中不存在。"
 
 msgid "runtime.property_not_found"
-msgstr ""
+msgstr "“{property}”不存在。（全局变量：{states}）"
 
 msgid "runtime.method_not_found"
-msgstr ""
+msgstr "“{method}”不存在。（全局变量：{states}）"
 
 msgid "runtime.signal_not_found"
-msgstr ""
+msgstr "“{sighal_name}”不存在。（全局变量：{states}）"
 
 msgid "runtime.method_not_callable"
-msgstr ""
+msgstr "{method}不是对象“{object}”上的函数。"
 
 msgid "runtime.unknown_operator"
-msgstr ""
+msgstr "未知操作符。"
 
 msgid "runtime.something_went_wrong"
-msgstr ""
+msgstr "未定义错误。"
