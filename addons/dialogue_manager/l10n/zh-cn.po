@@ -46,28 +46,28 @@ msgid "docs"
 msgstr "文档"
 
 msgid "insert.wave_bbcode"
-msgstr "BBCode [wave]"
+msgstr "BBCode [lb]wave[rb]"
 
 msgid "insert.shake_bbcode"
-msgstr ""
+msgstr "BBCode [lb]wave[rb]"
 
 msgid "insert.typing_pause"
-msgstr ""
+msgstr "输入间隔"
 
 msgid "insert.typing_speed_change"
-msgstr ""
+msgstr "输入速度变更"
 
 msgid "insert.auto_advance"
-msgstr ""
+msgstr "自动切行"
 
 msgid "insert.templates"
-msgstr ""
+msgstr "模板……"
 
 msgid "insert.title"
-msgstr ""
+msgstr "标题"
 
 msgid "insert.dialogue"
-msgstr ""
+msgstr "Dialogue 引用"
 
 msgid "insert.response"
 msgstr ""
