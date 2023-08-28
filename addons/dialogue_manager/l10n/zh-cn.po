@@ -61,202 +61,202 @@ msgid "insert.auto_advance"
 msgstr "自动切行"
 
 msgid "insert.templates"
-msgstr "模板……"
+msgstr "模板"
 
 msgid "insert.title"
 msgstr "标题"
 
 msgid "insert.dialogue"
-msgstr "Dialogue 引用"
+msgstr "对话引用"
 
 msgid "insert.response"
-msgstr ""
+msgstr "选项"
 
 msgid "insert.random_lines"
-msgstr ""
+msgstr "随机行"
 
 msgid "insert.random_text"
-msgstr ""
+msgstr "随机文本"
 
 msgid "insert.actions"
-msgstr ""
+msgstr "动作"
 
 msgid "insert.jump"
-msgstr ""
+msgstr "标题间跳转"
 
 msgid "insert.end_dialogue"
-msgstr ""
+msgstr "结束对话"
 
 msgid "generate_line_ids"
-msgstr ""
+msgstr "生成行 ID"
 
 msgid "save_to_csv"
-msgstr ""
+msgstr "生成 CSV"
 
 msgid "import_from_csv"
-msgstr ""
+msgstr "从 CSV 导入"
 
 msgid "confirm_close"
-msgstr ""
+msgstr "是否要保存到“{path}”？"
 
 msgid "confirm_close.save"
-msgstr ""
+msgstr "保存"
 
 msgid "confirm_close.discard"
-msgstr ""
+msgstr "不保存"
 
 msgid "buffer.save"
-msgstr ""
+msgstr "保存"
 
 msgid "buffer.save_as"
-msgstr ""
+msgstr "另存为……"
 
 msgid "buffer.close"
-msgstr ""
+msgstr "关闭"
 
 msgid "buffer.close_all"
-msgstr ""
+msgstr "全部关闭"
 
 msgid "buffer.close_other_files"
-msgstr ""
+msgstr "关闭其他文件"
 
 msgid "buffer.copy_file_path"
-msgstr ""
+msgstr "复制文件路径"
 
 msgid "buffer.show_in_filesystem"
-msgstr ""
+msgstr "在 Godot 侧边栏中显示"
 
 msgid "settings.revert_to_default_test_scene"
 msgstr ""
 
 msgid "settings.autoload"
-msgstr ""
+msgstr "Autoload"
 
 msgid "settings.path"
-msgstr ""
+msgstr "路径"
 
 msgid "settings.new_template"
-msgstr ""
+msgstr "新建文件时自动插入模板"
 
 msgid "settings.missing_keys"
-msgstr ""
+msgstr "将翻译键缺失视为错误"
 
 msgid "settings.missing_keys_hint"
-msgstr ""
+msgstr "如果你使用静态键，这将会帮助你寻找未添加至翻译文件的键。"
 
 msgid "settings.wrap_long_lines"
-msgstr ""
+msgstr "自动折行"
 
 msgid "settings.include_failed_responses"
-msgstr ""
+msgstr "在判断条件失败时仍显示选项"
 
 msgid "settings.ignore_missing_state_values"
-msgstr ""
+msgstr "忽略全局变量缺失错误（不建议）"
 
 msgid "settings.custom_test_scene"
-msgstr ""
+msgstr "自定义测试场景（必须继承自BaseDialogueTestScene）"
 
 msgid "settings.states_shortcuts"
-msgstr ""
+msgstr "全局变量映射"
 
 msgid "settings.states_message"
-msgstr ""
+msgstr "当一个 Autoload 在这里被勾选，他的所有成员会被映射为全局变量。"
 
 msgid "settings.states_hint"
-msgstr ""
+msgstr "比如，当你开启对于“Foo”的映射时，你可以将“Foo.bar”简写成“bar”。"
 
 msgid "n_of_n"
-msgstr ""
+msgstr "第{index}个，共{total}个"
 
 msgid "search.previous"
-msgstr ""
+msgstr "查找上一个"
 
 msgid "search.next"
-msgstr ""
+msgstr "查找下一个"
 
 msgid "search.match_case"
-msgstr ""
+msgstr "大小写敏感"
 
 msgid "search.toggle_replace"
-msgstr ""
+msgstr "替换"
 
 msgid "search.replace_with"
-msgstr ""
+msgstr "替换为"
 
 msgid "search.replace"
-msgstr ""
+msgstr "替换"
 
 msgid "search.replace_all"
-msgstr ""
+msgstr "全部替换"
 
 msgid "files_list.filter"
-msgstr ""
+msgstr "查找文件"
 
 msgid "titles_list.filter"
-msgstr ""
+msgstr "查找标题"
 
 msgid "errors.key_not_found"
-msgstr ""
+msgstr "键“{key}”未找到"
 
 msgid "errors.line_and_message"
-msgstr ""
+msgstr "第{line}行第{colume}列发生错误：{message}"
 
 msgid "errors_in_script"
-msgstr ""
+msgstr "你的脚本中存在错误。请修复错误，然后重试。"
 
 msgid "errors_with_build"
-msgstr ""
+msgstr "请先解决 Dialogue 中的错误。"
 
 msgid "errors.import_errors"
-msgstr ""
+msgstr "被引入的文件存在问题。"
 
 msgid "errors.already_imported"
-msgstr ""
+msgstr "文件已被引入。"
 
 msgid "errors.duplicate_import"
-msgstr ""
+msgstr "引入名不能重复。"
 
 msgid "errors.empty_title"
-msgstr ""
+msgstr "标题名不能为空。"
 
 msgid "errors.duplicate_title"
-msgstr ""
+msgstr "标题名不能重复。"
 
 msgid "errors.nested_title"
-msgstr ""
+msgstr "标题不能嵌套。"
 
 msgid "errors.invalid_title_string"
-msgstr ""
+msgstr "标题名非法。"
 
 msgid "errors.invalid_title_number"
-msgstr ""
+msgstr "标题不能以数字开始。"
 
 msgid "errors.unknown_title"
-msgstr ""
+msgstr "标题未定义。"
 
 msgid "errors.jump_to_invalid_title"
-msgstr ""
+msgstr "标题名非法。"
 
 msgid "errors.title_has_no_content"
-msgstr ""
+msgstr "目标标题为空。请替换为“=> END”。"
 
 msgid "errors.invalid_expression"
-msgstr ""
+msgstr "表达式非法。"
 
 msgid "errors.unexpected_condition"
-msgstr ""
+msgstr "未知条件。"
 
 msgid "errors.duplicate_id"
-msgstr ""
+msgstr "ID 重复。"
 
 msgid "errors.missing_id"
-msgstr ""
+msgstr "ID 不存在。"
 
 msgid "errors.invalid_indentation"
-msgstr ""
+msgstr "缩进非法。"
 
 msgid "errors.condition_has_no_content"
-msgstr ""
+msgstr "条件下方不能为空。"
 
 msgid "errors.incomplete_expression"
 msgstr ""
@@ -265,37 +265,37 @@ msgid "errors.invalid_expression_for_value"
 msgstr ""
 
 msgid "errors.file_not_found"
-msgstr ""
+msgstr "文件不存在。"
 
 msgid "errors.unexpected_end_of_expression"
 msgstr ""
 
 msgid "errors.unexpected_function"
-msgstr ""
+msgstr "函数不应存在。"
 
 msgid "errors.unexpected_bracket"
-msgstr ""
+msgstr "方括号不应存在。"
 
 msgid "errors.unexpected_closing_bracket"
-msgstr ""
+msgstr "方括号不应存在。"
 
 msgid "errors.missing_closing_bracket"
-msgstr ""
+msgstr "闭方括号不存在。"
 
 msgid "errors.unexpected_operator"
-msgstr ""
+msgstr "操作符不应存在。"
 
 msgid "errors.unexpected_comma"
-msgstr ""
+msgstr "逗号不应存在。"
 
 msgid "errors.unexpected_colon"
-msgstr ""
+msgstr "冒号不应存在。"
 
 msgid "errors.unexpected_dot"
-msgstr ""
+msgstr "句号不应存在。"
 
 msgid "errors.unexpected_boolean"
-msgstr ""
+msgstr "true/false 不应存在。"
 
 msgid "errors.unexpected_string"
 msgstr ""
@@ -307,46 +307,46 @@ msgid "errors.unexpected_variable"
 msgstr ""
 
 msgid "errors.invalid_index"
-msgstr ""
+msgstr "索引无效。"
 
 msgid "errors.unexpected_assignment"
 msgstr ""
 
 msgid "errors.unknown"
-msgstr ""
+msgstr "语法错误。"
 
 msgid "update.available"
-msgstr ""
+msgstr "v{version} 已经存在。"
 
 msgid "update.is_available_for_download"
-msgstr ""
+msgstr "v%s 已经可以下载。"
 
 msgid "update.downloading"
-msgstr ""
+msgstr "正在下载更新……"
 
 msgid "update.download_update"
 msgstr ""
 
 msgid "update.needs_reload"
-msgstr ""
+msgstr "需要重新加载项目以应用更新。"
 
 msgid "update.reload_ok_button"
-msgstr ""
+msgstr "重新加载"
 
 msgid "update.reload_cancel_button"
-msgstr ""
+msgstr "暂不重新加载"
 
 msgid "update.reload_project"
-msgstr ""
+msgstr "重新加载"
 
 msgid "update.release_notes"
-msgstr ""
+msgstr "发行注记……"
 
 msgid "update.success"
-msgstr ""
+msgstr "v{version} 已成功安装并应用。"
 
 msgid "update.failed"
-msgstr ""
+msgstr "更新失败。"
 
 msgid "runtime.no_resource"
 msgstr ""
