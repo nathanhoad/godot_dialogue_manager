@@ -139,7 +139,7 @@ msgid "settings.revert_to_default_test_scene"
 msgstr "Revert to default test scene"
 
 msgid "settings.autoload"
-msgstr "Autload"
+msgstr "Autoload"
 
 msgid "settings.path"
 msgstr "Path"
