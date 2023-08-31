@@ -11,7 +11,7 @@ signal external_file_requested(path: String, title: String)
 var main_view
 
 # Theme overrides for syntax highlighting, etc
-@export var theme_overrides: Dictionary:
+var theme_overrides: Dictionary:
 	set(value):
 		theme_overrides = value
 

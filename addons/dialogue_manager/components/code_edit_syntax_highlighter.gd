@@ -8,14 +8,15 @@ enum ExpressionType {DO, SET, IF}
 var dialogue_manager_parser: DialogueManagerParser = DialogueManagerParser.new()
 
 var regex_titles: RegEx = RegEx.create_from_string("^\\s*(?<title>~\\s+[^\\!\\@\\#\\$\\%\\^\\&\\*\\(\\)\\-\\=\\+\\{\\}\\[\\]\\;\\:\\\"\\'\\,\\.\\<\\>\\?\\/\\s]+)")
-var regex_comments: RegEx = RegEx.create_from_string("(?<comment>)#.*$")
+var regex_comments: RegEx = RegEx.create_from_string("(?:(?>\"(?:\\\\\"|[^\"\\n])*\")[^\"\\n]*?\\s*(?<comment>#[^\\n]*)$|^[^\"#\\n]*?\\s*(?<comment2>#[^\\n]*))")
 var regex_mutation: RegEx = RegEx.create_from_string("^\\s*(do|set) (?<mutation>.*)")
 var regex_condition: RegEx = RegEx.create_from_string("^\\s*(if|elif|while|else if) (?<condition>.*)")
 var regex_wcondition: RegEx = RegEx.create_from_string("\\[if (?<condition>((?:[^\\[\\]]*)|(?:\\[(?1)\\]))*?)\\]")
 var regex_wendif: RegEx = RegEx.create_from_string("\\[\\/(if)\\]")
+var regex_rgroup: RegEx = RegEx.create_from_string("\\[\\[(?<options>.*?)\\]\\]")
 var regex_endconditions: RegEx = RegEx.create_from_string("^\\s*(endif|else)\\s*$")
-var regex_tags: RegEx = RegEx.create_from_string("\\[(?<tag>(?!(?:ID:.*)|if)[a-zA-Z_][a-zA-Z0-9_]*)(?:[= ](?<val>[^\\[\\]]+))?\\](?:(?<text>(?!\\[\\/\\k<tag>\\]).*?)\\[\\/\\k<tag>\\])?")
-var regex_dialogue: RegEx = RegEx.create_from_string("^\\s*(?:(?<random>\\%\\d* )|(?<response>- ))?(?:(?<character>[^:]*): )?(?<dialogue>.*)$")
+var regex_tags: RegEx = RegEx.create_from_string("\\[(?<tag>(?!(?:ID:.*)|if)[a-zA-Z_][a-zA-Z0-9_]*)(?:[= ](?<val>[^\\[\\]]+))?\\](?:(?<text>(?!\\[\\/\\k<tag>\\]).*?)?(?<end>\\[\\/\\k<tag>\\]))?")
+var regex_dialogue: RegEx = RegEx.create_from_string("^\\s*(?:(?<random>\\%\\d* )|(?<response>- ))?(?:(?<character>[^#:]*): )?(?<dialogue>.*)$")
 var regex_goto: RegEx = RegEx.create_from_string("=><? (?:(?<file>[^\\/]+)\\/)?(?<title>[^\\/]*)")
 var regex_string: RegEx = RegEx.create_from_string("^(?<delimiter>[\"'])(?<content>(?:\\\\{2})*|(?:.*?[^\\\\](?:\\\\{2})*))\\1$")
 var regex_escape: RegEx = RegEx.create_from_string("\\\\.")
@@ -61,6 +62,17 @@ func _get_line_syntax_highlighting(line: int) -> Dictionary:
 	if text in cache:
 		return cache[text]
 
+	# Comments, we have to remove them at this point so the rest of the processing is easier
+	# Counts both end-of-line and single-line comments
+	# Comments are not allowed within dialogue lines or response lines, so we ask the parser what it thinks the current line is
+	if not (dialogue_manager_parser.is_dialogue_line(text) or dialogue_manager_parser.is_response_line(text)) or dialogue_manager_parser.is_line_empty(text) or dialogue_manager_parser.is_import_line(text):
+		var comment_matches: Array[RegExMatch] = regex_comments.search_all(text)
+		for comment_match in comment_matches:
+			for i in ["comment", "comment2"]:
+				if i in comment_match.names:
+					colors[comment_match.get_start(i)] = {"color": text_edit.theme_overrides.comments_color}
+					text = text.substr(0, comment_match.get_start(i))
+
 	# Dialogues.
 	var dialogue_matches: Array[RegExMatch] = regex_dialogue.search_all(text)
 	for dialogue_match in dialogue_matches:
@@ -73,7 +85,13 @@ func _get_line_syntax_highlighting(line: int) -> Dictionary:
 		if "character" in dialogue_match.names:
 			colors[dialogue_match.get_start("character")] = {"color": text_edit.theme_overrides.members_color}
 			colors[dialogue_match.get_end("character")] = {"color": text_edit.theme_overrides.text_color}
-		colors.merge(_get_dialogue_syntax_highlighting(dialogue_match.get_start("dialogue"), dialogue_match.get_string("dialogue")))
+		colors.merge(_get_dialogue_syntax_highlighting(dialogue_match.get_start("dialogue"), dialogue_match.get_string("dialogue")), true)
+
+	# Title lines.
+	if dialogue_manager_parser.is_title_line(text):
+		var title_matches: Array[RegExMatch] = regex_titles.search_all(text)
+		for title_match in title_matches:
+			colors[title_match.get_start("title")] = {"color": text_edit.theme_overrides.titles_color}
 
 	# Import lines.
 	var import_matches: Array[RegExMatch] = dialogue_manager_parser.IMPORT_REGEX.search_all(text)
@@ -83,14 +101,6 @@ func _get_line_syntax_highlighting(line: int) -> Dictionary:
 		colors[import_match.get_end("path") + 1] = {"color": text_edit.theme_overrides.conditions_color}
 		colors[import_match.get_start("prefix")] = {"color": text_edit.theme_overrides.members_color}
 		colors[import_match.get_end("prefix")] = {"color": text_edit.theme_overrides.conditions_color}
-		colors[import_match.get_end(0)] = {"color": text_edit.theme_overrides.text_color}
-
-	# Title lines.
-	if dialogue_manager_parser.is_title_line(text):
-		var title_matches: Array[RegExMatch] = regex_titles.search_all(text)
-		for title_match in title_matches:
-			colors[title_match.get_start("title")] = {"color": text_edit.theme_overrides.titles_color}
-			colors[title_match.get_end("title")] = {"color": text_edit.theme_overrides.text_color}
 
 	# Condition keywords and expressions.
 	var condition_matches: Array[RegExMatch] = regex_condition.search_all(text)
@@ -102,21 +112,12 @@ func _get_line_syntax_highlighting(line: int) -> Dictionary:
 	var endcondition_matches: Array[RegExMatch] = regex_endconditions.search_all(text)
 	for endcondition_match in endcondition_matches:
 		colors[endcondition_match.get_start(1)] = {"color": text_edit.theme_overrides.conditions_color}
-		colors[endcondition_match.get_end(1)] = {"color": text_edit.theme_overrides.text_color}
 
 	# Mutations.
 	var mutation_matches: Array[RegExMatch] = regex_mutation.search_all(text)
 	for mutation_match in mutation_matches:
 		colors[mutation_match.get_start(0)] = {"color": text_edit.theme_overrides.mutations_color}
 		colors.merge(_get_expression_syntax_highlighting(mutation_match.get_start("mutation"), ExpressionType.DO if mutation_match.strings[1] == "do" else ExpressionType.SET, mutation_match.get_string("mutation")), true)
-		colors[mutation_match.get_end(0)] = {"color": text_edit.theme_overrides.text_color}
-
-	# Comment blocks.
-	var index_max: int = colors.keys().max() if colors.size() > 0 else 0
-	var text_end: String = text.substr(index_max)
-	var comment_matches: Array[RegExMatch] = regex_comments.search_all(text_end)
-	for comment_match in comment_matches:
-		colors[index_max + comment_match.get_start("comment")] = {"color": text_edit.theme_overrides.comments_color}
 
 	# CodeEdit seems to have issues if the Dictionary keys weren't added in order?
 	var new_colors: Dictionary = {}
@@ -138,14 +139,20 @@ func _get_dialogue_syntax_highlighting(start_index: int, text: String) -> Dictio
 	var tag_matches: Array[RegExMatch] = regex_tags.search_all(text)
 	for tag_match in tag_matches:
 		colors[start_index + tag_match.get_start(0)] = {"color": text_edit.theme_overrides.symbols_color}
+		if "val" in tag_match.names:
+			colors.merge(_get_literal_syntax_highlighting(start_index + tag_match.get_start("val"), tag_match.get_string("val")), true)
+			colors[start_index + tag_match.get_end("val")] = {"color": text_edit.theme_overrides.symbols_color}
 		# Showing the text color straight in the editor for better ease-of-use
 		if tag_match.get_string("tag") == "color":
 			colors[start_index + tag_match.get_start("val")] = {"color": Color(tag_match.get_string("val"))}
-			colors[start_index + tag_match.get_end("val")] = {"color": text_edit.theme_overrides.symbols_color}
-		colors[start_index + tag_match.get_start("text")] = {"color": text_edit.theme_overrides.text_color}
-		# Text can still contain tags if several effects are applied ([center][b]Something[/b][/center], so recursing
-		colors.merge(_get_dialogue_syntax_highlighting(start_index + tag_match.get_start("text"), tag_match.get_string("text")), true)
-		colors[start_index + tag_match.get_end("text")] = {"color": text_edit.theme_overrides.symbols_color}
+		if "text" in tag_match.names:
+			colors[start_index + tag_match.get_start("text")] = {"color": text_edit.theme_overrides.text_color}
+			# Text can still contain tags if several effects are applied ([center][b]Something[/b][/center], so recursing
+			colors.merge(_get_dialogue_syntax_highlighting(start_index + tag_match.get_start("text"), tag_match.get_string("text")), true)
+			colors[start_index + tag_match.get_end("text")] = {"color": text_edit.theme_overrides.symbols_color}
+		if "end" in tag_match.names:
+			colors[start_index + tag_match.get_start("end")] = {"color": text_edit.theme_overrides.symbols_color}
+			colors[start_index + tag_match.get_end("end")] = {"color": text_edit.theme_overrides.text_color}
 		colors[start_index + tag_match.get_end(0)] = {"color": text_edit.theme_overrides.text_color}
 
 	# ID tag.
@@ -191,6 +198,18 @@ func _get_dialogue_syntax_highlighting(start_index: int, text: String) -> Dictio
 		colors[start_index + wendif_match.get_end(1)] = {"color": text_edit.theme_overrides.symbols_color}
 		colors[start_index + wendif_match.get_end(0)] = {"color": text_edit.theme_overrides.text_color}
 
+	# Random groups
+	var rgroup_matches: Array[RegExMatch] = regex_rgroup.search_all(text)
+	for rgroup_match in rgroup_matches:
+		colors[start_index + rgroup_match.get_start(0)] = {"color": text_edit.theme_overrides.symbols_color}
+		colors[start_index + rgroup_match.get_start("options")] = {"color": text_edit.theme_overrides.text_color}
+		var separator_matches: Array[RegExMatch] = RegEx.create_from_string("\\|").search_all(rgroup_match.get_string("options"))
+		for separator_match in separator_matches:
+			colors[start_index + rgroup_match.get_start("options") + separator_match.get_start(0)] = {"color": text_edit.theme_overrides.symbols_color}
+			colors[start_index + rgroup_match.get_start("options") + separator_match.get_end(0)] = {"color": text_edit.theme_overrides.text_color}
+		colors[start_index + rgroup_match.get_end("options")] = {"color": text_edit.theme_overrides.symbols_color}
+		colors[start_index + rgroup_match.get_end(0)] = {"color": text_edit.theme_overrides.text_color}
+
 	return colors
 
 
@@ -209,16 +228,16 @@ func _get_expression_syntax_highlighting(start_index: int, type: ExpressionType,
 			if "key" in assignment_match.names:
 				# Braces are outside of the key, so coloring them symbols_color
 				colors[start_index + assignment_match.get_start("key") - 1] = {"color": text_edit.theme_overrides.symbols_color}
-				colors.merge(_get_literal_syntax_highlighting(start_index + assignment_match.get_start("key"), assignment_match.get_string("key")))
+				colors.merge(_get_literal_syntax_highlighting(start_index + assignment_match.get_start("key"), assignment_match.get_string("key")), true)
 				colors[start_index + assignment_match.get_end("key")] = {"color": text_edit.theme_overrides.symbols_color}
 				colors[start_index + assignment_match.get_end("key") + 1] = {"color": text_edit.theme_overrides.text_color}
 
 			colors[start_index + assignment_match.get_start("op")] = {"color": text_edit.theme_overrides.symbols_color}
 			colors[start_index + assignment_match.get_end("op")] = {"color": text_edit.theme_overrides.text_color}
 
-			colors.merge(_get_literal_syntax_highlighting(start_index + assignment_match.get_start("val"), assignment_match.get_string("val")))
+			colors.merge(_get_literal_syntax_highlighting(start_index + assignment_match.get_start("val"), assignment_match.get_string("val")), true)
 	else:
-		colors.merge(_get_literal_syntax_highlighting(start_index, text))
+		colors.merge(_get_literal_syntax_highlighting(start_index, text), true)
 
 	return colors
 
@@ -232,6 +251,12 @@ func _get_literal_syntax_highlighting(start_index: int, text: String) -> Diction
 	var text_edit: TextEdit = get_text_edit()
 	var colors: Dictionary = {}
 
+	# Removing spaces at start/end of the literal
+	var text_length: int = text.length()
+	text = text.lstrip(" ")
+	start_index += text_length - text.length()
+	text = text.rstrip(" ")
+
 	# Parenthesis expression.
 	var paren_matches: Array[RegExMatch] = regex_paren.search_all(text)
 	for paren_match in paren_matches:
@@ -239,7 +264,6 @@ func _get_literal_syntax_highlighting(start_index: int, text: String) -> Diction
 		colors[start_index + paren_match.get_start(0) + 1] = {"color": text_edit.theme_overrides.text_color}
 		colors.merge(_get_literal_syntax_highlighting(start_index + paren_match.get_start("paren"), paren_match.get_string("paren")), true)
 		colors[start_index + paren_match.get_end(0) - 1] = {"color": text_edit.theme_overrides.symbols_color}
-		colors[start_index + paren_match.get_end(0)] = {"color": text_edit.theme_overrides.text_color}
 
 	# Strings.
 	var string_matches: Array[RegExMatch] = regex_string.search_all(text)
@@ -250,13 +274,11 @@ func _get_literal_syntax_highlighting(start_index: int, text: String) -> Diction
 			for escape_match in escape_matches:
 				colors[start_index + string_match.get_start("content") + escape_match.get_start(0)] = {"color": text_edit.theme_overrides.symbols_color}
 				colors[start_index + string_match.get_start("content") + escape_match.get_end(0)] = {"color": text_edit.theme_overrides.strings_color}
-		colors[start_index + string_match.get_end(0)] = {"color": text_edit.theme_overrides.text_color}
 
 	# Numbers.
 	var number_matches: Array[RegExMatch] = regex_number.search_all(text)
 	for number_match in number_matches:
 		colors[start_index + number_match.get_start(0)] = {"color": text_edit.theme_overrides.numbers_color}
-		colors[start_index + number_match.get_end(0)] = {"color": text_edit.theme_overrides.text_color}
 
 	# Arrays.
 	var array_matches: Array[RegExMatch] = regex_array.search_all(text)
@@ -264,7 +286,6 @@ func _get_literal_syntax_highlighting(start_index: int, text: String) -> Diction
 		colors[start_index + array_match.get_start(0)] = {"color": text_edit.theme_overrides.symbols_color}
 		colors.merge(_get_list_syntax_highlighting(start_index + array_match.get_start(1), array_match.strings[1]), true)
 		colors[start_index + array_match.get_end(1)] = {"color": text_edit.theme_overrides.symbols_color}
-		colors[start_index + array_match.get_end(0)] = {"color": text_edit.theme_overrides.text_color}
 
 	# Dictionaries.
 	var dict_matches: Array[RegExMatch] = regex_dict.search_all(text)
@@ -272,7 +293,6 @@ func _get_literal_syntax_highlighting(start_index: int, text: String) -> Diction
 		colors[start_index + dict_match.get_start(0)] = {"color": text_edit.theme_overrides.symbols_color}
 		colors.merge(_get_list_syntax_highlighting(start_index + dict_match.get_start(1), dict_match.strings[1]), true)
 		colors[start_index + dict_match.get_end(1)] = {"color": text_edit.theme_overrides.symbols_color}
-		colors[start_index + dict_match.get_end(0)] = {"color": text_edit.theme_overrides.text_color}
 
 	# Dictionary key: value pairs
 	var kvdict_matches: Array[RegExMatch] = regex_kvdict.search_all(text)
@@ -281,13 +301,11 @@ func _get_literal_syntax_highlighting(start_index: int, text: String) -> Diction
 		colors[start_index + kvdict_match.get_start("colon")] = {"color": text_edit.theme_overrides.symbols_color}
 		colors[start_index + kvdict_match.get_end("colon")] = {"color": text_edit.theme_overrides.text_color}
 		colors.merge(_get_literal_syntax_highlighting(start_index + kvdict_match.get_start("right"), kvdict_match.get_string("right")), true)
-		colors[start_index + kvdict_match.get_end("right")] = {"color": text_edit.theme_overrides.text_color}
 
 	# Booleans.
 	var bool_matches: Array[RegExMatch] = regex_bool.search_all(text)
 	for bool_match in bool_matches:
 		colors[start_index + bool_match.get_start(0)] = {"color": text_edit.theme_overrides.conditions_color}
-		colors[start_index + bool_match.get_end(0)] = {"color": text_edit.theme_overrides.text_color}
 
 	# Functions.
 	var function_matches: Array[RegExMatch] = regex_function.search_all(text)
@@ -297,7 +315,6 @@ func _get_literal_syntax_highlighting(start_index: int, text: String) -> Diction
 		colors[start_index + function_match.get_end(1)] = {"color": text_edit.theme_overrides.symbols_color}
 		colors.merge(_get_list_syntax_highlighting(start_index + function_match.get_end(0), text.substr(function_match.get_end(0), last_brace_index - function_match.get_end(0))), true)
 		colors[start_index + last_brace_index] = {"color": text_edit.theme_overrides.symbols_color}
-		colors[start_index + last_brace_index + 1] = {"color": text_edit.theme_overrides.text_color}
 
 	# Variables.
 	var varname_matches: Array[RegExMatch] = regex_varname.search_all(text)
@@ -309,9 +326,8 @@ func _get_literal_syntax_highlighting(start_index: int, text: String) -> Diction
 		if "key" in varname_match.names:
 			# Braces are outside of the key, so coloring them symbols_color
 			colors[start_index + varname_match.get_start("key") - 1] = {"color": text_edit.theme_overrides.symbols_color}
-			colors.merge(_get_literal_syntax_highlighting(start_index + varname_match.get_start("key"), varname_match.get_string("key")))
+			colors.merge(_get_literal_syntax_highlighting(start_index + varname_match.get_start("key"), varname_match.get_string("key")), true)
 			colors[start_index + varname_match.get_end("key")] = {"color": text_edit.theme_overrides.symbols_color}
-			colors[start_index + varname_match.get_end("key") + 1] = {"color": text_edit.theme_overrides.text_color}
 
 	# Comparison operators.
 	var comparison_matches: Array[RegExMatch] = regex_comparison.search_all(text)
@@ -320,7 +336,6 @@ func _get_literal_syntax_highlighting(start_index: int, text: String) -> Diction
 		colors[start_index + comparison_match.get_start("op")] = {"color": text_edit.theme_overrides.symbols_color}
 		colors[start_index + comparison_match.get_end("op")] = {"color": text_edit.theme_overrides.text_color}
 		colors.merge(_get_literal_syntax_highlighting(start_index + comparison_match.get_start("right"), comparison_match.get_string("right")), true)
-		colors[start_index + comparison_match.get_end("right")] = {"color": text_edit.theme_overrides.text_color}
 
 	# Logical binary operators.
 	var blogical_matches: Array[RegExMatch] = regex_blogical.search_all(text)
@@ -329,7 +344,6 @@ func _get_literal_syntax_highlighting(start_index: int, text: String) -> Diction
 		colors[start_index + blogical_match.get_start("op")] = {"color": text_edit.theme_overrides.conditions_color}
 		colors[start_index + blogical_match.get_end("op")] = {"color": text_edit.theme_overrides.text_color}
 		colors.merge(_get_literal_syntax_highlighting(start_index + blogical_match.get_start("right"), blogical_match.get_string("right")), true)
-		colors[start_index + blogical_match.get_end("right")] = {"color": text_edit.theme_overrides.text_color}
 
 	# Logical unary operators.
 	var ulogical_matches: Array[RegExMatch] = regex_ulogical.search_all(text)
@@ -337,7 +351,6 @@ func _get_literal_syntax_highlighting(start_index: int, text: String) -> Diction
 		colors[start_index + ulogical_match.get_start("op")] = {"color": text_edit.theme_overrides.conditions_color}
 		colors[start_index + ulogical_match.get_end("op")] = {"color": text_edit.theme_overrides.text_color}
 		colors.merge(_get_literal_syntax_highlighting(start_index + ulogical_match.get_start("right"), ulogical_match.get_string("right")), true)
-		colors[start_index + ulogical_match.get_end("right")] = {"color": text_edit.theme_overrides.text_color}
 
 	return colors
 
