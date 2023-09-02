@@ -1,6 +1,0 @@
-[gd_resource type="SyntaxHighlighter" load_steps=2 format=3 uid="uid://msdrdllrbymu"]
-
-[ext_resource type="Script" path="res://addons/dialogue_manager/components/code_edit_syntax_highlighter.gd" id="1_xr2in"]
-
-[resource]
-script = ExtResource("1_xr2in")

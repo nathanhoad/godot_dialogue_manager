@@ -7,6 +7,9 @@ signal error_clicked(line_number: int)
 signal external_file_requested(path: String, title: String)
 
 
+const DialogueSyntaxHighlighter = preload("res://addons/dialogue_manager/components/code_edit_syntax_highlighter.gd")
+
+
 # A link back to the owner MainView
 var main_view
 
@@ -14,6 +17,8 @@ var main_view
 var theme_overrides: Dictionary:
 	set(value):
 		theme_overrides = value
+
+		syntax_highlighter = DialogueSyntaxHighlighter.new()
 
 		# General UI
 		add_theme_color_override("font_color", theme_overrides.text_color)
@@ -58,6 +63,8 @@ func _ready() -> void:
 	# Add comment delimiter
 	if not has_comment_delimiter("#"):
 		add_comment_delimiter("#", "", true)
+
+	syntax_highlighter = DialogueSyntaxHighlighter.new()
 
 
 func _gui_input(event: InputEvent) -> void:

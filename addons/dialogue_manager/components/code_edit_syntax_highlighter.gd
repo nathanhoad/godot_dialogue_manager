@@ -144,7 +144,7 @@ func _get_dialogue_syntax_highlighting(start_index: int, text: String) -> Dictio
 			colors[start_index + tag_match.get_end("val")] = {"color": text_edit.theme_overrides.symbols_color}
 		# Showing the text color straight in the editor for better ease-of-use
 		if tag_match.get_string("tag") == "color":
-			colors[start_index + tag_match.get_start("val")] = {"color": Color(tag_match.get_string("val"))}
+			colors[start_index + tag_match.get_start("val")] = {"color": Color.from_string(tag_match.get_string("val"), text_edit.theme_overrides.text_color)}
 		if "text" in tag_match.names:
 			colors[start_index + tag_match.get_start("text")] = {"color": text_edit.theme_overrides.text_color}
 			# Text can still contain tags if several effects are applied ([center][b]Something[/b][/center], so recursing
