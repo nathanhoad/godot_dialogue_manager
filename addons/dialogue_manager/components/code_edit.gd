@@ -7,6 +7,9 @@ signal error_clicked(line_number: int)
 signal external_file_requested(path: String, title: String)
 
 
+const DialogueSyntaxHighlighter = preload("res://addons/dialogue_manager/components/code_edit_syntax_highlighter.gd")
+
+
 # A link back to the owner MainView
 var main_view
 
@@ -15,50 +18,9 @@ var theme_overrides: Dictionary:
 	set(value):
 		theme_overrides = value
 
-		syntax_highlighter.clear_color_regions()
-		syntax_highlighter.clear_keyword_colors()
-
-		# Imports
-		syntax_highlighter.add_keyword_color("import", theme_overrides.conditions_color)
-		syntax_highlighter.add_keyword_color("as", theme_overrides.conditions_color)
-
-		# Titles
-		syntax_highlighter.add_color_region("~", "~", theme_overrides.titles_color, true)
-
-		# Comments
-		syntax_highlighter.add_color_region("#", "##", theme_overrides.comments_color, true)
-
-		# Conditions
-		syntax_highlighter.add_keyword_color("if", theme_overrides.conditions_color)
-		syntax_highlighter.add_keyword_color("elif", theme_overrides.conditions_color)
-		syntax_highlighter.add_keyword_color("else", theme_overrides.conditions_color)
-		syntax_highlighter.add_keyword_color("while", theme_overrides.conditions_color)
-		syntax_highlighter.add_keyword_color("endif", theme_overrides.conditions_color)
-		syntax_highlighter.add_keyword_color("in", theme_overrides.conditions_color)
-		syntax_highlighter.add_keyword_color("and", theme_overrides.conditions_color)
-		syntax_highlighter.add_keyword_color("or", theme_overrides.conditions_color)
-		syntax_highlighter.add_keyword_color("not", theme_overrides.conditions_color)
-
-		# Values
-		syntax_highlighter.add_keyword_color("true", theme_overrides.numbers_color)
-		syntax_highlighter.add_keyword_color("false", theme_overrides.numbers_color)
-		syntax_highlighter.number_color = theme_overrides.numbers_color
-		syntax_highlighter.add_color_region("\"", "\"", theme_overrides.strings_color)
-
-		# Mutations
-		syntax_highlighter.add_keyword_color("do", theme_overrides.mutations_color)
-		syntax_highlighter.add_keyword_color("set", theme_overrides.mutations_color)
-		syntax_highlighter.function_color = theme_overrides.mutations_color
-		syntax_highlighter.member_variable_color = theme_overrides.members_color
-
-		# Jumps
-		syntax_highlighter.add_color_region("=>", "<=", theme_overrides.jumps_color, true)
-
-		# Dialogue
-		syntax_highlighter.add_color_region(": ", "::", theme_overrides.text_color, true)
+		syntax_highlighter = DialogueSyntaxHighlighter.new()
 
 		# General UI
-		syntax_highlighter.symbol_color = theme_overrides.symbols_color
 		add_theme_color_override("font_color", theme_overrides.text_color)
 		add_theme_color_override("background_color", theme_overrides.background_color)
 		add_theme_color_override("current_line_color", theme_overrides.current_line_color)
@@ -101,6 +63,8 @@ func _ready() -> void:
 	# Add comment delimiter
 	if not has_comment_delimiter("#"):
 		add_comment_delimiter("#", "", true)
+
+	syntax_highlighter = DialogueSyntaxHighlighter.new()
 
 
 func _gui_input(event: InputEvent) -> void:
