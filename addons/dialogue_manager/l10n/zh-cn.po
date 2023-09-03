@@ -40,7 +40,7 @@ msgid "settings"
 msgstr "设置"
 
 msgid "show_support"
-msgstr ""
+msgstr "捐款"
 
 msgid "docs"
 msgstr "文档"
@@ -127,7 +127,7 @@ msgid "buffer.show_in_filesystem"
 msgstr "在 Godot 侧边栏中显示"
 
 msgid "settings.revert_to_default_test_scene"
-msgstr ""
+msgstr "重置测试场景设定"
 
 msgid "settings.autoload"
 msgstr "Autoload"
@@ -259,7 +259,7 @@ msgid "errors.condition_has_no_content"
 msgstr "条件下方不能为空。"
 
 msgid "errors.incomplete_expression"
-msgstr ""
+msgstr "代码错误。"
 
 msgid "errors.invalid_expression_for_value"
 msgstr ""
@@ -268,7 +268,7 @@ msgid "errors.file_not_found"
 msgstr "文件不存在。"
 
 msgid "errors.unexpected_end_of_expression"
-msgstr ""
+msgstr "代码错误。"
 
 msgid "errors.unexpected_function"
 msgstr "函数不应存在。"
@@ -298,19 +298,19 @@ msgid "errors.unexpected_boolean"
 msgstr "true/false 不应存在。"
 
 msgid "errors.unexpected_string"
-msgstr ""
+msgstr "字符串不应存在。"
 
 msgid "errors.unexpected_number"
-msgstr ""
+msgstr "数字不应存在。"
 
 msgid "errors.unexpected_variable"
-msgstr ""
+msgstr "标识符不应存在。"
 
 msgid "errors.invalid_index"
 msgstr "索引无效。"
 
 msgid "errors.unexpected_assignment"
-msgstr ""
+msgstr "不应在条件判断中使用 = ，应使用 == 。"
 
 msgid "errors.unknown"
 msgstr "语法错误。"
@@ -325,7 +325,7 @@ msgid "update.downloading"
 msgstr "正在下载更新……"
 
 msgid "update.download_update"
-msgstr ""
+msgstr "下载"
 
 msgid "update.needs_reload"
 msgstr "需要重新加载项目以应用更新。"
