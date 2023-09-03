@@ -143,6 +143,9 @@ msgstr ""
 msgid "settings.missing_keys_hint"
 msgstr ""
 
+msgid "settings.characters_translations"
+msgstr ""
+
 msgid "settings.wrap_long_lines"
 msgstr ""
 

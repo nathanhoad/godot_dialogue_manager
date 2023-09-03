@@ -14,6 +14,7 @@ const DEFAULT_TEST_SCENE_PATH = "res://addons/dialogue_manager/test_scene.tscn"
 
 @onready var new_template_button: CheckBox = $Editor/NewTemplateButton
 @onready var missing_translations_button: CheckBox = $Editor/MissingTranslationsButton
+@onready var characters_translations_button: CheckBox = $Editor/CharactersTranslationsButton
 @onready var wrap_lines_button: Button = $Editor/WrapLinesButton
 @onready var test_scene_path_input: LineEdit = $Editor/CustomTestScene/TestScenePath
 @onready var revert_test_scene_button: Button = $Editor/CustomTestScene/RevertTestScene
@@ -33,6 +34,7 @@ func _ready() -> void:
 	new_template_button.text = DialogueConstants.translate("settings.new_template")
 	missing_translations_button.text = DialogueConstants.translate("settings.missing_keys")
 	$Editor/MissingTranslationsHint.text = DialogueConstants.translate("settings.missing_keys_hint")
+	characters_translations_button.text = DialogueConstants.translate("settings.characters_translations")
 	wrap_lines_button.text = DialogueConstants.translate("settings.wrap_long_lines")
 	$Editor/CustomTestSceneLabel.text = DialogueConstants.translate("settings.custom_test_scene")
 	include_all_responses_button.text = DialogueConstants.translate("settings.include_failed_responses")
@@ -55,6 +57,7 @@ func prepare() -> void:
 	states_title.add_theme_font_override("font", get_theme_font("bold", "EditorFonts"))
 
 	missing_translations_button.set_pressed_no_signal(DialogueSettings.get_setting("missing_translations_are_errors", false))
+	characters_translations_button.set_pressed_no_signal(DialogueSettings.get_setting("export_characters_in_translation", true))
 	wrap_lines_button.set_pressed_no_signal(DialogueSettings.get_setting("wrap_lines", false))
 	include_all_responses_button.set_pressed_no_signal(DialogueSettings.get_setting("include_all_responses", false))
 	ignore_missing_state_values.set_pressed_no_signal(DialogueSettings.get_setting("ignore_missing_state_values", false))
@@ -100,6 +103,10 @@ func _on_settings_view_visibility_changed() -> void:
 
 func _on_missing_translations_button_toggled(button_pressed: bool) -> void:
 	DialogueSettings.set_setting("missing_translations_are_errors", button_pressed)
+
+
+func _on_characters_translations_button_toggled(button_pressed: bool) -> void:
+	DialogueSettings.set_setting("export_characters_in_translation", button_pressed)
 
 
 func _on_wrap_lines_button_toggled(button_pressed: bool) -> void:
