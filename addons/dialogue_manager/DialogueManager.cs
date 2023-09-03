@@ -6,7 +6,7 @@ namespace DialogueManagerRuntime
 {
   public partial class DialogueManager : Node
   {
-    private static GodotObject singleton;
+    private static GodotObject? singleton;
 
     public static async Task<GodotObject> GetSingleton()
     {
@@ -33,7 +33,7 @@ namespace DialogueManagerRuntime
     }
 
 
-    public static async Task<DialogueLine> GetNextDialogueLine(Resource dialogueResource, string key = "0", Array<Variant> extraGameStates = null)
+    public static async Task<DialogueLine?> GetNextDialogueLine(Resource dialogueResource, string key = "0", Array<Variant>? extraGameStates = null)
     {
       var dialogueManager = Engine.GetSingleton("DialogueManager");
       dialogueManager.Call("_bridge_get_next_dialogue_line", dialogueResource, key, extraGameStates ?? new Array<Variant>());
@@ -45,7 +45,7 @@ namespace DialogueManagerRuntime
     }
 
 
-    public static void ShowExampleDialogueBalloon(Resource dialogueResource, string key = "0", Array<Variant> extraGameStates = null)
+    public static void ShowExampleDialogueBalloon(Resource dialogueResource, string key = "0", Array<Variant>? extraGameStates = null)
     {
       Engine.GetSingleton("DialogueManager").Call("show_example_dialogue_balloon", dialogueResource, key, extraGameStates ?? new Array<Variant>());
     }
@@ -95,8 +95,8 @@ namespace DialogueManagerRuntime
       get => responses;
     }
 
-    private string time = null;
-    public string Time
+    private string? time = null;
+    public string? Time
     {
       get => time;
     }
@@ -169,3 +169,4 @@ namespace DialogueManagerRuntime
     }
   }
 }
+
