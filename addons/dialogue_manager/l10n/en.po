@@ -153,6 +153,9 @@ msgstr "Treat missing translation keys as errors"
 msgid "settings.missing_keys_hint"
 msgstr "If you are using static translation keys then having this enabled will help you find any lines that you haven't added a key to yet."
 
+msgid "settings.characters_translations"
+msgstr "Export character names in translation files"
+
 msgid "settings.wrap_long_lines"
 msgstr "Wrap long lines"
 

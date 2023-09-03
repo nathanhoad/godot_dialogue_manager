@@ -10,6 +10,7 @@ const DialogueConstants = preload("res://addons/dialogue_manager/constants.gd")
 const DEFAULT_SETTINGS = {
 	"states" = [],
 	"missing_translations_are_errors" = false,
+	"export_characters_in_translation" = true,
 	"wrap_lines" = false,
 	"new_with_template" = true,
 	"include_all_responses" = false,
@@ -23,6 +24,7 @@ static func prepare() -> void:
 	for key in [
 		"states",
 		"missing_translations_are_errors",
+		"export_characters_in_translation",
 		"wrap_lines",
 		"new_with_template",
 		"include_all_responses",
