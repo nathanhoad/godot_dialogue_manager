@@ -1,5 +1,7 @@
 using Godot;
+using Godot.Collections;
 using DialogueManagerRuntime;
+using System.Threading.Tasks;
 
 public partial class TestScene : Node2D
 {
@@ -15,6 +17,10 @@ public partial class TestScene : Node2D
   [Export]
   Resource DialogueResource;
 
+  /* Make sure to add an [Export] decorator so that the Dialogue Manager can see the property */
+  [Export]
+  string PlayerName = "Player";
+
 
   public async override void _Ready()
   {
@@ -28,7 +34,19 @@ public partial class TestScene : Node2D
     bool isSmallWindow = (int)ProjectSettings.GetSetting("display/window/size/viewport_width") < 400;
     Balloon balloon = (Balloon)(isSmallWindow ? SmallBalloon : Balloon).Instantiate();
     AddChild(balloon);
-    balloon.Start(DialogueResource, Title);
+    balloon.Start(DialogueResource, Title, new Array<Variant> { this });
+  }
+
+
+  public async Task AskForName()
+  {
+    var nameInputDialogue = GD.Load<PackedScene>("res://examples/name_input_dialog/name_input_dialog.tscn").Instantiate() as AcceptDialog;
+    GetTree().Root.AddChild(nameInputDialogue);
+    nameInputDialogue.PopupCentered();
+
+    await ToSignal(nameInputDialogue, "confirmed");
+    PlayerName = nameInputDialogue.GetNode<LineEdit>("NameEdit").Text;
+    nameInputDialogue.QueueFree();
   }
 
 

@@ -510,7 +510,10 @@ func set_state_value(property: String, value, extra_game_states: Array) -> void:
 			state.set(property, value)
 			return
 
-	show_error_for_missing_state_value(DialogueConstants.translate("runtime.property_not_found").format({ property = property, states = str(get_game_states(extra_game_states)) }))
+	if property.to_snake_case() != property:
+		show_error_for_missing_state_value(DialogueConstants.translate("runtime.property_not_found_missing_export").format({ property = property, states = str(get_game_states(extra_game_states)) }))
+	else:
+		show_error_for_missing_state_value(DialogueConstants.translate("runtime.property_not_found").format({ property = property, states = str(get_game_states(extra_game_states)) }))
 
 
 # Collapse any expressions
@@ -582,7 +585,7 @@ func resolve(tokens: Array, extra_game_states: Array):
 							i -= 2
 						elif thing_has_method(caller.value, function_name, args):
 							caller["type"] = "value"
-							caller["value"] = await caller.value.callv(function_name, args)
+							caller["value"] = await resolve_thing_method(caller.value, function_name, args)
 							tokens.remove_at(i)
 							tokens.remove_at(i-1)
 							i -= 2
@@ -603,7 +606,7 @@ func resolve(tokens: Array, extra_game_states: Array):
 									found = true
 								elif thing_has_method(state, function_name, args):
 									token["type"] = "value"
-									token["value"] = await state.callv(function_name, args)
+									token["value"] = await resolve_thing_method(state, function_name, args)
 									found = true
 
 								if found:
@@ -995,8 +998,12 @@ func thing_has_method(thing, method: String, args: Array) -> bool:
 
 	if method in ["call", "call_deferred"]:
 		return thing.has_method(args[0])
-	else:
+	elif method.to_snake_case() == method:
 		return thing.has_method(method)
+
+	# If we get this far then the method might be a C# method with a Task return type
+	var dotnet_dialogue_manager = load("res://addons/dialogue_manager/DialogueManager.cs").new()
+	return dotnet_dialogue_manager.ThingHasMethod(thing, method)
 
 
 # Check if a given property exists
@@ -1040,6 +1047,16 @@ func resolve_signal(args: Array, extra_game_states: Array):
 
 	# The signal hasn't been found anywhere
 	show_error_for_missing_state_value(DialogueConstants.translate("runtime.signal_not_found").format({ signal_name = args[0], states = str(get_game_states(extra_game_states)) }))
+
+
+func resolve_thing_method(thing, method: String, args: Array):
+	if thing.has_method(method):
+		return thing.callv(method, args)
+
+	# If we get here then it's probably a C# method with a Task return type
+	var dotnet_dialogue_manager = load("res://addons/dialogue_manager/DialogueManager.cs").new()
+	dotnet_dialogue_manager.ResolveThingMethod(thing, method, args)
+	return await dotnet_dialogue_manager.Resolved
 
 
 func resolve_primitive_method(primitive, method_name: String, args: Array, extra_game_states: Array):
