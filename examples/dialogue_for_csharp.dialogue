@@ -1,0 +1,8 @@
+~ start
+
+Nathan: I am Nathan. What is your name?
+do AskForName()
+Nathan: Hi {{PlayerName}}! It is nice to meet you.
+Coco: Meow.
+
+=> END

@@ -399,6 +399,9 @@ msgstr "Key \"{key}\" not found in dictionary \"{dictionary}\""
 msgid "runtime.property_not_found"
 msgstr "\"{property}\" is not a property on any game states ({states})."
 
+msgid "runtime.property_not_found_missing_export"
+msgstr "\"{property}\" is not a property on any game states ({states}). You might need to add an [Export] decorator."
+
 msgid "runtime.method_not_found"
 msgstr "\"{method}\" is not a method on any game states ({states})"
 
