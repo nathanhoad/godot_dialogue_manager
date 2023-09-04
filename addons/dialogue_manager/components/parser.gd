@@ -806,9 +806,9 @@ func import_content(path: String, prefix: String, known_imports: Dictionary) -> 
 					imported_titles[import.prefix] = import.path.hash()
 
 		var origin_hash: int = -1
-		for hash in known_imports.keys():
-			if known_imports[hash] == ".":
-				origin_hash = hash
+		for hash_value in known_imports.keys():
+			if known_imports[hash_value] == ".":
+				origin_hash = hash_value
 
 		# Replace any titles or jump points with references to the files they point to (event if they point to their own file)
 		for i in range(0, content.size()):
