@@ -649,7 +649,6 @@ func find_next_condition_sibling(line_number: int) -> String:
 	var expected_indent = get_indent(line)
 
 	# Look down the list and find an elif or else at the same indent level
-	var last_valid_id: int = line_number
 	for i in range(line_number + 1, raw_lines.size()):
 		line = raw_lines[i]
 		if is_line_empty(line): continue
@@ -669,8 +668,6 @@ func find_next_condition_sibling(line_number: int) -> String:
 			# Found what we're looking for
 			elif (l.begins_with("elif ") or l.begins_with("else")):
 				return str(i)
-
-		last_valid_id = i
 
 	return DialogueConstants.ID_NULL
 
