@@ -579,7 +579,7 @@ func resolve(tokens: Array, extra_game_states: Array):
 						var caller: Dictionary = tokens[i - 2]
 						if typeof(caller.value) in DialogueConstants.SUPPORTED_PRIMITIVES:
 							caller["type"] = "value"
-							caller["value"] = resolve_primitive_method(caller.value, function_name, args, extra_game_states)
+							caller["value"] = resolve_primitive_method(caller.value, function_name, args)
 							tokens.remove_at(i)
 							tokens.remove_at(i-1)
 							i -= 2
@@ -602,7 +602,7 @@ func resolve(tokens: Array, extra_game_states: Array):
 							for state in get_game_states(extra_game_states):
 								if typeof(state) in DialogueConstants.SUPPORTED_PRIMITIVES and thing_has_method(state, function_name, args):
 									token["type"] = "value"
-									token["value"] = resolve_primitive_method(state, function_name, args, extra_game_states)
+									token["value"] = resolve_primitive_method(state, function_name, args)
 									found = true
 								elif thing_has_method(state, function_name, args):
 									token["type"] = "value"
@@ -1059,7 +1059,7 @@ func resolve_thing_method(thing, method: String, args: Array):
 	return await dotnet_dialogue_manager.Resolved
 
 
-func resolve_primitive_method(primitive, method_name: String, args: Array, extra_game_states: Array):
+func resolve_primitive_method(primitive, method_name: String, args: Array):
 	match typeof(primitive):
 		TYPE_ARRAY:
 			return resolve_array_method(primitive, method_name, args)
