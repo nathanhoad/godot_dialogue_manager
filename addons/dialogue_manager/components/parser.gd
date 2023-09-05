@@ -649,7 +649,6 @@ func find_next_condition_sibling(line_number: int) -> String:
 	var expected_indent = get_indent(line)
 
 	# Look down the list and find an elif or else at the same indent level
-	var last_valid_id: int = line_number
 	for i in range(line_number + 1, raw_lines.size()):
 		line = raw_lines[i]
 		if is_line_empty(line): continue
@@ -669,8 +668,6 @@ func find_next_condition_sibling(line_number: int) -> String:
 			# Found what we're looking for
 			elif (l.begins_with("elif ") or l.begins_with("else")):
 				return str(i)
-
-		last_valid_id = i
 
 	return DialogueConstants.ID_NULL
 
@@ -809,9 +806,9 @@ func import_content(path: String, prefix: String, known_imports: Dictionary) -> 
 					imported_titles[import.prefix] = import.path.hash()
 
 		var origin_hash: int = -1
-		for hash in known_imports.keys():
-			if known_imports[hash] == ".":
-				origin_hash = hash
+		for hash_value in known_imports.keys():
+			if known_imports[hash_value] == ".":
+				origin_hash = hash_value
 
 		# Replace any titles or jump points with references to the files they point to (event if they point to their own file)
 		for i in range(0, content.size()):

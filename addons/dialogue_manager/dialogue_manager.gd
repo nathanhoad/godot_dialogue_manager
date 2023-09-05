@@ -579,7 +579,7 @@ func resolve(tokens: Array, extra_game_states: Array):
 						var caller: Dictionary = tokens[i - 2]
 						if typeof(caller.value) in DialogueConstants.SUPPORTED_PRIMITIVES:
 							caller["type"] = "value"
-							caller["value"] = resolve_primitive_method(caller.value, function_name, args, extra_game_states)
+							caller["value"] = resolve_primitive_method(caller.value, function_name, args)
 							tokens.remove_at(i)
 							tokens.remove_at(i-1)
 							i -= 2
@@ -602,7 +602,7 @@ func resolve(tokens: Array, extra_game_states: Array):
 							for state in get_game_states(extra_game_states):
 								if typeof(state) in DialogueConstants.SUPPORTED_PRIMITIVES and thing_has_method(state, function_name, args):
 									token["type"] = "value"
-									token["value"] = resolve_primitive_method(state, function_name, args, extra_game_states)
+									token["value"] = resolve_primitive_method(state, function_name, args)
 									found = true
 								elif thing_has_method(state, function_name, args):
 									token["type"] = "value"
@@ -1059,7 +1059,7 @@ func resolve_thing_method(thing, method: String, args: Array):
 	return await dotnet_dialogue_manager.Resolved
 
 
-func resolve_primitive_method(primitive, method_name: String, args: Array, extra_game_states: Array):
+func resolve_primitive_method(primitive, method_name: String, args: Array):
 	match typeof(primitive):
 		TYPE_ARRAY:
 			return resolve_array_method(primitive, method_name, args)
@@ -1183,7 +1183,7 @@ func resolve_quaternion_method(quaternion: Quaternion, method_name: String, args
 		"exp":
 			return quaternion.exp()
 		"from_euler":
-			return quaternion.from_euler(args[0])
+			return Quaternion.from_euler(args[0])
 		"get_angle":
 			return quaternion.get_angle()
 		"get_axis":
@@ -1235,29 +1235,29 @@ func resolve_color_method(color: Color, method_name: String, args: Array):
 		"from_hsv":
 			match args.size():
 				3:
-					return color.from_hsv(args[0], args[1], args[2])
+					return Color.from_hsv(args[0], args[1], args[2])
 				4:
-					return color.from_hsv(args[0], args[1], args[2], args[3])
+					return Color.from_hsv(args[0], args[1], args[2], args[3])
 		"from_ok_hsl":
 			match args.size():
 				3:
-					return color.from_ok_hsl(args[0], args[1], args[2])
+					return Color.from_ok_hsl(args[0], args[1], args[2])
 				4:
-					return color.from_ok_hsl(args[0], args[1], args[2], args[3])
+					return Color.from_ok_hsl(args[0], args[1], args[2], args[3])
 		"from_rgbe9995":
-			return color.from_rgbe9995(args[0])
+			return Color.from_rgbe9995(args[0])
 		"from_string":
-			return color.from_string(args[0], args[1])
+			return Color.from_string(args[0], args[1])
 		"get_luminance":
 			return color.get_luminance()
 		"hex":
-			return color.hex(args[0])
+			return Color.hex(args[0])
 		"hex64":
-			return color.hex64(args[0])
+			return Color.hex64(args[0])
 		"html":
-			return color.html(args[0])
+			return Color.html(args[0])
 		"html_is_valid":
-			return color.html_is_valid(args[0])
+			return Color.html_is_valid(args[0])
 		"inverted":
 			return color.inverted()
 		"is_equal_approx":
