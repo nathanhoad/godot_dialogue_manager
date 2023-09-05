@@ -1051,7 +1051,7 @@ func resolve_signal(args: Array, extra_game_states: Array):
 
 func resolve_thing_method(thing, method: String, args: Array):
 	if thing.has_method(method):
-		return thing.callv(method, args)
+		return await thing.callv(method, args)
 
 	# If we get here then it's probably a C# method with a Task return type
 	var dotnet_dialogue_manager = load("res://addons/dialogue_manager/DialogueManager.cs").new()
