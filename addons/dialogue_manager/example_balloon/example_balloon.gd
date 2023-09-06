@@ -198,6 +198,12 @@ func _on_response_gui_input(event: InputEvent, item: Control) -> void:
 
 
 func _on_balloon_gui_input(event: InputEvent) -> void:
+	# If the user clicks on the balloon while it's typing then skip typing
+	if dialogue_label.is_typing and event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT:
+		get_viewport().set_input_as_handled()
+		dialogue_label.skip_typing()
+		return
+
 	if not is_waiting_for_input: return
 	if dialogue_line.responses.size() > 0: return
 
