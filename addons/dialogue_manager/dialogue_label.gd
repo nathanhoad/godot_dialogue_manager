@@ -56,12 +56,7 @@ func _process(delta: float) -> void:
 func _unhandled_input(event: InputEvent) -> void:
 	if self.is_typing and visible_ratio < 1 and event.is_action_pressed(skip_action):
 		get_viewport().set_input_as_handled()
-
-		# Run any inline mutations that haven't been run yet
-		for i in range(visible_characters, get_total_character_count()):
-			mutate_inline_mutations(i)
-		visible_characters = get_total_character_count()
-		self.is_typing = false
+		skip_typing()
 
 
 # Start typing out the text
@@ -77,11 +72,16 @@ func type_out() -> void:
 	if get_total_character_count() == 0:
 		self.is_typing = false
 	elif seconds_per_step == 0:
-		# Run any inline mutations
-		for i in range(0, get_total_character_count()):
-			mutate_inline_mutations(i)
+		mutation_remaining_mutations()
 		visible_characters = get_total_character_count()
 		self.is_typing = false
+
+
+# Stop typing out the text and jump right to the end
+func skip_typing() -> void:
+	mutation_remaining_mutations()
+	visible_characters = get_total_character_count()
+	self.is_typing = false
 
 
 # Type out the next character(s)
@@ -129,6 +129,12 @@ func get_speed(at_index: int) -> float:
 			return speed
 		speed = dialogue_line.speeds[index]
 	return speed
+
+
+# Run any inline mutations that haven't been run yet
+func mutation_remaining_mutations() -> void:
+	for i in range(visible_characters, get_total_character_count() + 1):
+		mutate_inline_mutations(i)
 
 
 # Run any mutations at the current typing position
