@@ -48,6 +48,8 @@ func _process(delta: float) -> void:
 			if waiting_seconds <= 0:
 				type_next(delta, waiting_seconds)
 		else:
+			# Make sure any mutations at the end of the line get run
+			mutate_inline_mutations(get_total_character_count())
 			self.is_typing = false
 
 
