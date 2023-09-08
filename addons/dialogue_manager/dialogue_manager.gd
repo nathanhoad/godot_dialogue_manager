@@ -707,7 +707,10 @@ func resolve(tokens: Array, extra_game_states: Array):
 			var dictionary = {}
 			for key in token.value.keys():
 				var resolved_key = await resolve([key], extra_game_states)
-				var resolved_value = await resolve([token.value.get(key)], extra_game_states)
+				var preresolved_value = token.value.get(key)
+				if typeof(preresolved_value) != TYPE_ARRAY:
+					preresolved_value = [preresolved_value]
+				var resolved_value = await resolve(preresolved_value, extra_game_states)
 				dictionary[resolved_key] = resolved_value
 			token["value"] = dictionary
 

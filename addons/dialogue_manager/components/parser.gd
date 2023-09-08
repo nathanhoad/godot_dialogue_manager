@@ -1236,6 +1236,7 @@ func build_token_tree(tokens: Array[Dictionary], line_type: String, expected_clo
 					type = DialogueConstants.TOKEN_DICTIONARY,
 					value = tokens_to_dictionary(sub_tree[0])
 				})
+
 				tokens = sub_tree[1]
 
 			DialogueConstants.TOKEN_BRACKET_OPEN:
@@ -1508,7 +1509,10 @@ func tokens_to_dictionary(tokens: Array[Dictionary]) -> Dictionary:
 	var dictionary = {}
 	for i in range(0, tokens.size()):
 		if tokens[i].type == DialogueConstants.TOKEN_COLON:
-			dictionary[tokens[i-1]] = tokens[i+1]
+			if tokens.size() == i + 2:
+				dictionary[tokens[i-1]] = tokens[i+1]
+			else:
+				dictionary[tokens[i-1]] = { type = DialogueConstants.TOKEN_GROUP, value = tokens.slice(i+1) }
 
 	return dictionary
 
