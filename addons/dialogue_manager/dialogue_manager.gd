@@ -867,6 +867,10 @@ func resolve(tokens: Array, extra_game_states: Array):
 
 	assert(limit < 1000, DialogueConstants.translate("runtime.something_went_wrong"))
 
+	# Account for Signal literals in emit calls
+	if tokens[0].value is Signal:
+		return tokens[0].value.get_name()
+
 	return tokens[0].value
 
 
