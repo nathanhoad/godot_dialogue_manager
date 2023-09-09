@@ -713,6 +713,15 @@ func import_translations_from_csv(path: String) -> void:
 	parser.free()
 
 
+func show_search_form(is_enabled: bool) -> void:
+	if code_edit.last_selected_text:
+		search_and_replace.input.text = code_edit.last_selected_text
+
+	search_and_replace.visible = is_enabled
+	search_button.set_pressed_no_signal(is_enabled)
+	search_and_replace.focus_line_edit()
+
+
 ### Signals
 
 
@@ -847,6 +856,7 @@ func _on_code_edit_text_changed() -> void:
 
 	var buffer = open_buffers[current_file_path]
 	buffer.text = code_edit.text
+
 	files_list.mark_file_as_unsaved(current_file_path, buffer.text != buffer.pristine_text)
 	save_all_button.disabled = open_buffers.values().filter(func(d): return d.text != d.pristine_text).size() == 0
 
@@ -883,15 +893,11 @@ func _on_errors_panel_error_pressed(line_number: int, column_number: int) -> voi
 
 
 func _on_search_button_toggled(button_pressed: bool) -> void:
-	if code_edit.last_selected_text:
-		search_and_replace.input.text = code_edit.last_selected_text
-
-	search_and_replace.visible = button_pressed
+	show_search_form(button_pressed)
 
 
 func _on_search_and_replace_open_requested() -> void:
-	search_button.set_pressed_no_signal(true)
-	search_and_replace.visible = true
+	show_search_form(true)
 
 
 func _on_search_and_replace_close_requested() -> void:
