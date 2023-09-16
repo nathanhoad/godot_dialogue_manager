@@ -158,6 +158,9 @@ msgstr ""
 msgid "settings.custom_test_scene"
 msgstr ""
 
+msgid "settings.default_csv_local"
+msgstr ""
+
 msgid "settings.states_shortcuts"
 msgstr ""
 

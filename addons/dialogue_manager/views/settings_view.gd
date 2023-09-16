@@ -12,6 +12,7 @@ const DialogueSettings = preload("res://addons/dialogue_manager/components/setti
 const DEFAULT_TEST_SCENE_PATH = "res://addons/dialogue_manager/test_scene.tscn"
 
 
+# Editor
 @onready var new_template_button: CheckBox = $Editor/NewTemplateButton
 @onready var missing_translations_button: CheckBox = $Editor/MissingTranslationsButton
 @onready var characters_translations_button: CheckBox = $Editor/CharactersTranslationsButton
@@ -19,6 +20,9 @@ const DEFAULT_TEST_SCENE_PATH = "res://addons/dialogue_manager/test_scene.tscn"
 @onready var test_scene_path_input: LineEdit = $Editor/CustomTestScene/TestScenePath
 @onready var revert_test_scene_button: Button = $Editor/CustomTestScene/RevertTestScene
 @onready var load_test_scene_button: Button = $Editor/CustomTestScene/LoadTestScene
+@onready var default_csv_locale: LineEdit = $Editor/DefaultCSVLocale
+
+# Runtime
 @onready var include_all_responses_button: CheckBox = $Runtime/IncludeAllResponsesButton
 @onready var ignore_missing_state_values: CheckBox = $Runtime/IgnoreMissingStateValues
 @onready var states_title: Label = $Runtime/StatesTitle
@@ -37,6 +41,8 @@ func _ready() -> void:
 	characters_translations_button.text = DialogueConstants.translate("settings.characters_translations")
 	wrap_lines_button.text = DialogueConstants.translate("settings.wrap_long_lines")
 	$Editor/CustomTestSceneLabel.text = DialogueConstants.translate("settings.custom_test_scene")
+	$Editor/DefaultCSVLocaleLabel.text = DialogueConstants.translate("settings.default_csv_local")
+
 	include_all_responses_button.text = DialogueConstants.translate("settings.include_failed_responses")
 	ignore_missing_state_values.text = DialogueConstants.translate("settings.ignore_missing_state_values")
 	states_title.text = DialogueConstants.translate("settings.states_shortcuts")
@@ -62,6 +68,7 @@ func prepare() -> void:
 	include_all_responses_button.set_pressed_no_signal(DialogueSettings.get_setting("include_all_responses", false))
 	ignore_missing_state_values.set_pressed_no_signal(DialogueSettings.get_setting("ignore_missing_state_values", false))
 	new_template_button.set_pressed_no_signal(DialogueSettings.get_setting("new_with_template", true))
+	default_csv_locale.text = DialogueSettings.get_setting("default_csv_locale", "en")
 
 	var project = ConfigFile.new()
 	var err = project.load("res://project.godot")
@@ -156,3 +163,7 @@ func _on_custom_test_scene_file_dialog_file_selected(path: String) -> void:
 
 func _on_ignore_missing_state_values_toggled(button_pressed: bool) -> void:
 	DialogueSettings.set_setting("ignore_missing_state_values", button_pressed)
+
+
+func _on_default_csv_locale_text_changed(new_text: String) -> void:
+	DialogueSettings.set_setting("default_csv_locale", new_text)
