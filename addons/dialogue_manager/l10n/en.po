@@ -168,6 +168,9 @@ msgstr "Skip over missing state value errors (not recommended)"
 msgid "settings.custom_test_scene"
 msgstr "Custom test scene (must extend BaseDialogueTestScene)"
 
+msgid "settings.default_csv_local"
+msgstr "Default CSV Local"
+
 msgid "settings.states_shortcuts"
 msgstr "State Shortcuts"
 
