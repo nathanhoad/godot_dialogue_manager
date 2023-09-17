@@ -84,6 +84,7 @@ var current_file_path: String = "":
 			files_list.hide()
 			title_list.hide()
 			code_edit.hide()
+			errors_panel.hide()
 		else:
 			test_button.disabled = false
 			search_button.disabled = false
@@ -428,7 +429,8 @@ func build_open_menu() -> void:
 		menu.set_item_disabled(2, true)
 	else:
 		for path in recent_files:
-			menu.add_icon_item(get_theme_icon("File", "EditorIcons"), path)
+			if FileAccess.file_exists(path):
+				menu.add_icon_item(get_theme_icon("File", "EditorIcons"), path)
 
 	menu.add_separator()
 	menu.add_item(DialogueConstants.translate("open.clear_recent_files"), OPEN_CLEAR)
