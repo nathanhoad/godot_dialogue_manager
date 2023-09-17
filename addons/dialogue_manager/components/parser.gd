@@ -16,6 +16,7 @@ var CONDITION_REGEX: RegEx = RegEx.create_from_string("(if|elif|while|else if) (
 var WRAPPED_CONDITION_REGEX: RegEx = RegEx.create_from_string("\\[if (?<condition>.*)\\]")
 var REPLACEMENTS_REGEX: RegEx = RegEx.create_from_string("{{(.*?)}}")
 var GOTO_REGEX: RegEx = RegEx.create_from_string("=><? (?<jump_to_title>.*)")
+var INDENT_REGEX: RegEx = RegEx.create_from_string("^\\t+")
 
 var TOKEN_DEFINITIONS: Dictionary = {
 	DialogueConstants.TOKEN_FUNCTION: RegEx.create_from_string("^[a-zA-Z_][a-zA-Z_0-9]*\\("),
@@ -94,11 +95,12 @@ func parse(text: String, path: String) -> Error:
 		var raw_line: String = raw_lines[id]
 
 		var line: Dictionary = {
+			id = str(id),
 			next_id = DialogueConstants.ID_NULL
 		}
 
 		# Ignore empty lines and comments
-		if is_line_empty(raw_line): continue
+#		if is_line_empty(raw_line): continue
 
 		# Work out if we are inside a conditional or option or if we just
 		# indented back out of one
@@ -262,7 +264,34 @@ func parse(text: String, path: String) -> Error:
 			else:
 				line["is_snippet"] = false
 
-		# Dialogue
+		# Nested dialogue
+		elif is_nested_dialogue_line(raw_line, parsed_lines, raw_lines, indent_size):
+			var parent_line: Dictionary = parsed_lines.values().back()
+			var parent_indent_size: int = get_indent(raw_lines[parent_line.id.to_int()])
+			var should_update_translation_key: bool = parent_line.translation_key == parent_line.text
+			var suffix: String = raw_line.strip_edges(true, false)
+			if suffix == "":
+				suffix = " "
+			parent_line["text"] += "\n" + suffix
+			parent_line["text_replacements"] = extract_dialogue_replacements(parent_line.text, parent_line.character.length() + 2 + parent_indent_size)
+			for replacement in parent_line.text_replacements:
+				if replacement.has("error"):
+					add_error(id, replacement.index, replacement.error)
+
+			if should_update_translation_key:
+				parent_line["translation_key"] = parent_line.text
+
+			parent_line["next_id"] = get_line_after_line(id, parent_indent_size, parent_line)
+
+			# Ignore this line when checking for indent errors
+			remove_error(parent_line.id.to_int(), DialogueConstants.ERR_INVALID_INDENTATION)
+
+			continue
+
+		elif is_line_empty(raw_line):
+			continue
+
+		# Regular dialogue
 		else:
 			# Work out any weighted random siblings
 			if raw_line.begins_with("%"):
@@ -496,6 +525,13 @@ func add_error(line_number: int, column_number: int, error: int) -> void:
 	})
 
 
+func remove_error(line_number: int, error: int) -> void:
+	for i in range(errors.size() - 1, -1, -1):
+		var err = errors[i]
+		if err.line_number == line_number - _imported_line_count and err.error == error:
+			errors.remove_at(i)
+
+
 func is_import_line(line: String) -> bool:
 	return line.begins_with("import ") and " as " in line
 
@@ -528,6 +564,16 @@ func is_goto_line(line: String) -> bool:
 
 func is_goto_snippet_line(line: String) -> bool:
 	return line.strip_edges().begins_with("=>< ")
+
+
+func is_nested_dialogue_line(raw_line: String, parsed_lines: Dictionary, raw_lines: PackedStringArray, indent_size: int) -> bool:
+	if parsed_lines.values().is_empty(): return false
+	if raw_line.strip_edges().begins_with("#"): return false
+
+	var parent_line: Dictionary = parsed_lines.values().back()
+	if parent_line.type != DialogueConstants.TYPE_DIALOGUE: return false
+	if get_indent(raw_lines[parent_line.id.to_int()]) >= indent_size: return false
+	return true
 
 
 func is_dialogue_line(line: String) -> bool:
@@ -577,7 +623,11 @@ func get_line_after_line(id: int, indent_size: int, line: Dictionary) -> String:
 
 
 func get_indent(line: String) -> int:
-	return line.count("\t", 0, line.find(line.strip_edges()))
+	var tabs: RegExMatch = INDENT_REGEX.search(line)
+	if tabs:
+		return tabs.get_string().length()
+	else:
+		return 0
 
 
 func get_next_nonempty_line_id(line_number: int) -> String:
@@ -762,7 +812,10 @@ func find_next_line_after_responses(line_number: int) -> String:
 			elif indent < expected_indent:
 				# ...outdented so check the previous parent
 				var previous_parent = parent_stack[parent_stack.size() - 2]
-				return parsed_lines[str(previous_parent)].next_id_after
+				if parsed_lines.has(str(previous_parent)):
+					return parsed_lines[str(previous_parent)].next_id_after
+				else:
+					return DialogueConstants.ID_NULL
 
 		# We're at the end of a conditional so jump back up to see what's after it
 		elif line.begins_with("elif ") or line.begins_with("else"):
