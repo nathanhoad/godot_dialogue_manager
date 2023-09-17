@@ -37,7 +37,7 @@ Nathan: The value of some_variable is {{SomeGlobal.some_property}}.
 To break a single line into multiple lines for display, you can either use a newline (`\n`) or indent each line below the first line. For example, these two snippets would be equivalent:
 
 ```
-Nathan: This is the first line.
+Coco: This is the first line.
 	This line would show up below it in the same balloon.
 	And even this line.
 ```
@@ -45,7 +45,7 @@ Nathan: This is the first line.
 and
 
 ```
-Nathan: This is the first line.\nThis line would show up below it in the same balloon.\nAnd even this line.
+Coco: This is the first line.\nThis line would show up below it in the same balloon.\nAnd even this line.
 ```
 
 _Note: When using indented line breaks and [line IDs for translations](./Translations.md) you can only specify a line ID on the first (unindented) line of each group._

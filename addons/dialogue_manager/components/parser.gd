@@ -99,9 +99,6 @@ func parse(text: String, path: String) -> Error:
 			next_id = DialogueConstants.ID_NULL
 		}
 
-		# Ignore empty lines and comments
-#		if is_line_empty(raw_line): continue
-
 		# Work out if we are inside a conditional or option or if we just
 		# indented back out of one
 		var indent_size: int = get_indent(raw_line)
