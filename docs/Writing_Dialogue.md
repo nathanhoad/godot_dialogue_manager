@@ -20,7 +20,6 @@ Titles can also be thought of as markers within the dialogue.
 
 Dialogue will run until it hits an `=> END`, `=> END!`, or the end of the file.
 
-
 ## Dialogue
 
 A dialogue line is either just text or in the form of "Character: What they say".
@@ -34,6 +33,22 @@ This is a line said by nobody.
 Nathan: I am saying this line.
 Nathan: The value of some_variable is {{SomeGlobal.some_property}}.
 ```
+
+To break a single line into multiple lines for display, you can either use a newline (`\n`) or indent each line below the first line. For example, these two snippets would be equivalent:
+
+```
+Coco: This is the first line.
+	This line would show up below it in the same balloon.
+	And even this line.
+```
+
+and
+
+```
+Coco: This is the first line.\nThis line would show up below it in the same balloon.\nAnd even this line.
+```
+
+_Note: When using indented line breaks and [line IDs for translations](./Translations.md) you can only specify a line ID on the first (unindented) line of each group._
 
 Dialogue lines can also contain **bb_code** for RichTextEffects (if you end up using a `RichTextLabel` or the `DialogueLabel` provided by this addon).
 
