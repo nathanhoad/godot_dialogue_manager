@@ -43,7 +43,7 @@ There is also a `[next]` code that you can use to signify that a line should be 
 
 ### Randomising lines of dialogue
 
-If you want to pick one from a few lines of dialogue you can mark the line witha `%` at the start like this:
+If you want to pick one from a few lines of dialogue you can mark the line with a `%` at the start like this:
 
 ```
 Nathan: I will say this.
@@ -136,7 +136,7 @@ Additional conditions use "elif" and you can use "else" to catch any other cases
 
 ```
 if SomeGlobal.some_property >= 10
-    Nathan: That property is greather than or equal to 10
+    Nathan: That property is greater than or equal to 10
 elif SomeGlobal.some_other_property == "some value"
     Nathan: Or we might be in here.
 else
@@ -167,7 +167,7 @@ If using a condition and a goto on a response line then make sure the goto is pr
 Conditions can also be used inline in a dialogue line when wrapped with "[if predicate]" and "[/if]".
 
 ```
-Nathan: I have done this [if aldready_done]once again[/if]
+Nathan: I have done this [if already_done]once again[/if]
 ```
 
 ## Mutations
@@ -238,7 +238,7 @@ func _ready() -> void:
 
 ## Translations
 
-You can export tranlsations as CSV from the "Translations" menu in the dialogue editor.
+You can export translations as CSV from the "Translations" menu in the dialogue editor.
 
 This will find any unique dialogue lines or response prompts and add them to a list. If an ID is specified for the line (eg. `[ID:SOME_KEY]`) then that will be used as the translation key, otherwise the dialogue/prompt itself will be.
 
