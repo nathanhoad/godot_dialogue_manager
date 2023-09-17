@@ -1005,12 +1005,16 @@ func thing_has_method(thing, method: String, args: Array) -> bool:
 
 	if method in ["call", "call_deferred"]:
 		return thing.has_method(args[0])
-	elif method.to_snake_case() == method:
-		return thing.has_method(method)
 
-	# If we get this far then the method might be a C# method with a Task return type
-	var dotnet_dialogue_manager = load("res://addons/dialogue_manager/DialogueManager.cs").new()
-	return dotnet_dialogue_manager.ThingHasMethod(thing, method)
+	if thing.has_method(method):
+		return true
+
+	if method.to_snake_case() != method and ResourceLoader.exists("res://addons/dialogue_manager/DialogueManager.cs"):
+		# If we get this far then the method might be a C# method with a Task return type
+		var dotnet_dialogue_manager = load("res://addons/dialogue_manager/DialogueManager.cs").new()
+		return dotnet_dialogue_manager.ThingHasMethod(thing, method)
+
+	return false
 
 
 # Check if a given property exists
