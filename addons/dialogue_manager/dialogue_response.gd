@@ -4,6 +4,10 @@ class_name DialogueResponse extends RefCounted
 
 const _DialogueConstants = preload("res://addons/dialogue_manager/constants.gd")
 
+
+## The ID of this response
+var id: String
+
 ## The internal type of this dialogue object, always set to [code]TYPE_RESPONSE[/code].
 var type: String = _DialogueConstants.TYPE_RESPONSE
 
@@ -25,6 +29,7 @@ var translation_key: String = ""
 
 func _init(data: Dictionary = {}) -> void:
 	if data.size() > 0:
+		id = data.id
 		type = data.type
 		next_id = data.next_id
 		is_allowed = data.is_allowed
