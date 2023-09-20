@@ -1,4 +1,6 @@
-extends RichTextLabel
+@icon("./assets/icon.svg")
+
+class_name DialogueLabel extends RichTextLabel
 
 
 signal spoke(letter: String, letter_index: int, speed: float)

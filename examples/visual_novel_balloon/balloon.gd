@@ -3,7 +3,7 @@ extends CanvasLayer
 
 @onready var background: TextureRect = $Background
 @onready var balloon: Control = $Balloon
-@onready var dialogue_label := $Balloon/Margin/DialogueLabel
+@onready var dialogue_label: DialogueLabel = $Balloon/Margin/DialogueLabel
 @onready var responses_menu: VBoxContainer = $Responses
 @onready var response_template: RichTextLabel = $ResponseTemplate
 
@@ -24,26 +24,26 @@ var dialogue_line: DialogueLine:
 		if not next_dialogue_line:
 			queue_free()
 			return
-		
+
 		is_waiting_for_input = false
-		
+
 		# Remove any previous responses
 		for child in responses_menu.get_children():
 			responses_menu.remove_child(child)
 			child.queue_free()
-		
+
 		dialogue_line = next_dialogue_line
-		
+
 		# Dim all characters except the one talking
 		for portrait in portraits:
 			if portrait == dialogue_line.character.to_lower():
 				portraits[portrait].modulate = Color.WHITE
 			else:
 				portraits[portrait].modulate = Color("757575")
-	
+
 		dialogue_label.modulate.a = 0
 		dialogue_label.dialogue_line = dialogue_line
-		
+
 		# Show any responses we have
 		responses_menu.modulate.a = 0
 		if dialogue_line.responses.size() > 0:
@@ -57,11 +57,11 @@ var dialogue_line: DialogueLine:
 				item.text = response.text
 				item.show()
 				responses_menu.add_child(item)
-		
+
 		dialogue_label.modulate.a = 1
 		dialogue_label.type_out()
 		await dialogue_label.finished_typing
-		
+
 		# Wait for input
 		if dialogue_line.responses.size() > 0:
 			responses_menu.modulate.a = 1
@@ -81,7 +81,7 @@ var dialogue_line: DialogueLine:
 func _ready() -> void:
 	response_template.hide()
 #	hide()
-	
+
 	Engine.get_singleton("DialogueManager").mutated.connect(_on_mutated)
 
 
@@ -112,15 +112,15 @@ func set_background(background_name: String) -> void:
 
 func add_portrait(character: String, slot: int = 0) -> void:
 	var slot_marker: Marker2D = get_node("Slot%d" % slot)
-	
+
 	if slot_marker.get_child_count() > 0: return
-	
+
 	# Instantiate the character
 	var portrait = load("res://examples/visual_novel_balloon/portraits/%s.tscn" % character).instantiate()
 	slot_marker.add_child(portrait)
-	
+
 	portraits[character] = portrait
-	
+
 	# Character appears
 	var tween: Tween = get_tree().create_tween().set_pause_mode(Tween.TWEEN_PAUSE_PROCESS).set_ease(Tween.EASE_IN_OUT)
 	tween.tween_property(portrait, "position:y", 0.0, 0.5).from(1000.0)
@@ -133,7 +133,7 @@ func call_portrait(character: String, method: String) -> void:
 
 func remove_portrait(character: String) -> void:
 	var portrait = portraits[character]
-	
+
 	# Character leaves
 	var tween: Tween = get_tree().create_tween().set_pause_mode(Tween.TWEEN_PAUSE_PROCESS).set_ease(Tween.EASE_IN_OUT)
 	tween.tween_property(portrait, "position:y", 1000.0, 0.5).from(0.0)
@@ -148,34 +148,34 @@ func remove_portrait(character: String) -> void:
 # Set up keyboard movement and signals for the response menu
 func configure_menu() -> void:
 	balloon.focus_mode = Control.FOCUS_NONE
-	
+
 	var items = get_responses()
 	for i in items.size():
 		var item: Control = items[i]
-		
+
 		item.mouse_filter = Control.MOUSE_FILTER_STOP
 		item.focus_mode = Control.FOCUS_ALL
-		
+
 		item.focus_neighbor_left = item.get_path()
 		item.focus_neighbor_right = item.get_path()
-		
+
 		if i == 0:
 			item.focus_neighbor_top = item.get_path()
 			item.focus_previous = item.get_path()
 		else:
 			item.focus_neighbor_top = items[i - 1].get_path()
 			item.focus_previous = items[i - 1].get_path()
-		
+
 		if i == items.size() - 1:
 			item.focus_neighbor_bottom = item.get_path()
 			item.focus_next = item.get_path()
 		else:
 			item.focus_neighbor_bottom = items[i + 1].get_path()
 			item.focus_next = items[i + 1].get_path()
-		
+
 		item.mouse_entered.connect(_on_response_mouse_entered.bind(item))
 		item.gui_input.connect(_on_response_gui_input.bind(item))
-	
+
 	items[0].grab_focus()
 
 
@@ -185,7 +185,7 @@ func get_responses() -> Array:
 	for child in responses_menu.get_children():
 		if "Disallowed" in child.name: continue
 		items.append(child)
-		
+
 	return items
 
 
@@ -199,13 +199,13 @@ func _on_mutated(_mutation: Dictionary) -> void:
 
 func _on_response_mouse_entered(item: Control) -> void:
 	if "Disallowed" in item.name: return
-	
+
 	item.grab_focus()
 
 
 func _on_response_gui_input(event: InputEvent, item: Control) -> void:
 	if "Disallowed" in item.name: return
-	
+
 	if event is InputEventMouseButton and event.is_pressed() and event.button_index == 1:
 		responses_menu.modulate.a = 0.0
 		next(dialogue_line.responses[item.get_index()].next_id)
@@ -218,9 +218,9 @@ func _on_balloon_gui_input(event: InputEvent) -> void:
 	if not is_waiting_for_input: return
 	if dialogue_line.responses.size() > 0: return
 
-	# When there are no response options the balloon itself is the clickable thing	
+	# When there are no response options the balloon itself is the clickable thing
 	get_viewport().set_input_as_handled()
-	
+
 	if event is InputEventMouseButton and event.is_pressed() and event.button_index == 1:
 		next(dialogue_line.next_id)
 	elif event.is_action_pressed("ui_accept") and get_viewport().gui_get_focus_owner() == balloon:

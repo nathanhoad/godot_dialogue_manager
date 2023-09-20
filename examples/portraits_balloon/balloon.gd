@@ -15,7 +15,7 @@ const DIALOGUE_PITCHES = {
 @onready var margin: MarginContainer = $Balloon/Margin
 @onready var character_portrait: Sprite2D = $Balloon/Margin/HBox/Portrait/Sprite2D
 @onready var character_label: RichTextLabel = $Balloon/Margin/HBox/VBox/CharacterLabel
-@onready var dialogue_label := $Balloon/Margin/HBox/VBox/DialogueLabel
+@onready var dialogue_label: DialogueLabel = $Balloon/Margin/HBox/VBox/DialogueLabel
 @onready var responses_menu: VBoxContainer = $Balloon/Margin/HBox/VBox/Responses
 
 ## The dialogue resource
@@ -33,24 +33,24 @@ var dialogue_line: DialogueLine:
 		if not next_dialogue_line:
 			queue_free()
 			return
-		
+
 		is_waiting_for_input = false
-		
+
 		# Remove any previous responses
 		for child in responses_menu.get_children():
 			responses_menu.remove_child(child)
 			child.queue_free()
-		
+
 		dialogue_line = next_dialogue_line
-		
+
 		character_label.visible = not dialogue_line.character.is_empty()
 		character_label.text = tr(dialogue_line.character, "dialogue")
 		character_portrait.texture = load("res://examples/portraits_balloon/portraits/%s%s.png" % [dialogue_line.character.to_lower(), file_suffix])
-		
+
 		dialogue_label.modulate.a = 0
 		dialogue_label.custom_minimum_size.x = dialogue_label.get_parent().size.x - 1
 		dialogue_label.dialogue_line = dialogue_line
-		
+
 		# Show any responses we have
 		responses_menu.modulate.a = 0
 		if dialogue_line.responses.size() > 0:
@@ -64,14 +64,14 @@ var dialogue_line: DialogueLine:
 				item.text = response.text
 				item.show()
 				responses_menu.add_child(item)
-		
+
 		# Show our balloon if it was previously hidden
 		balloon.show()
-		
+
 		dialogue_label.modulate.a = 1
 		dialogue_label.type_out()
 		await dialogue_label.finished_typing
-		
+
 		# Wait for input
 		if dialogue_line.responses.size() > 0:
 			responses_menu.modulate.a = 1
@@ -91,7 +91,7 @@ var dialogue_line: DialogueLine:
 func _ready() -> void:
 	response_template.hide()
 	balloon.hide()
-	
+
 	Engine.get_singleton("DialogueManager").mutated.connect(_on_mutated)
 
 
@@ -119,33 +119,33 @@ func next(next_id: String) -> void:
 # Set up keyboard movement and signals for the response menu
 func configure_menu() -> void:
 	balloon.focus_mode = Control.FOCUS_NONE
-	
+
 	var items = get_responses()
 	for i in items.size():
 		var item: Control = items[i]
-		
+
 		item.focus_mode = Control.FOCUS_ALL
-		
+
 		item.focus_neighbor_left = item.get_path()
 		item.focus_neighbor_right = item.get_path()
-		
+
 		if i == 0:
 			item.focus_neighbor_top = item.get_path()
 			item.focus_previous = item.get_path()
 		else:
 			item.focus_neighbor_top = items[i - 1].get_path()
 			item.focus_previous = items[i - 1].get_path()
-		
+
 		if i == items.size() - 1:
 			item.focus_neighbor_bottom = item.get_path()
 			item.focus_next = item.get_path()
 		else:
 			item.focus_neighbor_bottom = items[i + 1].get_path()
 			item.focus_next = items[i + 1].get_path()
-		
+
 		item.mouse_entered.connect(_on_response_mouse_entered.bind(item))
 		item.gui_input.connect(_on_response_gui_input.bind(item))
-	
+
 	items[0].grab_focus()
 
 
@@ -155,7 +155,7 @@ func get_responses() -> Array:
 	for child in responses_menu.get_children():
 		if "Disallowed" in child.name: continue
 		items.append(child)
-		
+
 	return items
 
 
@@ -163,7 +163,7 @@ func handle_resize() -> void:
 	if not is_instance_valid(margin):
 		call_deferred("handle_resize")
 		return
-	
+
 	balloon.custom_minimum_size.y = margin.size.y
 	balloon.size.y = 0
 	var viewport_size = balloon.get_viewport_rect().size
@@ -180,13 +180,13 @@ func _on_mutated(_mutation: Dictionary) -> void:
 
 func _on_response_mouse_entered(item: Control) -> void:
 	if "Disallowed" in item.name: return
-	
+
 	item.grab_focus()
 
 
 func _on_response_gui_input(event: InputEvent, item: Control) -> void:
 	if "Disallowed" in item.name: return
-	
+
 	if event is InputEventMouseButton and event.is_pressed() and event.button_index == 1:
 		next(dialogue_line.responses[item.get_index()].next_id)
 	elif event.is_action_pressed("ui_accept") and item in get_responses():
@@ -197,9 +197,9 @@ func _on_balloon_gui_input(event: InputEvent) -> void:
 	if not is_waiting_for_input: return
 	if dialogue_line.responses.size() > 0: return
 
-	# When there are no response options the balloon itself is the clickable thing	
+	# When there are no response options the balloon itself is the clickable thing
 	get_viewport().set_input_as_handled()
-	
+
 	if event is InputEventMouseButton and event.is_pressed() and event.button_index == 1:
 		next(dialogue_line.next_id)
 	elif event.is_action_pressed("ui_accept") and get_viewport().gui_get_focus_owner() == balloon:
