@@ -280,6 +280,10 @@ func get_line(resource: DialogueResource, key: String, extra_game_states: Array)
 			id_trail = "|" + data.next_id_after + id_trail
 		return await get_line(resource, data.next_id + id_trail, extra_game_states)
 
+	elif data.type == DialogueConstants.TYPE_DIALOGUE:
+		if not data.has("id"):
+			data.id = key
+
 	# Set up a line object
 	var line: DialogueLine = await create_dialogue_line(data, extra_game_states)
 
