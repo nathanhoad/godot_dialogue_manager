@@ -21,7 +21,6 @@ var _recompile_paths: PackedStringArray
 
 func _enter_tree() -> void:
 	add_autoload_singleton("DialogueManager", "res://addons/dialogue_manager/dialogue_manager.gd")
-	add_custom_type("DialogueLabel", "RichTextLabel", preload("res://addons/dialogue_manager/dialogue_label.gd"), _get_plugin_icon())
 
 	if Engine.is_editor_hint():
 		DialogueSettings.prepare()
@@ -52,7 +51,6 @@ func _enter_tree() -> void:
 
 func _exit_tree() -> void:
 	remove_autoload_singleton("DialogueManager")
-	remove_custom_type("DialogueLabel")
 
 	remove_import_plugin(import_plugin)
 	import_plugin = null
