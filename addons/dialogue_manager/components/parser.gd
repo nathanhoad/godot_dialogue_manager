@@ -459,7 +459,7 @@ func prepare(text: String, path: String, include_imported_titles_hashes: bool = 
 
 				# Import the file content
 				if not import_data.path.hash() in known_imports:
-					var error: Error = import_content(import_data.path, import_data.prefix, known_imports)
+					var error: Error = import_content(import_data.path, import_data.prefix, _imported_line_map, known_imports)
 					if error != OK:
 						errors.append({ line_number = id, column_number = 0, error = error })
 
@@ -837,21 +837,29 @@ func find_next_line_after_responses(line_number: int) -> String:
 
 
 ## Import content from another dialogue file or return an ERR
-func import_content(path: String, prefix: String, known_imports: Dictionary) -> Error:
+func import_content(path: String, prefix: String, imported_line_map: Array[Dictionary], known_imports: Dictionary) -> Error:
 	if FileAccess.file_exists(path):
 		var file = FileAccess.open(path, FileAccess.READ)
 		var content: PackedStringArray = file.get_as_text().split("\n")
 
 		var imported_titles: Dictionary = {}
 
-		for line in content:
+		for index in range(0, content.size()):
+			var line = content[index]
 			if is_import_line(line):
 				var import = extract_import_path_and_name(line)
 				if import.size() > 0:
+					# Make a map so we can refer compiled lines to where they were imported from
+					imported_line_map.append({
+						hash = import.path.hash(),
+						imported_on_line_number = index,
+						from_line = 0,
+						to_line = 0
+					})
 					if not known_imports.has(import.path.hash()):
 						# Add an empty record into the keys just so we don't end up with cyclic dependencies
 						known_imports[import.path.hash()] = ""
-						if import_content(import.path, import.prefix, known_imports) != OK:
+						if import_content(import.path, import.prefix, imported_line_map, known_imports) != OK:
 							return ERR_LINK_FAILED
 					imported_titles[import.prefix] = import.path.hash()
 
