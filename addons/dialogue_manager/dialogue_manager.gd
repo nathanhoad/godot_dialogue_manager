@@ -349,6 +349,7 @@ func create_dialogue_line(data: Dictionary, extra_game_states: Array) -> Dialogu
 		DialogueConstants.TYPE_DIALOGUE:
 			var resolved_data: ResolvedLineData = await get_resolved_line_data(data, extra_game_states)
 			return DialogueLine.new({
+				id = data.id,
 				type = DialogueConstants.TYPE_DIALOGUE,
 				next_id = data.next_id,
 				character = await get_resolved_character(data, extra_game_states),
@@ -366,6 +367,7 @@ func create_dialogue_line(data: Dictionary, extra_game_states: Array) -> Dialogu
 
 		DialogueConstants.TYPE_RESPONSE:
 			return DialogueLine.new({
+				id = data.id,
 				type = DialogueConstants.TYPE_RESPONSE,
 				next_id = data.next_id,
 				extra_game_states = extra_game_states
@@ -373,6 +375,7 @@ func create_dialogue_line(data: Dictionary, extra_game_states: Array) -> Dialogu
 
 		DialogueConstants.TYPE_MUTATION:
 			return DialogueLine.new({
+				id = data.id,
 				type = DialogueConstants.TYPE_MUTATION,
 				next_id = data.next_id,
 				mutation = data.mutation,
@@ -386,6 +389,7 @@ func create_dialogue_line(data: Dictionary, extra_game_states: Array) -> Dialogu
 func create_response(data: Dictionary, extra_game_states: Array) -> DialogueResponse:
 	var resolved_data: ResolvedLineData = await get_resolved_line_data(data, extra_game_states)
 	return DialogueResponse.new({
+		id = data.id,
 		type = DialogueConstants.TYPE_RESPONSE,
 		next_id = data.next_id,
 		is_allowed = await check_condition(data, extra_game_states),

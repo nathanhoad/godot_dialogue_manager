@@ -5,6 +5,9 @@ class_name DialogueLine extends RefCounted
 const _DialogueConstants = preload("res://addons/dialogue_manager/constants.gd")
 
 
+## The ID of this line
+var id: String
+
 ## The internal type of this dialogue object. One of [code]TYPE_DIALOGUE[/code] or [code]TYPE_MUTATION[/code]
 var type: String = _DialogueConstants.TYPE_DIALOGUE
 
@@ -53,6 +56,7 @@ var conditions: Dictionary = {}
 
 func _init(data: Dictionary = {}) -> void:
 	if data.size() > 0:
+		id = data.id
 		next_id = data.next_id
 		type = data.type
 		extra_game_states = data.extra_game_states
