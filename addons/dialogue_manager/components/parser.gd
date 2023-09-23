@@ -452,16 +452,16 @@ func prepare(text: String, path: String, include_imported_titles_hashes: bool = 
 
 				# Keep track of titles so we can add imported ones later
 				if str(import_data.path.hash()) in imported_titles.keys():
-					errors.append({ line_number = id, column_number = 0, error = DialogueConstants.ERR_FILE_ALREADY_IMPORTED })
+					add_error(id, 0, DialogueConstants.ERR_FILE_ALREADY_IMPORTED)
 				if import_data.prefix in imported_titles.values():
-					errors.append({ line_number = id, column_number = 0, error = DialogueConstants.ERR_DUPLICATE_IMPORT_NAME })
+					add_error(id, 0, DialogueConstants.ERR_DUPLICATE_IMPORT_NAME)
 				imported_titles[str(import_data.path.hash())] = import_data.prefix
 
 				# Import the file content
 				if not import_data.path.hash() in known_imports:
 					var error: Error = import_content(import_data.path, import_data.prefix, _imported_line_map, known_imports)
 					if error != OK:
-						errors.append({ line_number = id, column_number = 0, error = error })
+						add_error(id, 0, error)
 
 	var imported_content: String =  ""
 	var cummulative_line_number: int = 0
@@ -510,7 +510,9 @@ func add_error(line_number: int, column_number: int, error: int) -> void:
 			errors.append({
 				line_number = item.imported_on_line_number,
 				column_number = 0,
-				error = DialogueConstants.ERR_ERRORS_IN_IMPORTED_FILE
+				error = DialogueConstants.ERR_ERRORS_IN_IMPORTED_FILE,
+				external_error = error,
+				external_line_number = line_number
 			})
 			return
 
@@ -525,8 +527,11 @@ func add_error(line_number: int, column_number: int, error: int) -> void:
 func remove_error(line_number: int, error: int) -> void:
 	for i in range(errors.size() - 1, -1, -1):
 		var err = errors[i]
-		if err.line_number == line_number - _imported_line_count and err.error == error:
+		var is_native_error = err.line_number == line_number - _imported_line_count and err.error == error
+		var is_external_error = err.get("external_line_number") == line_number and err.get("external_error") == error
+		if is_native_error or is_external_error:
 			errors.remove_at(i)
+			return
 
 
 func is_import_line(line: String) -> bool:
@@ -906,7 +911,7 @@ func import_content(path: String, prefix: String, imported_line_map: Array[Dicti
 					content[i] = "%s=> %s/%s" % [line.split("=> ")[0], str(path.hash()), jump]
 
 		imported_paths.append(path)
-		known_imports[path.hash()] = "# %s as %s\n%s\n=> END\n" % [path, path.hash(), "\n".join(content)]
+		known_imports[path.hash()] = "\n".join(content) + "\n=> END\n"
 		return OK
 	else:
 		return ERR_FILE_NOT_FOUND
