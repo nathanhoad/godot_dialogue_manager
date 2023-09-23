@@ -80,8 +80,6 @@ var dialogue_line: DialogueLine:
 
 func _ready() -> void:
 	response_template.hide()
-#	hide()
-
 	Engine.get_singleton("DialogueManager").mutated.connect(_on_mutated)
 
 
