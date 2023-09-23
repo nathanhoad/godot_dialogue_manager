@@ -65,6 +65,7 @@ func _unhandled_input(event: InputEvent) -> void:
 func type_out() -> void:
 	text = dialogue_line.text
 	visible_characters = 0
+	visible_ratio = 0
 	self.is_typing = true
 	waiting_seconds = 0
 
