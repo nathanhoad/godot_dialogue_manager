@@ -40,7 +40,7 @@ public async Task AskForName()
 }
 ```
 
-And you would need to declar that `PlayerName` property like so (make sure to inclue the `[Export]` decorator or the Dialogue Manager won't be able to see it):
+And you would need to declare that `PlayerName` property like so (make sure to include the `[Export]` decorator or the Dialogue Manager won't be able to see it):
 
 ```csharp
 [Export]
