@@ -56,6 +56,14 @@ If you use the `DialogueLabel` node then you can also make use of the `[wait=N]`
 
 There is also a `[next]` code that you can use to signify that a line should be auto advanced. If given no arguments it will auto advance immediately after the text has typed out. If given something like `[next=0.5]` it will wait for 0.5s after typing has finished before moving to the next line. If given `[next=auto]` it will wait for an automatic amount of time based on the length of the line.
 
+### Tags
+
+If you need to annotate your lines with tags then you can wrap them in `[#` and `]`, separated by commas. So to specify "happy" and "surprised" tags for a line you would do something like:
+
+```
+Nathan: [#happy, #surprised] Oh, Hello!
+```
+
 ### Randomising lines of dialogue
 
 If you want to pick one from a few lines of dialogue you can mark the line with a `%` at the start like this:

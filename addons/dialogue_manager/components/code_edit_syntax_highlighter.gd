@@ -14,8 +14,8 @@ var regex_condition: RegEx = RegEx.create_from_string("^\\s*(if|elif|while|else 
 var regex_wcondition: RegEx = RegEx.create_from_string("\\[if (?<condition>((?:[^\\[\\]]*)|(?:\\[(?1)\\]))*?)\\]")
 var regex_wendif: RegEx = RegEx.create_from_string("\\[\\/(if)\\]")
 var regex_rgroup: RegEx = RegEx.create_from_string("\\[\\[(?<options>.*?)\\]\\]")
-var regex_endconditions: RegEx = RegEx.create_from_string("^\\s*(endif|else)\\s*$")
-var regex_tags: RegEx = RegEx.create_from_string("\\[(?<tag>(?!(?:ID:.*)|if)[a-zA-Z_][a-zA-Z0-9_]*)(?:[= ](?<val>[^\\[\\]]+))?\\](?:(?<text>(?!\\[\\/\\k<tag>\\]).*?)?(?<end>\\[\\/\\k<tag>\\]))?")
+var regex_endconditions: RegEx = RegEx.create_from_string("^\\s*(endif|else):?\\s*$")
+var regex_tags: RegEx = RegEx.create_from_string("\\[(?<tag>(?!(?:ID:.*)|if|)[a-zA-Z_][a-zA-Z0-9_]*)(?:[= ](?<val>[^\\[\\]]+))?\\](?:(?<text>(?!\\[\\/\\k<tag>\\]).*?)?(?<end>\\[\\/\\k<tag>\\]))?")
 var regex_dialogue: RegEx = RegEx.create_from_string("^\\s*(?:(?<random>\\%\\d* )|(?<response>- ))?(?:(?<character>[^#:]*): )?(?<dialogue>.*)$")
 var regex_goto: RegEx = RegEx.create_from_string("=><? (?:(?<file>[^\\/]+)\\/)?(?<title>[^\\/]*)")
 var regex_string: RegEx = RegEx.create_from_string("^(?<delimiter>[\"'])(?<content>(?:\\\\{2})*|(?:.*?[^\\\\](?:\\\\{2})*))\\1$")
@@ -112,6 +112,7 @@ func _get_line_syntax_highlighting(line: int) -> Dictionary:
 	var endcondition_matches: Array[RegExMatch] = regex_endconditions.search_all(text)
 	for endcondition_match in endcondition_matches:
 		colors[endcondition_match.get_start(1)] = {"color": text_edit.theme_overrides.conditions_color}
+		colors[endcondition_match.get_end(1)] = {"color": text_edit.theme_overrides.symbols_color}
 
 	# Mutations.
 	var mutation_matches: Array[RegExMatch] = regex_mutation.search_all(text)
@@ -134,6 +135,12 @@ func _get_line_syntax_highlighting(line: int) -> Dictionary:
 func _get_dialogue_syntax_highlighting(start_index: int, text: String) -> Dictionary:
 	var text_edit: TextEdit = get_text_edit()
 	var colors: Dictionary = {}
+
+	# #tag style tags
+	var hashtag_matches: Array[RegExMatch] = dialogue_manager_parser.TAGS_REGEX.search_all(text)
+	for hashtag_match in hashtag_matches:
+		colors[start_index + hashtag_match.get_start(0)] = { "color": text_edit.theme_overrides.comments_color }
+		colors[start_index + hashtag_match.get_end(0)] = { "color": text_edit.theme_overrides.text_color }
 
 	# Global tags, like bbcode.
 	var tag_matches: Array[RegExMatch] = regex_tags.search_all(text)
