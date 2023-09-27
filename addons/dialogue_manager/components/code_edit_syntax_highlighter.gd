@@ -15,7 +15,7 @@ var regex_wcondition: RegEx = RegEx.create_from_string("\\[if (?<condition>((?:[
 var regex_wendif: RegEx = RegEx.create_from_string("\\[\\/(if)\\]")
 var regex_rgroup: RegEx = RegEx.create_from_string("\\[\\[(?<options>.*?)\\]\\]")
 var regex_endconditions: RegEx = RegEx.create_from_string("^\\s*(endif|else):?\\s*$")
-var regex_tags: RegEx = RegEx.create_from_string("\\[(?<tag>(?!(?:ID:.*)|if|)[a-zA-Z_][a-zA-Z0-9_]*)(?:[= ](?<val>[^\\[\\]]+))?\\](?:(?<text>(?!\\[\\/\\k<tag>\\]).*?)?(?<end>\\[\\/\\k<tag>\\]))?")
+var regex_tags: RegEx = RegEx.create_from_string("\\[(?<tag>(?!(?:ID:.*)|if)[a-zA-Z_][a-zA-Z0-9_]*)(?:[= ](?<val>[^\\[\\]]+))?\\](?:(?<text>(?!\\[\\/\\k<tag>\\]).*?)?(?<end>\\[\\/\\k<tag>\\]))?")
 var regex_dialogue: RegEx = RegEx.create_from_string("^\\s*(?:(?<random>\\%\\d* )|(?<response>- ))?(?:(?<character>[^#:]*): )?(?<dialogue>.*)$")
 var regex_goto: RegEx = RegEx.create_from_string("=><? (?:(?<file>[^\\/]+)\\/)?(?<title>[^\\/]*)")
 var regex_string: RegEx = RegEx.create_from_string("^(?<delimiter>[\"'])(?<content>(?:\\\\{2})*|(?:.*?[^\\\\](?:\\\\{2})*))\\1$")
