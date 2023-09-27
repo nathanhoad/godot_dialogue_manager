@@ -59,7 +59,7 @@ var conditions: Dictionary = {}
 
 func _init(data: Dictionary = {}) -> void:
 	if data.size() > 0:
-		id = data.id
+		id = data.get("id", "")
 		next_id = data.next_id
 		type = data.type
 		extra_game_states = data.extra_game_states
