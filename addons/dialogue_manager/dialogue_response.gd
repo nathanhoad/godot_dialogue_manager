@@ -23,6 +23,9 @@ var text: String = ""
 ## A dictionary of variable replaces for the text. Generally for internal use only.
 var text_replacements: Array[Dictionary] = []
 
+## Any #tags
+var tags: PackedStringArray = []
+
 ## The key to use for translating the text.
 var translation_key: String = ""
 
@@ -35,6 +38,7 @@ func _init(data: Dictionary = {}) -> void:
 		is_allowed = data.is_allowed
 		text = data.text
 		text_replacements = data.text_replacements
+		tags = data.tags
 		translation_key = data.translation_key
 
 

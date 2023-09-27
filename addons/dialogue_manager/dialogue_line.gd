@@ -47,6 +47,9 @@ var extra_game_states: Array = []
 ## How long to show this line before advancing to the next. Either a float (of seconds), [code]"auto"[/code], or [code]null[/code].
 var time = null
 
+## Any #tags that were included in the line
+var tags: PackedStringArray = []
+
 ## The mutation details if this is a mutation line (where [code]type == TYPE_MUTATION[/code]).
 var mutation: Dictionary = {}
 
@@ -73,6 +76,7 @@ func _init(data: Dictionary = {}) -> void:
 				inline_mutations = data.inline_mutations
 				conditions = data.conditions
 				time = data.time
+				tags = data.tags
 
 			_DialogueConstants.TYPE_MUTATION:
 				mutation = data.mutation

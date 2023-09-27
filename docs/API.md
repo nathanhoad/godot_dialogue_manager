@@ -23,12 +23,14 @@ Returns a `DialogueLine` that looks something like this:
 - `next_id: String` - the ID of the next line of dialogue after this one.
 - `character: String` - the name of the character speaking (or `""`).
 - `text: String` - the text that the character is saying.
+- `tags: PackedStringArray` - a list of tags.
 - `translation_key: String` - the key used to translate the text (or the whole text again if no ID was specified on the line)
 - `responses: Array[DialogueResponse]` - the list of responses to this line (or `[]` if none are available).
   - `id: String` - the ID of the response.
   - `next_id: String` - the ID of the next line if this response is chosen.
   - `is_allowed: bool` - whether this line passed its condition check (useful if you have "include all responses" enabled)
   - `text: String` - the text for this response.
+  - `tags: PackedStringArray` - a list of tags.
   - `translation_key: String` - the key used to translate the text (or the whole text again if no ID was specified on the response)
 
 If there is no next line of dialogue found then it will return an empty dictionary (`{}`).

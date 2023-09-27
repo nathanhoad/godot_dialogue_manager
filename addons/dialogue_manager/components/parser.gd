@@ -11,6 +11,7 @@ var IMPORT_REGEX: RegEx = RegEx.create_from_string("import \"(?<path>[^\"]+)\" a
 var VALID_TITLE_REGEX: RegEx = RegEx.create_from_string("^[^\\!\\@\\#\\$\\%\\^\\&\\*\\(\\)\\-\\=\\+\\{\\}\\[\\]\\;\\:\\\"\\'\\,\\.\\<\\>\\?\\/\\s]+$")
 var BEGINS_WITH_NUMBER_REGEX: RegEx = RegEx.create_from_string("^\\d")
 var TRANSLATION_REGEX: RegEx = RegEx.create_from_string("\\[ID:(?<tr>.*?)\\]")
+var TAGS_REGEX: RegEx = RegEx.create_from_string("\\[#(?<tags>.*?)\\]")
 var MUTATION_REGEX: RegEx = RegEx.create_from_string("(do|set) (?<mutation>.*)")
 var CONDITION_REGEX: RegEx = RegEx.create_from_string("(if|elif|while|else if) (?<condition>.*)")
 var WRAPPED_CONDITION_REGEX: RegEx = RegEx.create_from_string("\\[if (?<condition>.*)\\]")
@@ -126,6 +127,12 @@ func parse(text: String, path: String) -> Error:
 		if is_response_line(raw_line):
 			parent_stack.append(str(id))
 			line["type"] = DialogueConstants.TYPE_RESPONSE
+
+			# Extract any #tags
+			var tag_data: ResolvedTagData = extract_tags(raw_line)
+			line["tags"] = tag_data.tags
+			raw_line = tag_data.line_without_tags
+
 			if " [if " in raw_line:
 				line["condition"] = extract_condition(raw_line, true, indent_size)
 			if " =>" in raw_line:
@@ -183,6 +190,7 @@ func parse(text: String, path: String) -> Error:
 					next_id = line.next_id,
 					next_id_after = line.next_id_after,
 					text_replacements = line.text_replacements,
+					tags = line.tags,
 					translation_key = line.get("translation_key")
 				}
 
@@ -296,6 +304,12 @@ func parse(text: String, path: String) -> Error:
 				raw_line = WEIGHTED_RANDOM_SIBLINGS_REGEX.sub(raw_line, "")
 
 			line["type"] = DialogueConstants.TYPE_DIALOGUE
+
+			# Extract any tags before we process the line
+			var tag_data: ResolvedTagData = extract_tags(raw_line)
+			line["tags"] = tag_data.tags
+			raw_line = tag_data.line_without_tags
+
 			var l = raw_line.replace("\\:", "!ESCAPED_COLON!")
 			if ": " in l:
 				var bits = Array(l.strip_edges().split(": "))
@@ -1074,6 +1088,23 @@ func extract_goto(line: String) -> String:
 		return titles.get(title)
 	else:
 		return DialogueConstants.ID_ERROR
+
+
+func extract_tags(line: String) -> ResolvedTagData:
+	var resolved_tags: PackedStringArray = []
+	var tag_matches: Array[RegExMatch] = TAGS_REGEX.search_all(line)
+	for tag_match in tag_matches:
+		line = line.replace(tag_match.get_string(), "")
+		var tags = tag_match.get_string().replace("[#", "").replace("]", "").replace(" ", "").split(",")
+		for tag in tags:
+			tag = tag.replace("#", "")
+			if not tag in resolved_tags:
+				resolved_tags.append(tag)
+
+	return ResolvedTagData.new({
+		tags = resolved_tags,
+		line_without_tags = line
+	})
 
 
 func extract_markers(line: String) -> ResolvedLineData:

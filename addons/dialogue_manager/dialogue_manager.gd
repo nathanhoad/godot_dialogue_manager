@@ -366,6 +366,7 @@ func create_dialogue_line(data: Dictionary, extra_game_states: Array) -> Dialogu
 				inline_mutations = resolved_data.mutations,
 				conditions = resolved_data.conditions,
 				time = resolved_data.time,
+				tags = data.tags,
 				extra_game_states = extra_game_states
 			})
 
@@ -374,6 +375,7 @@ func create_dialogue_line(data: Dictionary, extra_game_states: Array) -> Dialogu
 				id = data.id,
 				type = DialogueConstants.TYPE_RESPONSE,
 				next_id = data.next_id,
+				tags = data.tags,
 				extra_game_states = extra_game_states
 			})
 
@@ -399,6 +401,7 @@ func create_response(data: Dictionary, extra_game_states: Array) -> DialogueResp
 		is_allowed = await check_condition(data, extra_game_states),
 		text = resolved_data.text,
 		text_replacements = data.text_replacements,
+		tags = data.tags,
 		translation_key = data.translation_key
 	})
 
