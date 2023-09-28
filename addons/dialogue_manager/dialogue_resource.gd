@@ -4,7 +4,7 @@
 class_name DialogueResource extends Resource
 
 
-const _DialogueManager = preload("res://addons/dialogue_manager/dialogue_manager.gd")
+const _DialogueManager = preload("./dialogue_manager.gd")
 
 
 ## A map of titles and the lines they point to.

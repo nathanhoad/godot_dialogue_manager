@@ -6,7 +6,7 @@ signal failed()
 signal updated(updated_to_version: String)
 
 
-const DialogueConstants = preload("res://addons/dialogue_manager/constants.gd")
+const DialogueConstants = preload("../constants.gd")
 
 const TEMP_FILE_NAME = "user://temp.zip"
 

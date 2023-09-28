@@ -2,7 +2,7 @@
 extends Node
 
 
-const DialogueConstants = preload("res://addons/dialogue_manager/constants.gd")
+const DialogueConstants = preload("../constants.gd")
 
 
 ### Editor config
@@ -15,7 +15,7 @@ const DEFAULT_SETTINGS = {
 	new_with_template = true,
 	include_all_responses = false,
 	ignore_missing_state_values = false,
-	custom_test_scene_path = "res://addons/dialogue_manager/test_scene.tscn",
+	custom_test_scene_path = preload("../test_scene.tscn").resource_path,
 	default_csv_locale = "en"
 }
 

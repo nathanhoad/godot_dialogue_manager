@@ -7,7 +7,7 @@ signal error_clicked(line_number: int)
 signal external_file_requested(path: String, title: String)
 
 
-const DialogueSyntaxHighlighter = preload("res://addons/dialogue_manager/components/code_edit_syntax_highlighter.gd")
+const DialogueSyntaxHighlighter = preload("./code_edit_syntax_highlighter.gd")
 
 
 # A link back to the owner MainView

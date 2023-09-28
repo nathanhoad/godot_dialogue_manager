@@ -8,10 +8,10 @@ signal dialogue_ended(resource)
 signal bridge_get_next_dialogue_line_completed(line)
 
 
-const DialogueConstants = preload("res://addons/dialogue_manager/constants.gd")
-const DialogueSettings = preload("res://addons/dialogue_manager/components/settings.gd")
-const DialogueLine = preload("res://addons/dialogue_manager/dialogue_line.gd")
-const DialogueResponse = preload("res://addons/dialogue_manager/dialogue_response.gd")
+const DialogueConstants = preload("./constants.gd")
+const DialogueSettings = preload("./components/settings.gd")
+const DialogueLine = preload("./dialogue_line.gd")
+const DialogueResponse = preload("./dialogue_response.gd")
 
 
 enum MutationBehaviour {

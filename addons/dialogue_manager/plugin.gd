@@ -2,12 +2,12 @@
 extends EditorPlugin
 
 
-const DialogueConstants = preload("res://addons/dialogue_manager/constants.gd")
-const DialogueImportPlugin = preload("res://addons/dialogue_manager/import_plugin.gd")
-const DialogueTranslationParserPlugin = preload("res://addons/dialogue_manager/editor_translation_parser_plugin.gd")
-const DialogueSettings = preload("res://addons/dialogue_manager/components/settings.gd")
-const DialogueCache = preload("res://addons/dialogue_manager/components/dialogue_cache.gd")
-const MainView = preload("res://addons/dialogue_manager/views/main_view.tscn")
+const DialogueConstants = preload("./constants.gd")
+const DialogueImportPlugin = preload("./import_plugin.gd")
+const DialogueTranslationParserPlugin = preload("./editor_translation_parser_plugin.gd")
+const DialogueSettings = preload("./components/settings.gd")
+const DialogueCache = preload("./components/dialogue_cache.gd")
+const MainView = preload("./views/main_view.tscn")
 
 
 var import_plugin: DialogueImportPlugin
@@ -20,7 +20,7 @@ var _recompile_paths: PackedStringArray
 
 
 func _enter_tree() -> void:
-	add_autoload_singleton("DialogueManager", "res://addons/dialogue_manager/dialogue_manager.gd")
+	add_autoload_singleton("DialogueManager", "./dialogue_manager.gd")
 
 	if Engine.is_editor_hint():
 		DialogueSettings.prepare()
@@ -81,7 +81,7 @@ func _get_plugin_name() -> String:
 
 
 func _get_plugin_icon() -> Texture2D:
-	return load("res://addons/dialogue_manager/assets/icon.svg")
+	return load(get_script().resource_path.get_base_dir() + "/assets/icon.svg")
 
 
 func _handles(object) -> bool:
@@ -112,6 +112,18 @@ func _build() -> bool:
 		return false
 
 	return true
+
+
+## Get the current version
+func get_version() -> String:
+	var config: ConfigFile = ConfigFile.new()
+	config.load(get_plugin_path() + "/plugin.cfg")
+	return config.get_value("plugin", "version")
+
+
+## Get the current path of the plugin
+func get_plugin_path() -> String:
+	return get_script().resource_path.get_base_dir()
 
 
 ## Keep track of known files and their dependencies
@@ -197,19 +209,19 @@ func _copy_dialogue_balloon() -> void:
 	directory_dialog.file_mode = FileDialog.FILE_MODE_OPEN_DIR
 	directory_dialog.min_size = Vector2(600, 500) * scale
 	directory_dialog.dir_selected.connect(func(path):
-		var file: FileAccess = FileAccess.open("res://addons/dialogue_manager/example_balloon/example_balloon.tscn", FileAccess.READ)
-		var file_contents: String = file.get_as_text().replace("res://addons/dialogue_manager/example_balloon/example_balloon.gd", path + "/balloon.gd")
+		var file: FileAccess = FileAccess.open("./example_balloon/example_balloon.tscn", FileAccess.READ)
+		var file_contents: String = file.get_as_text().replace("./example_balloon/example_balloon.gd", path + "/balloon.gd")
 		file = FileAccess.open(path + "/balloon.tscn", FileAccess.WRITE)
 		file.store_string(file_contents)
 		file.close()
 
-		file = FileAccess.open("res://addons/dialogue_manager/example_balloon/small_example_balloon.tscn", FileAccess.READ)
-		file_contents = file.get_as_text().replace("res://addons/dialogue_manager/example_balloon/example_balloon.gd", path + "/balloon.gd")
+		file = FileAccess.open("./example_balloon/small_example_balloon.tscn", FileAccess.READ)
+		file_contents = file.get_as_text().replace("./example_balloon/example_balloon.gd", path + "/balloon.gd")
 		file = FileAccess.open(path + "/small_balloon.tscn", FileAccess.WRITE)
 		file.store_string(file_contents)
 		file.close()
 
-		file = FileAccess.open("res://addons/dialogue_manager/example_balloon/example_balloon.gd", FileAccess.READ)
+		file = FileAccess.open("./example_balloon/example_balloon.gd", FileAccess.READ)
 		file_contents = file.get_as_text()
 		file = FileAccess.open(path + "/balloon.gd", FileAccess.WRITE)
 		file.store_string(file_contents)

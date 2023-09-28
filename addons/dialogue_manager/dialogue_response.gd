@@ -2,7 +2,7 @@
 class_name DialogueResponse extends RefCounted
 
 
-const _DialogueConstants = preload("res://addons/dialogue_manager/constants.gd")
+const _DialogueConstants = preload("./constants.gd")
 
 
 ## The ID of this response

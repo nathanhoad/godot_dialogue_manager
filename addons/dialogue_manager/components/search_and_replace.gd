@@ -6,7 +6,7 @@ signal open_requested()
 signal close_requested()
 
 
-const DialogueConstants = preload("res://addons/dialogue_manager/constants.gd")
+const DialogueConstants = preload("../constants.gd")
 
 
 @onready var input: LineEdit = $Search/Input

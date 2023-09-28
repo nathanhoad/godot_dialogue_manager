@@ -5,7 +5,7 @@ extends HBoxContainer
 signal error_pressed(line_number)
 
 
-const DialogueConstants = preload("res://addons/dialogue_manager/constants.gd")
+const DialogueConstants = preload("../constants.gd")
 
 
 @onready var error_button: Button = $ErrorButton
