@@ -51,13 +51,16 @@ Coco: This is the first line.\nThis line would show up below it in the same ball
 _Note: When using indented line breaks and [line IDs for translations](./Translations.md) you can only specify a line ID on the first (unindented) line of each group._
 
 ### Escaping characters
-Escaping characters in dialogue can be done by using a backslash. This is relevant if your dialogue includes characters utilized in the syntax of the dialogue system, such as the colon (":"). 
 
-To display a colon in your dialogue, use a backslash ("\") before it.
+Escaping characters in dialogue can be done by using a backslash. This is relevant if your dialogue includes characters utilized in the syntax of the dialogue system, such as the colon (":").
+
+To display a colon in your dialogue, use a backslash ("\\") before it.
 
 ```dialogue
-Character : This is how\: you escape a colon.  
+Character : This is how\: you escape a colon.
 ```
+
+### Markup
 
 Dialogue lines can also contain **bb_code** for RichTextEffects (if you end up using a `RichTextLabel` or the `DialogueLabel` provided by this addon).
 
