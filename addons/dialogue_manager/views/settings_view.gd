@@ -5,11 +5,8 @@ extends TabContainer
 signal script_button_pressed(path: String)
 
 
-const DialogueConstants = preload("res://addons/dialogue_manager/constants.gd")
-const DialogueSettings = preload("res://addons/dialogue_manager/components/settings.gd")
-
-
-const DEFAULT_TEST_SCENE_PATH = "res://addons/dialogue_manager/test_scene.tscn"
+const DialogueConstants = preload("../constants.gd")
+const DialogueSettings = preload("../components/settings.gd")
 
 
 # Editor
@@ -32,6 +29,7 @@ const DEFAULT_TEST_SCENE_PATH = "res://addons/dialogue_manager/test_scene.tscn"
 var editor_plugin: EditorPlugin
 var all_globals: Dictionary = {}
 var enabled_globals: Array = []
+var _default_test_scene_path: String = preload("../test_scene.tscn").resource_path
 
 
 func _ready() -> void:
@@ -51,8 +49,8 @@ func _ready() -> void:
 
 
 func prepare() -> void:
-	test_scene_path_input.placeholder_text = DialogueSettings.get_setting("custom_test_scene_path", DEFAULT_TEST_SCENE_PATH)
-	revert_test_scene_button.visible = test_scene_path_input.placeholder_text != DEFAULT_TEST_SCENE_PATH
+	test_scene_path_input.placeholder_text = DialogueSettings.get_setting("custom_test_scene_path", _default_test_scene_path)
+	revert_test_scene_button.visible = test_scene_path_input.placeholder_text != _default_test_scene_path
 	revert_test_scene_button.icon = get_theme_icon("RotateLeft", "EditorIcons")
 	revert_test_scene_button.tooltip_text = DialogueConstants.translate("settings.revert_to_default_test_scene")
 	load_test_scene_button.icon = get_theme_icon("Load", "EditorIcons")
@@ -146,9 +144,9 @@ func _on_sample_template_toggled(button_pressed):
 
 
 func _on_revert_test_scene_pressed() -> void:
-	DialogueSettings.set_setting("custom_test_scene_path", DEFAULT_TEST_SCENE_PATH)
-	test_scene_path_input.placeholder_text = DEFAULT_TEST_SCENE_PATH
-	revert_test_scene_button.visible = test_scene_path_input.placeholder_text != DEFAULT_TEST_SCENE_PATH
+	DialogueSettings.set_setting("custom_test_scene_path", _default_test_scene_path)
+	test_scene_path_input.placeholder_text = _default_test_scene_path
+	revert_test_scene_button.visible = test_scene_path_input.placeholder_text != _default_test_scene_path
 
 
 func _on_load_test_scene_pressed() -> void:
@@ -158,7 +156,7 @@ func _on_load_test_scene_pressed() -> void:
 func _on_custom_test_scene_file_dialog_file_selected(path: String) -> void:
 	DialogueSettings.set_setting("custom_test_scene_path", path)
 	test_scene_path_input.placeholder_text = path
-	revert_test_scene_button.visible = test_scene_path_input.placeholder_text != DEFAULT_TEST_SCENE_PATH
+	revert_test_scene_button.visible = test_scene_path_input.placeholder_text != _default_test_scene_path
 
 
 func _on_ignore_missing_state_values_toggled(button_pressed: bool) -> void:

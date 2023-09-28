@@ -1,8 +1,8 @@
 extends Node
 
 
-const DialogueConstants = preload("res://addons/dialogue_manager/constants.gd")
-const DialogueSettings = preload("res://addons/dialogue_manager/components/settings.gd")
+const DialogueConstants = preload("../constants.gd")
+const DialogueSettings = preload("./settings.gd")
 
 
 # Keeps track of errors and dependencies.

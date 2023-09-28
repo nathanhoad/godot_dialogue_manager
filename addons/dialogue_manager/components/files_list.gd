@@ -7,7 +7,7 @@ signal file_popup_menu_requested(at_position: Vector2)
 signal file_double_clicked(file_path: String)
 
 
-const DialogueConstants = preload("res://addons/dialogue_manager/constants.gd")
+const DialogueConstants = preload("../constants.gd")
 
 const MODIFIED_SUFFIX = "(*)"
 

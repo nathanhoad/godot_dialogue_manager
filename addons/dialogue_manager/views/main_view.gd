@@ -2,8 +2,8 @@
 extends Control
 
 
-const DialogueConstants = preload("res://addons/dialogue_manager/constants.gd")
-const DialogueSettings = preload("res://addons/dialogue_manager/components/settings.gd")
+const DialogueConstants = preload("../constants.gd")
+const DialogueSettings = preload("../components/settings.gd")
 
 const OPEN_OPEN = 100
 const OPEN_CLEAR = 101
@@ -122,7 +122,7 @@ func _ready() -> void:
 	self.current_file_path = ""
 
 	# Set up the update checker
-	version_label.text = "v%s" % update_button.get_version()
+	version_label.text = "v%s" % editor_plugin.get_version()
 	update_button.editor_plugin = editor_plugin
 	update_button.on_before_refresh = func on_before_refresh():
 		# Save everything

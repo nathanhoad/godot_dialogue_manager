@@ -4,7 +4,7 @@ extends VBoxContainer
 signal title_selected(title: String)
 
 
-const DialogueConstants = preload("res://addons/dialogue_manager/constants.gd")
+const DialogueConstants = preload("../constants.gd")
 
 
 @onready var filter_edit: LineEdit = $FilterEdit
@@ -27,7 +27,7 @@ var filter: String:
 
 func _ready() -> void:
 	apply_theme()
-	
+
 	filter_edit.placeholder_text = DialogueConstants.translate("titles_list.filter")
 
 
