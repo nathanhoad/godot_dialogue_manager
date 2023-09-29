@@ -209,19 +209,21 @@ func _copy_dialogue_balloon() -> void:
 	directory_dialog.file_mode = FileDialog.FILE_MODE_OPEN_DIR
 	directory_dialog.min_size = Vector2(600, 500) * scale
 	directory_dialog.dir_selected.connect(func(path):
-		var file: FileAccess = FileAccess.open("./example_balloon/example_balloon.tscn", FileAccess.READ)
-		var file_contents: String = file.get_as_text().replace("./example_balloon/example_balloon.gd", path + "/balloon.gd")
+		var plugin_path: String = get_plugin_path()
+
+		var file: FileAccess = FileAccess.open(plugin_path + "/example_balloon/example_balloon.tscn", FileAccess.READ)
+		var file_contents: String = file.get_as_text().replace(plugin_path + "/example_balloon/example_balloon.gd", path + "/balloon.gd")
 		file = FileAccess.open(path + "/balloon.tscn", FileAccess.WRITE)
 		file.store_string(file_contents)
 		file.close()
 
-		file = FileAccess.open("./example_balloon/small_example_balloon.tscn", FileAccess.READ)
-		file_contents = file.get_as_text().replace("./example_balloon/example_balloon.gd", path + "/balloon.gd")
+		file = FileAccess.open(plugin_path + "/example_balloon/small_example_balloon.tscn", FileAccess.READ)
+		file_contents = file.get_as_text().replace(plugin_path + "/example_balloon/example_balloon.gd", path + "/balloon.gd")
 		file = FileAccess.open(path + "/small_balloon.tscn", FileAccess.WRITE)
 		file.store_string(file_contents)
 		file.close()
 
-		file = FileAccess.open("./example_balloon/example_balloon.gd", FileAccess.READ)
+		file = FileAccess.open(plugin_path + "/example_balloon/example_balloon.gd", FileAccess.READ)
 		file_contents = file.get_as_text()
 		file = FileAccess.open(path + "/balloon.gd", FileAccess.WRITE)
 		file.store_string(file_contents)

@@ -8,9 +8,9 @@ If you run into something that you think might be a bug then you can [open an is
 
 ## How can I support this project?
 
-There are a few ways you can support the development of Dialogue Manager. You can [become a patron on Patreon](https://patreon.com/nathanhoad), [buy me a coffee on Ko-fi](https://ko-fi.com/nathanhoad), or [become a GitHub sponsor](https://github.com/sponsors/nathanhoad).
+There are a few ways you can support the development of Dialogue Manager. You can [become a patron on Patreon](https://patreon.com/nathanhoad) or [sponser me on GitHub](https://github.com/sponsors/nathanhoad).
 
-If you're not in a position to do any of those things then you can just [give me a sub or like on YouTube](https://youtube.com/@nathan_hoad).
+If you're not in a position to do either of those things then you can just [give me a sub or like on YouTube](https://youtube.com/@nathan_hoad).
 
 ## How do I stop my player from moving while dialogue is showing?
 
@@ -22,7 +22,9 @@ For more of a guide then check out the code for my [beginner dialogue example pr
 
 There is a **Project > Tools** menu option to create a copy of the example balloon into somewhere in your project (never edit the original example balloon directly because any changes you make will be overwritten when updating the addon).
 
-From there it becomes an exercise in UI building using mostly Godot's UI control nodes (with the exception of the provided `DialogueLabel` node). I recommend digging through the initial code to familiarise yourself with how it works before changing anything.
+From there it becomes an exercise in UI building using mostly Godot's UI control nodes (with the exception of the provided `DialogueLabel` and `DialogueResponsesMenu` nodes). I recommend digging through the initial code to familiarise yourself with how it works before changing anything.
+
+The most common changes will be to the `theme` that is attached to the `Balloon` panel.
 
 ## How do I credit Dialogue Manager in my game?
 
