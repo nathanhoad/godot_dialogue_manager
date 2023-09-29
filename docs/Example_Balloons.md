@@ -1,10 +1,8 @@
 # Example Balloons
 
-It's up to you to implement the actual dialogue rendering and input control but there are a few example balloons included to get you started.
+It's up to you to implement the actual dialogue rendering and input control but there are a few example balloons included in the repository to get you started.
 
 You can find them in the [/examples](../examples) directory. If you want to try out these examples yourself, you'll need to clone the repository, not just download it.
-
-_**NOTE**: The first time you open this project in Godot 4 you'll need to save and then restart Godot (possibly twice) in order to try out the examples. There appears to be an issue with Godot when it initially creates the `.godot` cache folder._
 
 Example scenes include:
 
@@ -21,6 +19,8 @@ If you want to run the Point n Click example in German then you will need to ope
 ## Copying the example balloon
 
 There is a "Create copy of example dialogue balloon..." item in the _Project > Tools_ menu. When you click it you will be prompted to choose a directory to save the copied files into. From there, you can edit the new balloon to make it your own.
+
+The most common thing you might want to do is adjust the font and margin sizes and the simplest way to do that is to edit the `theme` that is attached to the `Balloon` panel in your new copy of the example balloon.
 
 ## My balloon
 

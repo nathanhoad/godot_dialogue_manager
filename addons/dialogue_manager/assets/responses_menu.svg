@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   width="16"
+   height="16"
+   viewBox="0 0 4.2333333 4.2333335"
+   version="1.1"
+   id="svg291"
+   inkscape:version="1.3 (0e150ed6c4, 2023-07-21)"
+   sodipodi:docname="responses_menu.svg"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <sodipodi:namedview
+     id="namedview293"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageshadow="2"
+     inkscape:pageopacity="0.0"
+     inkscape:pagecheckerboard="0"
+     inkscape:document-units="px"
+     showgrid="false"
+     width="1920px"
+     units="px"
+     borderlayer="true"
+     inkscape:showpageshadow="false"
+     inkscape:deskcolor="#d1d1d1"
+     inkscape:zoom="45.254834"
+     inkscape:cx="7.8334173"
+     inkscape:cy="6.5959804"
+     inkscape:window-width="2560"
+     inkscape:window-height="1377"
+     inkscape:window-x="-8"
+     inkscape:window-y="-8"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="layer1" />
+  <defs
+     id="defs288" />
+  <g
+     inkscape:label="Layer 1"
+     inkscape:groupmode="layer"
+     id="layer1">
+    <path
+       id="rect181"
+       style="fill:#e0e0e0;fill-opacity:1;stroke:none;stroke-width:1.77487;stroke-linecap:round;stroke-linejoin:round;paint-order:stroke markers fill"
+       d="M 1.5875 0.26458334 L 1.5875 0.79375001 L 4.2333334 0.79375001 L 4.2333334 0.26458334 L 1.5875 0.26458334 z M 0 0.83147381 L 0 2.4189738 L 1.3229167 1.6252238 L 0 0.83147381 z M 1.5875 1.3229167 L 1.5875 1.8520834 L 4.2333334 1.8520834 L 4.2333334 1.3229167 L 1.5875 1.3229167 z M 1.5875 2.38125 L 1.5875 2.9104167 L 4.2333334 2.9104167 L 4.2333334 2.38125 L 1.5875 2.38125 z M 1.5875 3.4395834 L 1.5875 3.9687501 L 4.2333334 3.9687501 L 4.2333334 3.4395834 L 1.5875 3.4395834 z "
+       fill="#E0E0E0" />
+  </g>
+</svg>
