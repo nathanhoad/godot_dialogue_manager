@@ -20,7 +20,7 @@ var _recompile_paths: PackedStringArray
 
 
 func _enter_tree() -> void:
-	add_autoload_singleton("DialogueManager", "./dialogue_manager.gd")
+	add_autoload_singleton("DialogueManager", "dialogue_manager.gd")
 
 	if Engine.is_editor_hint():
 		DialogueSettings.prepare()

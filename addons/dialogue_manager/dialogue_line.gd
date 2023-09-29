@@ -76,7 +76,7 @@ func _init(data: Dictionary = {}) -> void:
 				inline_mutations = data.inline_mutations
 				conditions = data.conditions
 				time = data.time
-				tags = data.tags
+				tags = data.get("tags", [])
 
 			_DialogueConstants.TYPE_MUTATION:
 				mutation = data.mutation

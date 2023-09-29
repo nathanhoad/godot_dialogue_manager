@@ -38,7 +38,7 @@ func _init(data: Dictionary = {}) -> void:
 		is_allowed = data.is_allowed
 		text = data.text
 		text_replacements = data.text_replacements
-		tags = data.tags
+		tags = data.get("tags", [])
 		translation_key = data.translation_key
 
 
