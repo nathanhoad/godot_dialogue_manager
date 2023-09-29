@@ -14,6 +14,7 @@ const MODIFIED_SUFFIX = "(*)"
 
 @onready var filter_edit: LineEdit = $FilterEdit
 @onready var list: ItemList = $List
+@onready var icon := load("res://addons/dialogue_manager/assets/icon.svg")
 
 var file_map: Dictionary = {}
 
@@ -96,7 +97,8 @@ func apply_filter() -> void:
 			var nice_file = file_map[file]
 			if file in unsaved_files:
 				nice_file += MODIFIED_SUFFIX
-			list.add_item(nice_file)
+			var new_id := list.add_item(nice_file)
+			list.set_item_icon(new_id, icon)
 
 	select_file(current_file_path)
 
