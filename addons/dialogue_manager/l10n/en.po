@@ -274,7 +274,7 @@ msgid "errors.condition_has_no_content"
 msgstr "A condition line needs an indented line below it."
 
 msgid "errors.incomplete_expression"
-msgstr "Incomplate expression."
+msgstr "Incomplete expression."
 
 msgid "errors.invalid_expression_for_value"
 msgstr "Invalid expression for value."
