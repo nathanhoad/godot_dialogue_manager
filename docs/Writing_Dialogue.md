@@ -251,7 +251,7 @@ If any are found they will be highlighted and must be fixed before you can run y
 
 For dialogue that doesn't rely too heavily on game state conditions you can do a quick test of it by clicking the "Run the test scene" button in the main toolbar.
 
-This will boot up a test scene and run the currently active node. Use `ui_up`, `ui_down`, and `ui_accept` to navigate the dialogue and responses.
+This will boot up a test scene and run from the nearest title marker above the cursor position. Use your mouse and/or `ui_up`, `ui_down`, and `ui_accept` to navigate the dialogue and responses.
 
 Once the conversation is over the scene will close.
 
@@ -259,7 +259,7 @@ Once the conversation is over the scene will close.
 
 You can override which scene is run when clicking the test button in settings.
 
-Your custom test scene must extend `BaseDialogueTestScene` which will provide you with a `resource` property which is the `DialogueResource` currently open and a `title` property which is the nearest title to the cursor position.
+Your custom test scene must extend `BaseDialogueTestScene` which will provide you with a `resource` property (which is the `DialogueResource` currently open) and the `title` to start from.
 
 The simplest example custom test scene is something like this (which is pretty much the same as the actual test scene):
 

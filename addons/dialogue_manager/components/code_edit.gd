@@ -224,10 +224,10 @@ func check_active_title() -> void:
 	# Look at each line above this one to find the next title line
 	for i in range(line_number, -1, -1):
 		if lines[i].begins_with("~ "):
-			emit_signal("active_title_change", lines[i].replace("~ ", ""))
+			active_title_change.emit(lines[i].replace("~ ", ""))
 			return
 
-	emit_signal("active_title_change", "0")
+	active_title_change.emit("")
 
 
 # Move the caret line to match a given title
@@ -309,7 +309,7 @@ func toggle_comment() -> void:
 			set_line(line, line_text.substr(comment_delimiter.length()) if is_line_commented else comment_delimiter + line_text)
 			caret_offsets[line] += (-1 if is_line_commented else 1) * comment_delimiter.length()
 
-		emit_signal("lines_edited_from", from, to)
+		lines_edited_from.emit(from, to)
 
 	# Readjust carets and selection positions after all carets effect have been calculated
 	# Tried making it in the above loop, but that causes a weird behaviour if two carets are on the same line (first caret will move, but not the second one)
@@ -323,8 +323,8 @@ func toggle_comment() -> void:
 
 	end_complex_operation()
 
-	emit_signal("text_set")
-	emit_signal("text_changed")
+	text_set.emit()
+	text_changed.emit()
 
 
 # Move the selected lines up or down
@@ -359,7 +359,7 @@ func move_line(offset: int) -> void:
 	if reselect:
 		select(from, 0, to, get_line_width(to))
 	set_cursor(cursor)
-	emit_signal("text_changed")
+	text_changed.emit()
 
 
 ### Signals
@@ -379,7 +379,7 @@ func _on_code_edit_symbol_validate(symbol: String) -> void:
 
 func _on_code_edit_symbol_lookup(symbol: String, line: int, column: int) -> void:
 	if symbol.begins_with("res://") and symbol.ends_with(".dialogue"):
-		emit_signal("external_file_requested", symbol, "")
+		external_file_requested.emit(symbol, "")
 	else:
 		go_to_title(symbol)
 
@@ -400,4 +400,4 @@ func _on_code_edit_caret_changed() -> void:
 func _on_code_edit_gutter_clicked(line: int, gutter: int) -> void:
 	var line_errors = errors.filter(func(error): return error.line_number == line)
 	if line_errors.size() > 0:
-		emit_signal("error_clicked", line)
+		error_clicked.emit(line)
