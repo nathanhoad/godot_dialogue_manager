@@ -6,7 +6,7 @@
 - `Treat missing translations as errors` can be enabled if you are using static translation keys and are adding them manually (there is an automatic static key button but you might be writing specific keys).
 - `Export character names in translation files` can be enabled to include character names when using translations.
 - `Wrap long lines` turns on word wrapping.
-- `Custom Test Scene` can be used to override the default test scene that gets run when you click "Test Scene" in the dialogue editor.
+- `Custom Test Scene` can be used to override the default test scene that gets run when you click the "Test dialogue" button in the dialogue editor.
 - `Default CSV locale` can be modified to set the default locale heading when generating CSVs for translation.
 
 ## Runtime
