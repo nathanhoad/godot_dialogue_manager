@@ -12,9 +12,10 @@ const DialogueConstants = preload("../constants.gd")
 const MODIFIED_SUFFIX = "(*)"
 
 
+@export var icon: Texture2D
+
 @onready var filter_edit: LineEdit = $FilterEdit
 @onready var list: ItemList = $List
-@onready var icon := load("res://addons/dialogue_manager/assets/icon.svg")
 
 var file_map: Dictionary = {}
 
