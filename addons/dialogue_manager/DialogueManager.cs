@@ -1,7 +1,11 @@
 using Godot;
 using Godot.Collections;
+using System;
+using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
+
+#nullable enable
 
 namespace DialogueManagerRuntime
 {
@@ -58,22 +62,32 @@ namespace DialogueManagerRuntime
 
     public bool ThingHasMethod(GodotObject thing, string method)
     {
-      MethodInfo info = thing.GetType().GetMethod(method, BindingFlags.Instance | BindingFlags.Public | BindingFlags.DeclaredOnly);
+      MethodInfo? info = thing.GetType().GetMethod(method, BindingFlags.Instance | BindingFlags.Public | BindingFlags.DeclaredOnly);
       return info != null;
     }
 
-
+#nullable disable
     public async void ResolveThingMethod(GodotObject thing, string method, Array<Variant> args)
     {
+      MethodInfo? info = thing.GetType().GetMethod(method, BindingFlags.Instance | BindingFlags.Public | BindingFlags.DeclaredOnly);
+
+      if (info == null) return;
+
       // Convert the method args to something reflection can handle
-      object[] _args = new object[args.Count];
-      for (int i = 0; i < args.Count; i++)
+      ParameterInfo[] argTypes = info.GetParameters();
+      object[] _args = new object[argTypes.Length];
+      for (int i = 0; i < argTypes.Length; i++)
       {
-        _args[i] = args[i];
+        if (i < args.Count && args[i].Obj != null)
+        {
+          _args[i] = Convert.ChangeType(args[i].Obj, argTypes[i].ParameterType);
+        }
+        else if (argTypes[i].DefaultValue != null)
+        {
+          _args[i] = argTypes[i].DefaultValue;
+        }
       }
 
-      // Call the method
-      MethodInfo info = thing.GetType().GetMethod(method, BindingFlags.Instance | BindingFlags.Public | BindingFlags.DeclaredOnly);
       if (info.ReturnType == typeof(Task))
       {
         await (Task)info.Invoke(thing, _args);
@@ -86,6 +100,7 @@ namespace DialogueManagerRuntime
       }
     }
   }
+#nullable enable
 
 
   public partial class DialogueLine : RefCounted
@@ -140,7 +155,7 @@ namespace DialogueManagerRuntime
     private Dictionary pauses = new Dictionary();
     private Dictionary speeds = new Dictionary();
 
-    private Array<Array> inline_mutations = new Array<Array>();
+    private Array<Godot.Collections.Array> inline_mutations = new Array<Godot.Collections.Array>();
 
     private Array<Variant> extra_game_states = new Array<Variant>();
 
@@ -155,7 +170,7 @@ namespace DialogueManagerRuntime
       translation_key = (string)data.Get("translation_key");
       pauses = (Dictionary)data.Get("pauses");
       speeds = (Dictionary)data.Get("speeds");
-      inline_mutations = (Array<Array>)data.Get("inline_mutations");
+      inline_mutations = (Array<Godot.Collections.Array>)data.Get("inline_mutations");
 
       foreach (var response in (Array<RefCounted>)data.Get("responses"))
       {

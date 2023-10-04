@@ -38,14 +38,15 @@ public partial class TestScene : Node2D
   }
 
 
-  public async Task AskForName()
+  public async Task AskForName(string defaultName = "Player")
   {
     var nameInputDialogue = GD.Load<PackedScene>("res://examples/name_input_dialog/name_input_dialog.tscn").Instantiate() as AcceptDialog;
+    var nameInput = nameInputDialogue.GetNode<LineEdit>("NameEdit");
     GetTree().Root.AddChild(nameInputDialogue);
     nameInputDialogue.PopupCentered();
-
+    nameInput.Text = defaultName;
     await ToSignal(nameInputDialogue, "confirmed");
-    PlayerName = nameInputDialogue.GetNode<LineEdit>("NameEdit").Text;
+    PlayerName = nameInput.Text;
     nameInputDialogue.QueueFree();
   }
 
