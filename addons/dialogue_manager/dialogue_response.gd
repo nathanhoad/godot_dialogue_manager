@@ -32,13 +32,13 @@ var translation_key: String = ""
 
 func _init(data: Dictionary = {}) -> void:
 	if data.size() > 0:
-		id = data.get("id", "")
+		id = data.id
 		type = data.type
 		next_id = data.next_id
 		is_allowed = data.is_allowed
 		text = data.text
 		text_replacements = data.text_replacements
-		tags = data.get("tags", [])
+		tags = data.tags
 		translation_key = data.translation_key
 
 

@@ -59,7 +59,7 @@ var conditions: Dictionary = {}
 
 func _init(data: Dictionary = {}) -> void:
 	if data.size() > 0:
-		id = data.get("id", "")
+		id = data.id
 		next_id = data.next_id
 		type = data.type
 		extra_game_states = data.extra_game_states
@@ -76,7 +76,7 @@ func _init(data: Dictionary = {}) -> void:
 				inline_mutations = data.inline_mutations
 				conditions = data.conditions
 				time = data.time
-				tags = data.get("tags", [])
+				tags = data.tags
 
 			_DialogueConstants.TYPE_MUTATION:
 				mutation = data.mutation
