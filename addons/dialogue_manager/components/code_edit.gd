@@ -294,17 +294,21 @@ func toggle_comment() -> void:
 
 	for caret_index in range(0, get_caret_count()):
 		var from_line: int = get_caret_line(caret_index)
+		var from_column: int = get_caret_column(caret_index)
 		var to_line: int = get_caret_line(caret_index)
+		var to_column: int = get_caret_column(caret_index)
 
 		if has_selection(caret_index):
 			from_line = get_selection_from_line(caret_index)
 			to_line = get_selection_to_line(caret_index)
+			from_column = get_selection_from_column(caret_index)
+			to_column = get_selection_to_column(caret_index)
 
 		selections.append({
-			from_column = get_selection_from_column(caret_index),
-			to_column = get_selection_to_column(caret_index),
 			from_line = from_line,
-			to_line = to_line
+			from_column = from_column,
+			to_line = to_line,
+			to_column = to_column
 		})
 
 		for line_number in range(from_line, to_line + 1):
@@ -326,8 +330,6 @@ func toggle_comment() -> void:
 				line_offsets[line_number] = -1
 			else:
 				line_offsets[line_number] = 0
-
-		lines_edited_from.emit(from_line, to_line)
 
 	for caret_index in range(0, get_caret_count()):
 		var selection: Dictionary = selections[caret_index]
