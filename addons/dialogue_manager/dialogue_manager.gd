@@ -583,6 +583,9 @@ func resolve(tokens: Array, extra_game_states: Array):
 							token["value"] = Color(args[0], args[1], args[2])
 						4:
 							token["value"] = Color(args[0], args[1], args[2], args[3])
+				"load":
+					token["type"] = "value"
+					token["value"] = load(args[0])
 				_:
 					if tokens[i - 1].type == DialogueConstants.TOKEN_DOT:
 						# If we are calling a deeper function then we need to collapse the
