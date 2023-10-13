@@ -31,13 +31,11 @@ func set_responses(next_responses: Array[DialogueResponse]) -> void:
 	# Add new items
 	if _responses.size() > 0:
 		for response in _responses:
-			var item: RichTextLabel = RichTextLabel.new()
-			item.theme_type_variation = "ResponseLabel"
+			var item: Button = Button.new()
 			item.name = "Response%d" % get_child_count()
-			item.fit_content = true
 			if not response.is_allowed:
 				item.name = String(item.name) + "Disallowed"
-				item.modulate.a = 0.4
+				item.disabled = true
 			item.text = response.text
 			add_child(item)
 
