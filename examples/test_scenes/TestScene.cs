@@ -1,25 +1,20 @@
 using Godot;
-using Godot.Collections;
 using DialogueManagerRuntime;
 using System.Threading.Tasks;
 
 public partial class TestScene : Node2D
 {
-  [Export]
-  PackedScene Balloon;
+  [Export] PackedScene Balloon;
 
-  [Export]
-  PackedScene SmallBalloon;
+  [Export] PackedScene SmallBalloon;
 
-  [Export]
-  string Title = "start";
+  [Export] string Title = "start";
 
-  [Export]
-  Resource DialogueResource;
+  [Export] Resource DialogueResource;
 
   /* Make sure to add an [Export] decorator so that the Dialogue Manager can see the property */
-  [Export]
-  string PlayerName = "Player";
+  [Export] string PlayerName = "Player";
+  [Export] int TreatsCount = 0;
 
 
   public async override void _Ready()
@@ -34,7 +29,7 @@ public partial class TestScene : Node2D
     bool isSmallWindow = (int)ProjectSettings.GetSetting("display/window/size/viewport_width") < 400;
     Balloon balloon = (Balloon)(isSmallWindow ? SmallBalloon : Balloon).Instantiate();
     AddChild(balloon);
-    balloon.Start(DialogueResource, Title, new Array<Variant> { this });
+    balloon.Start(DialogueResource, Title);
   }
 
 
