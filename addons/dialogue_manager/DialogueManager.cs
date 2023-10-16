@@ -69,7 +69,7 @@ namespace DialogueManagerRuntime
 #nullable disable
     public async void ResolveThingMethod(GodotObject thing, string method, Array<Variant> args)
     {
-      MethodInfo? info = thing.GetType().GetMethod(method, BindingFlags.Instance | BindingFlags.Public | BindingFlags.DeclaredOnly);
+      MethodInfo info = thing.GetType().GetMethod(method, BindingFlags.Instance | BindingFlags.Public | BindingFlags.DeclaredOnly);
 
       if (info == null) return;
 
@@ -171,6 +171,7 @@ namespace DialogueManagerRuntime
       pauses = (Dictionary)data.Get("pauses");
       speeds = (Dictionary)data.Get("speeds");
       inline_mutations = (Array<Godot.Collections.Array>)data.Get("inline_mutations");
+      time = (string)data.Get("time");
 
       foreach (var response in (Array<RefCounted>)data.Get("responses"))
       {

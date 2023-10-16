@@ -9,7 +9,7 @@ signal response_selected(response: DialogueResponse)
 
 
 # The list of dialogue responses.
-var _responses: Array[DialogueResponse] = []
+var _responses: Array = []
 
 
 func _ready() -> void:
@@ -20,7 +20,7 @@ func _ready() -> void:
 
 
 ## Set the list of responses to show.
-func set_responses(next_responses: Array[DialogueResponse]) -> void:
+func set_responses(next_responses: Array) -> void:
 	_responses = next_responses
 
 	# Remove any current items
