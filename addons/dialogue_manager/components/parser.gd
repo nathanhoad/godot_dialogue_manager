@@ -262,6 +262,10 @@ func parse(text: String, path: String) -> Error:
 		# Goto
 		elif is_goto_line(raw_line):
 			line["type"] = DialogueConstants.TYPE_GOTO
+
+			if raw_line.begins_with("%"):
+				apply_weighted_random(id, raw_line, indent_size, line)
+
 			line["next_id"] = extract_goto(raw_line)
 			if is_goto_snippet_line(raw_line):
 				line["is_snippet"] = true
@@ -408,7 +412,6 @@ func parse(text: String, path: String) -> Error:
 				pass
 			else:
 				line["next_id"] = line["parent_id"]
-
 
 		# Done!
 		parsed_lines[str(id)] = line
@@ -575,11 +578,13 @@ func is_mutation_line(line: String) -> bool:
 
 func is_goto_line(line: String) -> bool:
 	line = line.strip_edges(true, false)
+	line = WEIGHTED_RANDOM_SIBLINGS_REGEX.sub(line, "")
 	return line.begins_with("=> ") or line.begins_with("=>< ")
 
 
 func is_goto_snippet_line(line: String) -> bool:
-	return line.strip_edges().begins_with("=>< ")
+	line = WEIGHTED_RANDOM_SIBLINGS_REGEX.sub(line.strip_edges(), "")
+	return line.begins_with("=>< ")
 
 
 func is_nested_dialogue_line(raw_line: String, parsed_lines: Dictionary, raw_lines: PackedStringArray, indent_size: int) -> bool:
@@ -685,26 +690,29 @@ func apply_weighted_random(id: int, raw_line: String, indent_size: int, line: Di
 	# Look back up the list to find the first weighted random line in this group
 	var original_random_line: Dictionary = {}
 	for i in range(id, 0, -1):
+		# Lines that aren't prefixed with the random token are a dead end
 		if not raw_lines[i].strip_edges().begins_with("%") or get_indent(raw_lines[i]) != indent_size:
 			break
+		# Make sure we group random dialogue and ranom lines separately
+		elif WEIGHTED_RANDOM_SIBLINGS_REGEX.sub(raw_line.strip_edges(), "").begins_with("=") and not WEIGHTED_RANDOM_SIBLINGS_REGEX.sub(raw_lines[i].strip_edges(), "").begins_with("="):
+			break
+		# Otherwise we've found the origin
 		elif parsed_lines.has(str(i)) and parsed_lines[str(i)].has("siblings"):
 			original_random_line = parsed_lines[str(i)]
+			break
 
 	# Attach it to the original random line and work out where to go after the line
 	if original_random_line.size() > 0:
 		original_random_line["siblings"] += [{ weight = weight, id = str(id) }]
+		if original_random_line.type != DialogueConstants.TYPE_GOTO:
+			# Update the next line for all siblings (not goto lines, though, they manager their
+			# own next ID)
+			original_random_line["next_id"] = get_line_after_line(id, indent_size, line)
 		line["next_id"] = original_random_line.next_id
 	# Or set up this line as the original
 	else:
 		line["siblings"] = [{ weight = weight, id = str(id) }]
-		# Find the last weighted random line in this group
-		for i in range(id, raw_lines.size()):
-			if i + 1 >= raw_lines.size():
-				line["next_id"] = DialogueConstants.ID_END
-				break
-			if not raw_lines[i + 1].strip_edges().begins_with("%") or get_indent(raw_lines[i + 1]) != indent_size:
-				line["next_id"] = get_line_after_line(i, indent_size, line)
-				break
+		line["next_id"] = get_line_after_line(id, indent_size, line)
 
 	if line.next_id == DialogueConstants.ID_NULL:
 		line["next_id"] = DialogueConstants.ID_END

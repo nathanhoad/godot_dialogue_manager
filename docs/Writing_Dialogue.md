@@ -120,6 +120,15 @@ import "res://snippets.dialogue" as snippets
 
 And then you can jump to titles by prefixing them with `snippets/`. For example, say there was a "talk_to_nathan" title in the snippets file then in the current file I could use `=> snippets/talk_to_nathan`.
 
+The `%` syntax also applies to jumps. So to jump to one of a random set of titles you might have something like this:
+
+```
+Nathan: Let's go somewhere random.
+% => first
+% => second
+% => third
+```
+
 ## Responses
 
 To give the player branching options you can start a line with "- " and then a prompt. Like dialogue, prompts can also contain variables wrapped in `{{}}`.
