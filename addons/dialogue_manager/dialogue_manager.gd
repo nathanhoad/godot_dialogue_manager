@@ -267,7 +267,7 @@ func get_line(resource: DialogueResource, key: String, extra_game_states: Array)
 				cummulative_weight += sibling.weight
 
 	# Check condtiions
-	elif data.type == DialogueConstants.TYPE_CONDITION:
+	if data.type == DialogueConstants.TYPE_CONDITION:
 		# "else" will have no actual condition
 		if await check_condition(data, extra_game_states):
 			return await get_line(resource, data.next_id + id_trail, extra_game_states)
