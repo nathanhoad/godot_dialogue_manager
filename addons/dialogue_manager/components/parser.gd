@@ -103,7 +103,7 @@ func parse(text: String, path: String) -> Error:
 		# Work out if we are inside a conditional or option or if we just
 		# indented back out of one
 		var indent_size: int = get_indent(raw_line)
-		if indent_size < parent_stack.size():
+		if indent_size < parent_stack.size() and not is_line_empty(raw_line):
 			for _tab in range(0, parent_stack.size() - indent_size):
 				parent_stack.pop_back()
 
