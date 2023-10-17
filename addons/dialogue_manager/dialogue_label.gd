@@ -10,6 +10,9 @@ signal spoke(letter: String, letter_index: int, speed: float)
 ## Emitted when typing paused for a `[wait]`
 signal paused_typing(duration: float)
 
+## Emitted when the player skips the typing of dialogue.
+signal skipped_typing()
+
 ## Emitted when typing finishes.
 signal finished_typing()
 
@@ -93,6 +96,7 @@ func skip_typing() -> void:
 	_mutation_remaining_mutations()
 	visible_characters = get_total_character_count()
 	self.is_typing = false
+	skipped_typing.emit()
 
 
 # Type out the next character(s)
