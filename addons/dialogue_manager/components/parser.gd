@@ -694,7 +694,7 @@ func apply_weighted_random(id: int, raw_line: String, indent_size: int, line: Di
 		if not raw_lines[i].strip_edges().begins_with("%") or get_indent(raw_lines[i]) != indent_size:
 			break
 		# Make sure we group random dialogue and ranom lines separately
-		elif WEIGHTED_RANDOM_SIBLINGS_REGEX.sub(raw_line.strip_edges(), "").begins_with("=") and not WEIGHTED_RANDOM_SIBLINGS_REGEX.sub(raw_lines[i].strip_edges(), "").begins_with("="):
+		elif WEIGHTED_RANDOM_SIBLINGS_REGEX.sub(raw_line.strip_edges(), "").begins_with("=") != WEIGHTED_RANDOM_SIBLINGS_REGEX.sub(raw_lines[i].strip_edges(), "").begins_with("="):
 			break
 		# Otherwise we've found the origin
 		elif parsed_lines.has(str(i)) and parsed_lines[str(i)].has("siblings"):
@@ -708,6 +708,9 @@ func apply_weighted_random(id: int, raw_line: String, indent_size: int, line: Di
 			# Update the next line for all siblings (not goto lines, though, they manager their
 			# own next ID)
 			original_random_line["next_id"] = get_line_after_line(id, indent_size, line)
+			for sibling in original_random_line["siblings"]:
+				if sibling.id in parsed_lines:
+					parsed_lines[sibling.id]["next_id"] = original_random_line["next_id"]
 		line["next_id"] = original_random_line.next_id
 	# Or set up this line as the original
 	else:
