@@ -1,10 +1,20 @@
 extends Node
 
 
+## Emitted when a title is encountered while traversing dialogue, usually when jumping from a
+## goto line
 signal passed_title(title)
+
+## Emitted when a line of dialogue is encountered.
 signal got_dialogue(line)
+
+## Emitted when a mutation is encountered.
 signal mutated(mutation)
+
+## Emitted when some dialogue has reached the end.
 signal dialogue_ended(resource)
+
+## Used internally.
 signal bridge_get_next_dialogue_line_completed(line)
 
 
@@ -28,17 +38,24 @@ enum TranslationSource {
 }
 
 
-# The list of globals that dialogue can query
+## The list of globals that dialogue can query
 var game_states: Array = []
 
-# Allow dialogue to call singletons
+## Allow dialogue to call singletons
 var include_singletons: bool = true
 
-# Allow dialogue to call static methods/properties on classes
+## Allow dialogue to call static methods/properties on classes
 var include_classes: bool = true
 
-# Manage translation behaviour
+## Manage translation behaviour
 var translation_source: TranslationSource = TranslationSource.Guess
+
+## Used to resolve the current scene. Override if your game manages the current scene itself.
+var get_current_scene: Callable = func():
+	var current_scene: Node = get_tree().current_scene
+	if current_scene == null:
+		current_scene = get_tree().root.get_child(get_tree().root.get_child_count() - 1)
+	return current_scene
 
 var _node_properties: Array = []
 
@@ -202,7 +219,7 @@ func show_example_dialogue_balloon(resource: DialogueResource, title: String = "
 
 	var is_small_window: bool = ProjectSettings.get_setting("display/window/size/viewport_width") < 400
 	var balloon: Node = (SmallExampleBalloonScene if is_small_window else ExampleBalloonScene).instantiate()
-	get_tree().current_scene.add_child(balloon)
+	get_current_scene.call().add_child(balloon)
 	balloon.start(resource, title, extra_game_states)
 
 
@@ -408,7 +425,7 @@ func create_response(data: Dictionary, extra_game_states: Array) -> DialogueResp
 
 # Get the current game states
 func get_game_states(extra_game_states: Array) -> Array:
-	var current_scene: Node = get_tree().current_scene
+	var current_scene: Node = get_current_scene.call()
 	var unique_states: Array = []
 	for state in extra_game_states + [current_scene] + game_states:
 		if state != null and not unique_states.has(state):
