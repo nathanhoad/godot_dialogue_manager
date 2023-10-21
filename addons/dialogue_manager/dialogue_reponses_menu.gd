@@ -8,6 +8,9 @@ class_name DialogueResponsesMenu extends VBoxContainer
 signal response_selected(response: DialogueResponse)
 
 
+## Optionally specify a control to duplicate for each response
+@export var response_template: Control
+
 # The list of dialogue responses.
 var _responses: Array = []
 
@@ -17,6 +20,9 @@ func _ready() -> void:
 		if visible and get_menu_items().size() > 0:
 			get_menu_items()[0].grab_focus()
 	)
+
+	if is_instance_valid(response_template):
+		response_template.get_parent().remove_child(response_template)
 
 
 ## Set the list of responses to show.
@@ -31,7 +37,11 @@ func set_responses(next_responses: Array) -> void:
 	# Add new items
 	if _responses.size() > 0:
 		for response in _responses:
-			var item: Button = Button.new()
+			var item: Control
+			if is_instance_valid(response_template):
+				item = response_template.duplicate()
+			else:
+				item = Button.new()
 			item.name = "Response%d" % get_child_count()
 			if not response.is_allowed:
 				item.name = String(item.name) + "Disallowed"
