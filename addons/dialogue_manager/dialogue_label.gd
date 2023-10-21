@@ -86,14 +86,14 @@ func type_out() -> void:
 	if get_total_character_count() == 0:
 		self.is_typing = false
 	elif seconds_per_step == 0:
-		_mutation_remaining_mutations()
+		_mutate_remaining_mutations()
 		visible_characters = get_total_character_count()
 		self.is_typing = false
 
 
 ## Stop typing out the text and jump right to the end
 func skip_typing() -> void:
-	_mutation_remaining_mutations()
+	_mutate_remaining_mutations()
 	visible_characters = get_total_character_count()
 	self.is_typing = false
 	skipped_typing.emit()
@@ -147,7 +147,7 @@ func _get_speed(at_index: int) -> float:
 
 
 # Run any inline mutations that haven't been run yet
-func _mutation_remaining_mutations() -> void:
+func _mutate_remaining_mutations() -> void:
 	for i in range(visible_characters, get_total_character_count() + 1):
 		_mutate_inline_mutations(i)
 
