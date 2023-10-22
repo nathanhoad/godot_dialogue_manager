@@ -1,0 +1,16 @@
+~ start
+
+Nathan: I am Nathan. What is your name?
+do AskForName()
+Nathan: Hi {{PlayerName}}! It is nice to meet you.
+Nathan: How many treats should Coco have?
+- A couple
+	set TreatsCount = 2
+- Hmmm... a handful?
+	set TreatsCount = 8
+- Just give her the whole bag
+	set TreatsCount = 50
+Nathan: Ok, Coco, here's {{TreatsCount}} treats!
+Coco: Meow!
+
+=> END

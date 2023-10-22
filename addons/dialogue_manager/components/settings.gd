@@ -2,36 +2,40 @@
 extends Node
 
 
-const DialogueConstants = preload("res://addons/dialogue_manager/constants.gd")
+const DialogueConstants = preload("../constants.gd")
 
 
 ### Editor config
 
 const DEFAULT_SETTINGS = {
-	"states" = [],
-	"missing_translations_are_errors" = false,
-	"wrap_lines" = false,
-	"new_with_template" = true,
-	"include_all_responses" = false,
-	"custom_test_scene_path" = "res://addons/dialogue_manager/test_scene.tscn"
+	states = [],
+	missing_translations_are_errors = false,
+	export_characters_in_translation = true,
+	wrap_lines = false,
+	new_with_template = true,
+	include_all_responses = false,
+	ignore_missing_state_values = false,
+	custom_test_scene_path = preload("../test_scene.tscn").resource_path,
+	default_csv_locale = "en"
 }
 
 
 static func prepare() -> void:
 	# Migrate previous keys
 	for key in [
-		"states", 
-		"missing_translations_are_errors", 
-		"wrap_lines", 
-		"new_with_template", 
-		"include_all_responses", 
+		"states",
+		"missing_translations_are_errors",
+		"export_characters_in_translation",
+		"wrap_lines",
+		"new_with_template",
+		"include_all_responses",
 		"custom_test_scene_path"
 	]:
 		if ProjectSettings.has_setting("dialogue_manager/%s" % key):
 			var value = ProjectSettings.get_setting("dialogue_manager/%s" % key)
 			ProjectSettings.set_setting("dialogue_manager/%s" % key, null)
 			set_setting(key, value)
-	
+
 	# Set up defaults
 	for setting in DEFAULT_SETTINGS:
 		if ProjectSettings.has_setting("dialogue_manager/general/%s" % setting):
@@ -64,11 +68,11 @@ static func get_user_config() -> Dictionary:
 		run_resource_path = "",
 		is_running_test_scene = false
 	}
-	
+
 	if FileAccess.file_exists(DialogueConstants.USER_CONFIG_PATH):
 		var file: FileAccess = FileAccess.open(DialogueConstants.USER_CONFIG_PATH, FileAccess.READ)
 		user_config.merge(JSON.parse_string(file.get_as_text()), true)
-	
+
 	return user_config
 
 
@@ -121,8 +125,8 @@ static func clear_recent_files() -> void:
 
 static func set_caret(path: String, cursor: Vector2) -> void:
 	var carets: Dictionary = get_user_value("carets", {})
-	carets[path] = { 
-		x = cursor.x, 
+	carets[path] = {
+		x = cursor.x,
 		y = cursor.y
 	}
 	set_user_value("carets", carets)

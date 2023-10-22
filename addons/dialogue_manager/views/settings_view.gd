@@ -1,72 +1,83 @@
 @tool
-extends VBoxContainer
+extends TabContainer
 
 
 signal script_button_pressed(path: String)
 
 
-const DialogueConstants = preload("res://addons/dialogue_manager/constants.gd")
-const DialogueSettings = preload("res://addons/dialogue_manager/components/settings.gd")
+const DialogueConstants = preload("../constants.gd")
+const DialogueSettings = preload("../components/settings.gd")
 
 
-const DEFAULT_TEST_SCENE_PATH = "res://addons/dialogue_manager/test_scene.tscn"
+# Editor
+@onready var new_template_button: CheckBox = $Editor/NewTemplateButton
+@onready var missing_translations_button: CheckBox = $Editor/MissingTranslationsButton
+@onready var characters_translations_button: CheckBox = $Editor/CharactersTranslationsButton
+@onready var wrap_lines_button: Button = $Editor/WrapLinesButton
+@onready var test_scene_path_input: LineEdit = $Editor/CustomTestScene/TestScenePath
+@onready var revert_test_scene_button: Button = $Editor/CustomTestScene/RevertTestScene
+@onready var load_test_scene_button: Button = $Editor/CustomTestScene/LoadTestScene
+@onready var default_csv_locale: LineEdit = $Editor/DefaultCSVLocale
 
-
-@onready var new_template_button: CheckBox = $NewTemplateButton
-@onready var missing_translations_button: CheckBox = $MissingTranslationsButton
-@onready var wrap_lines_button: Button = $WrapLinesButton
-@onready var test_scene_path_input: LineEdit = $CustomTestScene/TestScenePath
-@onready var revert_test_scene_button: Button = $CustomTestScene/RevertTestScene
-@onready var load_test_scene_button: Button = $CustomTestScene/LoadTestScene
+# Runtime
+@onready var include_all_responses_button: CheckBox = $Runtime/IncludeAllResponsesButton
+@onready var ignore_missing_state_values: CheckBox = $Runtime/IgnoreMissingStateValues
+@onready var states_title: Label = $Runtime/StatesTitle
+@onready var globals_list: Tree = $Runtime/GlobalsList
 @onready var custom_test_scene_file_dialog: FileDialog = $CustomTestSceneFileDialog
-@onready var include_all_responses_button: Button = $IncludeAllResponsesButton
-@onready var states_title: Label = $StatesTitle
-@onready var globals_list: Tree = $GlobalsList
 
 var editor_plugin: EditorPlugin
 var all_globals: Dictionary = {}
 var enabled_globals: Array = []
+var _default_test_scene_path: String = preload("../test_scene.tscn").resource_path
 
 
 func _ready() -> void:
-	$NewTemplateButton.text = DialogueConstants.translate("settings.new_template")
-	$MissingTranslationsButton.text = DialogueConstants.translate("settings.missing_keys")
-	$MissingTranslationsHint.text = DialogueConstants.translate("settings.missing_keys_hint")
-	$WrapLinesButton.text = DialogueConstants.translate("settings.wrap_long_lines")
-	$IncludeAllResponsesButton.text = DialogueConstants.translate("settings.include_failed_responses")
-	$CustomTestSceneLabel.text = DialogueConstants.translate("settings.custom_test_scene")
-	$StatesTitle.text = DialogueConstants.translate("settings.states_shortcuts")
-	$StatesMessage.text = DialogueConstants.translate("settings.states_message")
-	$StatesHint.text = DialogueConstants.translate("settings.states_hint")
+	new_template_button.text = DialogueConstants.translate("settings.new_template")
+	missing_translations_button.text = DialogueConstants.translate("settings.missing_keys")
+	$Editor/MissingTranslationsHint.text = DialogueConstants.translate("settings.missing_keys_hint")
+	characters_translations_button.text = DialogueConstants.translate("settings.characters_translations")
+	wrap_lines_button.text = DialogueConstants.translate("settings.wrap_long_lines")
+	$Editor/CustomTestSceneLabel.text = DialogueConstants.translate("settings.custom_test_scene")
+	$Editor/DefaultCSVLocaleLabel.text = DialogueConstants.translate("settings.default_csv_local")
+
+	include_all_responses_button.text = DialogueConstants.translate("settings.include_failed_responses")
+	ignore_missing_state_values.text = DialogueConstants.translate("settings.ignore_missing_state_values")
+	states_title.text = DialogueConstants.translate("settings.states_shortcuts")
+	$Runtime/StatesMessage.text = DialogueConstants.translate("settings.states_message")
+	$Runtime/StatesHint.text = DialogueConstants.translate("settings.states_hint")
 
 
 func prepare() -> void:
-	test_scene_path_input.placeholder_text = DialogueSettings.get_setting("custom_test_scene_path", DEFAULT_TEST_SCENE_PATH)
-	revert_test_scene_button.visible = test_scene_path_input.placeholder_text != DEFAULT_TEST_SCENE_PATH
+	test_scene_path_input.placeholder_text = DialogueSettings.get_setting("custom_test_scene_path", _default_test_scene_path)
+	revert_test_scene_button.visible = test_scene_path_input.placeholder_text != _default_test_scene_path
 	revert_test_scene_button.icon = get_theme_icon("RotateLeft", "EditorIcons")
 	revert_test_scene_button.tooltip_text = DialogueConstants.translate("settings.revert_to_default_test_scene")
 	load_test_scene_button.icon = get_theme_icon("Load", "EditorIcons")
-	
+
 	var scale: float = editor_plugin.get_editor_interface().get_editor_scale()
 	custom_test_scene_file_dialog.min_size = Vector2(600, 500) * scale
-	
+
 	states_title.add_theme_font_override("font", get_theme_font("bold", "EditorFonts"))
-	
+
 	missing_translations_button.set_pressed_no_signal(DialogueSettings.get_setting("missing_translations_are_errors", false))
+	characters_translations_button.set_pressed_no_signal(DialogueSettings.get_setting("export_characters_in_translation", true))
 	wrap_lines_button.set_pressed_no_signal(DialogueSettings.get_setting("wrap_lines", false))
 	include_all_responses_button.set_pressed_no_signal(DialogueSettings.get_setting("include_all_responses", false))
+	ignore_missing_state_values.set_pressed_no_signal(DialogueSettings.get_setting("ignore_missing_state_values", false))
 	new_template_button.set_pressed_no_signal(DialogueSettings.get_setting("new_with_template", true))
-	
+	default_csv_locale.text = DialogueSettings.get_setting("default_csv_locale", "en")
+
 	var project = ConfigFile.new()
 	var err = project.load("res://project.godot")
 	assert(err == OK, "Could not find the project file")
-	
+
 	all_globals.clear()
 	if project.has_section("autoload"):
 		for key in project.get_section_keys("autoload"):
 			if key != "DialogueManager":
 				all_globals[key] = project.get_value("autoload", key)
-	
+
 	enabled_globals = DialogueSettings.get_setting("states", [])
 	globals_list.clear()
 	var root = globals_list.create_item()
@@ -77,7 +88,7 @@ func prepare() -> void:
 		item.set_text(0, name)
 		item.add_button(1, get_theme_icon("Edit", "EditorIcons"))
 		item.set_text(2, all_globals.get(name, "").replace("*res://", "res://"))
-	
+
 	globals_list.set_column_expand(0, false)
 	globals_list.set_column_custom_minimum_width(0, 250)
 	globals_list.set_column_expand(1, false)
@@ -99,6 +110,10 @@ func _on_missing_translations_button_toggled(button_pressed: bool) -> void:
 	DialogueSettings.set_setting("missing_translations_are_errors", button_pressed)
 
 
+func _on_characters_translations_button_toggled(button_pressed: bool) -> void:
+	DialogueSettings.set_setting("export_characters_in_translation", button_pressed)
+
+
 func _on_wrap_lines_button_toggled(button_pressed: bool) -> void:
 	DialogueSettings.set_setting("wrap_lines", button_pressed)
 
@@ -109,14 +124,14 @@ func _on_include_all_responses_button_toggled(button_pressed: bool) -> void:
 
 func _on_globals_list_item_selected() -> void:
 	var item = globals_list.get_selected()
-	var is_checked = not item.is_checked(0)	
+	var is_checked = not item.is_checked(0)
 	item.set_checked(0, is_checked)
-	
+
 	if is_checked:
 		enabled_globals.append(item.get_text(0))
 	else:
 		enabled_globals.erase(item.get_text(0))
-	
+
 	DialogueSettings.set_setting("states", enabled_globals)
 
 
@@ -129,9 +144,9 @@ func _on_sample_template_toggled(button_pressed):
 
 
 func _on_revert_test_scene_pressed() -> void:
-	DialogueSettings.set_setting("custom_test_scene_path", DEFAULT_TEST_SCENE_PATH)
-	test_scene_path_input.placeholder_text = DEFAULT_TEST_SCENE_PATH
-	revert_test_scene_button.visible = test_scene_path_input.placeholder_text != DEFAULT_TEST_SCENE_PATH
+	DialogueSettings.set_setting("custom_test_scene_path", _default_test_scene_path)
+	test_scene_path_input.placeholder_text = _default_test_scene_path
+	revert_test_scene_button.visible = test_scene_path_input.placeholder_text != _default_test_scene_path
 
 
 func _on_load_test_scene_pressed() -> void:
@@ -141,4 +156,12 @@ func _on_load_test_scene_pressed() -> void:
 func _on_custom_test_scene_file_dialog_file_selected(path: String) -> void:
 	DialogueSettings.set_setting("custom_test_scene_path", path)
 	test_scene_path_input.placeholder_text = path
-	revert_test_scene_button.visible = test_scene_path_input.placeholder_text != DEFAULT_TEST_SCENE_PATH
+	revert_test_scene_button.visible = test_scene_path_input.placeholder_text != _default_test_scene_path
+
+
+func _on_ignore_missing_state_values_toggled(button_pressed: bool) -> void:
+	DialogueSettings.set_setting("ignore_missing_state_values", button_pressed)
+
+
+func _on_default_csv_locale_text_changed(new_text: String) -> void:
+	DialogueSettings.set_setting("default_csv_locale", new_text)

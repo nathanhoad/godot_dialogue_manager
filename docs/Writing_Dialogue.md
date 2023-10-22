@@ -20,7 +20,6 @@ Titles can also be thought of as markers within the dialogue.
 
 Dialogue will run until it hits an `=> END`, `=> END!`, or the end of the file.
 
-
 ## Dialogue
 
 A dialogue line is either just text or in the form of "Character: What they say".
@@ -35,15 +34,51 @@ Nathan: I am saying this line.
 Nathan: The value of some_variable is {{SomeGlobal.some_property}}.
 ```
 
+To break a single line into multiple lines for display, you can either use a newline (`\n`) or indent each line below the first line. For example, these two snippets would be equivalent:
+
+```
+Coco: This is the first line.
+	This line would show up below it in the same balloon.
+	And even this line.
+```
+
+and
+
+```
+Coco: This is the first line.\nThis line would show up below it in the same balloon.\nAnd even this line.
+```
+
+_Note: When using indented line breaks and [line IDs for translations](./Translations.md) you can only specify a line ID on the first (unindented) line of each group._
+
+### Escaping characters
+
+Escaping characters in dialogue can be done by using a backslash. This is relevant if your dialogue includes characters utilized in the syntax of the dialogue system, such as the colon (":").
+
+To display a colon in your dialogue, use a backslash ("\\") before it.
+
+```dialogue
+Character : This is how\: you escape a colon.
+```
+
+### Markup
+
 Dialogue lines can also contain **bb_code** for RichTextEffects (if you end up using a `RichTextLabel` or the `DialogueLabel` provided by this addon).
 
 If you use the `DialogueLabel` node then you can also make use of the `[wait=N]` and `[speed=N]` codes. `wait` will pause the typing of the dialogue for `N` seconds (eg. `[wait=1.5]` will pause for 1.5 seconds). `speed` will change the typing speed of the current line of dialogue by that factor (eg `[speed=10]` will change the typing speed to be 10 times faster than normal).
 
 There is also a `[next]` code that you can use to signify that a line should be auto advanced. If given no arguments it will auto advance immediately after the text has typed out. If given something like `[next=0.5]` it will wait for 0.5s after typing has finished before moving to the next line. If given `[next=auto]` it will wait for an automatic amount of time based on the length of the line.
 
+### Tags
+
+If you need to annotate your lines with tags then you can wrap them in `[#` and `]`, separated by commas. So to specify "happy" and "surprised" tags for a line you would do something like:
+
+```
+Nathan: [#happy, #surprised] Oh, Hello!
+```
+
 ### Randomising lines of dialogue
 
-If you want to pick one from a few lines of dialogue you can mark the line witha `%` at the start like this:
+If you want to pick one from a few lines of dialogue you can mark the line with a `%` at the start like this:
 
 ```
 Nathan: I will say this.
@@ -84,6 +119,15 @@ import "res://snippets.dialogue" as snippets
 ```
 
 And then you can jump to titles by prefixing them with `snippets/`. For example, say there was a "talk_to_nathan" title in the snippets file then in the current file I could use `=> snippets/talk_to_nathan`.
+
+The `%` syntax also applies to jumps. So to jump to one of a random set of titles you might have something like this:
+
+```
+Nathan: Let's go somewhere random.
+% => first
+% => second
+% => third
+```
 
 ## Responses
 
@@ -136,7 +180,7 @@ Additional conditions use "elif" and you can use "else" to catch any other cases
 
 ```
 if SomeGlobal.some_property >= 10
-    Nathan: That property is greather than or equal to 10
+    Nathan: That property is greater than or equal to 10
 elif SomeGlobal.some_other_property == "some value"
     Nathan: Or we might be in here.
 else
@@ -163,6 +207,12 @@ Nathan: What would you like?
 ```
 
 If using a condition and a goto on a response line then make sure the goto is provided last.
+
+Conditions can also be used inline in a dialogue line when wrapped with "[if predicate]" and "[/if]".
+
+```
+Nathan: I have done this [if already_done]once again[/if]
+```
 
 ## Mutations
 
@@ -210,7 +260,7 @@ If any are found they will be highlighted and must be fixed before you can run y
 
 For dialogue that doesn't rely too heavily on game state conditions you can do a quick test of it by clicking the "Run the test scene" button in the main toolbar.
 
-This will boot up a test scene and run the currently active node. Use `ui_up`, `ui_down`, and `ui_accept` to navigate the dialogue and responses.
+This will boot up a test scene and run from the nearest title marker above the cursor position. Use your mouse and/or `ui_up`, `ui_down`, and `ui_accept` to navigate the dialogue and responses.
 
 Once the conversation is over the scene will close.
 
@@ -218,7 +268,7 @@ Once the conversation is over the scene will close.
 
 You can override which scene is run when clicking the test button in settings.
 
-Your custom test scene must extend `BaseDialogueTestScene` which will provide you with a `resource` property which is the `DialogueResource` currently open and a `title` property which is the nearest title to the cursor position.
+Your custom test scene must extend `BaseDialogueTestScene` which will provide you with a `resource` property (which is the `DialogueResource` currently open) and the `title` to start from.
 
 The simplest example custom test scene is something like this (which is pretty much the same as the actual test scene):
 
@@ -232,7 +282,7 @@ func _ready() -> void:
 
 ## Translations
 
-You can export tranlsations as CSV from the "Translations" menu in the dialogue editor.
+You can export translations as CSV from the "Translations" menu in the dialogue editor.
 
 This will find any unique dialogue lines or response prompts and add them to a list. If an ID is specified for the line (eg. `[ID:SOME_KEY]`) then that will be used as the translation key, otherwise the dialogue/prompt itself will be.
 

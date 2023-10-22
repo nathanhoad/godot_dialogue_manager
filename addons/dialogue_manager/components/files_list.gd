@@ -7,10 +7,12 @@ signal file_popup_menu_requested(at_position: Vector2)
 signal file_double_clicked(file_path: String)
 
 
-const DialogueConstants = preload("res://addons/dialogue_manager/constants.gd")
+const DialogueConstants = preload("../constants.gd")
 
 const MODIFIED_SUFFIX = "(*)"
 
+
+@export var icon: Texture2D
 
 @onready var filter_edit: LineEdit = $FilterEdit
 @onready var list: ItemList = $List
@@ -96,7 +98,8 @@ func apply_filter() -> void:
 			var nice_file = file_map[file]
 			if file in unsaved_files:
 				nice_file += MODIFIED_SUFFIX
-			list.add_item(nice_file)
+			var new_id := list.add_item(nice_file)
+			list.set_item_icon(new_id, icon)
 
 	select_file(current_file_path)
 

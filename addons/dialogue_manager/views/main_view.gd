@@ -2,8 +2,8 @@
 extends Control
 
 
-const DialogueConstants = preload("res://addons/dialogue_manager/constants.gd")
-const DialogueSettings = preload("res://addons/dialogue_manager/components/settings.gd")
+const DialogueConstants = preload("../constants.gd")
+const DialogueSettings = preload("../components/settings.gd")
 
 const OPEN_OPEN = 100
 const OPEN_CLEAR = 101
@@ -51,6 +51,7 @@ enum TranslationSource {
 @onready var insert_button: MenuButton = %InsertButton
 @onready var translations_button: MenuButton = %TranslationsButton
 @onready var settings_button: Button = %SettingsButton
+@onready var support_button: Button = %SupportButton
 @onready var docs_button: Button = %DocsButton
 @onready var version_label: Label = %VersionLabel
 @onready var update_button: Button = %UpdateButton
@@ -83,6 +84,7 @@ var current_file_path: String = "":
 			files_list.hide()
 			title_list.hide()
 			code_edit.hide()
+			errors_panel.hide()
 		else:
 			test_button.disabled = false
 			search_button.disabled = false
@@ -120,7 +122,7 @@ func _ready() -> void:
 	self.current_file_path = ""
 
 	# Set up the update checker
-	version_label.text = "v%s" % update_button.get_version()
+	version_label.text = "v%s" % editor_plugin.get_version()
 	update_button.editor_plugin = editor_plugin
 	update_button.on_before_refresh = func on_before_refresh():
 		# Save everything
@@ -366,6 +368,9 @@ func apply_theme() -> void:
 		settings_button.icon = get_theme_icon("Tools", "EditorIcons")
 		settings_button.tooltip_text = DialogueConstants.translate("settings")
 
+		support_button.icon = get_theme_icon("Heart", "EditorIcons")
+		support_button.tooltip_text = DialogueConstants.translate("show_support")
+
 		docs_button.icon = get_theme_icon("Help", "EditorIcons")
 		docs_button.text = DialogueConstants.translate("docs")
 
@@ -424,7 +429,8 @@ func build_open_menu() -> void:
 		menu.set_item_disabled(2, true)
 	else:
 		for path in recent_files:
-			menu.add_icon_item(get_theme_icon("File", "EditorIcons"), path)
+			if FileAccess.file_exists(path):
+				menu.add_icon_item(get_theme_icon("File", "EditorIcons"), path)
 
 	menu.add_separator()
 	menu.add_item(DialogueConstants.translate("open.clear_recent_files"), OPEN_CLEAR)
@@ -554,7 +560,7 @@ func export_translations_to_csv(path: String) -> void:
 	file = FileAccess.open(path, FileAccess.WRITE)
 
 	if not file.file_exists(path):
-		file.store_csv_line(["keys", "en"])
+		file.store_csv_line(["keys", DialogueSettings.get_setting("default_csv_locale", "en")])
 
 	# Write our translations to file
 	var known_keys: PackedStringArray = []
@@ -591,7 +597,9 @@ func export_translations_to_csv(path: String) -> void:
 	editor_plugin.get_editor_interface().get_file_system_dock().call_deferred("navigate_to_path", path)
 
 	# Add it to the project l10n settings if it's not already there
-	var translation_path: String = path.replace(".csv", ".en.translation")
+	var locale: String = DialogueSettings.get_setting("default_csv_locale", "en")
+	var language_code: RegExMatch = RegEx.create_from_string("^[a-z]{2,3}").search(locale)
+	var translation_path: String = path.replace(".csv", ".%s.translation" % language_code.get_string())
 	call_deferred("add_path_to_project_translations", translation_path)
 
 
@@ -619,7 +627,7 @@ func export_character_names_to_csv(path: String) -> void:
 	file = FileAccess.open(path, FileAccess.WRITE)
 
 	if not file.file_exists(path):
-		file.store_csv_line(["keys", "en"])
+		file.store_csv_line(["keys", DialogueSettings.get_setting("default_csv_locale", "en")])
 
 	# Write our translations to file
 	var known_keys: PackedStringArray = []
@@ -709,6 +717,15 @@ func import_translations_from_csv(path: String) -> void:
 	parser.free()
 
 
+func show_search_form(is_enabled: bool) -> void:
+	if code_edit.last_selected_text:
+		search_and_replace.input.text = code_edit.last_selected_text
+
+	search_and_replace.visible = is_enabled
+	search_button.set_pressed_no_signal(is_enabled)
+	search_and_replace.focus_line_edit()
+
+
 ### Signals
 
 
@@ -716,6 +733,7 @@ func _on_editor_settings_changed() -> void:
 	var editor_settings: EditorSettings = editor_plugin.get_editor_interface().get_editor_settings()
 	code_edit.minimap_draw = editor_settings.get_setting("text_editor/appearance/minimap/show_minimap")
 	code_edit.minimap_width = editor_settings.get_setting("text_editor/appearance/minimap/minimap_width")
+	code_edit.scroll_smooth = editor_settings.get_setting("text_editor/behavior/navigation/smooth_scrolling")
 
 
 func _on_open_menu_id_pressed(id: int) -> void:
@@ -842,6 +860,7 @@ func _on_code_edit_text_changed() -> void:
 
 	var buffer = open_buffers[current_file_path]
 	buffer.text = code_edit.text
+
 	files_list.mark_file_as_unsaved(current_file_path, buffer.text != buffer.pristine_text)
 	save_all_button.disabled = open_buffers.values().filter(func(d): return d.text != d.pristine_text).size() == 0
 
@@ -878,15 +897,11 @@ func _on_errors_panel_error_pressed(line_number: int, column_number: int) -> voi
 
 
 func _on_search_button_toggled(button_pressed: bool) -> void:
-	if code_edit.last_selected_text:
-		search_and_replace.input.text = code_edit.last_selected_text
-
-	search_and_replace.visible = button_pressed
+	show_search_form(button_pressed)
 
 
 func _on_search_and_replace_open_requested() -> void:
-	search_button.set_pressed_no_signal(true)
-	search_and_replace.visible = true
+	show_search_form(true)
 
 
 func _on_search_and_replace_close_requested() -> void:
@@ -921,6 +936,10 @@ func _on_settings_dialog_confirmed() -> void:
 	parse()
 	code_edit.wrap_mode = TextEdit.LINE_WRAPPING_BOUNDARY if DialogueSettings.get_setting("wrap_lines", false) else TextEdit.LINE_WRAPPING_NONE
 	code_edit.grab_focus()
+
+
+func _on_support_button_pressed() -> void:
+	OS.shell_open("https://patreon.com/nathanhoad")
 
 
 func _on_docs_button_pressed() -> void:

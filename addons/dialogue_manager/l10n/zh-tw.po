@@ -1,0 +1,409 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: Dialogue Manager\n"
+"Language: zh-tw\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+msgid "start_a_new_file"
+msgstr "創建新檔案"
+
+msgid "open_a_file"
+msgstr "開啟已有檔案"
+
+msgid "open.open"
+msgstr "開啟……"
+
+msgid "open.no_recent_files"
+msgstr "無歷史記錄"
+
+msgid "open.clear_recent_files"
+msgstr "清空歷史記錄"
+
+msgid "save_all_files"
+msgstr "儲存所有檔案"
+
+msgid "test_dialogue"
+msgstr "測試對話"
+
+msgid "search_for_text"
+msgstr "搜尋……"
+
+msgid "insert"
+msgstr "插入"
+
+msgid "translations"
+msgstr "翻譯"
+
+msgid "settings"
+msgstr "設置"
+
+msgid "show_support"
+msgstr "支持 Dialogue Manager"
+
+msgid "docs"
+msgstr "文檔"
+
+msgid "insert.wave_bbcode"
+msgstr "BBCode [lb]wave[rb]"
+
+msgid "insert.shake_bbcode"
+msgstr "BBCode [lb]wave[rb]"
+
+msgid "insert.typing_pause"
+msgstr "輸入間隔"
+
+msgid "insert.typing_speed_change"
+msgstr "輸入速度變更"
+
+msgid "insert.auto_advance"
+msgstr "自動切行"
+
+msgid "insert.templates"
+msgstr "模板"
+
+msgid "insert.title"
+msgstr "標題"
+
+msgid "insert.dialogue"
+msgstr "對話"
+
+msgid "insert.response"
+msgstr "回覆選項"
+
+msgid "insert.random_lines"
+msgstr "隨機行"
+
+msgid "insert.random_text"
+msgstr "隨機文本"
+
+msgid "insert.actions"
+msgstr "操作"
+
+msgid "insert.jump"
+msgstr "標題間跳轉"
+
+msgid "insert.end_dialogue"
+msgstr "結束對話"
+
+msgid "generate_line_ids"
+msgstr "生成行 ID"
+
+msgid "save_to_csv"
+msgstr "生成 CSV"
+
+msgid "import_from_csv"
+msgstr "從 CSV 導入"
+
+msgid "confirm_close"
+msgstr "是否要儲存到“{path}”？"
+
+msgid "confirm_close.save"
+msgstr "儲存"
+
+msgid "confirm_close.discard"
+msgstr "不儲存"
+
+msgid "buffer.save"
+msgstr "儲存"
+
+msgid "buffer.save_as"
+msgstr "儲存爲……"
+
+msgid "buffer.close"
+msgstr "關閉"
+
+msgid "buffer.close_all"
+msgstr "全部關閉"
+
+msgid "buffer.close_other_files"
+msgstr "關閉其他檔案"
+
+msgid "buffer.copy_file_path"
+msgstr "複製檔案位置"
+
+msgid "buffer.show_in_filesystem"
+msgstr "在 Godot 側邊欄中顯示"
+
+msgid "settings.revert_to_default_test_scene"
+msgstr "重置測試場景設定"
+
+msgid "settings.autoload"
+msgstr "Autoload"
+
+msgid "settings.path"
+msgstr "路徑"
+
+msgid "settings.new_template"
+msgstr "新建檔案時自動插入模板"
+
+msgid "settings.missing_keys"
+msgstr "將翻譯鍵缺失視爲錯誤"
+
+msgid "settings.missing_keys_hint"
+msgstr "如果你使用靜態鍵，這將會幫助你尋找未添加至翻譯檔案的鍵。"
+
+msgid "settings.wrap_long_lines"
+msgstr "自動折行"
+
+msgid "settings.characters_translations"
+msgstr "在翻譯檔案中導出角色名。"
+
+msgid "settings.include_failed_responses"
+msgstr "在判斷條件失敗時仍顯示回復選項"
+
+msgid "settings.ignore_missing_state_values"
+msgstr "忽略全局變量缺失錯誤（不建議）"
+
+msgid "settings.custom_test_scene"
+msgstr "自訂測試場景（必須繼承自BaseDialogueTestScene）"
+
+msgid "settings.states_shortcuts"
+msgstr "全局變量映射"
+
+msgid "settings.states_message"
+msgstr "當一個 Autoload 在這裏被勾選，他的所有成員會被映射爲全局變量。"
+
+msgid "settings.states_hint"
+msgstr "比如，當你開啓對於“Foo”的映射時，你可以將“Foo.bar”簡寫成“bar”。"
+
+msgid "n_of_n"
+msgstr "第{index}個，共{total}個"
+
+msgid "search.previous"
+msgstr "搜尋上一個"
+
+msgid "search.next"
+msgstr "搜尋下一個"
+
+msgid "search.match_case"
+msgstr "大小寫敏感"
+
+msgid "search.toggle_replace"
+msgstr "替換"
+
+msgid "search.replace_with"
+msgstr "替換爲"
+
+msgid "search.replace"
+msgstr "替換"
+
+msgid "search.replace_all"
+msgstr "全部替換"
+
+msgid "files_list.filter"
+msgstr "搜尋檔案"
+
+msgid "titles_list.filter"
+msgstr "搜尋標題"
+
+msgid "errors.key_not_found"
+msgstr "鍵“{key}”未找到"
+
+msgid "errors.line_and_message"
+msgstr "第{line}行第{colume}列發生錯誤：{message}"
+
+msgid "errors_in_script"
+msgstr "你的腳本中存在錯誤。請修復錯誤，然後重試。"
+
+msgid "errors_with_build"
+msgstr "請先解決 Dialogue 中的錯誤。"
+
+msgid "errors.import_errors"
+msgstr "被導入的檔案存在問題。"
+
+msgid "errors.already_imported"
+msgstr "檔案已被導入。"
+
+msgid "errors.duplicate_import"
+msgstr "導入名不能重複。"
+
+msgid "errors.empty_title"
+msgstr "標題名不能爲空。"
+
+msgid "errors.duplicate_title"
+msgstr "標題名不能重複。"
+
+msgid "errors.nested_title"
+msgstr "標題不能嵌套。"
+
+msgid "errors.invalid_title_string"
+msgstr "標題名無效。"
+
+msgid "errors.invalid_title_number"
+msgstr "標題不能以數字開始。"
+
+msgid "errors.unknown_title"
+msgstr "標題未定義。"
+
+msgid "errors.jump_to_invalid_title"
+msgstr "標題名無效。"
+
+msgid "errors.title_has_no_content"
+msgstr "目標標題爲空。請替換爲“=> END”。"
+
+msgid "errors.invalid_expression"
+msgstr "表達式無效。"
+
+msgid "errors.unexpected_condition"
+msgstr "未知條件。"
+
+msgid "errors.duplicate_id"
+msgstr "ID 重複。"
+
+msgid "errors.missing_id"
+msgstr "ID 不存在。"
+
+msgid "errors.invalid_indentation"
+msgstr "縮進無效。"
+
+msgid "errors.condition_has_no_content"
+msgstr "條件下方不能爲空。"
+
+msgid "errors.incomplete_expression"
+msgstr "不完整的表達式。"
+
+msgid "errors.invalid_expression_for_value"
+msgstr "無效的賦值表達式。"
+
+msgid "errors.file_not_found"
+msgstr "檔案不存在。"
+
+msgid "errors.unexpected_end_of_expression"
+msgstr "表達式 end 不應存在。"
+
+msgid "errors.unexpected_function"
+msgstr "函數不應存在。"
+
+msgid "errors.unexpected_bracket"
+msgstr "方括號不應存在。"
+
+msgid "errors.unexpected_closing_bracket"
+msgstr "方括號不應存在。"
+
+msgid "errors.missing_closing_bracket"
+msgstr "閉方括號不存在。"
+
+msgid "errors.unexpected_operator"
+msgstr "操作符不應存在。"
+
+msgid "errors.unexpected_comma"
+msgstr "逗號不應存在。"
+
+msgid "errors.unexpected_colon"
+msgstr "冒號不應存在。"
+
+msgid "errors.unexpected_dot"
+msgstr "句號不應存在。"
+
+msgid "errors.unexpected_boolean"
+msgstr "布爾值不應存在。"
+
+msgid "errors.unexpected_string"
+msgstr "字符串不應存在。"
+
+msgid "errors.unexpected_number"
+msgstr "數字不應存在。"
+
+msgid "errors.unexpected_variable"
+msgstr "標識符不應存在。"
+
+msgid "errors.invalid_index"
+msgstr "索引無效。"
+
+msgid "errors.unexpected_assignment"
+msgstr "不應在條件判斷中使用 = ，應使用 == 。"
+
+msgid "errors.unknown"
+msgstr "語法錯誤。"
+
+msgid "update.available"
+msgstr "v{version} 更新可用。"
+
+msgid "update.is_available_for_download"
+msgstr "v%s 已經可以下載。"
+
+msgid "update.downloading"
+msgstr "正在下載更新……"
+
+msgid "update.download_update"
+msgstr "下載"
+
+msgid "update.needs_reload"
+msgstr "需要重新加載項目以套用更新。"
+
+msgid "update.reload_ok_button"
+msgstr "重新加載"
+
+msgid "update.reload_cancel_button"
+msgstr "暫不重新加載"
+
+msgid "update.reload_project"
+msgstr "重新加載"
+
+msgid "update.release_notes"
+msgstr "查看發行註記"
+
+msgid "update.success"
+msgstr "v{version} 已成功安裝並套用。"
+
+msgid "update.failed"
+msgstr "更新失敗。"
+
+msgid "runtime.no_resource"
+msgstr "找不到資源。"
+
+msgid "runtime.no_content"
+msgstr "資源“{file_path}”爲空。"
+
+msgid "runtime.errors"
+msgstr "檔案中存在{errrors}個錯誤。"
+
+msgid "runtime.error_detail"
+msgstr "第{index}行：{message}"
+
+msgid "runtime.errors_see_details"
+msgstr "檔案中存在{errrors}個錯誤。請查看調試輸出。"
+
+msgid "runtime.invalid_expression"
+msgstr "表達式“{expression}”無效：{error}"
+
+msgid "runtime.unsupported_array_method"
+msgstr "不支持的數組方法{method_name}。"
+
+msgid "runtime.unsupported_dictionary_method"
+msgstr "不支持的字典方法{method_name}。"
+
+msgid "runtime.unsupported_quaternion_method"
+msgstr "不支持的 Quarternion 方法{method_name}。"
+
+msgid "runtime.array_index_out_of_bounds"
+msgstr "數組索引“{index}”越界。（數組名：“{array}”）"
+
+msgid "runtime.left_hand_size_cannot_be_assigned_to"
+msgstr "表達式左側的變量無法被賦值。"
+
+msgid "runtime.key_not_found"
+msgstr "鍵“{key}”在字典“{dictionary}”中不存在。"
+
+msgid "runtime.property_not_found"
+msgstr "“{property}”不存在。（全局變量：{states}）"
+
+msgid "runtime.method_not_found"
+msgstr "“{method}”不存在。（全局變量：{states}）"
+
+msgid "runtime.signal_not_found"
+msgstr "“{sighal_name}”不存在。（全局變量：{states}）"
+
+msgid "runtime.property_not_found_missing_export"
+msgstr "“{property}”不存在。（全局變量：{states}）你可能需要添加一個修飾詞 [Export]。"
+
+msgid "runtime.method_not_callable"
+msgstr "{method}不是對象“{object}”上的函數。"
+
+msgid "runtime.unknown_operator"
+msgstr "未知操作符。"
+
+msgid "runtime.something_went_wrong"
+msgstr "有什麼出錯了。"

@@ -63,6 +63,10 @@ The label will emit a `paused_typing` signal (along with the duration of the pau
 
 The `DialogueLabel` typing speed can be configured in your balloon by changing the `seconds_per_step` property. It will also automatically wait for a brief time when it encounters characters specified in the `pause_at_characters` property (by default, just ".").
 
+## Using a custom `current_scene` implementation
+
+If your game has its own method of managing what the "current scene" is then you might want to pass an overridden `Callable` to `DialogueManager.get_current_scene`. The built-in implementation looks at `get_tree().current_scene` before assuming the last child of `get_tree().root` is the current scene. If that doesn't work for you game then you can pass in a `Callable` that returns a `Node` that represents what the current scene is.
+
 ## Generating Dialogue Resources at runtime
 
 If you need to construct a dialogue resource at runtime you can use `create_resource_from_text(string)`:
@@ -78,5 +82,5 @@ If there were syntax errors the method will fail.
 If there were no errors then you can use this ephemeral resource like normal:
 
 ```gdscript
-var dialogue_line = await DialogueManager.get_next_dialogue_line("title", resource)
+var dialogue_line = await DialogueManager.get_next_dialogue_line(resource, "title")
 ```

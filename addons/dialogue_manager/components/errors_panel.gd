@@ -5,7 +5,7 @@ extends HBoxContainer
 signal error_pressed(line_number)
 
 
-const DialogueConstants = preload("res://addons/dialogue_manager/constants.gd")
+const DialogueConstants = preload("../constants.gd")
 
 
 @onready var error_button: Button = $ErrorButton
@@ -33,7 +33,7 @@ var errors: Array = []:
 func _ready() -> void:
 	apply_theme()
 	hide()
-	
+
 
 ## Set up colors and icons
 func apply_theme() -> void:
@@ -60,6 +60,8 @@ func show_error() -> void:
 		count_label.text = DialogueConstants.translate("n_of_n").format({ index = error_index + 1, total = errors.size() })
 		var error = errors[error_index]
 		error_button.text = DialogueConstants.translate("errors.line_and_message").format({ line = error.line_number + 1, column = error.column_number, message = DialogueConstants.get_error_message(error.error) })
+		if error.has("external_error"):
+			error_button.text += " " + DialogueConstants.get_error_message(error.external_error)
 
 
 ### Signals
