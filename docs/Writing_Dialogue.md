@@ -76,6 +76,15 @@ If you need to annotate your lines with tags then you can wrap them in `[#` and 
 Nathan: [#happy, #surprised] Oh, Hello!
 ```
 
+You can also give tags values that can be accessed with the `get_tag_value` method on a `DialogueLine`:
+
+```
+Nathan: [#mood=happy] Oh, Hello!
+```
+
+For this line of dialogue, the `tags` array would be `["mood=happy"]`, and `line.get_tag_value("mood")` would return `"happy"`.
+
+
 ### Randomising lines of dialogue
 
 If you want to pick one from a few lines of dialogue you can mark the line with a `%` at the start like this:
