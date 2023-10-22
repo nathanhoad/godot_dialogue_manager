@@ -73,7 +73,6 @@ func _init(data: Dictionary = {}) -> void:
 				translation_key = data.translation_key
 				pauses = data.pauses
 				speeds = data.speeds
-				tags = data.tags
 				inline_mutations = data.inline_mutations
 				conditions = data.conditions
 				time = data.time

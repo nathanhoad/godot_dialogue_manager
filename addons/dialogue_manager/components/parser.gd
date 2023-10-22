@@ -1122,7 +1122,6 @@ func extract_markers(line: String) -> ResolvedLineData:
 	var text: String = line
 	var pauses: Dictionary = {}
 	var speeds: Dictionary = {}
-	var tags: Dictionary = {}
 	var mutations: Array[Array] = []
 	var conditions: Dictionary = {}
 	var bbcodes: Array = []
@@ -1175,12 +1174,6 @@ func extract_markers(line: String) -> ResolvedLineData:
 					args[bits[0]] = bits[1]
 
 		match code:
-			"tag":
-				if raw_args.contains("="):
-					var split_args = str(raw_args).split("=")
-					tags[split_args[0]] = split_args[1]
-				else:
-					tags[raw_args] = true
 			"wait":
 				if pauses.has(index):
 					pauses[index] += args.get("value").to_float()
