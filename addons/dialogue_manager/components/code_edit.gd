@@ -54,6 +54,8 @@ var font_size: int:
 	get:
 		return font_size
 
+var WEIGHTED_RANDOM_PREFIX: RegEx = RegEx.create_from_string("^\\%[\\d.]+\\s")
+
 
 func _ready() -> void:
 	# Add error gutter
@@ -156,8 +158,7 @@ func _request_code_completion(force: bool) -> void:
 		parser.free()
 		return
 
-#	var last_character: String = current_line.substr(cursor.x - 1, 1)
-	var name_so_far: String = current_line.strip_edges()
+	var name_so_far: String = WEIGHTED_RANDOM_PREFIX.sub(current_line.strip_edges(), "")
 	if name_so_far != "" and name_so_far[0].to_upper() == name_so_far[0]:
 		# Only show names starting with that character
 		var names: PackedStringArray = get_character_names(name_so_far)
@@ -244,7 +245,7 @@ func get_character_names(beginning_with: String) -> PackedStringArray:
 	var lines = text.split("\n")
 	for line in lines:
 		if ": " in line:
-			var name: String = line.split(": ")[0].strip_edges()
+			var name: String = WEIGHTED_RANDOM_PREFIX.sub(line.split(": ")[0].strip_edges(), "")
 			if not name in names and matches_prompt(beginning_with, name):
 				names.append(name)
 	return names

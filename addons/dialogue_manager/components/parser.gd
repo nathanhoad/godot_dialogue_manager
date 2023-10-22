@@ -44,7 +44,7 @@ var TOKEN_DEFINITIONS: Dictionary = {
 	DialogueConstants.TOKEN_COMMENT: RegEx.create_from_string("^#.*")
 }
 
-var WEIGHTED_RANDOM_SIBLINGS_REGEX: RegEx = RegEx.create_from_string("^\\%(?<weight>\\d+)? ")
+var WEIGHTED_RANDOM_SIBLINGS_REGEX: RegEx = RegEx.create_from_string("^\\%(?<weight>[\\d.]+)? ")
 
 var raw_lines: PackedStringArray = []
 var parent_stack: Array[String] = []
@@ -682,10 +682,10 @@ func find_previous_response_id(line_number: int) -> String:
 
 
 func apply_weighted_random(id: int, raw_line: String, indent_size: int, line: Dictionary) -> void:
-	var weight: int = 1
+	var weight: float = 1
 	var found = WEIGHTED_RANDOM_SIBLINGS_REGEX.search(raw_line)
 	if found and found.names.has("weight"):
-		weight = found.strings[found.names.weight].to_int()
+		weight = found.strings[found.names.weight].to_float()
 
 	# Look back up the list to find the first weighted random line in this group
 	var original_random_line: Dictionary = {}
