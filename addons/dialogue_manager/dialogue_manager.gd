@@ -274,10 +274,10 @@ func get_line(resource: DialogueResource, key: String, extra_game_states: Array)
 
 	# Check for weighted random lines
 	if data.has("siblings"):
-		var result = randi() % data.siblings.reduce(func(total, sibling): return total + sibling.weight, 0)
-		var cummulative_weight = 0
+		var target_weight: float = randf_range(0, data.siblings.reduce(func(total, sibling): return total + sibling.weight, 0))
+		var cummulative_weight: float = 0
 		for sibling in data.siblings:
-			if result < cummulative_weight + sibling.weight:
+			if target_weight < cummulative_weight + sibling.weight:
 				data = resource.lines.get(sibling.id)
 				break
 			else:
