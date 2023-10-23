@@ -19,9 +19,11 @@ public partial class TestScene : Node2D
 
   public async override void _Ready()
   {
-    var dialogueManager = await DialogueManager.GetSingleton();
-
-    dialogueManager.Connect("dialogue_ended", new Callable(this, "OnDialogueEnded"));
+    DialogueManager.DialogueEnded += async (Resource dialogueResource) =>
+    {
+      await ToSignal(GetTree().CreateTimer(0.4), "timeout");
+      GetTree().Quit();
+    };
 
     await ToSignal(GetTree().CreateTimer(0.4), "timeout");
 
@@ -43,12 +45,5 @@ public partial class TestScene : Node2D
     await ToSignal(nameInputDialogue, "confirmed");
     PlayerName = nameInput.Text;
     nameInputDialogue.QueueFree();
-  }
-
-
-  private async void OnDialogueEnded(Resource resource)
-  {
-    await ToSignal(GetTree().CreateTimer(0.4), "timeout");
-    GetTree().Quit();
   }
 }
