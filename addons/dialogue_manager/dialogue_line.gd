@@ -89,3 +89,10 @@ func _to_string() -> String:
 		_DialogueConstants.TYPE_MUTATION:
 			return "<DialogueLine mutation>"
 	return ""
+
+func get_tag_value(tag_name: String) -> String:
+	var wrapped := "%s=" % tag_name
+	for t in tags:
+		if t.begins_with(wrapped):
+			return t.replace(wrapped, "").strip_edges()
+	return ""
