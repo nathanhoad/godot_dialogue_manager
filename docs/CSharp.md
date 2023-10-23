@@ -57,6 +57,43 @@ do AskForName()
 Nathan: Hello {{PlayerName}}!
 ```
 
+## Signals
+
+There are two ways you can connect to the Dialogue Manager signals - using `Connect` + `Callable` or by attaching event handlers.
+
+Using event handlers is the simpler method (but only works on the Dialogue Manager itself):
+
+```csharp
+DialogueManager.DialogueEnded += (Resource dialogueResource) =>
+{
+  // ...
+};
+
+DialogueManager.PassedTitle += (string title) =>
+{
+  // ...
+};
+
+DialogueManager.GotDialogue += (DialogueLine line) =>
+{
+  // ...
+};
+
+DialogueManager.Mutated += (Godot.Collections.Dictionary mutation) =>
+{
+  // ...
+};
+```
+
+If you are using the built-in responses menu node then you'll have to use the `Connect` approach.
+
+```csharp
+responsesMenu.Connect("response_selected", Callable.From((DialogueResponse response) =>
+{
+  // ...
+}));
+```
+
 ## Example
 
 There is a balloon implemented in C# in the **examples** folder of the repository. If you want to have a closer look at it you'll have to clone the repository down because the automatic download ZIP removes the docs and examples folder.

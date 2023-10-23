@@ -20,6 +20,7 @@ signal bridge_get_next_dialogue_line_completed(line)
 
 const DialogueConstants = preload("./constants.gd")
 const DialogueSettings = preload("./components/settings.gd")
+const DialogueResource = preload("./dialogue_resource.gd")
 const DialogueLine = preload("./dialogue_line.gd")
 const DialogueResponse = preload("./dialogue_response.gd")
 
@@ -87,6 +88,10 @@ func _ready() -> void:
 		var state: Node = get_node_or_null("/root/" + node_name)
 		if state:
 			game_states.append(state)
+
+	# Connect up the C# signals if need be
+	if ResourceLoader.exists("res://addons/dialogue_manager/DialogueManager.cs"):
+		load("res://addons/dialogue_manager/DialogueManager.cs").new().Prepare()
 
 
 ## Step through lines and run any mutations until we either hit some dialogue or the end of the conversation
