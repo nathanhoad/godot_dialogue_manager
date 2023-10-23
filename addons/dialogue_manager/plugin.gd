@@ -61,6 +61,9 @@ func _exit_tree() -> void:
 	if is_instance_valid(main_view):
 		main_view.queue_free()
 
+	if is_instance_valid(dialogue_cache):
+		dialogue_cache.queue_free()
+
 	get_editor_interface().get_file_system_dock().files_moved.disconnect(_on_files_moved)
 	get_editor_interface().get_file_system_dock().file_removed.disconnect(_on_file_removed)
 

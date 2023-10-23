@@ -37,11 +37,9 @@ var regex_paren: RegEx = RegEx.create_from_string("\\((?<paren>((?:[^\\(\\)]*)|(
 var cache: Dictionary = {}
 
 
-func unreference() -> bool:
-	if super():
+func _notification(what: int) -> void:
+	if what == NOTIFICATION_PREDELETE:
 		dialogue_manager_parser.free()
-		return true
-	return false
 
 
 func _clear_highlighting_cache() -> void:
