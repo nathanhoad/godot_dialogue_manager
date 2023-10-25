@@ -25,6 +25,11 @@ func _ready() -> void:
 		response_template.get_parent().remove_child(response_template)
 
 
+func _exit_tree() -> void:
+	if is_instance_valid(response_template):
+		response_template.free()
+
+
 ## Set the list of responses to show.
 func set_responses(next_responses: Array) -> void:
 	_responses = next_responses
