@@ -13,9 +13,11 @@ func _ready():
 	DisplayServer.window_set_position(Vector2(DisplayServer.screen_get_position(screen_index)) + (DisplayServer.screen_get_size(screen_index) - DisplayServer.window_get_size()) * 0.5)
 	DisplayServer.window_set_mode(DisplayServer.WINDOW_MODE_WINDOWED)
 
-	DialogueManager.dialogue_ended.connect(_on_dialogue_ended)
-
-	DialogueManager.show_example_dialogue_balloon(resource, title)
+	# Normally you can just call DialogueManager directly but doing so before the plugin has been
+	# enabled in settings will throw a compiler error here so I'm using get_singleton instead.
+	var dialogue_manager = Engine.get_singleton("DialogueManager")
+	dialogue_manager.dialogue_ended.connect(_on_dialogue_ended)
+	dialogue_manager.show_example_dialogue_balloon(resource, title)
 
 
 func _enter_tree() -> void:
