@@ -118,7 +118,6 @@ allow_reselect = true
 hide_folding = true
 hide_root = true
 select_mode = 1
-scroll_horizontal_enabled = false
 
 [node name="CustomTestSceneFileDialog" type="FileDialog" parent="."]
 title = "Open a File"
