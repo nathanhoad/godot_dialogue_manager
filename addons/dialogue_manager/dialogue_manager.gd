@@ -218,7 +218,7 @@ func create_resource_from_text(text: String) -> Resource:
 
 
 ## Show the example balloon
-func show_example_dialogue_balloon(resource: DialogueResource, title: String = "", extra_game_states: Array = []) -> void:
+func show_example_dialogue_balloon(resource: DialogueResource, title: String = "", extra_game_states: Array = []) -> CanvasLayer:
 	var ExampleBalloonScene = load("res://addons/dialogue_manager/example_balloon/example_balloon.tscn")
 	var SmallExampleBalloonScene = load("res://addons/dialogue_manager/example_balloon/small_example_balloon.tscn")
 
@@ -226,6 +226,8 @@ func show_example_dialogue_balloon(resource: DialogueResource, title: String = "
 	var balloon: Node = (SmallExampleBalloonScene if is_small_window else ExampleBalloonScene).instantiate()
 	get_current_scene.call().add_child(balloon)
 	balloon.start(resource, title, extra_game_states)
+
+	return balloon
 
 
 ### Dotnet bridge

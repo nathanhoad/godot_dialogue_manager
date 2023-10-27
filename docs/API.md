@@ -39,13 +39,15 @@ Pass an array of nodes as `extra_game_states` in order to temporarily add to the
 
 You can specify `mutation_behaviour` to be one of the values provided in the `DialogueManager.MutationBehaviour` enum. `Wait` is the default and will `await` any mutation lines. `DoNoWait` will run the mutations but not wait for them before moving to the next line. `Skip` will skip mutations entirely. In most cases you should leave this as the default. _The example balloon only supports `Wait`_.
 
-#### `func show_example_dialogue_balloon(resource: DialoueResource, title: String = "0", extra_game_states: Array = []) -> void`
+#### `func show_example_dialogue_balloon(resource: DialoueResource, title: String = "0", extra_game_states: Array = []) -> CanvasLayer`
 
 Opens the example balloon.
 
 If your game viewport is less than 400 it will open the low res balloon. Otherwise it will open the usual balloon.
 
 It will close once dialogue runs out.
+
+Returns the example balloon's base CanvasLayer in case you want to `queue_free()` it yourself.
 
 ## `DialogueLabel`
 
