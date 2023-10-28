@@ -147,7 +147,9 @@ func get_resolved_line_data(data: Dictionary, extra_game_states: Array = []) -> 
 		text = text.replace("[[%s]]" % found.get_string("options"), options[randi_range(0, options.size() - 1)])
 
 	# Do a pass on the markers to find any conditionals
-	var markers: ResolvedLineData = DialogueManagerParser.extract_markers_from_string(text)
+	var parser: DialogueManagerParser = DialogueManagerParser.new()
+	var markers: ResolvedLineData = parser.extract_markers(text)
+	parser.free()
 
 	# Resolve any conditionals and update marker positions as needed
 	var resolved_text: String = ""
