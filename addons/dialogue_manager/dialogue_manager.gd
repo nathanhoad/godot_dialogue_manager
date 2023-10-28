@@ -23,6 +23,9 @@ const DialogueSettings = preload("./components/settings.gd")
 const DialogueResource = preload("./dialogue_resource.gd")
 const DialogueLine = preload("./dialogue_line.gd")
 const DialogueResponse = preload("./dialogue_response.gd")
+const DialogueManagerParser = preload("./components/parser.gd")
+const DialogueManagerParseResult = preload("./components/parse_result.gd")
+const ResolvedLineData = preload("./components/resolved_line_data.gd")
 
 
 enum MutationBehaviour {
