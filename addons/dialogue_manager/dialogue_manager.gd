@@ -153,7 +153,6 @@ func get_resolved_line_data(data: Dictionary, extra_game_states: Array = []) -> 
 
 	# Resolve any conditionals and update marker positions as needed
 	var resolved_text: String = ""
-	var shifted_markers_index: int = 0
 	var previous_should_display_character: bool = true
 	var hidden_characters_from_index: int = -1
 	for index in range(markers.text.length()):
