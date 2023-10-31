@@ -153,26 +153,32 @@ func get_resolved_line_data(data: Dictionary, extra_game_states: Array = []) -> 
 
 	# Resolve any conditionals and update marker positions as needed
 	var resolved_text: String = ""
-	var should_display: bool = true
-	var should_display_stack: Array[bool] = []
-	var previous_should_display: bool = true
-	var previous_index_written: int = -1
+	var shifted_markers_index: int = 0
+	var previous_should_display_character: bool = true
+	var hidden_characters_from_index: int = -1
 	for index in range(markers.text.length()):
+		var should_display_character: bool = previous_should_display_character
+		# Check condition result value for the current marker, null marker = end of condition blocks
 		if markers.conditions.has(index):
-			if markers.conditions[index] == null:
-				should_display = should_display_stack[-1]
-				should_display_stack.pop_back()
-			else:
-				var result = await check_condition({ condition = markers.conditions[index] }, extra_game_states)
-				should_display_stack.push_back(should_display)
-				should_display = should_display and result
-		if not previous_should_display and should_display:
-			adjust_marker_indices(previous_index_written, index, markers)
-		elif previous_should_display and not should_display:
-			previous_index_written = index
-		previous_should_display = should_display
-		if should_display:
+			var condition_result: bool = true
+			if markers.conditions[index] != null:
+				condition_result = await check_condition({ condition = markers.conditions[index] }, extra_game_states)
+			should_display_character = condition_result
+		# End of a hidden block, so adjusting markers and resetting the hidden block index
+		if hidden_characters_from_index >= 0 and should_display_character:
+			adjust_marker_indices(hidden_characters_from_index, index, markers)
+			hidden_characters_from_index = -1
+		# Start of a hidden block
+		elif hidden_characters_from_index < 0 and not should_display_character:
+			hidden_characters_from_index = index
+		if should_display_character:
 			resolved_text += markers.text[index]
+		previous_should_display_character = should_display_character
+
+	# Remove stray markers if the last dialogue block is not displayed
+	if hidden_characters_from_index >= 0:
+		adjust_marker_indices(hidden_characters_from_index, markers.text.length() - 1, markers)
+
 	markers.text = resolved_text
 
 	return markers
@@ -1007,7 +1013,7 @@ func adjust_marker_indices(from: int, to: int, markers: ResolvedLineData) -> voi
 		for index in marker:
 			if index < from:
 				next_marker[index] = marker[index]
-			elif index > to:
+			elif index >= to:
 				next_marker[index - (to - from)] = marker[index]
 		markers.set(key, next_marker)
 
@@ -1017,8 +1023,8 @@ func adjust_marker_indices(from: int, to: int, markers: ResolvedLineData) -> voi
 		var index = mutation[0]
 		if index < from:
 			next_mutations.append(mutation)
-		elif index > to:
-			next_mutations.append([index - (to - from), mutation[index]])
+		elif index >= to:
+			next_mutations.append([index - (to - from), mutation[1]])
 	markers.mutations = next_mutations
 
 
