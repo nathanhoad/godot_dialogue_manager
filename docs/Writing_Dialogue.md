@@ -223,6 +223,18 @@ Conditions can also be used inline in a dialogue line when wrapped with "[if pre
 Nathan: I have done this [if already_done]once again[/if]
 ```
 
+When using a combination of mutations/speed/pauses and conditions, always use at least one character between a mutation and start or end of a condition block.
+This results in the speed tags not being processed, and it works the same for pauses `[wait=1.0]` and inline mutations `[do something()]`:
+```
+Nathan: I have done this [speed=5][if already_done]once again[/if][speed=10] faster
+Nathan: I have done this [if already_done][speed=5]once again[speed=10][/if] faster
+```
+Do instead:
+```
+Nathan: I have done this[speed=5] [if already_done]once again[/if] [speed=10]faster
+Nathan: I have done this[if already_done] [speed=5]once again[speed=10] [/if]faster
+```
+
 ## Mutations
 
 You can modify state with either a "set" or a "do" line.

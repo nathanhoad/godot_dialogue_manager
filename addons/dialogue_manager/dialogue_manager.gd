@@ -1012,7 +1012,7 @@ func adjust_marker_indices(from: int, to: int, markers: ResolvedLineData) -> voi
 		for index in marker:
 			if index < from:
 				next_marker[index] = marker[index]
-			elif index >= to:
+			elif index > to:
 				next_marker[index - (to - from)] = marker[index]
 		markers.set(key, next_marker)
 
@@ -1022,7 +1022,7 @@ func adjust_marker_indices(from: int, to: int, markers: ResolvedLineData) -> voi
 		var index = mutation[0]
 		if index < from:
 			next_mutations.append(mutation)
-		elif index >= to:
+		elif index > to:
 			next_mutations.append([index - (to - from), mutation[1]])
 	markers.mutations = next_mutations
 
