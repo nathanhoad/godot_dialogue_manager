@@ -77,11 +77,11 @@ func type_out() -> void:
 	text = dialogue_line.text
 	visible_characters = 0
 	visible_ratio = 0
-	self.is_typing = true
 	_waiting_seconds = 0
+	_last_wait_index = -1
+	_last_mutation_index = -1
 
-	# Text isn't calculated until the next frame
-	await get_tree().process_frame
+	self.is_typing = true
 
 	if get_total_character_count() == 0:
 		self.is_typing = false
