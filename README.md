@@ -24,6 +24,7 @@ You can install it via the Asset Library or [downloading a copy](https://github.
 ## Video Guides
 
 [![Dialogue in Godot 4 for Beginners](docs/beginners.png)](https://youtu.be/UhPFk8FSbd8)
+[![Making a custom dialogue balloon](docs/make-balloons.png)](https://youtu.be/X0e-n7dbff8)
 [![Dialogue Manager for Godot 4](docs/tutorial.png)](https://youtu.be/DL79aS-dT7E)
 [![New Stuff in Dialogue Manager for Godot 4](docs/tutorial2.png)](https://youtu.be/Kco9jeGfOtA)
 [![More new stuff as at version 2.8](docs/tutorial3.png)](https://youtu.be/10p1gozzJ9E)
