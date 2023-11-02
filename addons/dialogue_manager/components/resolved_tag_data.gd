@@ -1,4 +1,4 @@
-class_name ResolvedTagData extends RefCounted
+extends RefCounted
 
 
 var tags: PackedStringArray = []

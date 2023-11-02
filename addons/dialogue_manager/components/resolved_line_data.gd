@@ -1,4 +1,4 @@
-class_name ResolvedLineData extends RefCounted
+extends RefCounted
 
 var text: String = ""
 var pauses: Dictionary = {}
