@@ -18,6 +18,8 @@ var WRAPPED_CONDITION_REGEX: RegEx = RegEx.create_from_string("\\[if (?<conditio
 var REPLACEMENTS_REGEX: RegEx = RegEx.create_from_string("{{(.*?)}}")
 var GOTO_REGEX: RegEx = RegEx.create_from_string("=><? (?<jump_to_title>.*)")
 var INDENT_REGEX: RegEx = RegEx.create_from_string("^\\t+")
+var INLINE_RANDOM_REGEX: RegEx = RegEx.create_from_string("\\[\\[(?<options>.*?)\\]\\]")
+var INLINE_CONDITIONALS_REGEX: RegEx = RegEx.create_from_string("\\[if (?<condition>.+?)\\](?<body>.*?)\\[\\/if\\]")
 
 var TOKEN_DEFINITIONS: Dictionary = {
 	DialogueConstants.TOKEN_FUNCTION: RegEx.create_from_string("^[a-zA-Z_][a-zA-Z_0-9]*\\("),
@@ -1123,7 +1125,6 @@ func extract_markers(line: String) -> ResolvedLineData:
 	var pauses: Dictionary = {}
 	var speeds: Dictionary = {}
 	var mutations: Array[Array] = []
-	var conditions: Dictionary = {}
 	var bbcodes: Array = []
 	var time = null
 
@@ -1133,7 +1134,7 @@ func extract_markers(line: String) -> ResolvedLineData:
 	var accumulaive_length_offset = 0
 	for position in bbcode_positions:
 		# Ignore our own markers
-		if position.code in ["wait", "speed", "/speed", "do", "set", "next", "if", "/if"]:
+		if position.code in ["wait", "speed", "/speed", "do", "set", "next", "if", "else", "/if"]:
 			continue
 
 		bbcodes.append({
@@ -1160,8 +1161,6 @@ func extract_markers(line: String) -> ResolvedLineData:
 		var args = {}
 		if code in ["do", "set"]:
 			args["value"] = extract_mutation("%s %s" % [code, raw_args])
-		elif code == "if":
-			args["value"] = extract_condition(bbcode["bbcode"], true, 0)
 		else:
 			# Could be something like:
 			# 	"=1.0"
@@ -1187,10 +1186,6 @@ func extract_markers(line: String) -> ResolvedLineData:
 				mutations.append([index, args.get("value")])
 			"next":
 				time = args.get("value") if args.has("value") else "0"
-			"if":
-				conditions[index] = args.get("value")
-			"/if":
-				conditions[index] = null
 
 		# Find any BB codes that are after this index and remove the length from their start
 		var length = bbcode.bbcode.length()
@@ -1211,7 +1206,6 @@ func extract_markers(line: String) -> ResolvedLineData:
 		pauses = pauses,
 		speeds = speeds,
 		mutations = mutations,
-		conditions = conditions,
 		time = time
 	})
 
@@ -1246,7 +1240,7 @@ func find_bbcode_positions_in_string(string: String, find_all: bool = true) -> A
 
 		if string[i] == "]":
 			open_brace_count -= 1
-			if open_brace_count == 0:
+			if open_brace_count == 0 and not code in ["if", "else", "/if"]:
 				positions.append({
 					bbcode = bbcode,
 					code = code,
