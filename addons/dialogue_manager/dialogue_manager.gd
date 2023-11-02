@@ -139,20 +139,19 @@ func get_resolved_line_data(data: Dictionary, extra_game_states: Array = []) -> 
 		var value = await resolve(replacement.expression.duplicate(true), extra_game_states)
 		text = text.replace(replacement.value_in_text, str(value))
 
+	var parser: DialogueManagerParser = DialogueManagerParser.new()
+
 	# Resolve random groups
-	var random_regex: RegEx = RegEx.new()
-	random_regex.compile("\\[\\[(?<options>.*?)\\]\\]")
-	for found in random_regex.search_all(text):
+	for found in parser.INLINE_RANDOM_REGEX.search_all(text):
 		var options = found.get_string("options").split("|")
 		text = text.replace("[[%s]]" % found.get_string("options"), options[randi_range(0, options.size() - 1)])
 	# Do a pass on the markers to find any conditionals
-	var parser: DialogueManagerParser = DialogueManagerParser.new()
+
 	var markers: ResolvedLineData = parser.extract_markers(text)
 
 	# Resolve any conditionals and update marker positions as needed
 	var resolved_text: String = markers.text
-	var conditionals_regex: RegEx = RegEx.create_from_string("\\[if (?<condition>.+?)\\](?<body>.*?)\\[\\/if\\]")
-	var conditionals: Array[RegExMatch] = conditionals_regex.search_all(resolved_text)
+	var conditionals: Array[RegExMatch] = parser.INLINE_CONDITIONALS_REGEX.search_all(resolved_text)
 	var replacements: Array = []
 	for conditional in conditionals:
 		var condition_raw: String = conditional.strings[conditional.names.condition]

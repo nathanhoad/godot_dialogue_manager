@@ -18,6 +18,8 @@ var WRAPPED_CONDITION_REGEX: RegEx = RegEx.create_from_string("\\[if (?<conditio
 var REPLACEMENTS_REGEX: RegEx = RegEx.create_from_string("{{(.*?)}}")
 var GOTO_REGEX: RegEx = RegEx.create_from_string("=><? (?<jump_to_title>.*)")
 var INDENT_REGEX: RegEx = RegEx.create_from_string("^\\t+")
+var INLINE_RANDOM_REGEX: RegEx = RegEx.create_from_string("\\[\\[(?<options>.*?)\\]\\]")
+var INLINE_CONDITIONALS_REGEX: RegEx = RegEx.create_from_string("\\[if (?<condition>.+?)\\](?<body>.*?)\\[\\/if\\]")
 
 var TOKEN_DEFINITIONS: Dictionary = {
 	DialogueConstants.TOKEN_FUNCTION: RegEx.create_from_string("^[a-zA-Z_][a-zA-Z_0-9]*\\("),
