@@ -5,6 +5,9 @@ class_name DialogueManagerParser extends Object
 
 const DialogueConstants = preload("../constants.gd")
 const DialogueSettings = preload("./settings.gd")
+const ResolvedLineData = preload("./resolved_line_data.gd")
+const ResolvedTagData = preload("./resolved_tag_data.gd")
+const DialogueManagerParseResult = preload("./parse_result.gd")
 
 
 var IMPORT_REGEX: RegEx = RegEx.create_from_string("import \"(?<path>[^\"]+)\" as (?<prefix>[^\\!\\@\\#\\$\\%\\^\\&\\*\\(\\)\\-\\=\\+\\{\\}\\[\\]\\;\\:\\\"\\'\\,\\.\\<\\>\\?\\/\\s]+)")

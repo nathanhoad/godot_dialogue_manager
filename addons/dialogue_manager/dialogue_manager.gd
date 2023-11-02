@@ -145,8 +145,8 @@ func get_resolved_line_data(data: Dictionary, extra_game_states: Array = []) -> 
 	for found in parser.INLINE_RANDOM_REGEX.search_all(text):
 		var options = found.get_string("options").split("|")
 		text = text.replace("[[%s]]" % found.get_string("options"), options[randi_range(0, options.size() - 1)])
-	# Do a pass on the markers to find any conditionals
 
+	# Do a pass on the markers to find any conditionals
 	var markers: ResolvedLineData = parser.extract_markers(text)
 
 	# Resolve any conditionals and update marker positions as needed
