@@ -94,7 +94,10 @@ func _ready() -> void:
 
 	# Connect up the C# signals if need be
 	if ResourceLoader.exists("res://addons/dialogue_manager/DialogueManager.cs"):
-		load("res://addons/dialogue_manager/DialogueManager.cs").new().Prepare()
+		var csharp_dialogue_manager = load("res://addons/dialogue_manager/DialogueManager.cs")
+		# Make sure the C# dialogue manager could be loaded
+		if csharp_dialogue_manager != null:
+			csharp_dialogue_manager.new().Prepare()
 
 
 ## Step through lines and run any mutations until we either hit some dialogue or the end of the conversation
