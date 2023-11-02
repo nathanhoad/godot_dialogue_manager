@@ -194,7 +194,7 @@ func get_resolved_line_data(data: Dictionary, extra_game_states: Array = []) -> 
 			if index < r.start:
 				next_mutations.append(mutation)
 			elif index > r.start:
-				next_mutations.append([index - offset, mutation[index]])
+				next_mutations.append([index - offset, mutation[1]])
 		markers.mutations = next_mutations
 
 	markers.text = resolved_text
