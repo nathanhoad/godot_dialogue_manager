@@ -145,35 +145,62 @@ func get_resolved_line_data(data: Dictionary, extra_game_states: Array = []) -> 
 	for found in random_regex.search_all(text):
 		var options = found.get_string("options").split("|")
 		text = text.replace("[[%s]]" % found.get_string("options"), options[randi_range(0, options.size() - 1)])
-
 	# Do a pass on the markers to find any conditionals
 	var parser: DialogueManagerParser = DialogueManagerParser.new()
 	var markers: ResolvedLineData = parser.extract_markers(text)
-	parser.free()
 
 	# Resolve any conditionals and update marker positions as needed
-	var resolved_text: String = ""
-	var should_display: bool = true
-	var should_display_stack: Array[bool] = []
-	var previous_should_display: bool = true
-	var previous_index_written: int = -1
-	for index in range(markers.text.length()):
-		if markers.conditions.has(index):
-			if markers.conditions[index] == null:
-				should_display = should_display_stack[-1]
-				should_display_stack.pop_back()
-			else:
-				var result = await check_condition({ condition = markers.conditions[index] }, extra_game_states)
-				should_display_stack.push_back(should_display)
-				should_display = should_display and result
-		if not previous_should_display and should_display:
-			adjust_marker_indices(previous_index_written, index, markers)
-		elif previous_should_display and not should_display:
-			previous_index_written = index
-		previous_should_display = should_display
-		if should_display:
-			resolved_text += markers.text[index]
+	var resolved_text: String = markers.text
+	var conditionals_regex: RegEx = RegEx.create_from_string("\\[if (?<condition>.+?)\\](?<body>.*?)\\[\\/if\\]")
+	var conditionals: Array[RegExMatch] = conditionals_regex.search_all(resolved_text)
+	var replacements: Array = []
+	for conditional in conditionals:
+		var condition_raw: String = conditional.strings[conditional.names.condition]
+		var body: String = conditional.strings[conditional.names.body]
+		var body_else: String = ""
+		if "[else]" in body:
+			var bits = body.split("[else]")
+			body = bits[0]
+			body_else = bits[1]
+		var condition: Dictionary = parser.extract_condition("if " + condition_raw, false, 0)
+		# If the condition fails then use the else of ""
+		if not await check_condition({ condition = condition }, extra_game_states):
+			body = body_else
+		replacements.append({
+			start = conditional.get_start(),
+			end = conditional.get_end(),
+			string = conditional.get_string(),
+			body = body
+		})
+
+	for i in range(replacements.size() -1, -1, -1):
+		var r: Dictionary = replacements[i]
+		resolved_text = resolved_text.substr(0, r.start) + r.body + resolved_text.substr(r.end, 9999)
+		# Move any other markers now that the text has changed
+		var offset: int = r.end - r.start - r.body.length()
+		for key in ["pauses", "speeds", "time"]:
+			if markers.get(key) == null: continue
+			var marker = markers.get(key)
+			var next_marker: Dictionary = {}
+			for index in marker:
+				if index < r.start:
+					next_marker[index] = marker[index]
+				elif index > r.start:
+					next_marker[index - offset] = marker[index]
+			markers.set(key, next_marker)
+		var mutations: Array[Array] = markers.mutations
+		var next_mutations: Array[Array] = []
+		for mutation in mutations:
+			var index = mutation[0]
+			if index < r.start:
+				next_mutations.append(mutation)
+			elif index > r.start:
+				next_mutations.append([index - offset, mutation[index]])
+		markers.mutations = next_mutations
+
 	markers.text = resolved_text
+
+	parser.free()
 
 	return markers
 
@@ -393,7 +420,6 @@ func create_dialogue_line(data: Dictionary, extra_game_states: Array) -> Dialogu
 				pauses = resolved_data.pauses,
 				speeds = resolved_data.speeds,
 				inline_mutations = resolved_data.mutations,
-				conditions = resolved_data.conditions,
 				time = resolved_data.time,
 				tags = data.get("tags", []),
 				extra_game_states = extra_game_states
@@ -995,31 +1021,6 @@ func apply_operation(operator: String, first_value, second_value):
 			return first_value or second_value
 
 	assert(false, DialogueConstants.translate("runtime.unknown_operator"))
-
-
-# Move the position of any markers after a given position
-func adjust_marker_indices(from: int, to: int, markers: ResolvedLineData) -> void:
-	for key in ["pauses", "speeds", "time"]: # mutations
-		if markers.get(key) == null:
-			continue
-		var marker = markers.get(key)
-		var next_marker: Dictionary = {}
-		for index in marker:
-			if index < from:
-				next_marker[index] = marker[index]
-			elif index > to:
-				next_marker[index - (to - from)] = marker[index]
-		markers.set(key, next_marker)
-
-	var mutations: Array[Array] = markers.mutations
-	var next_mutations: Array[Array] = []
-	for mutation in mutations:
-		var index = mutation[0]
-		if index < from:
-			next_mutations.append(mutation)
-		elif index > to:
-			next_mutations.append([index - (to - from), mutation[index]])
-	markers.mutations = next_mutations
 
 
 # Check if a dialogue line contains meaningful information

@@ -84,7 +84,6 @@ Nathan: [#mood=happy] Oh, Hello!
 
 For this line of dialogue, the `tags` array would be `["mood=happy"]`, and `line.get_tag_value("mood")` would return `"happy"`.
 
-
 ### Randomising lines of dialogue
 
 If you want to pick one from a few lines of dialogue you can mark the line with a `%` at the start like this:
@@ -221,6 +220,12 @@ Conditions can also be used inline in a dialogue line when wrapped with "[if pre
 
 ```
 Nathan: I have done this [if already_done]once again[/if]
+```
+
+For simple this-or-that conditions you can write them like this:
+
+```
+Nathan: You have {{num_apples}} [if num_apples == 1]apple[else]apples[/if], nice!
 ```
 
 ## Mutations
