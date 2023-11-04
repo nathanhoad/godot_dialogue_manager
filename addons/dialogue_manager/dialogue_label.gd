@@ -176,7 +176,8 @@ func _should_auto_pause() -> bool:
 			return false
 
 	# Ignore two non-"." characters next to each other
-	if visible_characters > 1 and parsed_text[visible_characters - 1] in pause_at_characters.replace(".", "").split():
+	var other_pause_characters: PackedStringArray = pause_at_characters.replace(".", "").split()
+	if visible_characters > 1 and parsed_text[visible_characters - 1] in other_pause_characters and parsed_text[visible_characters] in other_pause_characters:
 		return false
 
 	return parsed_text[visible_characters - 1] in pause_at_characters.split()
