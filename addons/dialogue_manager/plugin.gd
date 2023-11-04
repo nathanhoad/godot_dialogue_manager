@@ -106,13 +106,14 @@ func _build() -> bool:
 	# Ignore errors in other files if we are just running the test scene
 	if DialogueSettings.get_user_value("is_running_test_scene", true): return true
 
-	var files_with_errors = dialogue_cache.get_files_with_errors()
-	if files_with_errors.size() > 0:
-		for dialogue_file in files_with_errors:
-			push_error("You have %d error(s) in %s" % [dialogue_file.errors.size(), dialogue_file.path])
-		get_editor_interface().edit_resource(load(files_with_errors[0].path))
-		main_view.show_build_error_dialog()
-		return false
+	if dialogue_cache != null:
+		var files_with_errors = dialogue_cache.get_files_with_errors()
+		if files_with_errors.size() > 0:
+			for dialogue_file in files_with_errors:
+				push_error("You have %d error(s) in %s" % [dialogue_file.errors.size(), dialogue_file.path])
+			get_editor_interface().edit_resource(load(files_with_errors[0].path))
+			main_view.show_build_error_dialog()
+			return false
 
 	return true
 
