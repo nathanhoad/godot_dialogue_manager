@@ -38,6 +38,7 @@ const TOKEN_ERROR = "error"
 # Line types
 
 const TYPE_UNKNOWN = "unknown"
+const TYPE_IMPORT = "import"
 const TYPE_RESPONSE = "response"
 const TYPE_TITLE = "title"
 const TYPE_CONDITION = "condition"

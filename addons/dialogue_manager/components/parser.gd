@@ -305,6 +305,10 @@ func parse(text: String, path: String) -> Error:
 		elif is_line_empty(raw_line):
 			continue
 
+		# Import line
+		elif is_import_line(raw_line):
+			line["type"] = DialogueConstants.TYPE_IMPORT
+
 		# Regular dialogue
 		else:
 			# Work out any weighted random siblings
