@@ -221,6 +221,9 @@ msgstr ""
 msgid "errors.duplicate_import"
 msgstr ""
 
+msgid "errors.unknown_using"
+msgstr ""
+
 msgid "errors.empty_title"
 msgstr ""
 
@@ -405,6 +408,9 @@ msgid "runtime.method_not_callable"
 msgstr ""
 
 msgid "runtime.unknown_operator"
+msgstr ""
+
+msgid "runtime.unknown_autoload"
 msgstr ""
 
 msgid "runtime.something_went_wrong"

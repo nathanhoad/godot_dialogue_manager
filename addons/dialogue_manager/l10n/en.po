@@ -231,6 +231,9 @@ msgstr "File already imported."
 msgid "errors.duplicate_import"
 msgstr "Duplicate import name."
 
+msgid "errors.unknown_using"
+msgstr "Unknown autoload in using statement."
+
 msgid "errors.empty_title"
 msgstr "Titles cannot be empty."
 
@@ -416,6 +419,9 @@ msgstr "\"{method}\" is not a callable method on \"{object}\""
 
 msgid "runtime.unknown_operator"
 msgstr "Unknown operator."
+
+msgid "runtime.unknown_autoload"
+msgstr "\"{autoload}\" doesn't appear to be a valid autoload."
 
 msgid "runtime.something_went_wrong"
 msgstr "Something went wrong."

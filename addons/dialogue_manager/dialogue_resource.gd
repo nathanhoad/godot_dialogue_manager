@@ -7,6 +7,9 @@ class_name DialogueResource extends Resource
 const _DialogueManager = preload("./dialogue_manager.gd")
 
 
+## A list of state shortcuts
+@export var using_states: PackedStringArray = []
+
 ## A map of titles and the lines they point to.
 @export var titles: Dictionary = {}
 

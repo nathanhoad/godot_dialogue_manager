@@ -100,6 +100,12 @@ func _get_line_syntax_highlighting(line: int) -> Dictionary:
 		colors[import_match.get_start("prefix")] = {"color": text_edit.theme_overrides.members_color}
 		colors[import_match.get_end("prefix")] = {"color": text_edit.theme_overrides.conditions_color}
 
+	# Using clauses
+	var using_matches: Array[RegExMatch] = dialogue_manager_parser.USING_REGEX.search_all(text)
+	for using_match in using_matches:
+		colors[using_match.get_start(0)] = {"color": text_edit.theme_overrides.conditions_color}
+		colors[using_match.get_start("state") - 1] = {"color": text_edit.theme_overrides.text_color}
+
 	# Condition keywords and expressions.
 	var condition_matches: Array[RegExMatch] = regex_condition.search_all(text)
 	for condition_match in condition_matches:

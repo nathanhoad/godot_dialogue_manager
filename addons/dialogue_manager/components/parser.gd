@@ -11,6 +11,7 @@ const DialogueManagerParseResult = preload("./parse_result.gd")
 
 
 var IMPORT_REGEX: RegEx = RegEx.create_from_string("import \"(?<path>[^\"]+)\" as (?<prefix>[^\\!\\@\\#\\$\\%\\^\\&\\*\\(\\)\\-\\=\\+\\{\\}\\[\\]\\;\\:\\\"\\'\\,\\.\\<\\>\\?\\/\\s]+)")
+var USING_REGEX: RegEx = RegEx.create_from_string("using (?<state>.*)")
 var VALID_TITLE_REGEX: RegEx = RegEx.create_from_string("^[^\\!\\@\\#\\$\\%\\^\\&\\*\\(\\)\\-\\=\\+\\{\\}\\[\\]\\;\\:\\\"\\'\\,\\.\\<\\>\\?\\/\\s]+$")
 var BEGINS_WITH_NUMBER_REGEX: RegEx = RegEx.create_from_string("^\\d")
 var TRANSLATION_REGEX: RegEx = RegEx.create_from_string("\\[ID:(?<tr>.*?)\\]")
@@ -56,6 +57,7 @@ var parent_stack: Array[String] = []
 
 var parsed_lines: Dictionary = {}
 var imported_paths: PackedStringArray = []
+var using_states: PackedStringArray = []
 var titles: Dictionary = {}
 var character_names: PackedStringArray = []
 var first_title: String = ""
@@ -96,6 +98,9 @@ func parse(text: String, path: String) -> Error:
 	# Parse all of the content
 	var known_translations = {}
 
+	# Get list of known autoloads
+	var autoload_names: PackedStringArray = get_autoload_names()
+
 	# Then parse all lines
 	for id in range(0, raw_lines.size()):
 		var raw_line: String = raw_lines[id]
@@ -126,10 +131,21 @@ func parse(text: String, path: String) -> Error:
 			line["translation_key"] = translation_key
 			raw_line = raw_line.replace("[ID:%s]" % translation_key, "")
 
-		## Check for each kind of line
+		# Check for each kind of line
+
+		# Start shortcuts
+		if raw_line.begins_with("using "):
+			var using_match: RegExMatch = USING_REGEX.search(raw_line)
+			if "state" in using_match.names:
+				var using_state: String = using_match.strings[using_match.names.state]
+				if not using_state in autoload_names:
+					add_error(id, 0, DialogueConstants.ERR_UNKNOWN_USING)
+				elif not using_state in using_states:
+					using_states.append(using_state)
+			continue
 
 		# Response
-		if is_response_line(raw_line):
+		elif is_response_line(raw_line):
 			parent_stack.append(str(id))
 			line["type"] = DialogueConstants.TYPE_RESPONSE
 
@@ -430,6 +446,7 @@ func parse(text: String, path: String) -> Error:
 func get_data() -> DialogueManagerParseResult:
 	var data: DialogueManagerParseResult = DialogueManagerParseResult.new()
 	data.imported_paths = imported_paths
+	data.using_states = using_states
 	data.titles = titles
 	data.character_names = character_names
 	data.first_title = first_title
@@ -440,6 +457,7 @@ func get_data() -> DialogueManagerParseResult:
 ## Get the last parse errors
 func get_errors() -> Array[Dictionary]:
 	return errors
+
 
 ## Prepare the parser by collecting all lines and titles
 func prepare(text: String, path: String, include_imported_titles_hashes: bool = true) -> void:
@@ -869,6 +887,18 @@ func find_next_line_after_responses(line_number: int) -> String:
 
 	# EOF so must be end of conversation
 	return DialogueConstants.ID_END_CONVERSATION
+
+
+## Get the names of any autoloads in the project
+func get_autoload_names() -> PackedStringArray:
+	var autoloads: PackedStringArray = []
+
+	var project = ConfigFile.new()
+	project.load("res://project.godot")
+	if project.has_section("autoload"):
+		return Array(project.get_section_keys("autoload")).filter(func(key): return key != "DialogueManager")
+
+	return autoloads
 
 
 ## Import content from another dialogue file or return an ERR

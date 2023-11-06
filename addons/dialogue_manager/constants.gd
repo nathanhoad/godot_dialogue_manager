@@ -172,6 +172,7 @@ const ERR_UNEXPECTED_NUMBER = 131
 const ERR_UNEXPECTED_VARIABLE = 132
 const ERR_INVALID_INDEX = 133
 const ERR_UNEXPECTED_ASSIGNMENT = 134
+const ERR_UNKNOWN_USING = 135
 
 
 ## Get the error message
@@ -247,6 +248,8 @@ static func get_error_message(error: int) -> String:
 			return translate("errors.invalid_index")
 		ERR_UNEXPECTED_ASSIGNMENT:
 			return translate("errors.unexpected_assignment")
+		ERR_UNKNOWN_USING:
+			return translate("errors.unknown_using")
 
 	return translate("errors.unknown")
 
