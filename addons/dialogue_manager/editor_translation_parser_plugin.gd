@@ -20,7 +20,7 @@ func _parse_file(path: String, msgids: Array, msgids_context_plural: Array) -> v
 
 			known_keys.append(character_name)
 
-			msgids_context_plural.append([character_name, "dialogue", ""])
+			msgids_context_plural.append([character_name.replace('"', '\\"'), "dialogue", ""])
 
 	# Add all dialogue lines and responses
 	var dialogue: Dictionary = data.lines
