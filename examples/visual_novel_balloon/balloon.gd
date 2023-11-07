@@ -208,6 +208,7 @@ func _on_response_gui_input(event: InputEvent, item: Control) -> void:
 		responses_menu.modulate.a = 0.0
 		next(dialogue_line.responses[item.get_index()].next_id)
 	elif event.is_action_pressed("ui_accept") and item in get_responses():
+		get_viewport().set_input_as_handled() # When there are no response options 
 		responses_menu.modulate.a = 0.0
 		next(dialogue_line.responses[item.get_index()].next_id)
 
