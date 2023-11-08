@@ -318,7 +318,7 @@ func parse(text: String, path: String) -> Error:
 
 			continue
 
-		elif is_line_empty(raw_line):
+		elif is_line_empty(raw_line) or is_import_line(raw_line):
 			continue
 
 		# Regular dialogue
