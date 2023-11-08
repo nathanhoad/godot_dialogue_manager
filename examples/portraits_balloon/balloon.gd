@@ -187,11 +187,11 @@ func _on_response_mouse_entered(item: Control) -> void:
 func _on_response_gui_input(event: InputEvent, item: Control) -> void:
 	if "Disallowed" in item.name: return
 
+	get_viewport().set_input_as_handled()
+
 	if event is InputEventMouseButton and event.is_pressed() and event.button_index == 1:
 		next(dialogue_line.responses[item.get_index()].next_id)
 	elif event.is_action_pressed("ui_accept") and item in get_responses():
-		# When there are no response options
-		get_viewport().set_input_as_handled()
 		next(dialogue_line.responses[item.get_index()].next_id)
 
 
