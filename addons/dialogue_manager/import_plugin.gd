@@ -6,7 +6,7 @@ signal compiled_resource(resource: Resource)
 
 
 const DialogueResource = preload("./dialogue_resource.gd")
-const compiler_version = 10
+const compiler_version = 11
 
 
 var editor_plugin
@@ -90,6 +90,7 @@ func _import(source_file: String, save_path: String, options: Dictionary, platfo
 	var resource: DialogueResource = DialogueResource.new()
 	resource.set_meta("dialogue_manager_version", version)
 
+	resource.using_states = data.using_states
 	resource.titles = data.titles
 	resource.first_title = data.first_title
 	resource.character_names = data.character_names

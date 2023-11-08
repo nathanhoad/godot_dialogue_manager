@@ -262,7 +262,10 @@ One thing to note is that _inline mutations_ that use `await` won't be awaited s
 
 ### State shortcuts
 
-If you want to shorten your references to state from something like `SomeGlobal.some_property` to just `some_property` then you can set up global state shortcuts in [Settings](./Settings.md).
+If you want to shorten your references to state from something like `SomeGlobal.some_property` to just `some_property` then there are two ways you can do this.
+
+1. If you use the same state in all of your dialogue then you can set up global state shortcuts in [Settings](./Settings.md).
+2. Or, if you want different shortcuts per dialogue file you can add a `using SomeGlobal` clause (for whatever autoload you're using) at the top of your dialogue file.
 
 ## Error checking
 
