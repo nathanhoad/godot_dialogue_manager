@@ -14,6 +14,10 @@
 - `Include responses with failed conditions` will include responses that failed their condition check in the list of responses attached to a given line.
 - `Skip over missing state value errors` will let you run dialogue and ignore any errors that occur when you reference state values that don't exist.
 
+### Custom balloon
+
+You can configure a default balloon to show when calling [`DialogueManager.show_dialogue_balloon()`](./API.md#func-show_dialogue_balloonresource-dialoueresource-title-string--0-extra_game_states-array-----node). This balloon will also be used when testing dialogue from the dialogue editor.
+
 ### Globals shortcuts
 
 The dialogue runtime itself is stateless, meaning it looks to your game to provide values for variables and for methods to run. At run time, the dialogue manager will check the current scene first and then check any globals.

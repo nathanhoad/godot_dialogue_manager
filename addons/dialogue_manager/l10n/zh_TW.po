@@ -164,7 +164,7 @@ msgstr "忽略全局變量缺失錯誤（不建議）"
 msgid "settings.custom_test_scene"
 msgstr "自訂測試場景（必須繼承自BaseDialogueTestScene）"
 
-msgid "settings.default_csv_local"
+msgid "settings.default_csv_locale"
 msgstr "預設 CSV 區域格式"
 
 msgid "settings.states_shortcuts"

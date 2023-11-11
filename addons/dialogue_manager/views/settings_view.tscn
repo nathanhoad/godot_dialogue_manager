@@ -75,7 +75,6 @@ layout_mode = 2
 
 [node name="DefaultCSVLocaleLabel" type="Label" parent="Editor"]
 layout_mode = 2
-text = "Default CSV Locale"
 
 [node name="DefaultCSVLocale" type="LineEdit" parent="Editor"]
 layout_mode = 2
@@ -93,6 +92,33 @@ layout_mode = 2
 text = "Skip over missing state value errors (not recommended)"
 
 [node name="HSeparator" type="HSeparator" parent="Runtime"]
+layout_mode = 2
+
+[node name="CustomBalloonLabel" type="Label" parent="Runtime"]
+layout_mode = 2
+text = "Custom balloon to use when calling \"DialogueManager.show_balloon()\""
+
+[node name="CustomBalloon" type="HBoxContainer" parent="Runtime"]
+layout_mode = 2
+
+[node name="BalloonPath" type="LineEdit" parent="Runtime/CustomBalloon"]
+layout_mode = 2
+size_flags_horizontal = 3
+focus_mode = 0
+editable = false
+shortcut_keys_enabled = false
+middle_mouse_paste_enabled = false
+
+[node name="RevertBalloonPath" type="Button" parent="Runtime/CustomBalloon"]
+visible = false
+layout_mode = 2
+tooltip_text = "Revert to default test scene"
+flat = true
+
+[node name="LoadBalloonPath" type="Button" parent="Runtime/CustomBalloon"]
+layout_mode = 2
+
+[node name="HSeparator2" type="HSeparator" parent="Runtime"]
 layout_mode = 2
 
 [node name="StatesTitle" type="Label" parent="Runtime"]
@@ -135,6 +161,8 @@ filters = PackedStringArray("*.tscn ; Scene")
 [connection signal="text_changed" from="Editor/DefaultCSVLocale" to="." method="_on_default_csv_locale_text_changed"]
 [connection signal="toggled" from="Runtime/IncludeAllResponsesButton" to="." method="_on_include_all_responses_button_toggled"]
 [connection signal="toggled" from="Runtime/IgnoreMissingStateValues" to="." method="_on_ignore_missing_state_values_toggled"]
+[connection signal="pressed" from="Runtime/CustomBalloon/RevertBalloonPath" to="." method="_on_revert_balloon_path_pressed"]
+[connection signal="pressed" from="Runtime/CustomBalloon/LoadBalloonPath" to="." method="_on_load_balloon_path_pressed"]
 [connection signal="button_clicked" from="Runtime/GlobalsList" to="." method="_on_globals_list_button_clicked"]
 [connection signal="item_selected" from="Runtime/GlobalsList" to="." method="_on_globals_list_item_selected"]
 [connection signal="file_selected" from="CustomTestSceneFileDialog" to="." method="_on_custom_test_scene_file_dialog_file_selected"]

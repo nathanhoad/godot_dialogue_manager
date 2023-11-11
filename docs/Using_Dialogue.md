@@ -1,8 +1,8 @@
 # Using dialogue in your game
 
-It's up to you to implement the actual dialogue rendering and input control but there are [a few example balloons](Example_Balloons.md) included to get you started.
+The simplest way to show dialogue in your game is to call [`DialogueManager.show_dialogue_balloon(resource, title)`](./API.md#func-show_dialogue_balloonresource-dialoueresource-title-string--0-extra_game_states-array-----node) with a dialogue resource and a title to start from. This will show the example balloon by default but you can configure it in [Settings](./Settings.md) to show your custom balloon.
 
-To use the built-in example balloon you can call [`DialogueManager.show_example_dialogue_balloon(resource, title)`](API.md) with a dialogue resource and the title you want to start from.
+It's up to you to implement/customise any dialogue rendering and input control to match your game but there are [a few example balloons](Example_Balloons.md) included to get you started with some of the more common things.
 
 Once you get to the stage of building your own balloon you'll need to know how to get a line of dialogue and how to use the dialogue label node.
 

@@ -16,7 +16,8 @@ const DEFAULT_SETTINGS = {
 	include_all_responses = false,
 	ignore_missing_state_values = false,
 	custom_test_scene_path = preload("../test_scene.tscn").resource_path,
-	default_csv_locale = "en"
+	default_csv_locale = "en",
+	balloon_path = ""
 }
 
 
