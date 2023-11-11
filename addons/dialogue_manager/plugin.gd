@@ -236,6 +236,8 @@ func _copy_dialogue_balloon() -> void:
 		get_editor_interface().get_resource_filesystem().scan()
 		get_editor_interface().get_file_system_dock().call_deferred("navigate_to_path", path + "/balloon.tscn")
 
+		DialogueSettings.set_setting("balloon_path", path + "/balloon.tscn")
+
 		directory_dialog.queue_free()
 	)
 	get_editor_interface().get_base_control().add_child(directory_dialog)

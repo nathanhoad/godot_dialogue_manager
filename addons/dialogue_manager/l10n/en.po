@@ -138,6 +138,15 @@ msgstr "Show in FileSystem"
 msgid "settings.revert_to_default_test_scene"
 msgstr "Revert to default test scene"
 
+msgid "settings.default_balloon_hint"
+msgstr "Custom balloon to use when calling \"DialogueManager.show_balloon()\""
+
+msgid "settings.revert_to_default_balloon"
+msgstr "Revert to default balloon"
+
+msgid "settings.default_balloon_path"
+msgstr "<example balloon>"
+
 msgid "settings.autoload"
 msgstr "Autoload"
 
@@ -168,8 +177,8 @@ msgstr "Skip over missing state value errors (not recommended)"
 msgid "settings.custom_test_scene"
 msgstr "Custom test scene (must extend BaseDialogueTestScene)"
 
-msgid "settings.default_csv_local"
-msgstr "Default CSV Local"
+msgid "settings.default_csv_locale"
+msgstr "Default CSV Locale"
 
 msgid "settings.states_shortcuts"
 msgstr "State Shortcuts"
