@@ -119,9 +119,9 @@ func find_in_line(line: String, text: String, from_index: int = 0) -> int:
 func _on_text_edit_gui_input(event: InputEvent) -> void:
 	if event is InputEventKey and event.is_pressed():
 		match event.as_text():
-			"Ctrl+F":
+			"Ctrl+F", "Command+F":
 				open_requested.emit()
-			"Ctrl+Shift+R":
+			"Ctrl+Shift+R", "Command+Shift+R":
 				replace_check_button.set_pressed(true)
 				open_requested.emit()
 
