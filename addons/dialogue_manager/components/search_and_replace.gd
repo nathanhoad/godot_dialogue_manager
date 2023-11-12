@@ -14,6 +14,7 @@ const DialogueConstants = preload("../constants.gd")
 @onready var previous_button: Button = $Search/PreviousButton
 @onready var next_button: Button = $Search/NextButton
 @onready var match_case_button: CheckBox = $Search/MatchCaseCheckBox
+@onready var replace_check_button: CheckButton = $Search/ReplaceCheckButton
 @onready var replace_panel: HBoxContainer = $Replace
 @onready var replace_input: LineEdit = $Replace/Input
 @onready var replace_button: Button = $Replace/ReplaceButton
@@ -116,8 +117,13 @@ func find_in_line(line: String, text: String, from_index: int = 0) -> int:
 
 
 func _on_text_edit_gui_input(event: InputEvent) -> void:
-	if event is InputEventKey and event.is_pressed() and event.as_text() == "Ctrl+F":
-		open_requested.emit()
+	if event is InputEventKey and event.is_pressed():
+		match event.as_text():
+			"Ctrl+F", "Command+F":
+				open_requested.emit()
+			"Ctrl+Shift+R", "Command+Shift+R":
+				replace_check_button.set_pressed(true)
+				open_requested.emit()
 
 
 func _on_text_edit_text_changed() -> void:

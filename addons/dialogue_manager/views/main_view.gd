@@ -166,12 +166,12 @@ func _unhandled_input(event: InputEvent) -> void:
 
 	if event is InputEventKey and event.is_pressed():
 		match event.as_text():
-			"Ctrl+Alt+S":
+			"Ctrl+Alt+S", "Command+Alt+S":
 				save_file(current_file_path)
-			"Ctrl+W":
+			"Ctrl+W", "Command+W":
 				get_viewport().set_input_as_handled()
 				close_file(current_file_path)
-			"Ctrl+F5":
+			"Ctrl+F5", "Command+F5":
 				_on_test_button_pressed()
 
 
