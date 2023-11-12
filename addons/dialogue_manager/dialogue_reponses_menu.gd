@@ -22,12 +22,7 @@ func _ready() -> void:
 	)
 
 	if is_instance_valid(response_template):
-		response_template.get_parent().remove_child(response_template)
-
-
-func _exit_tree() -> void:
-	if is_instance_valid(response_template):
-		response_template.free()
+		response_template.hide()
 
 
 ## Set the list of responses to show.
@@ -36,6 +31,8 @@ func set_responses(next_responses: Array) -> void:
 
 	# Remove any current items
 	for item in get_children():
+		if item == response_template: continue
+
 		remove_child(item)
 		item.queue_free()
 
@@ -44,7 +41,8 @@ func set_responses(next_responses: Array) -> void:
 		for response in _responses:
 			var item: Control
 			if is_instance_valid(response_template):
-				item = response_template.duplicate()
+				item = response_template.duplicate(DUPLICATE_GROUPS | DUPLICATE_SCRIPTS | DUPLICATE_SIGNALS)
+				item.show()
 			else:
 				item = Button.new()
 			item.name = "Response%d" % get_child_count()
@@ -83,7 +81,7 @@ func _configure_focus() -> void:
 			item.focus_next = items[i + 1].get_path()
 
 		item.mouse_entered.connect(_on_response_mouse_entered.bind(item))
-		item.gui_input.connect(_on_response_gui_input.bind(item))
+		item.gui_input.connect(_on_response_gui_input.bind(item, i))
 
 	items[0].grab_focus()
 
@@ -92,6 +90,7 @@ func _configure_focus() -> void:
 func get_menu_items() -> Array:
 	var items: Array = []
 	for child in get_children():
+		if not child.visible: continue
 		if "Disallowed" in child.name: continue
 		items.append(child)
 
@@ -107,12 +106,12 @@ func _on_response_mouse_entered(item: Control) -> void:
 	item.grab_focus()
 
 
-func _on_response_gui_input(event: InputEvent, item: Control) -> void:
+func _on_response_gui_input(event: InputEvent, item: Control, item_index: int) -> void:
 	if "Disallowed" in item.name: return
 
 	get_viewport().set_input_as_handled()
 
 	if event is InputEventMouseButton and event.is_pressed() and event.button_index == 1:
-		response_selected.emit(_responses[item.get_index()])
+		response_selected.emit(_responses[item_index])
 	elif event.is_action_pressed("ui_accept") and item in get_menu_items():
-		response_selected.emit(_responses[item.get_index()])
+		response_selected.emit(_responses[item_index])
