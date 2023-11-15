@@ -45,7 +45,7 @@ var responses: Array[DialogueResponse] = []
 var extra_game_states: Array = []
 
 ## How long to show this line before advancing to the next. Either a float (of seconds), [code]"auto"[/code], or [code]null[/code].
-var time = null
+var time: String = ""
 
 ## Any #tags that were included in the line
 var tags: PackedStringArray = []

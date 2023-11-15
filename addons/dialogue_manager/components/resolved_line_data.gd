@@ -4,7 +4,7 @@ var text: String = ""
 var pauses: Dictionary = {}
 var speeds: Dictionary = {}
 var mutations: Array[Array] = []
-var time = null
+var time: String = ""
 
 
 func _init(data: Dictionary) -> void:
