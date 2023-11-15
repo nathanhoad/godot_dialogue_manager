@@ -1159,7 +1159,7 @@ func extract_markers(line: String) -> ResolvedLineData:
 	var speeds: Dictionary = {}
 	var mutations: Array[Array] = []
 	var bbcodes: Array = []
-	var time:String = ""
+	var time: String = ""
 
 	# Extract all of the BB codes so that we know the actual text (we could do this easier with
 	# a RichTextLabel but then we'd need to await idle_frame which is annoying)
