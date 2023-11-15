@@ -77,7 +77,7 @@ var dialogue_line: DialogueLine:
 			responses_menu.modulate.a = 1
 			configure_menu()
 		elif dialogue_line.time != null:
-			var time = dialogue_line.dialogue.length() * 0.02 if dialogue_line.time == "auto" else dialogue_line.time.to_float()
+			var time = dialogue_line.text.length() * 0.02 if dialogue_line.time == "auto" else dialogue_line.time.to_float()
 			await get_tree().create_timer(time).timeout
 			next(dialogue_line.next_id)
 		else:
