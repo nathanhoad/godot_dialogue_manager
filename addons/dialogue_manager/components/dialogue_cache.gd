@@ -15,8 +15,14 @@ const DialogueSettings = preload("./settings.gd")
 # }
 var _cache: Dictionary = {}
 
+var _update_dependency_timer: Timer = Timer.new()
+var _update_dependency_paths: PackedStringArray = []
 
-func _init() -> void:
+
+func _ready() -> void:
+	add_child(_update_dependency_timer)
+	_update_dependency_timer.timeout.connect(_on_update_dependency_timeout)
+
 	_build_cache()
 
 
@@ -34,8 +40,8 @@ func add_file(path: String, parse_results: DialogueManagerParseResult = null) ->
 	}
 
 	# If this is a fresh cache entry then we need to check for dependencies
-	if parse_results == null:
-		WorkerThreadPool.add_task(_update_dependencies.bind(path))
+	if parse_results == null and not _update_dependency_paths.has(path):
+		queue_updating_dependencies(path)
 
 
 ## Get the file paths in the cache.
@@ -65,6 +71,14 @@ func get_files_with_errors() -> Array[Dictionary]:
 	return files_with_errors
 
 
+## Queue a file to have it's dependencies checked
+func queue_updating_dependencies(of_path: String) -> void:
+	_update_dependency_timer.stop()
+	if not _update_dependency_paths.has(of_path):
+		_update_dependency_paths.append(of_path)
+	_update_dependency_timer.start(0.5)
+
+
 ## Update any references to a file path that has moved
 func move_file_path(from_path: String, to_path: String) -> void:
 	if _cache.has(from_path):
@@ -74,7 +88,12 @@ func move_file_path(from_path: String, to_path: String) -> void:
 
 ## Get any dialogue files that import a given path.
 func get_files_with_dependency(imported_path: String) -> Array:
-	return _cache.values().filter(func(d): return imported_path in d.dependencies)
+	return _cache.values().filter(func(d): return d.dependencies.has(imported_path))
+
+
+## Get any paths that are dependent on a given path
+func get_dependent_paths(on_path: String) -> PackedStringArray:
+	return get_files_with_dependency(on_path).map(func(d): return d.path)
 
 
 # Build the initial cache for dialogue files.
@@ -104,12 +123,20 @@ func _get_dialogue_files_in_filesystem(path: String = "res://") -> PackedStringA
 	return files
 
 
-# Check for dependencies of a path
-func _update_dependencies(path: String) -> void:
-	var file: FileAccess = FileAccess.open(path, FileAccess.READ)
+### Signals
+
+
+func _on_update_dependency_timeout() -> void:
+	_update_dependency_timer.stop()
 	var import_regex: RegEx = RegEx.create_from_string("import \"(?<path>.*?)\"")
-	var found_imports = import_regex.search_all(file.get_as_text())
-	var dependencies: PackedStringArray = []
-	for found in found_imports:
-		dependencies.append(found.strings[found.names.path])
-	_cache[path].dependencies = dependencies
+	var file: FileAccess
+	var found_imports: Array[RegExMatch]
+	for path in _update_dependency_paths:
+		# Open the file and check for any "import" lines
+		file = FileAccess.open(path, FileAccess.READ)
+		found_imports = import_regex.search_all(file.get_as_text())
+		var dependencies: PackedStringArray = []
+		for found in found_imports:
+			dependencies.append(found.strings[found.names.path])
+		_cache[path].dependencies = dependencies
+	_update_dependency_paths.clear()

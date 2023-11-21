@@ -167,11 +167,13 @@ func _unhandled_input(event: InputEvent) -> void:
 	if event is InputEventKey and event.is_pressed():
 		match event.as_text():
 			"Ctrl+Alt+S", "Command+Alt+S":
+				get_viewport().set_input_as_handled()
 				save_file(current_file_path)
 			"Ctrl+W", "Command+W":
 				get_viewport().set_input_as_handled()
 				close_file(current_file_path)
 			"Ctrl+F5", "Command+F5":
+				get_viewport().set_input_as_handled()
 				_on_test_button_pressed()
 
 
@@ -255,26 +257,40 @@ func open_file(path: String) -> void:
 
 
 func show_file_in_filesystem(path: String) -> void:
-	var file_system = editor_plugin.get_editor_interface().get_file_system_dock()
-	file_system.navigate_to_path(path)
+	var file_system_dock: FileSystemDock = Engine.get_meta("DialogueManagerPlugin") \
+		.get_editor_interface() \
+		.get_file_system_dock()
+
+	file_system_dock.navigate_to_path(path)
+
+
+func _get_file_system() -> EditorFileSystem:
+	return Engine.get_meta("DialogueManagerPlugin") \
+		.get_editor_interface() \
+		.get_resource_filesystem()
 
 
 # Save any open files
 func save_files() -> void:
+	save_all_button.disabled = true
+
 	var saved_files: PackedStringArray = []
 	for path in open_buffers:
 		if open_buffers[path].text != open_buffers[path].pristine_text:
 			saved_files.append(path)
-		save_file(path)
+		save_file(path, false)
 
 	# Make sure we reimport/recompile the changes
 	if saved_files.size() > 0:
-		editor_plugin.get_editor_interface().get_resource_filesystem().reimport_files(saved_files)
-	save_all_button.disabled = true
+		# NOTE: Godot 4.2rc1 has an issue with reimporting more than one
+		# file at a time so we do them one by one
+		for file in saved_files:
+			_get_file_system().reimport_files([file])
+			await get_tree().create_timer(0.2)
 
 
 # Save a file
-func save_file(path: String) -> void:
+func save_file(path: String, rescan_file_system: bool = true) -> void:
 	var buffer = open_buffers[path]
 
 	files_list.mark_file_as_unsaved(path, false)
@@ -290,6 +306,9 @@ func save_file(path: String) -> void:
 	var file: FileAccess = FileAccess.open(path, FileAccess.WRITE)
 	file.store_string(buffer.text)
 	file.close()
+
+	if rescan_file_system:
+		_get_file_system().scan()
 
 
 func close_file(file: String) -> void:
@@ -921,7 +940,7 @@ func _on_settings_view_script_button_pressed(path: String) -> void:
 
 
 func _on_test_button_pressed() -> void:
-	apply_changes()
+	save_file(current_file_path)
 
 	if errors_panel.errors.size() > 0:
 		errors_dialog.popup_centered()

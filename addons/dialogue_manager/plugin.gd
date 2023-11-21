@@ -15,18 +15,16 @@ var translation_parser_plugin: DialogueTranslationParserPlugin
 var main_view
 var dialogue_cache: DialogueCache
 
-var _recompile_timer: Timer = Timer.new()
-var _recompile_paths: PackedStringArray
-
 
 func _enter_tree() -> void:
 	add_autoload_singleton("DialogueManager", "dialogue_manager.gd")
 
 	if Engine.is_editor_hint():
+		Engine.set_meta("DialogueManagerPlugin", self)
+
 		DialogueSettings.prepare()
 
 		import_plugin = DialogueImportPlugin.new()
-		import_plugin.editor_plugin = self
 		add_import_plugin(import_plugin)
 
 		translation_parser_plugin = DialogueTranslationParserPlugin.new()
@@ -37,10 +35,10 @@ func _enter_tree() -> void:
 		get_editor_interface().get_editor_main_screen().add_child(main_view)
 		_make_visible(false)
 
-		main_view.add_child(_recompile_timer)
-		_recompile_timer.timeout.connect(_on_recompile_timer_timeout)
-
 		dialogue_cache = DialogueCache.new()
+		main_view.add_child(dialogue_cache)
+		Engine.set_meta("DialogueCache", dialogue_cache)
+
 		_update_localization()
 
 		get_editor_interface().get_file_system_dock().files_moved.connect(_on_files_moved)
@@ -61,8 +59,8 @@ func _exit_tree() -> void:
 	if is_instance_valid(main_view):
 		main_view.queue_free()
 
-	if is_instance_valid(dialogue_cache):
-		dialogue_cache.queue_free()
+	Engine.remove_meta("DialogueManagerPlugin")
+	Engine.remove_meta("DialogueCache")
 
 	get_editor_interface().get_file_system_dock().files_moved.disconnect(_on_files_moved)
 	get_editor_interface().get_file_system_dock().file_removed.disconnect(_on_file_removed)
@@ -130,18 +128,6 @@ func get_plugin_path() -> String:
 	return get_script().resource_path.get_base_dir()
 
 
-## Keep track of known files and their dependencies
-func add_file_to_cache(path: String, parse_results: DialogueManagerParseResult) -> void:
-	dialogue_cache.add_file(path, parse_results)
-	queue_recompile_of_dependencies(path)
-
-
-## Keep track of compile errors
-func add_errors_to_cache(path: String, errors: Array[Dictionary]) -> void:
-	dialogue_cache.add_errors_to_file(path, errors)
-	queue_recompile_of_dependencies(path)
-
-
 ## Update references to a moved file
 func update_import_paths(from_path: String, to_path: String) -> void:
 	dialogue_cache.move_file_path(from_path, to_path)
@@ -154,7 +140,7 @@ func update_import_paths(from_path: String, to_path: String) -> void:
 	# Update any other files that import the moved file
 	var dependents = dialogue_cache.get_files_with_dependency(from_path)
 	for dependent in dependents:
-		dependent.dependencies.erase(from_path)
+		dependent.dependencies.remove_at(dependent.dependencies.find(from_path))
 		dependent.dependencies.append(to_path)
 
 		# Update the live buffer
@@ -165,16 +151,11 @@ func update_import_paths(from_path: String, to_path: String) -> void:
 		# Open the file and update the path
 		var file: FileAccess = FileAccess.open(dependent.path, FileAccess.READ)
 		var text = file.get_as_text().replace(from_path, to_path)
+		file.close()
 
 		file = FileAccess.open(dependent.path, FileAccess.WRITE)
 		file.store_string(text)
-
-
-func queue_recompile_of_dependencies(of_path: String) -> void:
-	_recompile_timer.stop()
-	if not _recompile_paths.has(of_path):
-		_recompile_paths.append(of_path)
-	_recompile_timer.start(0.5)
+		file.close()
 
 
 func _update_localization() -> void:
@@ -247,27 +228,12 @@ func _copy_dialogue_balloon() -> void:
 ### Signals
 
 
-func _on_recompile_timer_timeout() -> void:
-	_recompile_timer.stop()
-	if _recompile_paths.size() > 0:
-		var files_to_reimport: PackedStringArray = []
-		for path in _recompile_paths:
-			var dependencies = dialogue_cache.get_files_with_dependency(path).map(func(file): return file.path)
-			for dependency in dependencies:
-				if not files_to_reimport.has(dependency):
-					files_to_reimport.append(dependency)
-
-		if files_to_reimport.size() > 0:
-			get_editor_interface().get_resource_filesystem().reimport_files(files_to_reimport)
-			_recompile_paths = []
-
-
 func _on_files_moved(old_file: String, new_file: String) -> void:
 	update_import_paths(old_file, new_file)
 	DialogueSettings.move_recent_file(old_file, new_file)
 
 
 func _on_file_removed(file: String) -> void:
-	queue_recompile_of_dependencies(file)
+	update_import_paths(file, "?")
 	if is_instance_valid(main_view):
 		main_view.close_file(file)
