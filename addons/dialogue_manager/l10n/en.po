@@ -135,6 +135,9 @@ msgstr "Copy file path"
 msgid "buffer.show_in_filesystem"
 msgstr "Show in FileSystem"
 
+msgid "settings.invalid_test_scene"
+msgstr "\"{path}\" does not extend BaseDialogueTestScene."
+
 msgid "settings.revert_to_default_test_scene"
 msgstr "Revert to default test scene"
 

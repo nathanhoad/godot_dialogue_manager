@@ -20,10 +20,6 @@ enum PathTarget {
 @onready var missing_translations_button: CheckBox = $Editor/MissingTranslationsButton
 @onready var characters_translations_button: CheckBox = $Editor/CharactersTranslationsButton
 @onready var wrap_lines_button: Button = $Editor/WrapLinesButton
-@onready var test_scene_path_input: LineEdit = $Editor/CustomTestScene/TestScenePath
-@onready var revert_test_scene_button: Button = $Editor/CustomTestScene/RevertTestScene
-@onready var load_test_scene_button: Button = $Editor/CustomTestScene/LoadTestScene
-@onready var custom_test_scene_file_dialog: FileDialog = $CustomTestSceneFileDialog
 @onready var default_csv_locale: LineEdit = $Editor/DefaultCSVLocale
 
 # Runtime
@@ -34,6 +30,12 @@ enum PathTarget {
 @onready var load_balloon_button: Button = $Runtime/CustomBalloon/LoadBalloonPath
 @onready var states_title: Label = $Runtime/StatesTitle
 @onready var globals_list: Tree = $Runtime/GlobalsList
+
+# Advanced
+@onready var test_scene_path_input: LineEdit = $Advanced/CustomTestScene/TestScenePath
+@onready var revert_test_scene_button: Button = $Advanced/CustomTestScene/RevertTestScene
+@onready var load_test_scene_button: Button = $Advanced/CustomTestScene/LoadTestScene
+@onready var custom_test_scene_file_dialog: FileDialog = $CustomTestSceneFileDialog
 
 var editor_plugin: EditorPlugin
 var all_globals: Dictionary = {}
@@ -49,7 +51,6 @@ func _ready() -> void:
 	$Editor/MissingTranslationsHint.text = DialogueConstants.translate("settings.missing_keys_hint")
 	characters_translations_button.text = DialogueConstants.translate("settings.characters_translations")
 	wrap_lines_button.text = DialogueConstants.translate("settings.wrap_long_lines")
-	$Editor/CustomTestSceneLabel.text = DialogueConstants.translate("settings.custom_test_scene")
 	$Editor/DefaultCSVLocaleLabel.text = DialogueConstants.translate("settings.default_csv_locale")
 
 	include_all_responses_button.text = DialogueConstants.translate("settings.include_failed_responses")
@@ -58,6 +59,8 @@ func _ready() -> void:
 	states_title.text = DialogueConstants.translate("settings.states_shortcuts")
 	$Runtime/StatesMessage.text = DialogueConstants.translate("settings.states_message")
 	$Runtime/StatesHint.text = DialogueConstants.translate("settings.states_hint")
+
+	$Advanced/CustomTestSceneLabel.text = DialogueConstants.translate("settings.custom_test_scene")
 
 
 func prepare() -> void:
@@ -176,9 +179,17 @@ func _on_load_test_scene_pressed() -> void:
 func _on_custom_test_scene_file_dialog_file_selected(path: String) -> void:
 	match path_target:
 		PathTarget.CustomTestScene:
-			DialogueSettings.set_setting("custom_test_scene_path", path)
-			test_scene_path_input.placeholder_text = path
-			revert_test_scene_button.visible = test_scene_path_input.placeholder_text != _default_test_scene_path
+			# Check that the test scene is a subclass of BaseDialogueTestScene
+			var test_scene: PackedScene = load(path)
+			if test_scene and test_scene.instantiate() is BaseDialogueTestScene:
+				DialogueSettings.set_setting("custom_test_scene_path", path)
+				test_scene_path_input.placeholder_text = path
+				revert_test_scene_button.visible = test_scene_path_input.placeholder_text != _default_test_scene_path
+			else:
+				var accept: AcceptDialog = AcceptDialog.new()
+				accept.dialog_text = DialogueConstants.translate("settings.invalid_test_scene").format({ path = path })
+				add_child(accept)
+				accept.popup_centered.call_deferred()
 
 		PathTarget.Balloon:
 			DialogueSettings.set_setting("balloon_path", path)
