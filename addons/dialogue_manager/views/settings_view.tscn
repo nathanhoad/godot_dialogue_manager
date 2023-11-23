@@ -28,6 +28,7 @@ text = "Treat missing translation keys as errors"
 
 [node name="MissingTranslationsHint" type="Label" parent="Editor"]
 modulate = Color(1, 1, 1, 0.501961)
+custom_minimum_size = Vector2(10, 0)
 layout_mode = 2
 text = "If you are using static translation keys then having this enabled will help you find any lines that you haven't added a key to yet."
 autowrap_mode = 3
@@ -45,36 +46,9 @@ text = "Wrap long lines"
 [node name="HSeparator" type="HSeparator" parent="Editor"]
 layout_mode = 2
 
-[node name="CustomTestSceneLabel" type="Label" parent="Editor"]
-layout_mode = 2
-text = "Custom test scene (must extend BaseDialogueTestScene)"
-
-[node name="CustomTestScene" type="HBoxContainer" parent="Editor"]
-layout_mode = 2
-
-[node name="TestScenePath" type="LineEdit" parent="Editor/CustomTestScene"]
-layout_mode = 2
-size_flags_horizontal = 3
-focus_mode = 0
-placeholder_text = "res://addons/dialogue_manager/test_scene.tscn"
-editable = false
-shortcut_keys_enabled = false
-middle_mouse_paste_enabled = false
-
-[node name="RevertTestScene" type="Button" parent="Editor/CustomTestScene"]
-visible = false
-layout_mode = 2
-tooltip_text = "Revert to default test scene"
-flat = true
-
-[node name="LoadTestScene" type="Button" parent="Editor/CustomTestScene"]
-layout_mode = 2
-
-[node name="HSeparator2" type="HSeparator" parent="Editor"]
-layout_mode = 2
-
 [node name="DefaultCSVLocaleLabel" type="Label" parent="Editor"]
 layout_mode = 2
+text = "Default CSV Locale"
 
 [node name="DefaultCSVLocale" type="LineEdit" parent="Editor"]
 layout_mode = 2
@@ -145,6 +119,35 @@ hide_folding = true
 hide_root = true
 select_mode = 1
 
+[node name="Advanced" type="VBoxContainer" parent="."]
+visible = false
+layout_mode = 2
+
+[node name="CustomTestSceneLabel" type="Label" parent="Advanced"]
+layout_mode = 2
+text = "Custom test scene (must extend BaseDialogueTestScene)"
+
+[node name="CustomTestScene" type="HBoxContainer" parent="Advanced"]
+layout_mode = 2
+
+[node name="TestScenePath" type="LineEdit" parent="Advanced/CustomTestScene"]
+layout_mode = 2
+size_flags_horizontal = 3
+focus_mode = 0
+placeholder_text = "res://addons/dialogue_manager/test_scene.tscn"
+editable = false
+shortcut_keys_enabled = false
+middle_mouse_paste_enabled = false
+
+[node name="RevertTestScene" type="Button" parent="Advanced/CustomTestScene"]
+visible = false
+layout_mode = 2
+tooltip_text = "Revert to default test scene"
+flat = true
+
+[node name="LoadTestScene" type="Button" parent="Advanced/CustomTestScene"]
+layout_mode = 2
+
 [node name="CustomTestSceneFileDialog" type="FileDialog" parent="."]
 title = "Open a File"
 ok_button_text = "Open"
@@ -156,8 +159,6 @@ filters = PackedStringArray("*.tscn ; Scene")
 [connection signal="toggled" from="Editor/MissingTranslationsButton" to="." method="_on_missing_translations_button_toggled"]
 [connection signal="toggled" from="Editor/CharactersTranslationsButton" to="." method="_on_characters_translations_button_toggled"]
 [connection signal="toggled" from="Editor/WrapLinesButton" to="." method="_on_wrap_lines_button_toggled"]
-[connection signal="pressed" from="Editor/CustomTestScene/RevertTestScene" to="." method="_on_revert_test_scene_pressed"]
-[connection signal="pressed" from="Editor/CustomTestScene/LoadTestScene" to="." method="_on_load_test_scene_pressed"]
 [connection signal="text_changed" from="Editor/DefaultCSVLocale" to="." method="_on_default_csv_locale_text_changed"]
 [connection signal="toggled" from="Runtime/IncludeAllResponsesButton" to="." method="_on_include_all_responses_button_toggled"]
 [connection signal="toggled" from="Runtime/IgnoreMissingStateValues" to="." method="_on_ignore_missing_state_values_toggled"]
@@ -165,4 +166,6 @@ filters = PackedStringArray("*.tscn ; Scene")
 [connection signal="pressed" from="Runtime/CustomBalloon/LoadBalloonPath" to="." method="_on_load_balloon_path_pressed"]
 [connection signal="button_clicked" from="Runtime/GlobalsList" to="." method="_on_globals_list_button_clicked"]
 [connection signal="item_selected" from="Runtime/GlobalsList" to="." method="_on_globals_list_item_selected"]
+[connection signal="pressed" from="Advanced/CustomTestScene/RevertTestScene" to="." method="_on_revert_test_scene_pressed"]
+[connection signal="pressed" from="Advanced/CustomTestScene/LoadTestScene" to="." method="_on_load_test_scene_pressed"]
 [connection signal="file_selected" from="CustomTestSceneFileDialog" to="." method="_on_custom_test_scene_file_dialog_file_selected"]

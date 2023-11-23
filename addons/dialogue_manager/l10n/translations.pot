@@ -125,6 +125,9 @@ msgstr ""
 msgid "buffer.show_in_filesystem"
 msgstr ""
 
+msgid "settings.invalid_test_scene"
+msgstr ""
+
 msgid "settings.revert_to_default_test_scene"
 msgstr ""
 
