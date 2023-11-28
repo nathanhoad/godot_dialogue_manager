@@ -44,3 +44,11 @@ func _init(data: Dictionary = {}) -> void:
 
 func _to_string() -> String:
 	return "<DialogueResponse text=\"%s\">" % text
+
+
+func get_tag_value(tag_name: String) -> String:
+	var wrapped := "%s=" % tag_name
+	for t in tags:
+		if t.begins_with(wrapped):
+			return t.replace(wrapped, "").strip_edges()
+	return ""
