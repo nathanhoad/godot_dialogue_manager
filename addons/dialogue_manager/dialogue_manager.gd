@@ -93,11 +93,8 @@ func _ready() -> void:
 			game_states.append(state)
 
 	# Connect up the C# signals if need be
-	if ResourceLoader.exists("res://addons/dialogue_manager/DialogueManager.cs"):
-		var csharp_dialogue_manager = load("res://addons/dialogue_manager/DialogueManager.cs")
-		# Make sure the C# dialogue manager could be loaded
-		if csharp_dialogue_manager != null:
-			csharp_dialogue_manager.new().Prepare()
+	if _has_dotnet_solution():
+		_get_dotnet_dialogue_manager().Prepare()
 
 
 ## Step through lines and run any mutations until we either hit some dialogue or the end of the conversation
@@ -285,6 +282,17 @@ func _get_example_balloon_path() -> String:
 
 
 ### Dotnet bridge
+
+
+func _has_dotnet_solution() -> bool:
+	if not DialogueSettings.get_setting("has_dotnet_solution", false): return false
+	if not ResourceLoader.exists("res://addons/dialogue_manager/DialogueManager.cs"): return false
+	if load("res://addons/dialogue_manager/DialogueManager.cs") == null: return false
+	return true
+
+
+func _get_dotnet_dialogue_manager() -> Node:
+	return load("res://addons/dialogue_manager/DialogueManager.cs").new()
 
 
 func _bridge_get_next_dialogue_line(resource: DialogueResource, key: String, extra_game_states: Array = []) -> void:
@@ -1075,10 +1083,9 @@ func thing_has_method(thing, method: String, args: Array) -> bool:
 	if thing.has_method(method):
 		return true
 
-	if method.to_snake_case() != method and ResourceLoader.exists("res://addons/dialogue_manager/DialogueManager.cs"):
+	if method.to_snake_case() != method and _has_dotnet_solution():
 		# If we get this far then the method might be a C# method with a Task return type
-		var dotnet_dialogue_manager = load("res://addons/dialogue_manager/DialogueManager.cs").new()
-		return dotnet_dialogue_manager.ThingHasMethod(thing, method)
+		return _get_dotnet_dialogue_manager().ThingHasMethod(thing, method)
 
 	return false
 
@@ -1131,7 +1138,7 @@ func resolve_thing_method(thing, method: String, args: Array):
 		return await thing.callv(method, args)
 
 	# If we get here then it's probably a C# method with a Task return type
-	var dotnet_dialogue_manager = load("res://addons/dialogue_manager/DialogueManager.cs").new()
+	var dotnet_dialogue_manager = _get_dotnet_dialogue_manager()
 	dotnet_dialogue_manager.ResolveThingMethod(thing, method, args)
 	return await dotnet_dialogue_manager.Resolved
 
