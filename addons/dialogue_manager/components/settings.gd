@@ -17,7 +17,8 @@ const DEFAULT_SETTINGS = {
 	ignore_missing_state_values = false,
 	custom_test_scene_path = preload("../test_scene.tscn").resource_path,
 	default_csv_locale = "en",
-	balloon_path = ""
+	balloon_path = "",
+	has_dotnet_solution = false
 }
 
 
@@ -36,6 +37,8 @@ static func prepare() -> void:
 			var value = ProjectSettings.get_setting("dialogue_manager/%s" % key)
 			ProjectSettings.set_setting("dialogue_manager/%s" % key, null)
 			set_setting(key, value)
+
+	ProjectSettings.set_as_internal("dialogue_manager/general/has_dotnet_solution", true)
 
 	# Set up defaults
 	for setting in DEFAULT_SETTINGS:
