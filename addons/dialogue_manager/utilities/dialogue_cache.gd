@@ -2,7 +2,8 @@ extends Node
 
 
 const DialogueConstants = preload("../constants.gd")
-const DialogueSettings = preload("./settings.gd")
+const DialogueSettings = preload("../settings.gd")
+const DialogueManagerParseResult = preload("./parse_result.gd")
 
 
 # Keeps track of errors and dependencies.

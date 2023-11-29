@@ -17,6 +17,12 @@ var next_id: String = ""
 ## [code]true[/code] if the condition of this line was met.
 var is_allowed: bool = true
 
+## A character (depending on the "characters in responses" behaviour setting).
+var character: String = ""
+
+## A dictionary of varialbe replaces for the character name. Generally for internal use only.
+var character_replacements: Array[Dictionary] = []
+
 ## The prompt for this response.
 var text: String = ""
 
@@ -36,6 +42,8 @@ func _init(data: Dictionary = {}) -> void:
 		type = data.type
 		next_id = data.next_id
 		is_allowed = data.is_allowed
+		character = data.character
+		character_replacements = data.character_replacements
 		text = data.text
 		text_replacements = data.text_replacements
 		tags = data.tags

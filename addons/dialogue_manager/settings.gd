@@ -2,7 +2,7 @@
 extends Node
 
 
-const DialogueConstants = preload("../constants.gd")
+const DialogueConstants = preload("./constants.gd")
 
 
 ### Editor config
@@ -15,10 +15,11 @@ const DEFAULT_SETTINGS = {
 	new_with_template = true,
 	include_all_responses = false,
 	ignore_missing_state_values = false,
-	custom_test_scene_path = preload("../test_scene.tscn").resource_path,
+	custom_test_scene_path = preload("./test_scene.tscn").resource_path,
 	default_csv_locale = "en",
 	balloon_path = "",
-	has_dotnet_solution = false
+	has_dotnet_solution = false,
+	create_lines_for_responses_with_characters = true
 }
 
 

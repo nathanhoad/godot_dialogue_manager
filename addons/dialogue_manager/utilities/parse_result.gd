@@ -1,4 +1,4 @@
-class_name DialogueManagerParseResult extends RefCounted
+extends RefCounted
 
 var imported_paths: PackedStringArray = []
 var using_states: PackedStringArray = []

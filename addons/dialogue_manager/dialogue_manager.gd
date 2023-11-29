@@ -19,13 +19,13 @@ signal bridge_get_next_dialogue_line_completed(line)
 
 
 const DialogueConstants = preload("./constants.gd")
-const DialogueSettings = preload("./components/settings.gd")
+const DialogueSettings = preload("./settings.gd")
 const DialogueResource = preload("./dialogue_resource.gd")
 const DialogueLine = preload("./dialogue_line.gd")
 const DialogueResponse = preload("./dialogue_response.gd")
-const DialogueManagerParser = preload("./components/parser.gd")
-const DialogueManagerParseResult = preload("./components/parse_result.gd")
-const ResolvedLineData = preload("./components/resolved_line_data.gd")
+const DialogueManagerParser = preload("./utilities/parser.gd")
+const DialogueManagerParseResult = preload("./utilities/parse_result.gd")
+const ResolvedLineData = preload("./utilities/resolved_line_data.gd")
 
 
 enum MutationBehaviour {
@@ -215,10 +215,10 @@ func get_resolved_line_data(data: Dictionary, extra_game_states: Array = []) -> 
 
 ## Replace any variables, etc in the character name
 func get_resolved_character(data: Dictionary, extra_game_states: Array = []) -> String:
-	var character: String = data.character
+	var character: String = data.get("character", "")
 
 	# Resolve variables
-	for replacement in data.character_replacements:
+	for replacement in data.get("character_replacements", []):
 		var value = await resolve(replacement.expression.duplicate(true), extra_game_states)
 		character = character.replace(replacement.value_in_text, str(value))
 
@@ -456,13 +456,7 @@ func create_dialogue_line(data: Dictionary, extra_game_states: Array) -> Dialogu
 			})
 
 		DialogueConstants.TYPE_RESPONSE:
-			return DialogueLine.new({
-				id = data.get("id", ""),
-				type = DialogueConstants.TYPE_RESPONSE,
-				next_id = data.next_id,
-				tags = data.get("tags", []),
-				extra_game_states = extra_game_states
-			})
+			return null
 
 		DialogueConstants.TYPE_MUTATION:
 			return DialogueLine.new({
@@ -484,6 +478,8 @@ func create_response(data: Dictionary, extra_game_states: Array) -> DialogueResp
 		type = DialogueConstants.TYPE_RESPONSE,
 		next_id = data.next_id,
 		is_allowed = await check_condition(data, extra_game_states),
+		character = await get_resolved_character(data, extra_game_states),
+		character_replacements = data.get("character_replacements", [] as Array[Dictionary]),
 		text = resolved_data.text,
 		text_replacements = data.text_replacements,
 		tags = data.get("tags", []),

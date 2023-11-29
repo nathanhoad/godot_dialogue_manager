@@ -105,6 +105,7 @@ text = "If an autoload is enabled here you can refer to its properties and metho
 
 [node name="StatesHint" type="Label" parent="Runtime"]
 modulate = Color(1, 1, 1, 0.501961)
+custom_minimum_size = Vector2(10, 0)
 layout_mode = 2
 text = "ie. Instead of \"SomeState.some_property\" you could just use \"some_property\""
 autowrap_mode = 3
@@ -148,6 +149,13 @@ flat = true
 [node name="LoadTestScene" type="Button" parent="Advanced/CustomTestScene"]
 layout_mode = 2
 
+[node name="HSeparator" type="HSeparator" parent="Advanced"]
+layout_mode = 2
+
+[node name="CreateLinesForResponseCharacters" type="CheckBox" parent="Advanced"]
+layout_mode = 2
+text = "Create child dialogue line for responses with character names in them"
+
 [node name="CustomTestSceneFileDialog" type="FileDialog" parent="."]
 title = "Open a File"
 ok_button_text = "Open"
@@ -168,4 +176,5 @@ filters = PackedStringArray("*.tscn ; Scene")
 [connection signal="item_selected" from="Runtime/GlobalsList" to="." method="_on_globals_list_item_selected"]
 [connection signal="pressed" from="Advanced/CustomTestScene/RevertTestScene" to="." method="_on_revert_test_scene_pressed"]
 [connection signal="pressed" from="Advanced/CustomTestScene/LoadTestScene" to="." method="_on_load_test_scene_pressed"]
+[connection signal="toggled" from="Advanced/CreateLinesForResponseCharacters" to="." method="_on_create_lines_for_response_characters_toggled"]
 [connection signal="file_selected" from="CustomTestSceneFileDialog" to="." method="_on_custom_test_scene_file_dialog_file_selected"]

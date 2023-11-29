@@ -3,7 +3,7 @@ extends Control
 
 
 const DialogueConstants = preload("../constants.gd")
-const DialogueSettings = preload("../components/settings.gd")
+const DialogueSettings = preload("../settings.gd")
 
 const OPEN_OPEN = 100
 const OPEN_CLEAR = 101

@@ -4,7 +4,7 @@ class_name DialogueManagerParser extends Object
 
 
 const DialogueConstants = preload("../constants.gd")
-const DialogueSettings = preload("./settings.gd")
+const DialogueSettings = preload("../settings.gd")
 const ResolvedLineData = preload("./resolved_line_data.gd")
 const ResolvedTagData = preload("./resolved_tag_data.gd")
 const DialogueManagerParseResult = preload("./parse_result.gd")
@@ -174,6 +174,8 @@ func parse(text: String, path: String) -> Error:
 				if goto_line.next_id in [DialogueConstants.ID_ERROR, DialogueConstants.ID_ERROR_INVALID_TITLE, DialogueConstants.ID_ERROR_TITLE_HAS_NO_BODY]:
 					line["next_id"] = goto_line.next_id
 
+			line["character"] = ""
+			line["character_replacements"] = [] as Array[Dictionary]
 			line["text"] = extract_response_prompt(raw_line)
 
 			var previous_response_id = find_previous_response_id(id)
@@ -204,38 +206,28 @@ func parse(text: String, path: String) -> Error:
 
 			# If this response has a character name in it then it will automatically be
 			# injected as a line of dialogue if the player selects it
-			var l = line.text.replace("\\:", "!ESCAPED_COLON!")
-			if ": " in l:
-				var first_child: Dictionary = {
-					type = DialogueConstants.TYPE_DIALOGUE,
-					next_id = line.next_id,
-					next_id_after = line.next_id_after,
-					text_replacements = line.text_replacements,
-					tags = line.tags,
-					translation_key = line.get("translation_key")
-				}
-
-				var bits = Array(l.strip_edges().split(": "))
-				first_child["character"] = bits.pop_front()
-				# You can use variables in the character's name
-				first_child["character_replacements"] = extract_dialogue_replacements(first_child.character, first_child.character.length() + 2 + indent_size)
-				for replacement in first_child.character_replacements:
-					if replacement.has("error"):
-						add_error(id, replacement.index, replacement.error)
-				first_child["text"] = ": ".join(bits).replace("!ESCAPED_COLON!", ":")
-
-				line["character"] = first_child.character.strip_edges()
-				if not line["character"] in character_names:
-					character_names.append(line["character"])
-				line["text"] = first_child.text.strip_edges()
-
-				if first_child.translation_key == null:
-					first_child["translation_key"] = first_child.text
-
-				parsed_lines[str(id) + ".2"] = first_child
-				line["next_id"] = str(id) + ".2"
+			var response_text: String = line.text.replace("\\:", "!ESCAPED_COLON!")
+			if ": " in response_text:
+				if DialogueSettings.get_setting("create_lines_for_responses_with_characters", true):
+					var first_child: Dictionary = {
+						type = DialogueConstants.TYPE_DIALOGUE,
+						next_id = line.next_id,
+						next_id_after = line.next_id_after,
+						text_replacements = line.text_replacements,
+						tags = line.tags,
+						translation_key = line.get("translation_key")
+					}
+					parse_response_character_and_text(id, response_text, first_child, indent_size, parsed_lines)
+					line["character"] = first_child.character
+					line["character_replacements"] = first_child.character_replacements
+					line["text"] = first_child.text
+					line["translation_key"] = first_child.translation_key
+					parsed_lines[str(id) + ".2"] = first_child
+					line["next_id"] = str(id) + ".2"
+				else:
+					parse_response_character_and_text(id, response_text, line, indent_size, parsed_lines)
 			else:
-				line["text"] = l.replace("!ESCAPED_COLON!", ":")
+				line["text"] = response_text.replace("!ESCAPED_COLON!", ":")
 
 		# Title
 		elif is_title_line(raw_line):
@@ -1015,6 +1007,23 @@ func extract_response_prompt(line: String) -> String:
 		line = line.replace("[ID:%s]" % translation_key, "")
 
 	return line.replace("\\n", "\n").strip_edges()
+
+
+func parse_response_character_and_text(id: int, text: String, line: Dictionary, indent_size: int, parsed_lines: Dictionary) -> void:
+	var bits = Array(text.strip_edges().split(": "))
+	line["character"] = bits.pop_front().strip_edges()
+	line["character_replacements"] = extract_dialogue_replacements(line.character, line.character.length() + 2 + indent_size)
+	for replacement in line.character_replacements:
+		if replacement.has("error"):
+			add_error(id, replacement.index, replacement.error)
+
+	if not line["character"] in character_names:
+		character_names.append(line["character"])
+
+	line["text"] = ": ".join(bits).replace("!ESCAPED_COLON!", ":").strip_edges()
+
+	if line.get("translation_key", null) == null:
+		line["translation_key"] = line.text
 
 
 func extract_mutation(line: String) -> Dictionary:
