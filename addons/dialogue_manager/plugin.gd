@@ -141,8 +141,11 @@ func update_import_paths(from_path: String, to_path: String) -> void:
 
 	# Reopen the file if it's already open
 	if main_view.current_file_path == from_path:
-		main_view.current_file_path = ""
-		main_view.open_file(to_path)
+		if to_path == "":
+			main_view.close_file(from_path)
+		else:
+			main_view.current_file_path = ""
+			main_view.open_file(to_path)
 
 	# Update any other files that import the moved file
 	var dependents = dialogue_cache.get_files_with_dependency(from_path)
@@ -241,6 +244,6 @@ func _on_files_moved(old_file: String, new_file: String) -> void:
 
 
 func _on_file_removed(file: String) -> void:
-	update_import_paths(file, "?")
+	update_import_paths(file, "")
 	if is_instance_valid(main_view):
 		main_view.close_file(file)
