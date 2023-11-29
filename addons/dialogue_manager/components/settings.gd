@@ -38,8 +38,6 @@ static func prepare() -> void:
 			ProjectSettings.set_setting("dialogue_manager/%s" % key, null)
 			set_setting(key, value)
 
-	ProjectSettings.set_as_internal("dialogue_manager/general/has_dotnet_solution", true)
-
 	# Set up defaults
 	for setting in DEFAULT_SETTINGS:
 		if ProjectSettings.has_setting("dialogue_manager/general/%s" % setting):

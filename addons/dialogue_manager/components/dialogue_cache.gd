@@ -81,9 +81,11 @@ func queue_updating_dependencies(of_path: String) -> void:
 
 ## Update any references to a file path that has moved
 func move_file_path(from_path: String, to_path: String) -> void:
-	if _cache.has(from_path):
+	if not _cache.has(from_path): return
+
+	if to_path != "":
 		_cache[to_path] = _cache[from_path].duplicate()
-		_cache.erase(from_path)
+	_cache.erase(from_path)
 
 
 ## Get any dialogue files that import a given path.
