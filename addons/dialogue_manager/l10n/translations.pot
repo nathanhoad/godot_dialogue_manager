@@ -182,6 +182,9 @@ msgstr ""
 msgid "settings.states_hint"
 msgstr ""
 
+msgid "settings.recompile_warning"
+msgstr ""
+
 msgid "settings.create_lines_for_responses_with_characters"
 msgstr ""
 

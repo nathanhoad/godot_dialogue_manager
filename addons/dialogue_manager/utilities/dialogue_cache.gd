@@ -27,6 +27,20 @@ func _ready() -> void:
 	_build_cache()
 
 
+func reimport_files(files: PackedStringArray = []) -> void:
+	if files.is_empty(): files = get_files()
+
+	var file_system: EditorFileSystem = Engine.get_meta("DialogueManagerPlugin") \
+		.get_editor_interface() \
+		.get_resource_filesystem()
+
+	# NOTE: Godot 4.2rc1 has an issue with reimporting more than one
+	# file at a time so we do them one by one
+	for file in files:
+		file_system.reimport_files([file])
+		await get_tree().create_timer(0.2)
+
+
 ## Add a dialogue file to the cache.
 func add_file(path: String, parse_results: DialogueManagerParseResult = null) -> void:
 	var dependencies: PackedStringArray = []
