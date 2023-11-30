@@ -49,7 +49,14 @@ func set_responses(next_responses: Array) -> void:
 			if not response.is_allowed:
 				item.name = String(item.name) + "Disallowed"
 				item.disabled = true
-			item.text = response.text
+
+			# If the item has a response property then use that
+			if "response" in item:
+				item.response = response
+			# Otherwise assume we can just set the text
+			else:
+				item.text = response.text
+
 			add_child(item)
 
 		_configure_focus()
