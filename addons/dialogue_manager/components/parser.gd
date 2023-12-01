@@ -1161,6 +1161,17 @@ func extract_markers(line: String) -> ResolvedLineData:
 	var bbcodes: Array = []
 	var time: String = ""
 
+	# Remove any escaped brackets (ie. "\[")
+	var escaped_open_brackets: PackedInt32Array = []
+	var escaped_close_brackets: PackedInt32Array = []
+	for i in range(0, text.length() - 1):
+		if text.substr(i, 2) == "\\[":
+			text = text.erase(i, 2).insert(i, "!")
+			escaped_open_brackets.append(i)
+		elif text.substr(i, 2) == "\\]":
+			text = text.erase(i, 2).insert(i, "!")
+			escaped_close_brackets.append(i)
+
 	# Extract all of the BB codes so that we know the actual text (we could do this easier with
 	# a RichTextLabel but then we'd need to await idle_frame which is annoying)
 	var bbcode_positions = find_bbcode_positions_in_string(text)
@@ -1233,6 +1244,12 @@ func extract_markers(line: String) -> ResolvedLineData:
 	# Put the BB Codes back in
 	for bb in bbcodes:
 		text = text.insert(bb.start, bb.bbcode)
+
+	# Put the escaped brackets back in
+	for index in escaped_open_brackets:
+		text = text.erase(index, 1).insert(index, "[")
+	for index in escaped_close_brackets:
+		text = text.erase(index, 1).insert(index, "]")
 
 	return ResolvedLineData.new({
 		text = text,
