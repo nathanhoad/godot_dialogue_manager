@@ -6,7 +6,7 @@ const DialogueConstants = preload("./constants.gd")
 const DialogueImportPlugin = preload("./import_plugin.gd")
 const DialogueTranslationParserPlugin = preload("./editor_translation_parser_plugin.gd")
 const DialogueSettings = preload("./settings.gd")
-const DialogueCache = preload("./utilities/dialogue_cache.gd")
+const DialogueCache = preload("./components/dialogue_cache.gd")
 const MainView = preload("./views/main_view.tscn")
 
 
