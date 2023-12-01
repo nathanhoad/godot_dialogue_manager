@@ -1,7 +1,12 @@
 @icon("./assets/icon.svg")
 
+@tool
 ## A RichTextLabel specifically for use with [b]Dialogue Manager[/b] dialogue.
 class_name DialogueLabel extends RichTextLabel
+
+
+const DEFAULT_SECONDS_PER_STEP: float = 0.02
+const DEFAULT_SECONDS_PER_PAUSE_STEP: float = DEFAULT_SECONDS_PER_STEP * 15
 
 
 ## Emitted for each letter typed out.
@@ -18,13 +23,15 @@ signal finished_typing()
 
 
 ## The action to press to skip typing.
-@export var skip_action: String = "ui_cancel"
+@export var skip_action: StringName = &"ui_cancel"
 
 ## The speed with which the text types out.
-@export var seconds_per_step: float = 0.02
+@export var seconds_per_step: float = DEFAULT_SECONDS_PER_STEP
 
 ## Automatically have a brief pause when these characters are encountered.
 @export var pause_at_characters: String = ".?!"
+
+@export var seconds_per_pause_step: float = DEFAULT_SECONDS_PER_PAUSE_STEP
 
 
 ## The current line of dialogue.
@@ -67,7 +74,7 @@ func _process(delta: float) -> void:
 
 
 func _unhandled_input(event: InputEvent) -> void:
-	if self.is_typing and visible_ratio < 1 and event.is_action_pressed(skip_action):
+	if self.is_typing and visible_ratio < 1 and InputMap.has_action(skip_action) and event.is_action_pressed(skip_action):
 		get_viewport().set_input_as_handled()
 		skip_typing()
 
