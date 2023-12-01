@@ -3,7 +3,7 @@ extends Control
 
 
 const DialogueConstants = preload("../constants.gd")
-const DialogueSettings = preload("../components/settings.gd")
+const DialogueSettings = preload("../settings.gd")
 
 const OPEN_OPEN = 100
 const OPEN_CLEAR = 101
@@ -264,12 +264,6 @@ func show_file_in_filesystem(path: String) -> void:
 	file_system_dock.navigate_to_path(path)
 
 
-func _get_file_system() -> EditorFileSystem:
-	return Engine.get_meta("DialogueManagerPlugin") \
-		.get_editor_interface() \
-		.get_resource_filesystem()
-
-
 # Save any open files
 func save_files() -> void:
 	save_all_button.disabled = true
@@ -280,13 +274,8 @@ func save_files() -> void:
 			saved_files.append(path)
 		save_file(path, false)
 
-	# Make sure we reimport/recompile the changes
 	if saved_files.size() > 0:
-		# NOTE: Godot 4.2rc1 has an issue with reimporting more than one
-		# file at a time so we do them one by one
-		for file in saved_files:
-			_get_file_system().reimport_files([file])
-			await get_tree().create_timer(0.2)
+		Engine.get_meta("DialogueCache").reimport_files(saved_files)
 
 
 # Save a file
@@ -308,7 +297,10 @@ func save_file(path: String, rescan_file_system: bool = true) -> void:
 	file.close()
 
 	if rescan_file_system:
-		_get_file_system().scan()
+		Engine.get_meta("DialogueManagerPlugin") \
+			.get_editor_interface() \
+			.get_resource_filesystem()\
+			.scan()
 
 
 func close_file(file: String) -> void:
@@ -931,6 +923,7 @@ func _on_search_and_replace_close_requested() -> void:
 
 
 func _on_settings_button_pressed() -> void:
+	settings_view.prepare()
 	settings_dialog.popup_centered()
 
 
@@ -953,6 +946,7 @@ func _on_test_button_pressed() -> void:
 
 
 func _on_settings_dialog_confirmed() -> void:
+	settings_view.apply_settings_changes()
 	parse()
 	code_edit.wrap_mode = TextEdit.LINE_WRAPPING_BOUNDARY if DialogueSettings.get_setting("wrap_lines", false) else TextEdit.LINE_WRAPPING_NONE
 	code_edit.grab_focus()

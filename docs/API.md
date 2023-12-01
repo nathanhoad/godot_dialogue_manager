@@ -36,6 +36,7 @@ Returns a `DialogueLine` that looks something like this:
   - `id: String` - the ID of the response.
   - `next_id: String` - the ID of the next line if this response is chosen.
   - `is_allowed: bool` - whether this line passed its condition check (useful if you have "include all responses" enabled)
+  - `character: String` - the character name (if one was provided).
   - `text: String` - the text for this response.
   - `tags: PackedStringArray` - a list of tags.
   - `translation_key: String` - the key used to translate the text (or the whole text again if no ID was specified on the response)

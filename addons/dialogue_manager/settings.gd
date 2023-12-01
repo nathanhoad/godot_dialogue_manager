@@ -2,7 +2,7 @@
 extends Node
 
 
-const DialogueConstants = preload("../constants.gd")
+const DialogueConstants = preload("./constants.gd")
 
 
 ### Editor config
@@ -15,10 +15,11 @@ const DEFAULT_SETTINGS = {
 	new_with_template = true,
 	include_all_responses = false,
 	ignore_missing_state_values = false,
-	custom_test_scene_path = preload("../test_scene.tscn").resource_path,
+	custom_test_scene_path = preload("./test_scene.tscn").resource_path,
 	default_csv_locale = "en",
 	balloon_path = "",
-	has_dotnet_solution = false
+	has_dotnet_solution = false,
+	create_lines_for_responses_with_characters = true
 }
 
 
@@ -56,6 +57,14 @@ static func get_setting(key: String, default):
 		return ProjectSettings.get_setting("dialogue_manager/general/%s" % key)
 	else:
 		return default
+
+
+static func get_settings(only_keys: PackedStringArray = []) -> Dictionary:
+	var settings: Dictionary = {}
+	for key in DEFAULT_SETTINGS.keys():
+		if only_keys.is_empty() or key in only_keys:
+			settings[key] = get_setting(key, DEFAULT_SETTINGS[key])
+	return settings
 
 
 ### User config

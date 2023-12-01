@@ -1,7 +1,7 @@
 class_name BaseDialogueTestScene extends Node2D
 
 
-const DialogueSettings = preload("./components/settings.gd")
+const DialogueSettings = preload("./settings.gd")
 
 
 @onready var title: String = DialogueSettings.get_user_value("run_title")

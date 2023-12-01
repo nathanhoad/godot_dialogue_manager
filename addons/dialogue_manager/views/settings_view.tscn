@@ -1,6 +1,9 @@
-[gd_scene load_steps=2 format=3 uid="uid://cpg4lg1r3ff6m"]
+[gd_scene load_steps=3 format=3 uid="uid://cpg4lg1r3ff6m"]
 
 [ext_resource type="Script" path="res://addons/dialogue_manager/views/settings_view.gd" id="1_06uxa"]
+
+[sub_resource type="Theme" id="Theme_3a8rc"]
+HSeparator/constants/separation = 20
 
 [node name="SettingsView" type="TabContainer"]
 anchors_preset = 15
@@ -12,6 +15,7 @@ grow_horizontal = 2
 grow_vertical = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
+theme = SubResource("Theme_3a8rc")
 script = ExtResource("1_06uxa")
 
 [node name="Editor" type="VBoxContainer" parent="."]
@@ -21,10 +25,6 @@ layout_mode = 2
 layout_mode = 2
 button_pressed = true
 text = "New dialogue files will start with template text"
-
-[node name="MissingTranslationsButton" type="CheckBox" parent="Editor"]
-layout_mode = 2
-text = "Treat missing translation keys as errors"
 
 [node name="MissingTranslationsHint" type="Label" parent="Editor"]
 modulate = Color(1, 1, 1, 0.501961)
@@ -105,6 +105,7 @@ text = "If an autoload is enabled here you can refer to its properties and metho
 
 [node name="StatesHint" type="Label" parent="Runtime"]
 modulate = Color(1, 1, 1, 0.501961)
+custom_minimum_size = Vector2(10, 0)
 layout_mode = 2
 text = "ie. Instead of \"SomeState.some_property\" you could just use \"some_property\""
 autowrap_mode = 3
@@ -148,15 +149,28 @@ flat = true
 [node name="LoadTestScene" type="Button" parent="Advanced/CustomTestScene"]
 layout_mode = 2
 
+[node name="HSeparator" type="HSeparator" parent="Advanced"]
+layout_mode = 2
+
+[node name="RecompileWarning" type="Label" parent="Advanced"]
+layout_mode = 2
+text = "Changing these settings will force a recompile of all dialogue. Only change them if you know what you are doing."
+
+[node name="MissingTranslationsButton" type="CheckBox" parent="Advanced"]
+layout_mode = 2
+text = "Treat missing translation keys as errors"
+
+[node name="CreateLinesForResponseCharacters" type="CheckBox" parent="Advanced"]
+layout_mode = 2
+text = "Create child dialogue line for responses with character names in them"
+
 [node name="CustomTestSceneFileDialog" type="FileDialog" parent="."]
 title = "Open a File"
 ok_button_text = "Open"
 file_mode = 0
 filters = PackedStringArray("*.tscn ; Scene")
 
-[connection signal="visibility_changed" from="." to="." method="_on_settings_view_visibility_changed"]
 [connection signal="toggled" from="Editor/NewTemplateButton" to="." method="_on_sample_template_toggled"]
-[connection signal="toggled" from="Editor/MissingTranslationsButton" to="." method="_on_missing_translations_button_toggled"]
 [connection signal="toggled" from="Editor/CharactersTranslationsButton" to="." method="_on_characters_translations_button_toggled"]
 [connection signal="toggled" from="Editor/WrapLinesButton" to="." method="_on_wrap_lines_button_toggled"]
 [connection signal="text_changed" from="Editor/DefaultCSVLocale" to="." method="_on_default_csv_locale_text_changed"]
@@ -168,4 +182,6 @@ filters = PackedStringArray("*.tscn ; Scene")
 [connection signal="item_selected" from="Runtime/GlobalsList" to="." method="_on_globals_list_item_selected"]
 [connection signal="pressed" from="Advanced/CustomTestScene/RevertTestScene" to="." method="_on_revert_test_scene_pressed"]
 [connection signal="pressed" from="Advanced/CustomTestScene/LoadTestScene" to="." method="_on_load_test_scene_pressed"]
+[connection signal="toggled" from="Advanced/MissingTranslationsButton" to="." method="_on_missing_translations_button_toggled"]
+[connection signal="toggled" from="Advanced/CreateLinesForResponseCharacters" to="." method="_on_create_lines_for_response_characters_toggled"]
 [connection signal="file_selected" from="CustomTestSceneFileDialog" to="." method="_on_custom_test_scene_file_dialog_file_selected"]

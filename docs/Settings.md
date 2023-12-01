@@ -3,10 +3,8 @@
 ## Editor
 
 - `New dialogue files will start with template text` can be enabled to start new dialogue files with example dialogue.
-- `Treat missing translations as errors` can be enabled if you are using static translation keys and are adding them manually (there is an automatic static key button but you might be writing specific keys).
 - `Export character names in translation files` can be enabled to include character names when using translations.
 - `Wrap long lines` turns on word wrapping.
-- `Custom Test Scene` can be used to override the default test scene that gets run when you click the "Test dialogue" button in the dialogue editor.
 - `Default CSV locale` can be modified to set the default locale heading when generating CSVs for translation.
 
 ## Runtime
@@ -27,3 +25,12 @@ If you don't want to type out a globals' name all of the time you can add it to 
 For example, instead of having to type out `GameState.some_variable`, you could enable `GameState` and then you would just need to type out `some_variable`.
 
 ![GameState and SessionState are used by dialogue](states.jpg)
+
+## Advanced
+
+- `Custom Test Scene` can be used to override the default test scene that gets run when you click the "Test dialogue" button in the dialogue editor.
+
+Changing any of the following values will result in a recompile of all dialogue files in your project.
+
+- `Treat missing translations as errors` can be enabled if you are using static translation keys and are adding them manually (there is an automatic static key button but you might be writing specific keys).
+- `Create child dialogue line for responses with character names in them` can be disabled if you don't want to automatically create a dialogue line after responses that define a character

@@ -2,7 +2,8 @@ extends EditorTranslationParserPlugin
 
 
 const DialogueConstants = preload("./constants.gd")
-const DialogueSettings = preload("./components/settings.gd")
+const DialogueSettings = preload("./settings.gd")
+const DialogueManagerParseResult = preload("./components/parse_result.gd")
 
 
 func _parse_file(path: String, msgids: Array, msgids_context_plural: Array) -> void:

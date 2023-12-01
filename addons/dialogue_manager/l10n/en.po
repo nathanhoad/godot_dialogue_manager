@@ -192,6 +192,12 @@ msgstr "If an autoload is enabled here you can refer to its properties and metho
 msgid "settings.states_hint"
 msgstr "ie. Instead of \"SomeState.some_property\" you could just use \"some_property\""
 
+msgid "settings.recompile_warning"
+msgstr "Changing these settings will force a recompile of all dialogue. Only change them if you know what you are doing."
+
+msgid "settings.create_lines_for_responses_with_characters"
+msgstr "Create child dialogue line for responses with character names in them"
+
 msgid "n_of_n"
 msgstr "{index} of {total}"
 
