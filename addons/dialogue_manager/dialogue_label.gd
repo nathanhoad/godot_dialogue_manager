@@ -31,6 +31,7 @@ signal finished_typing()
 ## Automatically have a brief pause when these characters are encountered.
 @export var pause_at_characters: String = ".?!"
 
+## The amount of time to pause when exposing a character in pause_at_characters.
 @export var seconds_per_pause_step: float = DEFAULT_SECONDS_PER_PAUSE_STEP
 
 
