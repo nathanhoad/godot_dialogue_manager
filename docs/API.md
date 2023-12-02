@@ -62,9 +62,9 @@ Returns the example balloon's base CanvasLayer in case you want to `queue_free()
 ### Exports
 
 - `skip_action: StringName = &"ui_cancel"` - the action to press to skip typing, if any.
-- `seconds_per_step: float = DEFAULT_SECONDS_PER_STEP` - the speed with which the text types out.
+- `seconds_per_step: float = 0.02` - the speed with which the text types out.
 - `pause_at_characters: String = ".?!"` - automatically have a brief pause when these characters are encountered.
-- `seconds_per_pause_step: float = DEFAULT_SECONDS_PER_PAUSE_STEP` - the amount of time to pause when exposing a character present in pause_at_characters.
+- `seconds_per_pause_step: float = 0.3` - the amount of time to pause when exposing a character present in pause_at_characters.
 
 ### Signals
 

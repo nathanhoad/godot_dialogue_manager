@@ -5,10 +5,6 @@
 class_name DialogueLabel extends RichTextLabel
 
 
-const DEFAULT_SECONDS_PER_STEP: float = 0.02
-const DEFAULT_SECONDS_PER_PAUSE_STEP: float = DEFAULT_SECONDS_PER_STEP * 15
-
-
 ## Emitted for each letter typed out.
 signal spoke(letter: String, letter_index: int, speed: float)
 
@@ -26,13 +22,13 @@ signal finished_typing()
 @export var skip_action: StringName = &"ui_cancel"
 
 ## The speed with which the text types out.
-@export var seconds_per_step: float = DEFAULT_SECONDS_PER_STEP
+@export var seconds_per_step: float = 0.02
 
 ## Automatically have a brief pause when these characters are encountered.
 @export var pause_at_characters: String = ".?!"
 
 ## The amount of time to pause when exposing a character present in pause_at_characters.
-@export var seconds_per_pause_step: float = DEFAULT_SECONDS_PER_PAUSE_STEP
+@export var seconds_per_pause_step: float = 0.3
 
 
 ## The current line of dialogue.
