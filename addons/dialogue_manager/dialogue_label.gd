@@ -31,7 +31,7 @@ signal finished_typing()
 ## Automatically have a brief pause when these characters are encountered.
 @export var pause_at_characters: String = ".?!"
 
-## The amount of time to pause when exposing a character in pause_at_characters.
+## The amount of time to pause when exposing a character present in pause_at_characters.
 @export var seconds_per_pause_step: float = DEFAULT_SECONDS_PER_PAUSE_STEP
 
 
@@ -123,7 +123,7 @@ func _type_next(delta: float, seconds_needed: float) -> void:
 
 	# Pause on characters like "."
 	if _should_auto_pause():
-		additional_waiting_seconds += seconds_per_step * 15
+		additional_waiting_seconds += seconds_per_pause_step
 
 	# Pause at literal [wait] directives
 	if _last_wait_index != visible_characters and additional_waiting_seconds > 0:
