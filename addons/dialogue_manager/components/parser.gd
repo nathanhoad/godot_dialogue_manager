@@ -443,6 +443,7 @@ func get_data() -> DialogueManagerParseResult:
 	data.character_names = character_names
 	data.first_title = first_title
 	data.lines = parsed_lines
+	data.errors = errors
 	return data
 
 

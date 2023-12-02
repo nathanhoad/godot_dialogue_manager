@@ -11,14 +11,15 @@ config_version=5
 [application]
 
 config/name="Dialogue Manager"
-run/main_scene="res://examples/test_scenes/portraits_scene.tscn"
-config/features=PackedStringArray("4.1")
+run/main_scene="res://tests/tests.tscn"
+config/features=PackedStringArray("4.2")
 config/icon="res://icon.svg"
 
 [autoload]
 
 Events="*res://examples/events.gd"
 State="*res://examples/state.gd"
+StateForTests="*res://tests/state_for_tests.gd"
 DialogueManager="*res://addons/dialogue_manager/dialogue_manager.gd"
 
 [dialogue_manager]
