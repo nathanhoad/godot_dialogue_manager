@@ -1,0 +1,128 @@
+[gd_scene load_steps=5 format=3 uid="uid://k2pif7ljmrxq"]
+
+[ext_resource type="Script" path="res://tests/tests.gd" id="1_ds4fl"]
+
+[sub_resource type="Theme" id="Theme_mxx6t"]
+default_font_size = 18
+MarginContainer/constants/margin_bottom = 20
+MarginContainer/constants/margin_left = 20
+MarginContainer/constants/margin_right = 20
+MarginContainer/constants/margin_top = 20
+
+[sub_resource type="LabelSettings" id="LabelSettings_272v2"]
+font_size = 70
+font_color = Color(1, 0.823529, 0, 1)
+outline_size = 2
+outline_color = Color(0.67451, 0.419608, 0, 1)
+shadow_color = Color(0.67451, 0.419608, 0, 1)
+shadow_offset = Vector2(0, 4)
+
+[sub_resource type="Gradient" id="Gradient_0kudq"]
+offsets = PackedFloat32Array(0, 0.212454, 0.498168, 0.772894, 1)
+colors = PackedColorArray(0, 1, 0, 1, 0.877526, 0.403399, 0, 1, 1, 0, 0.670991, 1, 1, 0.840899, 0, 1, 0.990476, 1, 0.950589, 1)
+
+[node name="Tests" type="ColorRect"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme = SubResource("Theme_mxx6t")
+color = Color(0.0705882, 0.423529, 0.2, 1)
+script = ExtResource("1_ds4fl")
+
+[node name="AllPassing" type="RichTextLabel" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = 94.0
+offset_bottom = -403.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_font_sizes/normal_font_size = 100
+bbcode_enabled = true
+text = "[wave][center]All tests passed"
+
+[node name="Label" type="Label" parent="."]
+modulate = Color(1, 1, 1, 0.596078)
+layout_mode = 0
+offset_top = 260.0
+offset_right = 1153.0
+offset_bottom = 286.0
+theme_override_font_sizes/font_size = 30
+text = "See Output for details"
+horizontal_alignment = 1
+
+[node name="TestsCount" type="Label" parent="."]
+layout_mode = 0
+offset_left = 115.0
+offset_top = 415.0
+offset_right = 308.0
+offset_bottom = 511.0
+text = "1"
+label_settings = SubResource("LabelSettings_272v2")
+horizontal_alignment = 1
+
+[node name="Label" type="Label" parent="TestsCount"]
+layout_mode = 0
+offset_left = 1.0
+offset_top = 98.0
+offset_right = 201.0
+offset_bottom = 140.0
+theme_override_font_sizes/font_size = 30
+text = "Tests"
+horizontal_alignment = 1
+
+[node name="AssertionsCount" type="Label" parent="."]
+layout_mode = 0
+offset_left = 452.0
+offset_top = 415.0
+offset_right = 645.0
+offset_bottom = 511.0
+text = "1"
+label_settings = SubResource("LabelSettings_272v2")
+horizontal_alignment = 1
+
+[node name="Label" type="Label" parent="AssertionsCount"]
+layout_mode = 0
+offset_left = 1.0
+offset_top = 98.0
+offset_right = 201.0
+offset_bottom = 140.0
+theme_override_font_sizes/font_size = 30
+text = "Assertions"
+horizontal_alignment = 1
+
+[node name="SecondsCount" type="Label" parent="."]
+layout_mode = 0
+offset_left = 803.0
+offset_top = 415.0
+offset_right = 996.0
+offset_bottom = 511.0
+text = "0"
+label_settings = SubResource("LabelSettings_272v2")
+horizontal_alignment = 1
+
+[node name="Label" type="Label" parent="SecondsCount"]
+layout_mode = 0
+offset_left = 1.0
+offset_top = 98.0
+offset_right = 201.0
+offset_bottom = 140.0
+theme_override_font_sizes/font_size = 30
+text = "Seconds"
+horizontal_alignment = 1
+
+[node name="CPUParticles2D" type="CPUParticles2D" parent="."]
+position = Vector2(596, -18)
+amount = 13
+preprocess = 10.0
+emission_shape = 3
+emission_rect_extents = Vector2(500, 1)
+direction = Vector2(0, 1)
+spread = 114.75
+initial_velocity_max = 293.75
+scale_amount_min = 4.0
+scale_amount_max = 10.0
+color_ramp = SubResource("Gradient_0kudq")
