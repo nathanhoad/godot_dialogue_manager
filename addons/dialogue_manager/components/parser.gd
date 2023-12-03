@@ -475,14 +475,6 @@ func prepare(text: String, path: String, include_imported_titles_hashes: bool = 
 		if is_import_line(line):
 			var import_data = extract_import_path_and_name(line)
 			if import_data.size() > 0:
-				# Make a map so we can refer compiled lines to where they were imported from
-				_imported_line_map.append({
-					hash = import_data.path.hash(),
-					imported_on_line_number = id,
-					from_line = 0,
-					to_line = 0
-				})
-
 				# Keep track of titles so we can add imported ones later
 				if str(import_data.path.hash()) in imported_titles.keys():
 					add_error(id, 0, DialogueConstants.ERR_FILE_ALREADY_IMPORTED)
@@ -492,6 +484,14 @@ func prepare(text: String, path: String, include_imported_titles_hashes: bool = 
 
 				# Import the file content
 				if not import_data.path.hash() in known_imports:
+					# Make a map so we can refer compiled lines to where they were imported from
+					_imported_line_map.append({
+						hash = import_data.path.hash(),
+						imported_on_line_number = id,
+						from_line = 0,
+						to_line = 0
+					})
+
 					var error: Error = import_content(import_data.path, import_data.prefix, _imported_line_map, known_imports)
 					if error != OK:
 						add_error(id, 0, error)
