@@ -253,10 +253,14 @@ namespace DialogueManagerRuntime
       }
     }
 
-    public string GetTagValue(string tagName) {
-      foreach (var tag in tags) {
-        if (tag.StartsWith(tagName)) {
-          return tag.Substring(tagName.Length);
+    public string GetTagValue(string tagName)
+    {
+      string wrapped = $"{tagName}=";
+      foreach (var tag in tags)
+      {
+        if (tag.StartsWith(wrapped))
+        {
+          return tag.Substring(wrapped.Length);
         }
       }
       return "";
@@ -309,10 +313,14 @@ namespace DialogueManagerRuntime
       tags = (Array<string>)data.Get("tags");
     }
 
-    public string GetTagValue(string tagName) {
-      foreach (var tag in tags) {
-        if (tag.StartsWith(tagName)) {
-          return tag.Substring(tagName.Length);
+    public string GetTagValue(string tagName) 
+    {
+      string wrapped = $"{tagName}=";
+      foreach (var tag in tags) 
+      {
+        if (tag.StartsWith(wrapped)) 
+        {
+          return tag.Substring(wrapped.Length);
         }
       }
       return "";
