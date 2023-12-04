@@ -228,7 +228,11 @@ namespace DialogueManagerRuntime
 
     private Array<Variant> extra_game_states = new Array<Variant>();
 
-
+    private Array<string> tags = new Array<string>();
+    public Array<string> Tags
+    {
+      get => tags;
+    }
 
     public DialogueLine(RefCounted data)
     {
@@ -241,11 +245,25 @@ namespace DialogueManagerRuntime
       speeds = (Dictionary)data.Get("speeds");
       inline_mutations = (Array<Godot.Collections.Array>)data.Get("inline_mutations");
       time = (string)data.Get("time");
+      tags = (Array<string>)data.Get("tags");
 
       foreach (var response in (Array<RefCounted>)data.Get("responses"))
       {
         responses.Add(new DialogueResponse(response));
       }
+    }
+
+    public string GetTagValue(string tagName)
+    {
+      string wrapped = $"{tagName}=";
+      foreach (var tag in tags)
+      {
+        if (tag.StartsWith(wrapped))
+        {
+          return tag.Substring(wrapped.Length);
+        }
+      }
+      return "";
     }
   }
 
@@ -280,6 +298,11 @@ namespace DialogueManagerRuntime
       set => translation_key = value;
     }
 
+    private Array<string> tags = new Array<string>();
+    public Array<string> Tags
+    {
+      get => tags;
+    }
 
     public DialogueResponse(RefCounted data)
     {
@@ -287,6 +310,20 @@ namespace DialogueManagerRuntime
       is_allowed = (bool)data.Get("is_allowed");
       text = (string)data.Get("text");
       translation_key = (string)data.Get("translation_key");
+      tags = (Array<string>)data.Get("tags");
+    }
+
+    public string GetTagValue(string tagName) 
+    {
+      string wrapped = $"{tagName}=";
+      foreach (var tag in tags) 
+      {
+        if (tag.StartsWith(wrapped)) 
+        {
+          return tag.Substring(wrapped.Length);
+        }
+      }
+      return "";
     }
   }
 }
