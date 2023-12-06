@@ -231,10 +231,10 @@ func parse(text: String, path: String) -> Error:
 
 		# Title
 		elif is_title_line(raw_line):
+			line["type"] = DialogueConstants.TYPE_TITLE
 			if not raw_lines[id].begins_with("~"):
 				add_error(id, indent_size + 2, DialogueConstants.ERR_NESTED_TITLE)
 			else:
-				line["type"] = DialogueConstants.TYPE_TITLE
 				line["text"] = extract_title(raw_line)
 				# Titles can't have numbers as the first letter (unless they are external titles which get replaced with hashes)
 				if id >= _imported_line_count and BEGINS_WITH_NUMBER_REGEX.search(line.text):
