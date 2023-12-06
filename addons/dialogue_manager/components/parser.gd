@@ -63,7 +63,7 @@ var character_names: PackedStringArray = []
 var first_title: String = ""
 var errors: Array[Dictionary] = []
 
-var _imported_line_map: Array[Dictionary] = []
+var _imported_line_map: Dictionary = {}
 var _imported_line_count: int = 0
 
 var while_loopbacks: Array[String] = []
@@ -456,7 +456,7 @@ func get_errors() -> Array[Dictionary]:
 func prepare(text: String, path: String, include_imported_titles_hashes: bool = true) -> void:
 	errors = []
 	imported_paths = []
-	_imported_line_map = []
+	_imported_line_map = {}
 	while_loopbacks = []
 	titles = {}
 	character_names = []
@@ -474,31 +474,33 @@ func prepare(text: String, path: String, include_imported_titles_hashes: bool = 
 		var line = raw_lines[id]
 		if is_import_line(line):
 			var import_data = extract_import_path_and_name(line)
+			var import_hash: int = import_data.path.hash()
 			if import_data.size() > 0:
-				# Make a map so we can refer compiled lines to where they were imported from
-				_imported_line_map.append({
-					hash = import_data.path.hash(),
-					imported_on_line_number = id,
-					from_line = 0,
-					to_line = 0
-				})
-
 				# Keep track of titles so we can add imported ones later
-				if str(import_data.path.hash()) in imported_titles.keys():
+				if str(import_hash) in imported_titles.keys():
 					add_error(id, 0, DialogueConstants.ERR_FILE_ALREADY_IMPORTED)
 				if import_data.prefix in imported_titles.values():
 					add_error(id, 0, DialogueConstants.ERR_DUPLICATE_IMPORT_NAME)
-				imported_titles[str(import_data.path.hash())] = import_data.prefix
+				imported_titles[str(import_hash)] = import_data.prefix
 
 				# Import the file content
-				if not import_data.path.hash() in known_imports:
+				if not known_imports.has(import_hash):
 					var error: Error = import_content(import_data.path, import_data.prefix, _imported_line_map, known_imports)
 					if error != OK:
 						add_error(id, 0, error)
 
+				# Make a map so we can refer compiled lines to where they were imported from
+				if not _imported_line_map.has(import_hash):
+					_imported_line_map[import_hash] = {
+						hash = import_hash,
+						imported_on_line_number = id,
+						from_line = 0,
+						to_line = 0
+					}
+
 	var imported_content: String =  ""
 	var cummulative_line_number: int = 0
-	for item in _imported_line_map:
+	for item in _imported_line_map.values():
 		item["from_line"] = cummulative_line_number
 		if known_imports.has(item.hash):
 			cummulative_line_number += known_imports[item.hash].split("\n").size()
@@ -895,7 +897,7 @@ func get_autoload_names() -> PackedStringArray:
 
 
 ## Import content from another dialogue file or return an ERR
-func import_content(path: String, prefix: String, imported_line_map: Array[Dictionary], known_imports: Dictionary) -> Error:
+func import_content(path: String, prefix: String, imported_line_map: Dictionary, known_imports: Dictionary) -> Error:
 	if FileAccess.file_exists(path):
 		var file = FileAccess.open(path, FileAccess.READ)
 		var content: PackedStringArray = file.get_as_text().split("\n")
@@ -907,18 +909,21 @@ func import_content(path: String, prefix: String, imported_line_map: Array[Dicti
 			if is_import_line(line):
 				var import = extract_import_path_and_name(line)
 				if import.size() > 0:
-					# Make a map so we can refer compiled lines to where they were imported from
-					imported_line_map.append({
-						hash = import.path.hash(),
-						imported_on_line_number = index,
-						from_line = 0,
-						to_line = 0
-					})
 					if not known_imports.has(import.path.hash()):
 						# Add an empty record into the keys just so we don't end up with cyclic dependencies
 						known_imports[import.path.hash()] = ""
 						if import_content(import.path, import.prefix, imported_line_map, known_imports) != OK:
 							return ERR_LINK_FAILED
+
+					if not imported_line_map.has(import.path.hash()):
+						# Make a map so we can refer compiled lines to where they were imported from
+						imported_line_map[import.path.hash()] = {
+							hash = import.path.hash(),
+							imported_on_line_number = index,
+							from_line = 0,
+							to_line = 0
+						}
+
 					imported_titles[import.prefix] = import.path.hash()
 
 		var origin_hash: int = -1
