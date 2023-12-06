@@ -28,6 +28,10 @@ var dialogue_line: DialogueLine:
 			queue_free()
 			return
 
+		# If the node isn't ready yet then none of the labels will be ready yet either
+		if not is_node_ready():
+			await ready
+
 		dialogue_line = next_dialogue_line
 
 		character_label.visible = not dialogue_line.character.is_empty()
