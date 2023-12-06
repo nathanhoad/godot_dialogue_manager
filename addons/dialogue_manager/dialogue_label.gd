@@ -27,6 +27,9 @@ signal finished_typing()
 ## Automatically have a brief pause when these characters are encountered.
 @export var pause_at_characters: String = ".?!"
 
+## Don't auto pause if the charcter after the pause is one of these.
+@export var skip_pause_at_character_if_followed_by: String = ")\""
+
 ## The amount of time to pause when exposing a character present in pause_at_characters.
 @export var seconds_per_pause_step: float = 0.3
 
@@ -175,6 +178,10 @@ func _should_auto_pause() -> bool:
 	if visible_characters == 0: return false
 
 	var parsed_text: String = get_parsed_text()
+
+	# Ignore pause characters if they are next to a non-pause character
+	if parsed_text[visible_characters] in skip_pause_at_character_if_followed_by.split():
+		return false
 
 	# Ignore "." if it's between two numbers
 	if visible_characters > 3 and parsed_text[visible_characters - 1] == ".":
