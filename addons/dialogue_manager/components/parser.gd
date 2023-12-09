@@ -1181,10 +1181,10 @@ func extract_markers(line: String) -> ResolvedLineData:
 	var escaped_close_brackets: PackedInt32Array = []
 	for i in range(0, text.length() - 1):
 		if text.substr(i, 2) == "\\[":
-			text = text.erase(i, 2).insert(i, "!")
+			text = text.substr(0, i) + "!" + text.substr(i + 2)
 			escaped_open_brackets.append(i)
 		elif text.substr(i, 2) == "\\]":
-			text = text.erase(i, 2).insert(i, "!")
+			text = text.substr(0, i) + "!" + text.substr(i + 2)
 			escaped_close_brackets.append(i)
 
 	# Extract all of the BB codes so that we know the actual text (we could do this easier with
@@ -1252,6 +1252,14 @@ func extract_markers(line: String) -> ResolvedLineData:
 			if bb.offset_start > bbcode.start:
 				bb.offset_start -= length
 				bb.start -= length
+
+		# Find any escaped brackets after this that need moving
+		for i in range(0, escaped_open_brackets.size()):
+			if escaped_open_brackets[i] > bbcode.start:
+				escaped_open_brackets[i] -= length
+		for i in range(0, escaped_close_brackets.size()):
+			if escaped_close_brackets[i] > bbcode.start:
+				escaped_close_brackets[i] -= length
 
 		text = text.substr(0, index) + text.substr(index + length)
 		next_bbcode_position = find_bbcode_positions_in_string(text, false)
