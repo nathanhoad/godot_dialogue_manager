@@ -69,3 +69,8 @@ func test_can_resolve_inline_conditions() -> void:
 
 	data = await _resolve("Nathan: What I'm saying is [if true]true[else]false[/if].")
 	assert(data.text == "What I'm saying is true.", "Should resolve condition with else in it.")
+
+
+func test_can_handle_escaped_brackets() -> void:
+	var data = await _resolve("Nathan: This[wait=1] is a \\[[color=lime]special[/color]\\] thing")
+	assert(data.text == "This is a [[color=lime]special[/color]] thing")
