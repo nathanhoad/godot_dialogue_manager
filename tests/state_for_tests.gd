@@ -5,6 +5,10 @@ var some_property: int = 0
 var character_name: String = "Coco"
 
 
+func noop() -> void:
+	pass
+
+
 func some_method(number: int, string: String) -> int:
 	return number * string.length()
 

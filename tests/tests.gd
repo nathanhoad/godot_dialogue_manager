@@ -13,10 +13,10 @@ func _ready() -> void:
 	tests_count = 0
 	started_at = Time.get_ticks_msec()
 
-	await _run_tests("basic_dialogue")
-	await _run_tests("extracting_markers")
-	await _run_tests("responses")
-	await _run_tests("state")
+	var tests: PackedStringArray = Array(DirAccess.get_files_at("res://tests")) \
+		.filter(func(path): return path.begins_with("test_"))
+	for test in tests:
+		await _run_tests(test)
 
 	var duration: float = (Time.get_ticks_msec() - started_at) / 1000
 	print_rich("[color=#555]_______________________[/color]\n\n[b]%d tests[/b] with %d assertions in [color=yellow]%.2fs[/color]" % [tests_count, assertions_count, duration])
@@ -28,14 +28,20 @@ func _ready() -> void:
 
 # Run all the test methods on a node
 func _run_tests(path: String) -> void:
-	print_rich("[b]%s[/b]" % path.replace("_", " ").to_upper())
-	var node: Node = load(get_script().resource_path.get_base_dir() + "/test_" + path + ".gd").new()
+	print_rich("[b]%s[/b]" % path.get_basename().replace("test_", "").replace("_", " ").to_upper())
+	var node: Node = load(get_script().resource_path.get_base_dir() + "/" + path).new()
+
+	node.before_all()
 
 	for method in node.get_method_list():
 		if method.name.begins_with("test_"):
+			node.before_each()
 			await node.call(method.name)
 			print_rich("\t[color=lime]o[/color] " + method.name.replace("test_", "").replace("_", " "))
 			tests_count += 1
+			node.after_each()
+
+	node.after_all()
 
 	assertions_count += node.get_script().source_code.count("assert(")
 
