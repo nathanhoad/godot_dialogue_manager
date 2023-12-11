@@ -51,6 +51,26 @@ This is dialogue without a name.")
 	assert(line.text == "This is dialogue without a name.", "Should match dialogue.")
 
 
+func test_can_parse_multiline_dialogue() -> void:
+	var output = parse("
+~ start
+Nathan: This is the first line.
+	This is the second line.")
+
+	assert(output.errors.is_empty(), "Should have no errors.")
+	assert(output.lines["3"].text == "This is the first line.\nThis is the second line.", "Should concatenate the lines.")
+
+	output = parse("
+~ start
+Nathan: This is the first line.
+	This is the second line.
+	do something()")
+
+	assert(output.errors.size() == 1, "Should have 1 error.")
+	assert(output.errors[0].line_number == 4, "Error on line 5.")
+	assert(output.errors[0].error == DialogueConstants.ERR_INVALID_INDENTATION, "Error on line 5.")
+
+
 func test_can_parse_jumps() -> void:
 	var output = parse("
 ~ start

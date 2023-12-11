@@ -456,7 +456,13 @@ func create_dialogue_line(data: Dictionary, extra_game_states: Array) -> Dialogu
 			})
 
 		DialogueConstants.TYPE_RESPONSE:
-			return null
+			return DialogueLine.new({
+				id = data.get("id", ""),
+				type = DialogueConstants.TYPE_RESPONSE,
+				next_id = data.next_id,
+				tags = data.get("tags", []),
+				extra_game_states = extra_game_states
+			})
 
 		DialogueConstants.TYPE_MUTATION:
 			return DialogueLine.new({
