@@ -105,7 +105,7 @@ func _import(source_file: String, save_path: String, options: Dictionary, platfo
 	compiled_resource.emit(resource)
 
 	# Recompile any dependencies
-	var dependent_paths: PackedStringArray = cache.get_dependent_paths(source_file)
+	var dependent_paths: PackedStringArray = cache.get_dependent_paths_for_reimport(source_file)
 	for path in dependent_paths:
 		append_import_external_resource(path)
 

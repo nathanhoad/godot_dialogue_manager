@@ -43,16 +43,15 @@ func reimport_files(files: PackedStringArray = []) -> void:
 
 ## Add a dialogue file to the cache.
 func add_file(path: String, parse_results: DialogueManagerParseResult = null) -> void:
-	var dependencies: PackedStringArray = []
-
-	if parse_results != null:
-		dependencies = Array(parse_results.imported_paths).filter(func(d): return d != path)
-
 	_cache[path] = {
 		path = path,
-		dependencies = dependencies,
+		dependencies = [],
 		errors = []
 	}
+
+	if parse_results != null:
+		_cache[path].dependencies = Array(parse_results.imported_paths).filter(func(d): return d != path)
+		_cache[path].parsed_at = Time.get_ticks_msec()
 
 	# If this is a fresh cache entry then we need to check for dependencies
 	if parse_results == null and not _update_dependency_paths.has(path):
@@ -109,8 +108,10 @@ func get_files_with_dependency(imported_path: String) -> Array:
 
 
 ## Get any paths that are dependent on a given path
-func get_dependent_paths(on_path: String) -> PackedStringArray:
-	return get_files_with_dependency(on_path).map(func(d): return d.path)
+func get_dependent_paths_for_reimport(on_path: String) -> PackedStringArray:
+	return get_files_with_dependency(on_path) \
+		.filter(func(d): return Time.get_ticks_msec() - d.get("parsed_at", 0) > 3000) \
+		.map(func(d): return d.path)
 
 
 # Build the initial cache for dialogue files.
