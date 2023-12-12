@@ -77,7 +77,8 @@ static func get_user_config() -> Dictionary:
 		carets = {},
 		run_title = "",
 		run_resource_path = "",
-		is_running_test_scene = false
+		is_running_test_scene = false,
+		open_in_external_editor = false
 	}
 
 	if FileAccess.file_exists(DialogueConstants.USER_CONFIG_PATH):

@@ -198,6 +198,12 @@ msgstr "Changing these settings will force a recompile of all dialogue. Only cha
 msgid "settings.create_lines_for_responses_with_characters"
 msgstr "Create child dialogue line for responses with character names in them"
 
+msgid "settings.open_in_external_editor"
+msgstr "Open dialogue files in external editor"
+
+msgid "settings.external_editor_warning"
+msgstr "Note: Syntax highlighting and detailed error checking are not supported in external editors."
+
 msgid "n_of_n"
 msgstr "{index} of {total}"
 

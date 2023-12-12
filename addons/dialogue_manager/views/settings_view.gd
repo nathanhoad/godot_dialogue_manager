@@ -31,6 +31,7 @@ enum PathTarget {
 @onready var globals_list: Tree = $Runtime/GlobalsList
 
 # Advanced
+@onready var open_in_external_editor_button: CheckBox = $Advanced/OpenInExternalEditorButton
 @onready var test_scene_path_input: LineEdit = $Advanced/CustomTestScene/TestScenePath
 @onready var revert_test_scene_button: Button = $Advanced/CustomTestScene/RevertTestScene
 @onready var load_test_scene_button: Button = $Advanced/CustomTestScene/LoadTestScene
@@ -62,6 +63,8 @@ func _ready() -> void:
 	$Runtime/StatesMessage.text = DialogueConstants.translate("settings.states_message")
 	$Runtime/StatesHint.text = DialogueConstants.translate("settings.states_hint")
 
+	open_in_external_editor_button.text = DialogueConstants.translate("settings.open_in_external_editor")
+	$Advanced/ExternalWarning.text = DialogueConstants.translate("settings.external_editor_warning")
 	$Advanced/CustomTestSceneLabel.text = DialogueConstants.translate("settings.custom_test_scene")
 	$Advanced/RecompileWarning.text = DialogueConstants.translate("settings.recompile_warning")
 	missing_translations_button.text = DialogueConstants.translate("settings.missing_keys")
@@ -98,6 +101,8 @@ func prepare() -> void:
 
 	missing_translations_button.set_pressed_no_signal(DialogueSettings.get_setting("missing_translations_are_errors", false))
 	create_lines_for_response_characters.set_pressed_no_signal(DialogueSettings.get_setting("create_lines_for_responses_with_characters", true))
+
+	open_in_external_editor_button.set_pressed_no_signal(DialogueSettings.get_user_value("open_in_external_editor", false))
 
 	var project = ConfigFile.new()
 	var err = project.load("res://project.godot")
@@ -235,3 +240,7 @@ func _on_load_balloon_path_pressed() -> void:
 
 func _on_create_lines_for_response_characters_toggled(toggled_on: bool) -> void:
 	DialogueSettings.set_setting("create_lines_for_responses_with_characters", toggled_on)
+
+
+func _on_open_in_external_editor_button_toggled(toggled_on: bool) -> void:
+	DialogueSettings.set_user_value("open_in_external_editor", toggled_on)
