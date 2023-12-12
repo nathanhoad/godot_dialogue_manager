@@ -86,9 +86,10 @@ func _get_plugin_icon() -> Texture2D:
 
 
 func _handles(object) -> bool:
-	if object is DialogueResource and DialogueSettings.get_user_value("open_in_external_editor", false):
-		var settings: EditorSettings = get_editor_interface().get_editor_settings()
-		var external_editor: String = settings.get_setting("text_editor/external/exec_path")
+	var editor_settings: EditorSettings = get_editor_interface().get_editor_settings()
+	var external_editor: String = editor_settings.get_setting("text_editor/external/exec_path")
+	var use_external_editor: bool = editor_settings.get_setting("text_editor/external/use_external_editor") and external_editor != ""
+	if object is DialogueResource and use_external_editor and DialogueSettings.get_user_value("open_in_external_editor", false):
 		var project_path: String = ProjectSettings.globalize_path("res://")
 		var file_path: String = ProjectSettings.globalize_path(object.resource_path)
 		OS.create_process(external_editor, [project_path, file_path])

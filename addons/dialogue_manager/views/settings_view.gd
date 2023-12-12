@@ -104,6 +104,14 @@ func prepare() -> void:
 
 	open_in_external_editor_button.set_pressed_no_signal(DialogueSettings.get_user_value("open_in_external_editor", false))
 
+	var editor_settings: EditorSettings = editor_plugin.get_editor_interface().get_editor_settings()
+	var external_editor: String = editor_settings.get_setting("text_editor/external/exec_path")
+	var use_external_editor: bool = editor_settings.get_setting("text_editor/external/use_external_editor") and external_editor != ""
+	if not use_external_editor:
+		open_in_external_editor_button.hide()
+		$Advanced/ExternalWarning.hide()
+		$Advanced/HSeparator.hide()
+
 	var project = ConfigFile.new()
 	var err = project.load("res://project.godot")
 	assert(err == OK, "Could not find the project file")
