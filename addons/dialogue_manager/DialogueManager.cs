@@ -111,7 +111,6 @@ namespace DialogueManagerRuntime
       return instance;
     }
 
-
     public static async Task<DialogueLine?> GetNextDialogueLine(Resource dialogueResource, string key = "", Array<Variant>? extraGameStates = null)
     {
       Instance.Call("_bridge_get_next_dialogue_line", dialogueResource, key, extraGameStates ?? new Array<Variant>());
@@ -122,12 +121,15 @@ namespace DialogueManagerRuntime
       return new DialogueLine((RefCounted)result[0]);
     }
 
+    public static async void Mutate(Dictionary mutation, bool isInlineMutation, Array<Variant>? extraGameStates = null) {
+     Instance.Call("mutate", mutation, extraGameStates ?? new Array<Variant>(), isInlineMutation);
+     await Instance.ToSignal(Instance, "mutated");
+    }
 
     public static CanvasLayer ShowExampleDialogueBalloon(Resource dialogueResource, string key = "", Array<Variant>? extraGameStates = null)
     {
       return (CanvasLayer)Instance.Call("show_example_dialogue_balloon", dialogueResource, key, extraGameStates ?? new Array<Variant>());
     }
-
 
     public bool ThingHasMethod(GodotObject thing, string method)
     {
@@ -222,9 +224,19 @@ namespace DialogueManagerRuntime
     }
 
     private Dictionary pauses = new Dictionary();
+    public Dictionary Pauses {
+     get => pauses;
+    }
+
     private Dictionary speeds = new Dictionary();
+    public Dictionary Speeds {
+     get => speeds;
+    }
 
     private Array<Godot.Collections.Array> inline_mutations = new Array<Godot.Collections.Array>();
+    public Array<Godot.Collections.Array> InlineMutations {
+     get => inline_mutations;
+    }
 
     private Array<Variant> extra_game_states = new Array<Variant>();
 
@@ -264,6 +276,17 @@ namespace DialogueManagerRuntime
         }
       }
       return "";
+    }
+
+    public override string ToString() {
+     switch (type) {
+      case "dialogue":
+       return $"<DialogueLine character=\"{character}\" text=\"{text}\">";
+      case "mutation":
+       return "<DialogueLine mutation>";
+      default:
+       return "";
+     }
     }
   }
 
@@ -325,6 +348,10 @@ namespace DialogueManagerRuntime
       }
       return "";
     }
+	
+	public override string ToString() {
+	 return $"<DialogueResponse text=\"{text}\"";
+	}
   }
 }
 
