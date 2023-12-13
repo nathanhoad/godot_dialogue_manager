@@ -279,6 +279,7 @@ dialog_text = "You're now up to date!"
 [connection signal="pressed" from="Margin/Content/SidePanel/Toolbar/NewButton" to="." method="_on_new_button_pressed"]
 [connection signal="about_to_popup" from="Margin/Content/SidePanel/Toolbar/OpenButton" to="." method="_on_open_button_about_to_popup"]
 [connection signal="pressed" from="Margin/Content/SidePanel/Toolbar/SaveAllButton" to="." method="_on_save_all_button_pressed"]
+[connection signal="file_middle_clicked" from="Margin/Content/SidePanel/Bookmarks/FilesList" to="." method="_on_files_list_file_middle_clicked"]
 [connection signal="file_popup_menu_requested" from="Margin/Content/SidePanel/Bookmarks/FilesList" to="." method="_on_files_list_file_popup_menu_requested"]
 [connection signal="file_selected" from="Margin/Content/SidePanel/Bookmarks/FilesList" to="." method="_on_files_list_file_selected"]
 [connection signal="about_to_popup" from="Margin/Content/SidePanel/Bookmarks/FilesList/FilesPopupMenu" to="." method="_on_files_popup_menu_about_to_popup"]
