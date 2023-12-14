@@ -965,6 +965,10 @@ func _on_files_list_file_popup_menu_requested(at_position: Vector2) -> void:
 	files_popup_menu.popup()
 
 
+func _on_files_list_file_middle_clicked(path: String):
+	close_file(path)
+
+
 func _on_files_popup_menu_about_to_popup() -> void:
 	files_popup_menu.clear()
 
