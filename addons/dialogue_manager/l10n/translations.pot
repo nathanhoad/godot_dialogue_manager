@@ -188,6 +188,12 @@ msgstr ""
 msgid "settings.create_lines_for_responses_with_characters"
 msgstr ""
 
+msgid "settings.open_in_external_editor"
+msgstr ""
+
+msgid "settings.external_editor_warning"
+msgstr ""
+
 msgid "n_of_n"
 msgstr ""
 
