@@ -14,4 +14,4 @@ func some_method(number: int, string: String) -> int:
 
 
 func long_mutation() -> void:
-	await get_tree().create_timer(0.2).timeout
+	await get_tree().create_timer(0.5).timeout

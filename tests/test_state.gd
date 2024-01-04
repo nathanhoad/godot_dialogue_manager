@@ -88,10 +88,10 @@ Nathan: Done.")
 	var line = await resource.get_next_dialogue_line("start")
 	assert(StateForTests.some_property == StateForTests.some_method(10, "something"), "Should have updated the property.")
 
-	var started_at: int = Time.get_ticks_msec()
+	var started_at: float = Time.get_unix_time_from_system()
 	line = await resource.get_next_dialogue_line(line.next_id)
-	var duration: float = (Time.get_ticks_msec() - started_at) / 1000.0
-	assert(duration >= 0.15, "Mutation should take some time.")
+	var duration: float = Time.get_unix_time_from_system() - started_at
+	assert(duration > 0.4, "Mutation should take some time.")
 
 
 func test_can_use_extra_state() -> void:

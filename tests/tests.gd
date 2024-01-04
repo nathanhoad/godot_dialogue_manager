@@ -31,17 +31,17 @@ func _run_tests(path: String) -> void:
 	print_rich("[b]%s[/b]" % path.get_basename().replace("test_", "").replace("_", " ").to_upper())
 	var node: Node = load(get_script().resource_path.get_base_dir() + "/" + path).new()
 
-	node.before_all()
+	await node.before_all()
 
 	for method in node.get_method_list():
 		if method.name.begins_with("test_"):
-			node.before_each()
+			await node.before_each()
 			await node.call(method.name)
 			print_rich("\t[color=lime]o[/color] " + method.name.replace("test_", "").replace("_", " "))
 			tests_count += 1
-			node.after_each()
+			await node.after_each()
 
-	node.after_all()
+	await node.after_all()
 
 	assertions_count += node.get_script().source_code.count("assert(")
 
