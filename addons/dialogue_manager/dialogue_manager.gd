@@ -17,6 +17,9 @@ signal dialogue_ended(resource)
 ## Used internally.
 signal bridge_get_next_dialogue_line_completed(line)
 
+## Used inernally
+signal bridge_mutated()
+
 
 const DialogueConstants = preload("./constants.gd")
 const DialogueSettings = preload("./settings.gd")
@@ -301,6 +304,11 @@ func _bridge_get_next_dialogue_line(resource: DialogueResource, key: String, ext
 
 	var line = await get_next_dialogue_line(resource, key, extra_game_states)
 	bridge_get_next_dialogue_line_completed.emit(line)
+
+
+func _bridge_mutate(mutation: Dictionary, extra_game_states: Array, is_inline_mutation: bool = false) -> void:
+	await mutate(mutation, extra_game_states, is_inline_mutation)
+	bridge_mutated.emit()
 
 
 ### Helpers

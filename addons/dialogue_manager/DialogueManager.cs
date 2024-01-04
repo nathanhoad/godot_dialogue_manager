@@ -121,9 +121,10 @@ namespace DialogueManagerRuntime
       return new DialogueLine((RefCounted)result[0]);
     }
 
-    public static async void Mutate(Dictionary mutation, bool isInlineMutation, Array<Variant>? extraGameStates = null) {
-     Instance.Call("mutate", mutation, extraGameStates ?? new Array<Variant>(), isInlineMutation);
-     await Instance.ToSignal(Instance, "mutated");
+    public static async void Mutate(Dictionary mutation, Array<Variant>? extraGameStates = null, bool isInlineMutation = false)
+    {
+      Instance.Call("_bridge_mutate", mutation, extraGameStates ?? new Array<Variant>(), isInlineMutation);
+      await Instance.ToSignal(Instance, "bridge_mutated");
     }
 
     public static CanvasLayer ShowExampleDialogueBalloon(Resource dialogueResource, string key = "", Array<Variant>? extraGameStates = null)
@@ -224,18 +225,21 @@ namespace DialogueManagerRuntime
     }
 
     private Dictionary pauses = new Dictionary();
-    public Dictionary Pauses {
-     get => pauses;
+    public Dictionary Pauses
+    {
+      get => pauses;
     }
 
     private Dictionary speeds = new Dictionary();
-    public Dictionary Speeds {
-     get => speeds;
+    public Dictionary Speeds
+    {
+      get => speeds;
     }
 
     private Array<Godot.Collections.Array> inline_mutations = new Array<Godot.Collections.Array>();
-    public Array<Godot.Collections.Array> InlineMutations {
-     get => inline_mutations;
+    public Array<Godot.Collections.Array> InlineMutations
+    {
+      get => inline_mutations;
     }
 
     private Array<Variant> extra_game_states = new Array<Variant>();
@@ -278,15 +282,17 @@ namespace DialogueManagerRuntime
       return "";
     }
 
-    public override string ToString() {
-     switch (type) {
-      case "dialogue":
-       return $"<DialogueLine character=\"{character}\" text=\"{text}\">";
-      case "mutation":
-       return "<DialogueLine mutation>";
-      default:
-       return "";
-     }
+    public override string ToString()
+    {
+      switch (type)
+      {
+        case "dialogue":
+          return $"<DialogueLine character=\"{character}\" text=\"{text}\">";
+        case "mutation":
+          return "<DialogueLine mutation>";
+        default:
+          return "";
+      }
     }
   }
 
@@ -336,22 +342,23 @@ namespace DialogueManagerRuntime
       tags = (Array<string>)data.Get("tags");
     }
 
-    public string GetTagValue(string tagName) 
+    public string GetTagValue(string tagName)
     {
       string wrapped = $"{tagName}=";
-      foreach (var tag in tags) 
+      foreach (var tag in tags)
       {
-        if (tag.StartsWith(wrapped)) 
+        if (tag.StartsWith(wrapped))
         {
           return tag.Substring(wrapped.Length);
         }
       }
       return "";
     }
-	
-	public override string ToString() {
-	 return $"<DialogueResponse text=\"{text}\"";
-	}
+
+    public override string ToString()
+    {
+      return $"<DialogueResponse text=\"{text}\"";
+    }
   }
 }
 
