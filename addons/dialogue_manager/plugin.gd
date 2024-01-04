@@ -115,7 +115,7 @@ func _build() -> bool:
 		var directory: String = ProjectSettings.get("dotnet/project/solution_directory")
 		var file_name: String = ProjectSettings.get("dotnet/project/assembly_name")
 		var has_dotnet_solution: bool = FileAccess.file_exists("res://%s/%s.sln" % [directory, file_name])
-		DialogueSettings.set_setting("has_dotnet_solution", has_dotnet_solution)
+		DialogueSettings.set_user_value("has_dotnet_solution", has_dotnet_solution)
 
 	# Ignore errors in other files if we are just running the test scene
 	if DialogueSettings.get_user_value("is_running_test_scene", true): return true

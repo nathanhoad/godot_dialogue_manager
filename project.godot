@@ -25,7 +25,6 @@ DialogueManager="*res://addons/dialogue_manager/dialogue_manager.gd"
 [dialogue_manager]
 
 general/states=["State", "Events"]
-general/create_lines_for_responses_with_characters=false
 
 [display]
 
