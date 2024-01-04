@@ -65,6 +65,7 @@ Returns the example balloon's base CanvasLayer in case you want to `queue_free()
 - `seconds_per_step: float = 0.02` - the speed with which the text types out.
 - `pause_at_characters: String = ".?!"` - automatically have a brief pause when these characters are encountered.
 - `skip_pause_at_character_if_followed_by: String = ")\""` - ignore automatic pausing if the pause character is followed by one of these.
+- `skip_pause_at_abbreviations: Array = ["Mr", "Mrs", "Ms", "Dr", "etc", "ex"] - Don't auto pause after these abbreviations (only if "." is in `pause_at_characters`).
 - `seconds_per_pause_step: float = 0.3` - the amount of time to pause when exposing a character present in pause_at_characters.
 
 ### Signals
