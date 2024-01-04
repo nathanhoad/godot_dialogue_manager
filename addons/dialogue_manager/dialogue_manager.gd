@@ -285,7 +285,7 @@ func _get_example_balloon_path() -> String:
 
 
 func _has_dotnet_solution() -> bool:
-	if not DialogueSettings.get_setting("has_dotnet_solution", false): return false
+	if not DialogueSettings.get_user_value("has_dotnet_solution", false): return false
 	if not ResourceLoader.exists("res://addons/dialogue_manager/DialogueManager.cs"): return false
 	if load("res://addons/dialogue_manager/DialogueManager.cs") == null: return false
 	return true
