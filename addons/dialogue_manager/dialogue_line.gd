@@ -62,20 +62,20 @@ func _init(data: Dictionary = {}) -> void:
 		id = data.id
 		next_id = data.next_id
 		type = data.type
-		extra_game_states = data.extra_game_states
+		extra_game_states = data.get("extra_game_states", [])
 
 		match type:
 			_DialogueConstants.TYPE_DIALOGUE:
 				character = data.character
-				character_replacements = data.character_replacements
+				character_replacements = data.get("character_replacements", [] as Array[Dictionary])
 				text = data.text
-				text_replacements = data.text_replacements
-				translation_key = data.translation_key
-				pauses = data.pauses
-				speeds = data.speeds
-				inline_mutations = data.inline_mutations
-				time = data.time
-				tags = data.tags
+				text_replacements = data.get("text_replacements", [] as Array[Dictionary])
+				translation_key = data.get("translation_key", data.text)
+				pauses = data.get("pauses", {})
+				speeds = data.get("speeds", {})
+				inline_mutations = data.get("inline_mutations", [] as Array[Array])
+				time = data.get("time", "")
+				tags = data.get("tags", [])
 
 			_DialogueConstants.TYPE_MUTATION:
 				mutation = data.mutation

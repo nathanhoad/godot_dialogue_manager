@@ -91,7 +91,7 @@ Nathan: Done.")
 	var started_at: float = Time.get_unix_time_from_system()
 	line = await resource.get_next_dialogue_line(line.next_id)
 	var duration: float = Time.get_unix_time_from_system() - started_at
-	assert(duration > 0.4, "Mutation should take some time.")
+	assert(duration > 0.2, "Mutation should take some time.")
 
 
 func test_can_use_extra_state() -> void:

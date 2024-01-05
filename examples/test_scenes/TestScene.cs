@@ -19,31 +19,31 @@ public partial class TestScene : Node2D
 
   public async override void _Ready()
   {
-    DialogueManager.DialogueEnded += async (Resource dialogueResource) =>
-    {
-      await ToSignal(GetTree().CreateTimer(0.4), "timeout");
-      GetTree().Quit();
-    };
+	DialogueManager.DialogueEnded += async (Resource dialogueResource) =>
+	{
+	  await ToSignal(GetTree().CreateTimer(0.4), "timeout");
+	  GetTree().Quit();
+	};
 
-    await ToSignal(GetTree().CreateTimer(0.4), "timeout");
+	await ToSignal(GetTree().CreateTimer(0.4), "timeout");
 
-    // Show the dialogue
-    bool isSmallWindow = (int)ProjectSettings.GetSetting("display/window/size/viewport_width") < 400;
-    Balloon balloon = (Balloon)(isSmallWindow ? SmallBalloon : Balloon).Instantiate();
-    AddChild(balloon);
-    balloon.Start(DialogueResource, Title);
+	// Show the dialogue
+	bool isSmallWindow = (int)ProjectSettings.GetSetting("display/window/size/viewport_width") < 400;
+	Balloon balloon = (Balloon)(isSmallWindow ? SmallBalloon : Balloon).Instantiate();
+	AddChild(balloon);
+	balloon.Start(DialogueResource, Title);
   }
 
 
   public async Task AskForName(string defaultName = "Player")
   {
-    var nameInputDialogue = GD.Load<PackedScene>("res://examples/name_input_dialog/name_input_dialog.tscn").Instantiate() as AcceptDialog;
-    var nameInput = nameInputDialogue.GetNode<LineEdit>("NameEdit");
-    GetTree().Root.AddChild(nameInputDialogue);
-    nameInputDialogue.PopupCentered();
-    nameInput.Text = defaultName;
-    await ToSignal(nameInputDialogue, "confirmed");
-    PlayerName = nameInput.Text;
-    nameInputDialogue.QueueFree();
+	var nameInputDialogue = GD.Load<PackedScene>("res://examples/name_input_dialog/name_input_dialog.tscn").Instantiate() as AcceptDialog;
+	var nameInput = nameInputDialogue.GetNode<LineEdit>("NameEdit");
+	GetTree().Root.AddChild(nameInputDialogue);
+	nameInputDialogue.PopupCentered();
+	nameInput.Text = defaultName;
+	await ToSignal(nameInputDialogue, "confirmed");
+	PlayerName = nameInput.Text;
+	nameInputDialogue.QueueFree();
   }
 }
