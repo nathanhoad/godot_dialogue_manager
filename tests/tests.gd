@@ -10,6 +10,8 @@ var assertions_count: int = 0
 
 
 func _ready() -> void:
+	visible = false
+
 	tests_count = 0
 	started_at = Time.get_ticks_msec()
 
@@ -24,6 +26,8 @@ func _ready() -> void:
 	tests_count_label.text = str(tests_count)
 	assertions_count_label.text = str(assertions_count)
 	seconds_count_label.text = "%.2f" % duration
+
+	visible = true
 
 
 # Run all the test methods on a node

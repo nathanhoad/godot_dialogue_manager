@@ -94,6 +94,20 @@ Nathan: Done.")
 	assert(duration > 0.2, "Mutation should take some time.")
 
 
+
+func test_can_run_expressions() -> void:
+	var resource = create_resource("
+~ start
+set StateForTests.some_property = 10 * 2-1.5 / 2 + (5 * 5)
+Nathan: Done.")
+
+	StateForTests.some_property = 0
+
+	await resource.get_next_dialogue_line("start")
+	assert(StateForTests.some_property == int(10 * 2-1.5 / 2 + (5 * 5)), "Should have updated the property.")
+
+
+
 func test_can_use_extra_state() -> void:
 	var resource = create_resource("
 ~ start
