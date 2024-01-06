@@ -37,8 +37,8 @@ var TOKEN_DEFINITIONS: Dictionary = {
 	DialogueConstants.TOKEN_COLON: RegEx.create_from_string("^:"),
 	DialogueConstants.TOKEN_COMPARISON: RegEx.create_from_string("^(==|<=|>=|<|>|!=|in )"),
 	DialogueConstants.TOKEN_ASSIGNMENT: RegEx.create_from_string("^(\\+=|\\-=|\\*=|/=|=)"),
-	DialogueConstants.TOKEN_OPERATOR: RegEx.create_from_string("^(\\+|\\-|\\*|/|%)"),
 	DialogueConstants.TOKEN_NUMBER: RegEx.create_from_string("^\\-?\\d+(\\.\\d+)?"),
+	DialogueConstants.TOKEN_OPERATOR: RegEx.create_from_string("^(\\+|\\-|\\*|/|%)"),
 	DialogueConstants.TOKEN_COMMA: RegEx.create_from_string("^,"),
 	DialogueConstants.TOKEN_DOT: RegEx.create_from_string("^\\."),
 	DialogueConstants.TOKEN_STRING: RegEx.create_from_string("^(\".*?\"|\'.*?\')"),
@@ -1505,10 +1505,23 @@ func build_token_tree(tokens: Array[Dictionary], line_type: String, expected_clo
 				})
 
 			DialogueConstants.TOKEN_NUMBER:
-				tree.append({
-					type = token.type,
-					value = token.value.to_float() if "." in token.value else token.value.to_int()
-				})
+				var value = token.value.to_float() if "." in token.value else token.value.to_int()
+				# If previous token is a number and this one is a negative number then
+				# inject a minus operator token in between them.
+				if tree.size() > 0 and token.value.begins_with("-") and tree[tree.size() - 1].type == DialogueConstants.TOKEN_NUMBER:
+					tree.append(({
+						type = DialogueConstants.TOKEN_OPERATOR,
+						value = "-"
+					}))
+					tree.append({
+						type = token.type,
+						value = -1 * value
+					})
+				else:
+					tree.append({
+						type = token.type,
+						value = value
+					})
 
 	if expected_close_token != "":
 		return [build_token_tree_error(DialogueConstants.ERR_MISSING_CLOSING_BRACKET, tokens[0].index), tokens]
@@ -1516,13 +1529,18 @@ func build_token_tree(tokens: Array[Dictionary], line_type: String, expected_clo
 	return [tree, tokens]
 
 
-func check_next_token(token: Dictionary, next_tokens: Array[Dictionary], line_type: String) -> int:
-	var next_token_type = null
+func check_next_token(token: Dictionary, next_tokens: Array[Dictionary], line_type: String) -> Error:
+	var next_token: Dictionary = { type = null }
 	if next_tokens.size() > 0:
-		next_token_type = next_tokens.front().type
+		next_token = next_tokens.front()
 
+	# Guard for assigning in a condition
 	if token.type == DialogueConstants.TOKEN_ASSIGNMENT and line_type == DialogueConstants.TYPE_CONDITION:
 		return DialogueConstants.ERR_UNEXPECTED_ASSIGNMENT
+
+	# Special case for a negative number after this one
+	if token.type == DialogueConstants.TOKEN_NUMBER and next_token.type == DialogueConstants.TOKEN_NUMBER and next_token.value.begins_with("-"):
+		return OK
 
 	var expected_token_types = []
 	var unexpected_token_types = []
@@ -1631,8 +1649,8 @@ func check_next_token(token: Dictionary, next_tokens: Array[Dictionary], line_ty
 				DialogueConstants.TOKEN_BRACKET_OPEN
 			]
 
-	if (expected_token_types.size() > 0 and not next_token_type in expected_token_types or unexpected_token_types.size() > 0 and next_token_type in unexpected_token_types):
-		match next_token_type:
+	if (expected_token_types.size() > 0 and not next_token.type in expected_token_types or unexpected_token_types.size() > 0 and next_token.type in unexpected_token_types):
+		match next_token.type:
 			null:
 				return DialogueConstants.ERR_UNEXPECTED_END_OF_EXPRESSION
 
