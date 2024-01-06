@@ -63,7 +63,7 @@ else:
 
 func test_can_parse_mutations() -> void:
 	var output = parse("
-set StateForTests.some_property = StateForTests.some_method(10, \"something\")
+set StateForTests.some_property = StateForTests.some_method(-10, \"something\")
 do long_mutation()")
 
 	assert(output.errors.is_empty(), "Should have no errors.")
@@ -78,7 +78,10 @@ do long_mutation()")
 func test_can_run_mutations() -> void:
 	var resource = create_resource("
 ~ start
-set StateForTests.some_property = StateForTests.some_method(10, \"something\")
+set StateForTests.some_property = StateForTests.some_method(-10, \"something\")
+set StateForTests.some_property += 5-10
+set StateForTests.some_property *= 2
+set StateForTests.some_property /= 2
 Nathan: Pause the test.
 do StateForTests.long_mutation()
 Nathan: Done.")
@@ -86,7 +89,7 @@ Nathan: Done.")
 	StateForTests.some_property = 0
 
 	var line = await resource.get_next_dialogue_line("start")
-	assert(StateForTests.some_property == StateForTests.some_method(10, "something"), "Should have updated the property.")
+	assert(StateForTests.some_property == StateForTests.some_method(-10, "something") + 5-10, "Should have updated the property.")
 
 	var started_at: float = Time.get_unix_time_from_system()
 	line = await resource.get_next_dialogue_line(line.next_id)
