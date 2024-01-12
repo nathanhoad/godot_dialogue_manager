@@ -10,6 +10,8 @@ var assertions_count: int = 0
 
 
 func _ready() -> void:
+	TranslationServer.set_locale("en")
+
 	visible = false
 
 	tests_count = 0
