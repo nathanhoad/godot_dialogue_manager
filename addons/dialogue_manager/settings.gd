@@ -39,7 +39,7 @@ static func prepare() -> void:
 			set_setting(key, value)
 
 	# Set up initial settings
-	for setting: String in DEFAULT_SETTINGS:
+	for setting in DEFAULT_SETTINGS:
 		var setting_name: String = "dialogue_manager/general/%s" % setting
 		if not ProjectSettings.has_setting(setting_name):
 			set_setting(setting, DEFAULT_SETTINGS[setting])
