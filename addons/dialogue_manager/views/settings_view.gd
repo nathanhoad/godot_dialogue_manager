@@ -122,7 +122,7 @@ func prepare() -> void:
 			if key != "DialogueManager":
 				all_globals[key] = project.get_value("autoload", key)
 
-	enabled_globals = DialogueSettings.get_setting("states", [])
+	enabled_globals = DialogueSettings.get_setting("states", []).duplicate()
 	globals_list.clear()
 	var root = globals_list.create_item()
 	for name in all_globals.keys():
