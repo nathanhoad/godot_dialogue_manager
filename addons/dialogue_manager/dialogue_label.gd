@@ -154,7 +154,7 @@ func _get_pause(at_index: int) -> float:
 # Get the speed for the current typing position
 func _get_speed(at_index: int) -> float:
 	var speed: float = 1
-	for index: int in dialogue_line.speeds:
+	for index in dialogue_line.speeds:
 		if index > at_index:
 			return speed
 		speed = dialogue_line.speeds[index]
@@ -163,7 +163,7 @@ func _get_speed(at_index: int) -> float:
 
 # Run any inline mutations that haven't been run yet
 func _mutate_remaining_mutations() -> void:
-	for i: int in range(visible_characters, get_total_character_count() + 1):
+	for i in range(visible_characters, get_total_character_count() + 1):
 		_mutate_inline_mutations(i)
 
 
@@ -197,7 +197,7 @@ func _should_auto_pause() -> bool:
 	# Ignore "." if it's used in an abbreviation
 	# Note: does NOT support multi-period abbreviations (ex. p.m.)
 	if "." in pause_at_characters and parsed_text[visible_characters - 1] == ".":
-		for abbreviation: String in skip_pause_at_abbreviations:
+		for abbreviation in skip_pause_at_abbreviations:
 			if visible_characters >= abbreviation.length():
 				var previous_characters: String = parsed_text.substr(visible_characters - abbreviation.length() - 1, abbreviation.length())
 				if previous_characters == abbreviation:
