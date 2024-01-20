@@ -1,6 +1,7 @@
 @icon("./assets/icon.svg")
 
 @tool
+
 ## A RichTextLabel specifically for use with [b]Dialogue Manager[/b] dialogue.
 class_name DialogueLabel extends RichTextLabel
 
@@ -18,7 +19,7 @@ signal skipped_typing()
 signal finished_typing()
 
 
-## The action to press to skip typing.
+# The action to press to skip typing.
 @export var skip_action: StringName = &"ui_cancel"
 
 ## The speed with which the text types out.
@@ -79,6 +80,9 @@ func _process(delta: float) -> void:
 
 
 func _unhandled_input(event: InputEvent) -> void:
+	# Note: this will no longer be reached if using Dialogue Manager > 2.32.2. To make skip handling
+	# simpler (so all of mouse/keyboard/joypad are together) it is now the responsibility of the
+	# dialogue balloon.
 	if self.is_typing and visible_ratio < 1 and InputMap.has_action(skip_action) and event.is_action_pressed(skip_action):
 		get_viewport().set_input_as_handled()
 		skip_typing()
