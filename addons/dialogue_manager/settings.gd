@@ -18,7 +18,9 @@ const DEFAULT_SETTINGS = {
 	custom_test_scene_path = preload("./test_scene.tscn").resource_path,
 	default_csv_locale = "en",
 	balloon_path = "",
-	create_lines_for_responses_with_characters = true
+	create_lines_for_responses_with_characters = true,
+	include_character_in_translation_exports = false,
+	include_notes_in_translation_exports = false
 }
 
 
