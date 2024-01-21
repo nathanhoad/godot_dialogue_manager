@@ -16,11 +16,9 @@ grow_vertical = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
 theme = SubResource("Theme_3a8rc")
-current_tab = 2
 script = ExtResource("1_06uxa")
 
 [node name="Editor" type="VBoxContainer" parent="."]
-visible = false
 layout_mode = 2
 
 [node name="NewTemplateButton" type="CheckBox" parent="Editor"]
@@ -123,6 +121,7 @@ hide_root = true
 select_mode = 1
 
 [node name="Advanced" type="VBoxContainer" parent="."]
+visible = false
 layout_mode = 2
 
 [node name="IncludeCharactersInTranslations" type="CheckBox" parent="Advanced"]
@@ -131,7 +130,7 @@ text = "Include character names in translation exports"
 
 [node name="IncludeNotesInTranslations" type="CheckBox" parent="Advanced"]
 layout_mode = 2
-text = "Include notes  (## comments) names in translation exports"
+text = "Include notes (## comments) in translation exports"
 
 [node name="HSeparator" type="HSeparator" parent="Advanced"]
 layout_mode = 2
