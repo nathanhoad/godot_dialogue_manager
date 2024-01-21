@@ -17,7 +17,7 @@ var dialogue_cache: DialogueCache
 
 
 func _enter_tree() -> void:
-	add_autoload_singleton("DialogueManager", "dialogue_manager.gd")
+	add_autoload_singleton("DialogueManager", get_plugin_path() + "/dialogue_manager.gd")
 
 	if Engine.is_editor_hint():
 		Engine.set_meta("DialogueManagerPlugin", self)
@@ -82,7 +82,7 @@ func _get_plugin_name() -> String:
 
 
 func _get_plugin_icon() -> Texture2D:
-	return load(get_script().resource_path.get_base_dir() + "/assets/icon.svg")
+	return load(get_plugin_path() + "/assets/icon.svg")
 
 
 func _handles(object) -> bool:

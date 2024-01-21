@@ -1280,9 +1280,9 @@ func extract_markers(line: String) -> ResolvedLineData:
 
 	# Put the escaped brackets back in
 	for index in escaped_open_brackets:
-		text = text.erase(index, 1).insert(index, "[")
+		text = text.left(index) + "[" + text.right(text.length() - index - 1)
 	for index in escaped_close_brackets:
-		text = text.erase(index, 1).insert(index, "]")
+		text = text.left(index) + "]" + text.right(text.length() - index - 1)
 
 	return ResolvedLineData.new({
 		text = text,
