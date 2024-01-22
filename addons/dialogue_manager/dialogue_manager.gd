@@ -1,26 +1,6 @@
 extends Node
 
 
-## Emitted when a title is encountered while traversing dialogue, usually when jumping from a
-## goto line
-signal passed_title(title)
-
-## Emitted when a line of dialogue is encountered.
-signal got_dialogue(line)
-
-## Emitted when a mutation is encountered.
-signal mutated(mutation)
-
-## Emitted when some dialogue has reached the end.
-signal dialogue_ended(resource)
-
-## Used internally.
-signal bridge_get_next_dialogue_line_completed(line)
-
-## Used inernally
-signal bridge_mutated()
-
-
 const DialogueConstants = preload("./constants.gd")
 const DialogueSettings = preload("./settings.gd")
 const DialogueResource = preload("./dialogue_resource.gd")
@@ -29,6 +9,26 @@ const DialogueResponse = preload("./dialogue_response.gd")
 const DialogueManagerParser = preload("./components/parser.gd")
 const DialogueManagerParseResult = preload("./components/parse_result.gd")
 const ResolvedLineData = preload("./components/resolved_line_data.gd")
+
+
+## Emitted when a title is encountered while traversing dialogue, usually when jumping from a
+## goto line
+signal passed_title(title: String)
+
+## Emitted when a line of dialogue is encountered.
+signal got_dialogue(line: DialogueLine)
+
+## Emitted when a mutation is encountered.
+signal mutated(mutation: Dictionary)
+
+## Emitted when some dialogue has reached the end.
+signal dialogue_ended(resource: DialogueResource)
+
+## Used internally.
+signal bridge_get_next_dialogue_line_completed(line: DialogueLine)
+
+## Used inernally
+signal bridge_mutated()
 
 
 enum MutationBehaviour {

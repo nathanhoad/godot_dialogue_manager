@@ -4,6 +4,9 @@
 class_name DialogueResponsesMenu extends VBoxContainer
 
 
+const DialogueResponse = preload("./dialogue_response.gd")
+
+
 ## Emitted when a response is selected.
 signal response_selected(response: DialogueResponse)
 
@@ -57,6 +60,8 @@ func set_responses(next_responses: Array) -> void:
 			else:
 				item.text = response.text
 
+			item.set_meta("response", response)
+
 			add_child(item)
 
 		_configure_focus()
@@ -88,7 +93,7 @@ func _configure_focus() -> void:
 			item.focus_next = items[i + 1].get_path()
 
 		item.mouse_entered.connect(_on_response_mouse_entered.bind(item))
-		item.gui_input.connect(_on_response_gui_input.bind(item, i))
+		item.gui_input.connect(_on_response_gui_input.bind(item, item.get_meta("response")))
 
 	items[0].grab_focus()
 
@@ -113,12 +118,12 @@ func _on_response_mouse_entered(item: Control) -> void:
 	item.grab_focus()
 
 
-func _on_response_gui_input(event: InputEvent, item: Control, item_index: int) -> void:
+func _on_response_gui_input(event: InputEvent, item: Control, response: DialogueResponse) -> void:
 	if "Disallowed" in item.name: return
 
 	get_viewport().set_input_as_handled()
 
 	if event is InputEventMouseButton and event.is_pressed() and event.button_index == 1:
-		response_selected.emit(_responses[item_index])
+		response_selected.emit(response)
 	elif event.is_action_pressed("ui_accept") and item in get_menu_items():
-		response_selected.emit(_responses[item_index])
+		response_selected.emit(response)
