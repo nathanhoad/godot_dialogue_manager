@@ -6,7 +6,6 @@ class_name DialogueResource extends Resource
 
 const _DialogueManager = preload("./dialogue_manager.gd")
 
-
 ## A list of state shortcuts
 @export var using_states: PackedStringArray = []
 
@@ -21,6 +20,9 @@ const _DialogueManager = preload("./dialogue_manager.gd")
 
 ## A map of the encoded lines of dialogue.
 @export var lines: Dictionary = {}
+
+## raw version of the text
+@export var raw_text: String
 
 
 ## Get the next printable line of dialogue, starting from a referenced line ([code]title[/code] can
