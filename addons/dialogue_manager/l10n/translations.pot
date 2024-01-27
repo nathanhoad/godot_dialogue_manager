@@ -194,6 +194,12 @@ msgstr ""
 msgid "settings.external_editor_warning"
 msgstr ""
 
+msgid "settings.include_characters_in_translations"
+msgstr ""
+
+msgid "settings.include_notes_in_translations"
+msgstr ""
+
 msgid "n_of_n"
 msgstr ""
 

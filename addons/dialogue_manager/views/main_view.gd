@@ -549,11 +549,16 @@ func add_path_to_project_translations(path: String) -> void:
 
 # Export dialogue and responses to CSV
 func export_translations_to_csv(path: String) -> void:
+	var default_locale: String = DialogueSettings.get_setting("default_csv_locale", "en")
+
 	var file: FileAccess
 
 	# If the file exists, open it first and work out which keys are already in it
-	var existing_csv = {}
-	var commas = []
+	var existing_csv: Dictionary = {}
+	var column_count: int = 2
+	var default_locale_column: int = 1
+	var character_column: int = -1
+	var notes_column: int = -1
 	if FileAccess.file_exists(path):
 		file = FileAccess.open(path, FileAccess.READ)
 		var is_first_line = true
@@ -562,17 +567,43 @@ func export_translations_to_csv(path: String) -> void:
 			line = file.get_csv_line()
 			if is_first_line:
 				is_first_line = false
-				for i in range(2, line.size()):
-					commas.append("")
+				column_count = line.size()
+				for i in range(1, line.size()):
+					if line[i] == default_locale:
+						default_locale_column = i
+					elif line[i] == "_character":
+						character_column = i
+					elif line[i] == "_notes":
+						notes_column = i
+
 			# Make sure the line isn't empty before adding it
 			if line.size() > 0 and line[0].strip_edges() != "":
 				existing_csv[line[0]] = line
 
+		# The character column wasn't found in the existing file but the setting is turned on
+		if character_column == -1 and DialogueSettings.get_setting("include_character_in_translation_exports", false):
+			character_column = column_count
+			column_count += 1
+			existing_csv["keys"].append("_character")
+
+		# The notes column wasn't found in the existing file but the setting is turned on
+		if notes_column == -1 and DialogueSettings.get_setting("include_notes_in_translation_exports", false):
+			notes_column = column_count
+			column_count += 1
+			existing_csv["keys"].append("_notes")
+
 	# Start a new file
 	file = FileAccess.open(path, FileAccess.WRITE)
 
-	if not file.file_exists(path):
-		file.store_csv_line(["keys", DialogueSettings.get_setting("default_csv_locale", "en")])
+	if not FileAccess.file_exists(path):
+		var headings: PackedStringArray = ["keys", default_locale]
+		if DialogueSettings.get_setting("include_character_in_translation_exports", false):
+			character_column = headings.size()
+			headings.append("_character")
+		if DialogueSettings.get_setting("include_notes_in_translation_exports", false):
+			notes_column = headings.size()
+			headings.append("_notes")
+		file.store_csv_line(headings)
 
 	# Write our translations to file
 	var known_keys: PackedStringArray = []
@@ -589,13 +620,22 @@ func export_translations_to_csv(path: String) -> void:
 
 		known_keys.append(line.translation_key)
 
+		var line_to_save: PackedStringArray = []
 		if existing_csv.has(line.translation_key):
-			var existing_line = existing_csv.get(line.translation_key)
-			existing_line[1] = line.text
-			lines_to_save.append(existing_line)
+			line_to_save = existing_csv.get(line.translation_key)
+			line_to_save.resize(column_count)
 			existing_csv.erase(line.translation_key)
 		else:
-			lines_to_save.append(PackedStringArray([line.translation_key, line.text] + commas))
+			line_to_save.resize(column_count)
+			line_to_save[0] = line.translation_key
+
+		line_to_save[default_locale_column] = line.text
+		if character_column > -1:
+			line_to_save[character_column] = "(response)" if line.type == DialogueConstants.TYPE_RESPONSE else line.character
+		if notes_column > -1:
+			line_to_save[notes_column] = line.notes
+
+		lines_to_save.append(line_to_save)
 
 	# Store lines in the file, starting with anything that already exists that hasn't been touched
 	for line in existing_csv.values():
@@ -609,8 +649,7 @@ func export_translations_to_csv(path: String) -> void:
 	editor_plugin.get_editor_interface().get_file_system_dock().call_deferred("navigate_to_path", path)
 
 	# Add it to the project l10n settings if it's not already there
-	var locale: String = DialogueSettings.get_setting("default_csv_locale", "en")
-	var language_code: RegExMatch = RegEx.create_from_string("^[a-z]{2,3}").search(locale)
+	var language_code: RegExMatch = RegEx.create_from_string("^[a-z]{2,3}").search(default_locale)
 	var translation_path: String = path.replace(".csv", ".%s.translation" % language_code.get_string())
 	call_deferred("add_path_to_project_translations", translation_path)
 

@@ -124,6 +124,17 @@ select_mode = 1
 visible = false
 layout_mode = 2
 
+[node name="IncludeCharactersInTranslations" type="CheckBox" parent="Advanced"]
+layout_mode = 2
+text = "Include character names in translation exports"
+
+[node name="IncludeNotesInTranslations" type="CheckBox" parent="Advanced"]
+layout_mode = 2
+text = "Include notes (## comments) in translation exports"
+
+[node name="HSeparator" type="HSeparator" parent="Advanced"]
+layout_mode = 2
+
 [node name="OpenInExternalEditorButton" type="CheckBox" parent="Advanced"]
 layout_mode = 2
 text = "Open dialogue files in external editor"
@@ -132,7 +143,7 @@ text = "Open dialogue files in external editor"
 layout_mode = 2
 text = "Note: Syntax highlighting and detailed error checking are not supported in external editors."
 
-[node name="HSeparator" type="HSeparator" parent="Advanced"]
+[node name="HSeparator3" type="HSeparator" parent="Advanced"]
 layout_mode = 2
 
 [node name="CustomTestSceneLabel" type="Label" parent="Advanced"]
@@ -191,6 +202,8 @@ filters = PackedStringArray("*.tscn ; Scene")
 [connection signal="pressed" from="Runtime/CustomBalloon/LoadBalloonPath" to="." method="_on_load_balloon_path_pressed"]
 [connection signal="button_clicked" from="Runtime/GlobalsList" to="." method="_on_globals_list_button_clicked"]
 [connection signal="item_selected" from="Runtime/GlobalsList" to="." method="_on_globals_list_item_selected"]
+[connection signal="toggled" from="Advanced/IncludeCharactersInTranslations" to="." method="_on_include_characters_in_translations_toggled"]
+[connection signal="toggled" from="Advanced/IncludeNotesInTranslations" to="." method="_on_include_notes_in_translations_toggled"]
 [connection signal="toggled" from="Advanced/OpenInExternalEditorButton" to="." method="_on_open_in_external_editor_button_toggled"]
 [connection signal="pressed" from="Advanced/CustomTestScene/RevertTestScene" to="." method="_on_revert_test_scene_pressed"]
 [connection signal="pressed" from="Advanced/CustomTestScene/LoadTestScene" to="." method="_on_load_test_scene_pressed"]

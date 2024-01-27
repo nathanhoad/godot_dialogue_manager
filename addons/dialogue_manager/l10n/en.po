@@ -204,6 +204,12 @@ msgstr "Open dialogue files in external editor"
 msgid "settings.external_editor_warning"
 msgstr "Note: Syntax highlighting and detailed error checking are not supported in external editors."
 
+msgid "settings.include_characters_in_translations"
+msgstr "Include character names in translation exports"
+
+msgid "settings.include_notes_in_translations"
+msgstr "Include notes (## comments) in translation exports"
+
 msgid "n_of_n"
 msgstr "{index} of {total}"
 

@@ -28,6 +28,8 @@ For example, instead of having to type out `GameState.some_variable`, you could 
 
 ## Advanced
 
+- `Include character names in translation exports` - will include a `_character` column in CSV exports.
+- `Include notes (## comments) in translation exports` - will include a `_notes` column in CSV exports populated from doc-style comments (eg. `## This is a comment`) above translatable lines.
 - `Custom Test Scene` can be used to override the default test scene that gets run when you click the "Test dialogue" button in the dialogue editor.
 
 Changing any of the following values will result in a recompile of all dialogue files in your project.
