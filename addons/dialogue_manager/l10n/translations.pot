@@ -445,3 +445,9 @@ msgstr ""
 
 msgid "runtime.something_went_wrong"
 msgstr ""
+
+msgid "runtime.expected_n_got_n_args"
+msgstr ""
+
+msgid "runtime.unsupported_array_type"
+msgstr ""

@@ -15,3 +15,7 @@ func some_method(number: int, string: String) -> int:
 
 func long_mutation() -> void:
 	await get_tree().create_timer(0.5).timeout
+
+
+func typed_array_method(numbers: Array[int], strings: Array[String], dictionaries: Array) -> String:
+	return str(numbers) + str(strings) + str(dictionaries)

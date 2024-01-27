@@ -97,6 +97,14 @@ Nathan: Done.")
 	assert(duration > 0.2, "Mutation should take some time.")
 
 
+func test_can_run_mutations_with_typed_arrays() -> void:
+	var resource = create_resource("
+~ start
+Nathan: {{StateForTests.typed_array_method([-1, 27], [\"something\"], [{ \"key\": \"value\" }])}}")
+
+	var line = await resource.get_next_dialogue_line("start")
+	assert(line.text == "[-1, 27][\"something\"][{ \"key\": \"value\" }]", "Should match output.")
+
 
 func test_can_run_expressions() -> void:
 	var resource = create_resource("

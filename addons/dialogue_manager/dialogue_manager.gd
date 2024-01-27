@@ -1153,6 +1153,29 @@ func resolve_signal(args: Array, extra_game_states: Array):
 
 func resolve_thing_method(thing, method: String, args: Array):
 	if thing.has_method(method):
+		# Try to convert any literals to the right type
+		var method_args = thing.get_method_list().filter(func(m): return method == m.name)[0].args
+		assert(method_args.size() >= args.size(), DialogueConstants.translate("runtime.expected_n_got_n_args").format({ expected = method_args.size(), method = method, received = args.size()}))
+		for i in range(0, args.size()):
+			var m: Dictionary = method_args[i]
+			var to_type:int = typeof(args[i])
+			if m.type == TYPE_ARRAY:
+				match m.hint_string:
+					"String":
+						to_type = TYPE_PACKED_STRING_ARRAY
+					"int":
+						to_type = TYPE_PACKED_INT64_ARRAY
+					"float":
+						to_type = TYPE_PACKED_FLOAT64_ARRAY
+					"Vector2":
+						to_type = TYPE_PACKED_VECTOR2_ARRAY
+					"Vector3":
+						to_type = TYPE_PACKED_VECTOR3_ARRAY
+					_:
+						assert(m.hint_string == "", DialogueConstants.translate("runtime.unsupported_array_type").format({ type = m.hint_string}))
+			if typeof(args[i]) != to_type:
+				args[i] = type_convert(args[i], to_type)
+
 		return await thing.callv(method, args)
 
 	# If we get here then it's probably a C# method with a Task return type
