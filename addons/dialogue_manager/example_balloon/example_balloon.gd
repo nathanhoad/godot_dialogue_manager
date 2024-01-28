@@ -7,7 +7,7 @@ const NEXT_ACTION = &"ui_accept"
 const SKIP_ACTION = &"ui_cancel"
 
 
-@onready var balloon: Panel = %Balloon
+@onready var balloon: Control = %Balloon
 @onready var character_label: RichTextLabel = %CharacterLabel
 @onready var dialogue_label: DialogueLabel = %DialogueLabel
 @onready var responses_menu: DialogueResponsesMenu = %ResponsesMenu
