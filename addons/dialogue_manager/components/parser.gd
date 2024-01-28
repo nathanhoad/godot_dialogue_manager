@@ -62,6 +62,7 @@ var titles: Dictionary = {}
 var character_names: PackedStringArray = []
 var first_title: String = ""
 var errors: Array[Dictionary] = []
+var raw_text: String = ""
 
 var _imported_line_map: Dictionary = {}
 var _imported_line_count: int = 0
@@ -94,7 +95,8 @@ static func extract_markers_from_string(string: String) -> ResolvedLineData:
 ## Parse some raw dialogue text. Returns a dictionary containing parse results
 func parse(text: String, path: String) -> Error:
 	prepare(text, path)
-
+	raw_text = text
+	
 	# Parse all of the content
 	var known_translations = {}
 
@@ -468,6 +470,7 @@ func get_data() -> DialogueManagerParseResult:
 	data.first_title = first_title
 	data.lines = parsed_lines
 	data.errors = errors
+	data.raw_text = raw_text
 	return data
 
 
