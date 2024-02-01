@@ -75,8 +75,10 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
+theme = SubResource("Theme_qq3yp")
 
 [node name="Panel" type="Panel" parent="Balloon"]
+clip_children = 2
 layout_mode = 1
 anchors_preset = 12
 anchor_top = 1.0
@@ -89,7 +91,6 @@ offset_bottom = -19.0
 grow_horizontal = 2
 grow_vertical = 0
 mouse_filter = 1
-theme = SubResource("Theme_qq3yp")
 
 [node name="Dialogue" type="MarginContainer" parent="Balloon/Panel"]
 layout_mode = 1
@@ -119,21 +120,21 @@ size_flags_vertical = 3
 text = "Dialogue..."
 skip_pause_at_abbreviations = PackedStringArray("Mr", "Mrs", "Ms", "Dr", "etc", "eg", "ex")
 
-[node name="Responses" type="MarginContainer" parent="Balloon/Panel"]
+[node name="Responses" type="MarginContainer" parent="Balloon"]
 layout_mode = 1
 anchors_preset = -1
 anchor_left = 0.226
 anchor_top = 0.166
 anchor_right = 0.961
 anchor_bottom = 0.168
-offset_left = -3.31201
-offset_top = -404.224
-offset_right = -0.63208
-offset_bottom = -0.552
+offset_left = 8.64801
+offset_top = -19.568
+offset_right = 11.3279
+offset_bottom = 384.104
 grow_horizontal = 2
 grow_vertical = 2
 
-[node name="ResponsesMenu" type="VBoxContainer" parent="Balloon/Panel/Responses" node_paths=PackedStringArray("response_template")]
+[node name="ResponsesMenu" type="VBoxContainer" parent="Balloon/Responses" node_paths=PackedStringArray("response_template")]
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_vertical = 8
@@ -141,9 +142,9 @@ theme_override_constants/separation = 2
 script = ExtResource("3_72ixx")
 response_template = NodePath("ResponseExample")
 
-[node name="ResponseExample" type="Button" parent="Balloon/Panel/Responses/ResponsesMenu"]
+[node name="ResponseExample" type="Button" parent="Balloon/Responses/ResponsesMenu"]
 layout_mode = 2
 text = "Response example"
 
 [connection signal="gui_input" from="Balloon" to="." method="_on_balloon_gui_input"]
-[connection signal="response_selected" from="Balloon/Panel/Responses/ResponsesMenu" to="." method="_on_responses_menu_response_selected"]
+[connection signal="response_selected" from="Balloon/Responses/ResponsesMenu" to="." method="_on_responses_menu_response_selected"]
