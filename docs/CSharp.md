@@ -15,6 +15,13 @@ var dialogue = GD.Load<Resource>("res://example.dialogue");
 DialogueManager.ShowExampleDialogueBalloon(dialogue, "start");
 ```
 
+Or show your custom balloon (if configured):
+
+```cs
+var dialogue = GD.Load<Resource>("res://example.dialogue");
+DialogueManager.ShowDialogueBalloon(dialogue, "start");
+```
+
 Or manually traverse dialogue:
 
 ```cs
