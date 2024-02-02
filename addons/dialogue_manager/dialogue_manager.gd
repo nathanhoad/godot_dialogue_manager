@@ -1185,7 +1185,7 @@ func resolve_thing_method(thing, method: String, args: Array):
 						if m.hint_string != "":
 							assert(false, DialogueConstants.translate("runtime.unsupported_array_type").format({ type = m.hint_string}))
 			if typeof(args[i]) != to_type:
-				args[i] = type_convert(args[i], to_type)
+				args[i] = convert(args[i], to_type)
 
 		return await thing.callv(method, args)
 
