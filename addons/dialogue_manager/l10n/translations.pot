@@ -451,3 +451,6 @@ msgstr ""
 
 msgid "runtime.unsupported_array_type"
 msgstr ""
+
+msgid "runtime.dialogue_balloon_missing_start_method"
+msgstr ""

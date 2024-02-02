@@ -125,7 +125,7 @@ public partial class Balloon : CanvasLayer
 
     // Set up the responses if there are any
     responsesMenu.Hide();
-    responsesMenu.Call("set_responses", dialogueLine.Responses);
+    responsesMenu.Set("responses", dialogueLine.Responses);
 
     // Show the balloon
     balloon.Show();
