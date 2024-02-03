@@ -275,7 +275,12 @@ func show_example_dialogue_balloon(resource: DialogueResource, title: String = "
 func show_dialogue_balloon(resource: DialogueResource, title: String = "", extra_game_states: Array = []) -> Node:
 	var balloon: Node = load(DialogueSettings.get_setting("balloon_path", _get_example_balloon_path())).instantiate()
 	get_current_scene.call().add_child(balloon)
-	balloon.start(resource, title, extra_game_states)
+	if balloon.has_method("start"):
+		balloon.start(resource, title, extra_game_states)
+	elif balloon.has_method("Start"):
+		balloon.Start(resource, title, extra_game_states)
+	else:
+		assert(false, DialogueConstants.translate("runtime.dialogue_balloon_missing_start_method"))
 	return balloon
 
 
@@ -291,13 +296,15 @@ func _get_example_balloon_path() -> String:
 
 func _has_dotnet_solution() -> bool:
 	if not DialogueSettings.get_user_value("has_dotnet_solution", false): return false
-	if not ResourceLoader.exists("res://addons/dialogue_manager/DialogueManager.cs"): return false
-	if load("res://addons/dialogue_manager/DialogueManager.cs") == null: return false
+
+	var plugin_path: String = get_script().resource_path.get_base_dir()
+	if not ResourceLoader.exists(plugin_path + "/DialogueManager.cs"): return false
+	if load(plugin_path + "/DialogueManager.cs") == null: return false
 	return true
 
 
 func _get_dotnet_dialogue_manager() -> Node:
-	return load("res://addons/dialogue_manager/DialogueManager.cs").new()
+	return load(get_script().resource_path.get_base_dir() + "/DialogueManager.cs").new()
 
 
 func _bridge_get_next_dialogue_line(resource: DialogueResource, key: String, extra_game_states: Array = []) -> void:

@@ -461,3 +461,6 @@ msgstr "\"{method}\" was called with {received} arguments but it only has {expec
 
 msgid "runtime.unsupported_array_type"
 msgstr "Array[{type}] isn't supported in mutations. Use Array as a type instead."
+
+msgid "runtime.dialogue_balloon_missing_start_method"
+msgstr "Your dialogue balloon is missing a \"start\" or \"Start\" method."
