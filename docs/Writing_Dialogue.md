@@ -206,6 +206,8 @@ while SomeGlobal.some_property < 10
 Nathan: Now, we can move on.
 ```
 
+To escape a condition line (ie. if you wanted to start a dialogue line with "if") then you can prefix the condition keyword with a "\".
+
 Responses can also have "if" conditions. Wrap these in "[" and "]".
 
 ```

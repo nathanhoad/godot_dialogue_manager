@@ -336,6 +336,7 @@ func parse(text: String, path: String) -> Error:
 			if raw_line.begins_with("\\if"): raw_line = raw_line.substr(1)
 			if raw_line.begins_with("\\elif"): raw_line = raw_line.substr(1)
 			if raw_line.begins_with("\\else"): raw_line = raw_line.substr(1)
+			if raw_line.begins_with("\\while"): raw_line = raw_line.substr(1)
 			if raw_line.begins_with("\\-"): raw_line = raw_line.substr(1)
 			if raw_line.begins_with("\\~"): raw_line = raw_line.substr(1)
 			if raw_line.begins_with("\\=>"): raw_line = raw_line.substr(1)
