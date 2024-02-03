@@ -96,7 +96,7 @@ static func extract_markers_from_string(string: String) -> ResolvedLineData:
 func parse(text: String, path: String) -> Error:
 	prepare(text, path)
 	raw_text = text
-	
+
 	# Parse all of the content
 	var known_translations = {}
 
@@ -332,6 +332,15 @@ func parse(text: String, path: String) -> Error:
 
 		# Regular dialogue
 		else:
+			# Remove escape character
+			if raw_line.begins_with("\\if"): raw_line = raw_line.substr(1)
+			if raw_line.begins_with("\\elif"): raw_line = raw_line.substr(1)
+			if raw_line.begins_with("\\else"): raw_line = raw_line.substr(1)
+			if raw_line.begins_with("\\while"): raw_line = raw_line.substr(1)
+			if raw_line.begins_with("\\-"): raw_line = raw_line.substr(1)
+			if raw_line.begins_with("\\~"): raw_line = raw_line.substr(1)
+			if raw_line.begins_with("\\=>"): raw_line = raw_line.substr(1)
+
 			# Add any doc notes
 			line["notes"] = "\n".join(doc_comments)
 			doc_comments = []

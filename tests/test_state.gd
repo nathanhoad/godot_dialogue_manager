@@ -38,6 +38,24 @@ Nathan: After.")
 	assert(condition.next_id_after == "8", "Should reference after conditions.")
 
 
+func test_ignore_escaped_conditions() -> void:
+	var output = parse("
+\\if this is dialogue.
+\\elif this too.
+\\else and this one.")
+
+	assert(output.errors.is_empty(), "Should have no errors.")
+
+	assert(output.lines["2"].type == DialogueConstants.TYPE_DIALOGUE, "Should be dialogue.")
+	assert(output.lines["2"].text == "if this is dialogue.", "Should escape slash.")
+
+	assert(output.lines["3"].type == DialogueConstants.TYPE_DIALOGUE, "Should be dialogue.")
+	assert(output.lines["3"].text == "elif this too.", "Should escape slash.")
+
+	assert(output.lines["4"].type == DialogueConstants.TYPE_DIALOGUE, "Should be dialogue.")
+	assert(output.lines["4"].text == "else and this one.", "Should escape slash.")
+
+
 func test_can_run_conditions() -> void:
 	var resource = create_resource("
 ~ start
