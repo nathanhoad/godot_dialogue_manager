@@ -78,7 +78,7 @@ corner_radius_bottom_right = 3
 corner_radius_bottom_left = 3
 
 [sub_resource type="Theme" id="Theme_qq3yp"]
-default_font_size = 9
+default_font_size = 8
 Button/styles/disabled = SubResource("StyleBoxFlat_235ry")
 Button/styles/focus = SubResource("StyleBoxFlat_ufjut")
 Button/styles/hover = SubResource("StyleBoxFlat_fcbqo")
@@ -93,21 +93,30 @@ Panel/styles/panel = SubResource("StyleBoxFlat_uy0d5")
 layer = 100
 script = ExtResource("1_s2gbs")
 
-[node name="Balloon" type="Panel" parent="."]
+[node name="Balloon" type="Control" parent="."]
 unique_name_in_owner = true
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme = SubResource("Theme_qq3yp")
+
+[node name="Panel" type="Panel" parent="Balloon"]
+layout_mode = 1
 anchors_preset = 12
 anchor_top = 1.0
 anchor_right = 1.0
 anchor_bottom = 1.0
-offset_left = 5.0
-offset_top = -69.0
+offset_left = 3.0
+offset_top = -62.0
 offset_right = -4.0
-offset_bottom = -5.0
+offset_bottom = -4.0
 grow_horizontal = 2
 grow_vertical = 0
-theme = SubResource("Theme_qq3yp")
 
-[node name="Dialogue" type="MarginContainer" parent="Balloon"]
+[node name="Dialogue" type="MarginContainer" parent="Balloon/Panel"]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -115,10 +124,10 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 
-[node name="VBoxContainer" type="VBoxContainer" parent="Balloon/Dialogue"]
+[node name="VBoxContainer" type="VBoxContainer" parent="Balloon/Panel/Dialogue"]
 layout_mode = 2
 
-[node name="CharacterLabel" type="RichTextLabel" parent="Balloon/Dialogue/VBoxContainer"]
+[node name="CharacterLabel" type="RichTextLabel" parent="Balloon/Panel/Dialogue/VBoxContainer"]
 unique_name_in_owner = true
 modulate = Color(1, 1, 1, 0.501961)
 layout_mode = 2
@@ -128,25 +137,26 @@ text = "Character"
 fit_content = true
 scroll_active = false
 
-[node name="DialogueLabel" parent="Balloon/Dialogue/VBoxContainer" instance=ExtResource("2_hfvdi")]
+[node name="DialogueLabel" parent="Balloon/Panel/Dialogue/VBoxContainer" instance=ExtResource("2_hfvdi")]
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_vertical = 3
 text = "Dialogue..."
+skip_pause_at_abbreviations = PackedStringArray("Mr", "Mrs", "Ms", "Dr", "etc", "eg", "ex")
 
 [node name="Responses" type="MarginContainer" parent="Balloon"]
 layout_mode = 1
-anchors_preset = -1
-anchor_left = 0.226
-anchor_top = 0.166
-anchor_right = 0.961
-anchor_bottom = 0.168
-offset_left = -3.286
-offset_top = -168.624
-offset_right = -0.871002
-offset_bottom = -0.752
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -124.0
+offset_top = -218.0
+offset_right = 125.0
+offset_bottom = -50.0
 grow_horizontal = 2
-grow_vertical = 2
+grow_vertical = 0
 
 [node name="ResponsesMenu" type="VBoxContainer" parent="Balloon/Responses"]
 unique_name_in_owner = true

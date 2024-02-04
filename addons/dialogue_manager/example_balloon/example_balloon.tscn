@@ -122,17 +122,17 @@ skip_pause_at_abbreviations = PackedStringArray("Mr", "Mrs", "Ms", "Dr", "etc", 
 
 [node name="Responses" type="MarginContainer" parent="Balloon"]
 layout_mode = 1
-anchors_preset = -1
-anchor_left = 0.226
-anchor_top = 0.166
-anchor_right = 0.961
-anchor_bottom = 0.168
-offset_left = 8.64801
-offset_top = -19.568
-offset_right = 11.3279
-offset_bottom = 384.104
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -147.0
+offset_top = -558.0
+offset_right = 494.0
+offset_bottom = -154.0
 grow_horizontal = 2
-grow_vertical = 2
+grow_vertical = 0
 
 [node name="ResponsesMenu" type="VBoxContainer" parent="Balloon/Responses" node_paths=PackedStringArray("response_template")]
 unique_name_in_owner = true

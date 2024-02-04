@@ -162,3 +162,20 @@ static func get_caret(path: String) -> Vector2:
 		return Vector2(caret.x, caret.y)
 	else:
 		return Vector2.ZERO
+
+
+static func has_dot_net_solution() -> bool:
+	if get_user_value("has_dotnet_solution", false): return true
+
+	if ProjectSettings.has_setting("dotnet/project/solution_directory"):
+		var directory: String = ProjectSettings.get("dotnet/project/solution_directory")
+		var file_name: String = ProjectSettings.get("dotnet/project/assembly_name")
+		var has_dotnet_solution: bool = FileAccess.file_exists("res://%s/%s.sln" % [directory, file_name])
+		set_user_value("has_dotnet_solution", has_dotnet_solution)
+		return has_dotnet_solution
+	else:
+		var plugin_path: String = new().get_script().resource_path.get_base_dir()
+		if not ResourceLoader.exists(plugin_path + "/DialogueManager.cs"): return false
+		if load(plugin_path + "/DialogueManager.cs") == null: return false
+
+	return true
