@@ -18,9 +18,7 @@ func show_dialogue(key: String) -> void:
 	assert(dialogue_resource != null, "\"dialogue_resource\" property needs a to point to a DialogueResource.")
 
 	var is_small_window: bool = ProjectSettings.get_setting("display/window/size/viewport_width") < 400
-	var balloon: Node = (SmallBalloon if is_small_window else Balloon).instantiate()
-	add_child(balloon)
-	balloon.start(dialogue_resource, key)
+	DialogueManager.show_dialogue_balloon_scene(SmallBalloon if is_small_window else Balloon, dialogue_resource, key)
 
 
 ### Signals

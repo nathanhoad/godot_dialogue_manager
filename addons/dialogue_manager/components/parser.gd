@@ -1196,7 +1196,7 @@ func extract_tags(line: String) -> ResolvedTagData:
 	var tag_matches: Array[RegExMatch] = TAGS_REGEX.search_all(line)
 	for tag_match in tag_matches:
 		line = line.replace(tag_match.get_string(), "")
-		var tags = tag_match.get_string().replace("[#", "").replace("]", "").replace(" ", "").split(",")
+		var tags = tag_match.get_string().replace("[#", "").replace("]", "").replace(", ", ",").split(",")
 		for tag in tags:
 			tag = tag.replace("#", "")
 			if not tag in resolved_tags:
