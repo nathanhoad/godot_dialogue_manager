@@ -18,6 +18,13 @@ Opens the dialogue balloon configured in settings (or the example balloon if non
 Returns the balloon's base node in case you want to `queue_free()` it yourself.
 
 
+#### `func show_dialogue_balloon_scene(balloon_scene: Node | String, resource: DialoueResource, title: String = "", extra_game_states: Array = []) -> Node`
+
+Opens a dialogue balloon given in `balloon_scene`.
+
+Returns the balloon's base node in case you want to `queue_free()` it yourself.
+
+
 #### `func get_next_dialogue_line(resource: DialogueResource, key: String = "", extra_game_states: Array = [], mutation_behaviour: MutationBehaviour = MutationBehaviour.Wait) -> DialogueLine`
 
 **Must be used with `await`.**
