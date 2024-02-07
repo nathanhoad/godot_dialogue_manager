@@ -164,7 +164,7 @@ static func get_caret(path: String) -> Vector2:
 		return Vector2.ZERO
 
 
-static func has_dot_net_solution() -> bool:
+static func has_dotnet_solution() -> bool:
 	if get_user_value("has_dotnet_solution", false): return true
 
 	if ProjectSettings.has_setting("dotnet/project/solution_directory"):

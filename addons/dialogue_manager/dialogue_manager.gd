@@ -68,9 +68,6 @@ var _node_properties: Array = []
 
 
 func _ready() -> void:
-	# Make the dialogue manager available as a singleton
-	Engine.register_singleton("DialogueManager", self)
-
 	# Cache the known Node2D properties
 	_node_properties = ["Script Variables"]
 	var temp_node: Node2D = Node2D.new()
@@ -95,8 +92,13 @@ func _ready() -> void:
 		if state:
 			game_states.append(state)
 
+	# Make the dialogue manager available as a singleton
+	if Engine.has_singleton("DialogueManager"):
+		Engine.unregister_singleton("DialogueManager")
+	Engine.register_singleton("DialogueManager", self)
+
 	# Connect up the C# signals if need be
-	if _has_dotnet_solution():
+	if DialogueSettings.has_dotnet_solution():
 		_get_dotnet_dialogue_manager().Prepare()
 
 
@@ -303,10 +305,6 @@ func _get_example_balloon_path() -> String:
 
 
 ### Dotnet bridge
-
-
-func _has_dotnet_solution() -> bool:
-	return DialogueSettings.has_dot_net_solution()
 
 
 func _get_dotnet_dialogue_manager() -> Node:
@@ -1123,7 +1121,7 @@ func thing_has_method(thing, method: String, args: Array) -> bool:
 	if thing.has_method(method):
 		return true
 
-	if method.to_snake_case() != method and _has_dotnet_solution():
+	if method.to_snake_case() != method and DialogueSettings.has_dotnet_solution():
 		# If we get this far then the method might be a C# method with a Task return type
 		return _get_dotnet_dialogue_manager().ThingHasMethod(thing, method)
 
