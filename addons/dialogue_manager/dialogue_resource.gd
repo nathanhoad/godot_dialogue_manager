@@ -1,3 +1,4 @@
+@tool
 @icon("./assets/icon.svg")
 
 ## A collection of dialogue lines for use with [code]DialogueManager[/code].

@@ -215,7 +215,7 @@ func _copy_dialogue_balloon() -> void:
 	directory_dialog.dir_selected.connect(func(path):
 		var plugin_path: String = get_plugin_path()
 
-		var is_dotnet: bool = DialogueSettings.has_dot_net_solution()
+		var is_dotnet: bool = DialogueSettings.has_dotnet_solution()
 		var balloon_path: String = path + ("/Balloon.tscn" if is_dotnet else "/balloon.tscn")
 		var balloon_script_path: String = path + ("/DialogueBalloon.cs" if is_dotnet else "/balloon.gd")
 
