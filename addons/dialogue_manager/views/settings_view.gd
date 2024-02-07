@@ -85,6 +85,9 @@ func prepare() -> void:
 	load_test_scene_button.icon = get_theme_icon("Load", "EditorIcons")
 
 	var balloon_path: String = DialogueSettings.get_setting("balloon_path", "")
+	if not FileAccess.file_exists(balloon_path):
+		DialogueSettings.set_setting("balloon_path", "")
+		balloon_path = ""
 	balloon_path_input.placeholder_text = balloon_path if balloon_path != "" else DialogueConstants.translate("settings.default_balloon_path")
 	revert_balloon_button.visible = balloon_path != ""
 	revert_balloon_button.icon = get_theme_icon("RotateLeft", "EditorIcons")
