@@ -1,6 +1,6 @@
 ﻿Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2012
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Dialogue Manager", "Dialogue Manager.csproj", "{05CFFC51-FD6A-4F8C-ADCD-908F631CA5F9}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Dialogue Manager", "Dialogue Manager.csproj", "{4DF09FFE-C342-4477-9552-02A35FBA3CA3}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -9,11 +9,11 @@ Global
 	ExportRelease|Any CPU = ExportRelease|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{05CFFC51-FD6A-4F8C-ADCD-908F631CA5F9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{05CFFC51-FD6A-4F8C-ADCD-908F631CA5F9}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{05CFFC51-FD6A-4F8C-ADCD-908F631CA5F9}.ExportDebug|Any CPU.ActiveCfg = ExportDebug|Any CPU
-		{05CFFC51-FD6A-4F8C-ADCD-908F631CA5F9}.ExportDebug|Any CPU.Build.0 = ExportDebug|Any CPU
-		{05CFFC51-FD6A-4F8C-ADCD-908F631CA5F9}.ExportRelease|Any CPU.ActiveCfg = ExportRelease|Any CPU
-		{05CFFC51-FD6A-4F8C-ADCD-908F631CA5F9}.ExportRelease|Any CPU.Build.0 = ExportRelease|Any CPU
+		{4DF09FFE-C342-4477-9552-02A35FBA3CA3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4DF09FFE-C342-4477-9552-02A35FBA3CA3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4DF09FFE-C342-4477-9552-02A35FBA3CA3}.ExportDebug|Any CPU.ActiveCfg = ExportDebug|Any CPU
+		{4DF09FFE-C342-4477-9552-02A35FBA3CA3}.ExportDebug|Any CPU.Build.0 = ExportDebug|Any CPU
+		{4DF09FFE-C342-4477-9552-02A35FBA3CA3}.ExportRelease|Any CPU.ActiveCfg = ExportRelease|Any CPU
+		{4DF09FFE-C342-4477-9552-02A35FBA3CA3}.ExportRelease|Any CPU.Build.0 = ExportRelease|Any CPU
 	EndGlobalSection
 EndGlobal
