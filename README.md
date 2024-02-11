@@ -24,6 +24,7 @@ You can install it via the Asset Library or [downloading a copy](https://github.
 ## Video Guides
 
 [![Dialogue in Godot 4 for Beginners](docs/beginners.png)](https://youtu.be/UhPFk8FSbd8)
+[![Dialogue in Godot 4 for C# developers](docs/dotnet.png)](https://youtu.be/U3Mimia-904)
 [![Cool balloons in Godot 4: Part 1](docs/make-balloons.png)](https://youtu.be/X0e-n7dbff8)
 [![Cool balloons in Godot 4: Part 2](docs/make-balloons-2.png)](https://youtu.be/DfdcyHwqXdo)
 [![Dialogue Manager for Godot 4](docs/tutorial.png)](https://youtu.be/DL79aS-dT7E)
