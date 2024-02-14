@@ -1009,10 +1009,6 @@ func resolve(tokens: Array, extra_game_states: Array):
 	if limit >= 1000:
 		assert(false, DialogueConstants.translate("runtime.something_went_wrong"))
 
-	# Account for Signal literals in emit calls
-	if tokens[0].value is Signal:
-		return tokens[0].value.get_name()
-
 	return tokens[0].value
 
 
@@ -1146,6 +1142,9 @@ func thing_has_property(thing: Object, property: String) -> bool:
 
 
 func resolve_signal(args: Array, extra_game_states: Array):
+	if args[0] is Signal:
+		args[0] = args[0].get_name()
+
 	for state in get_game_states(extra_game_states):
 		if typeof(state) == TYPE_DICTIONARY:
 			continue
