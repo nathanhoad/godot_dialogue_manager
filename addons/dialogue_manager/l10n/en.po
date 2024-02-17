@@ -414,15 +414,6 @@ msgstr "You have {count} errors in your dialogue text. See Output for details."
 msgid "runtime.invalid_expression"
 msgstr "\"{expression}\" is not a valid expression: {error}"
 
-msgid "runtime.unsupported_array_method"
-msgstr "Calling \"{method_name}\" on an array isn't supported."
-
-msgid "runtime.unsupported_dictionary_method"
-msgstr "Calling \"{method_name}\" on a dictionary isn't supported."
-
-msgid "runtime.unsupported_quaternion_method"
-msgstr "Calling \"{method_name}\" on a quaternion isn't supported."
-
 msgid "runtime.array_index_out_of_bounds"
 msgstr "Index {index} out of bounds of array \"{array}\"."
 

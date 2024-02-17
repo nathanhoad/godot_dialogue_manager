@@ -333,6 +333,7 @@ func parse(text: String, path: String) -> Error:
 		# Regular dialogue
 		else:
 			# Remove escape character
+			if raw_line.begins_with("\\using"): raw_line = raw_line.substr(1)
 			if raw_line.begins_with("\\if"): raw_line = raw_line.substr(1)
 			if raw_line.begins_with("\\elif"): raw_line = raw_line.substr(1)
 			if raw_line.begins_with("\\else"): raw_line = raw_line.substr(1)
@@ -490,6 +491,7 @@ func get_errors() -> Array[Dictionary]:
 
 ## Prepare the parser by collecting all lines and titles
 func prepare(text: String, path: String, include_imported_titles_hashes: bool = true) -> void:
+	using_states = []
 	errors = []
 	imported_paths = []
 	_imported_line_map = {}

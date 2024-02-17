@@ -377,15 +377,6 @@ msgstr "檔案中存在{errrors}個錯誤。請查看調試輸出。"
 msgid "runtime.invalid_expression"
 msgstr "表達式“{expression}”無效：{error}"
 
-msgid "runtime.unsupported_array_method"
-msgstr "不支持的數組方法{method_name}。"
-
-msgid "runtime.unsupported_dictionary_method"
-msgstr "不支持的字典方法{method_name}。"
-
-msgid "runtime.unsupported_quaternion_method"
-msgstr "不支持的 Quarternion 方法{method_name}。"
-
 msgid "runtime.array_index_out_of_bounds"
 msgstr "數組索引“{index}”越界。（數組名：“{array}”）"
 
