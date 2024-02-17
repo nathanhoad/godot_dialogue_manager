@@ -404,15 +404,6 @@ msgstr ""
 msgid "runtime.invalid_expression"
 msgstr ""
 
-msgid "runtime.unsupported_array_method"
-msgstr ""
-
-msgid "runtime.unsupported_dictionary_method"
-msgstr ""
-
-msgid "runtime.unsupported_quaternion_method"
-msgstr ""
-
 msgid "runtime.array_index_out_of_bounds"
 msgstr ""
 

@@ -150,3 +150,33 @@ set extra_value = 10")
 
 	line = await  resource.get_next_dialogue_line(line.next_id, [extra_state])
 	assert(extra_state.extra_value == 10, "Should have updated value.")
+
+
+func test_can_use_using_clause() -> void:
+	var resource = create_resource("
+using StateForTests
+~ start
+Nathan: {{some_property}}")
+
+	StateForTests.some_property = 27
+
+	var line = await resource.get_next_dialogue_line("start")
+	assert(line.text == "27", "Should match property.")
+
+
+func test_can_use_color_constants() -> void:
+	var resource = create_resource("
+~ start
+Nathan: {{Color.BLUE}} == {{Color(0,0,1)}}")
+
+	var line = await resource.get_next_dialogue_line("start")
+	assert(line.text == "(0, 0, 1, 1) == (0, 0, 1, 1)", "Should match blue.")
+
+
+func test_can_use_vector_constants() -> void:
+	var resource = create_resource("
+~ start
+Nathan: {{Vector2.UP}} == {{Vector2(0, -1)}}")
+
+	var line = await resource.get_next_dialogue_line("start")
+	assert(line.text == "(0, -1) == (0, -1)", "Should match up.")
