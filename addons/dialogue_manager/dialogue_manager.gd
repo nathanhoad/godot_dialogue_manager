@@ -1064,7 +1064,7 @@ func compare(operator: String, first_value, second_value) -> bool:
 				if typeof(second_value) == TYPE_BOOL:
 					return second_value == false
 				else:
-					return false
+					return second_value == null
 			else:
 				return first_value == second_value
 		"!=":
@@ -1072,7 +1072,7 @@ func compare(operator: String, first_value, second_value) -> bool:
 				if typeof(second_value) == TYPE_BOOL:
 					return second_value == true
 				else:
-					return false
+					return second_value != null
 			else:
 				return first_value != second_value
 
