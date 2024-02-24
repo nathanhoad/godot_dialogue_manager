@@ -26,8 +26,8 @@ var regex_dict: RegEx = RegEx.create_from_string("^\\{((?>[^\\{\\}]+|(?R))*)\\}$
 var regex_kvdict: RegEx = RegEx.create_from_string("^\\s*(?<left>.*?)\\s*(?<colon>:)\\s*(?<right>.*)$")
 var regex_commas: RegEx = RegEx.create_from_string("([^,]+)(?:\\s*,\\s*)?")
 var regex_assignment: RegEx = RegEx.create_from_string("^\\s*(?<var>[a-zA-Z_][a-zA-Z_0-9]*)(?:(?<attr>(?:\\.[a-zA-Z_][a-zA-Z_0-9]*)+)|(?:\\[(?<key>[^\\]]+)\\]))?\\s*(?<op>(?:\\/|\\*|-|\\+)?=)\\s*(?<val>.*)$")
-var regex_varname: RegEx = RegEx.create_from_string("^\\s*(?!true|false|and|or|not|in)(?<var>[a-zA-Z_][a-zA-Z_0-9]*)(?:(?<attr>(?:\\.[a-zA-Z_][a-zA-Z_0-9]*)+)|(?:\\[(?<key>[^\\]]+)\\]))?\\s*$")
-var regex_bool: RegEx = RegEx.create_from_string("^\\s*(true|false)\\s*$")
+var regex_varname: RegEx = RegEx.create_from_string("^\\s*(?!true|false|and|or|not|in|null)(?<var>[a-zA-Z_][a-zA-Z_0-9]*)(?:(?<attr>(?:\\.[a-zA-Z_][a-zA-Z_0-9]*)+)|(?:\\[(?<key>[^\\]]+)\\]))?\\s*$")
+var regex_keyword: RegEx = RegEx.create_from_string("^\\s*(true|false|null)\\s*$")
 var regex_function: RegEx = RegEx.create_from_string("^\\s*([a-zA-Z_][a-zA-Z_0-9]*\\s*)\\(")
 var regex_comparison: RegEx = RegEx.create_from_string("^(?<left>.*?)\\s*(?<op>==|>=|<=|<|>|!=)\\s*(?<right>.*)$")
 var regex_blogical: RegEx = RegEx.create_from_string("^(?<left>.*?)\\s+(?<op>and|or|in)\\s+(?<right>.*)$")
@@ -314,7 +314,7 @@ func _get_literal_syntax_highlighting(start_index: int, text: String) -> Diction
 		colors.merge(_get_literal_syntax_highlighting(start_index + kvdict_match.get_start("right"), kvdict_match.get_string("right")), true)
 
 	# Booleans.
-	var bool_matches: Array[RegExMatch] = regex_bool.search_all(text)
+	var bool_matches: Array[RegExMatch] = regex_keyword.search_all(text)
 	for bool_match in bool_matches:
 		colors[start_index + bool_match.get_start(0)] = {"color": text_edit.theme_overrides.conditions_color}
 
