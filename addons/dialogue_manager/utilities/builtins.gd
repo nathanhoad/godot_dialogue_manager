@@ -422,18 +422,6 @@ static func resolve_vector3_property(vector: Vector3, property: String):
 			return Vector3.FORWARD
 		"BACK":
 			return Vector3.BACK
-		"MODEL_LEFT":
-			return Vector3.MODEL_LEFT
-		"MODEL_RIGHT":
-			return Vector3.MODEL_RIGHT
-		"MODEL_TOP":
-			return Vector3.MODEL_TOP
-		"MODEL_BOTTOM":
-			return Vector3.MODEL_BOTTOM
-		"MODEL_FRONT":
-			return Vector3.MODEL_FRONT
-		"MODEL_REAR":
-			return Vector3.MODEL_REAR
 
 	return vector[property]
 
