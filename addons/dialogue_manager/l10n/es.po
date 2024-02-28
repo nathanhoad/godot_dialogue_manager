@@ -1,0 +1,457 @@
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Dialogue Manager\n"
+"POT-Creation-Date: 2024-02-25 20:58\n"
+"PO-Revision-Date: 2024-02-25 20:58\n"
+"Last-Translator: you <you@example.com>\n"
+"Language-Team: Spanish <yourteam@example.com>\n"
+"Language: es\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+msgid "start_a_new_file"
+msgstr "Crear un nuevo archivo"
+
+msgid "open_a_file"
+msgstr "Abrir un archivo"
+
+msgid "open.open"
+msgstr "Abrir..."
+
+msgid "open.no_recent_files"
+msgstr "No hay archivos recientes"
+
+msgid "open.clear_recent_files"
+msgstr "Limpiar archivos recientes"
+
+msgid "save_all_files"
+msgstr "Guardar todos los archivos"
+
+msgid "test_dialogue"
+msgstr "Diálogo de prueba"
+
+msgid "search_for_text"
+msgstr "Buscar texto"
+
+msgid "insert"
+msgstr "Insertar"
+
+msgid "translations"
+msgstr "Traducciones"
+
+msgid "settings"
+msgstr "Ajustes"
+
+msgid "show_support"
+msgstr "Contribuye con Dialogue Manager"
+
+msgid "docs"
+msgstr "Docs"
+
+msgid "insert.wave_bbcode"
+msgstr "BBCode ondulado"
+
+msgid "insert.shake_bbcode"
+msgstr "BBCode agitado"
+
+msgid "insert.typing_pause"
+msgstr "Pausa de escritura"
+
+msgid "insert.typing_speed_change"
+msgstr "Cambiar la velocidad de escritura"
+
+msgid "insert.auto_advance"
+msgstr "Avance automático"
+
+msgid "insert.templates"
+msgstr "Plantillas"
+
+msgid "insert.title"
+msgstr "Título"
+
+msgid "insert.dialogue"
+msgstr "Diálogo"
+
+msgid "insert.response"
+msgstr "Respuesta"
+
+msgid "insert.random_lines"
+msgstr "Líneas aleatorias"
+
+msgid "insert.random_text"
+msgstr "Texto aleatorio"
+
+msgid "insert.actions"
+msgstr "Acciones"
+
+msgid "insert.jump"
+msgstr "Ir al título"
+
+msgid "insert.end_dialogue"
+msgstr "Finalizar diálogo"
+
+msgid "generate_line_ids"
+msgstr "Generar IDs de línea"
+
+msgid "save_characters_to_csv"
+msgstr "Guardar los nombres de los personajes en un archivo CSV..."
+
+msgid "save_to_csv"
+msgstr "Guardar líneas en CSV..."
+
+msgid "import_from_csv"
+msgstr "Importar cambios de línea desde CSV..."
+
+msgid "confirm_close"
+msgstr "¿Guardar los cambios en '{path}'?"
+
+msgid "confirm_close.save"
+msgstr "Guardar cambios"
+
+msgid "confirm_close.discard"
+msgstr "Descartar"
+
+msgid "buffer.save"
+msgstr "Guardar"
+
+msgid "buffer.save_as"
+msgstr "Guardar como..."
+
+msgid "buffer.close"
+msgstr "Cerrar"
+
+msgid "buffer.close_all"
+msgstr "Cerrar todo"
+
+msgid "buffer.close_other_files"
+msgstr "Cerrar otros archivos"
+
+msgid "buffer.copy_file_path"
+msgstr "Copiar la ruta del archivo"
+
+msgid "buffer.show_in_filesystem"
+msgstr "Mostrar en el sistema de archivos"
+
+msgid "settings.invalid_test_scene"
+msgstr "\"{path}\" no extiende BaseDialogueTestScene."
+
+msgid "settings.revert_to_default_test_scene"
+msgstr "Revertir a la escena de prueba por defecto"
+
+msgid "settings.default_balloon_hint"
+msgstr ""
+"Globo personalizado para usar al llamar a \"DialogueManager.show_balloon()\""
+
+msgid "settings.revert_to_default_balloon"
+msgstr "Volver al globo predeterminado"
+
+msgid "settings.default_balloon_path"
+msgstr "<globo de ejemplo>"
+
+msgid "settings.autoload"
+msgstr "Autocarga"
+
+msgid "settings.path"
+msgstr "Ruta"
+
+msgid "settings.new_template"
+msgstr "Los nuevos archivos de diálogo empezarán con una plantilla"
+
+msgid "settings.missing_keys"
+msgstr "Tratar las claves de traducción faltantes como errores"
+
+msgid "settings.missing_keys_hint"
+msgstr "Si estás utilizando claves de traducción estáticas, tener esta opción habilitada te ayudará a encontrar cualquier línea a la que aún no le hayas añadido una clave."
+
+msgid "settings.characters_translations"
+msgstr "Exportar nombres de personajes en archivos de traducción"
+
+msgid "settings.wrap_long_lines"
+msgstr "Romper líneas largas"
+
+msgid "settings.include_failed_responses"
+msgstr "Incluir respuestas con condiciones fallidas"
+
+msgid "settings.ignore_missing_state_values"
+msgstr "Omitir errores de valores de estado faltantes (no recomendado)"
+
+msgid "settings.custom_test_scene"
+msgstr "Escena de prueba personalizada (debe extender BaseDialogueTestScene)"
+
+msgid "settings.default_csv_locale"
+msgstr "Localización CSV por defecto"
+
+msgid "settings.states_shortcuts"
+msgstr "Atajos de teclado"
+
+msgid "settings.states_message"
+msgstr "Si un autoload está habilitado aquí, puedes referirte a sus propiedades y métodos sin tener que usar su nombre."
+
+msgid "settings.states_hint"
+msgstr "ie. En lugar de \"SomeState.some_property\" podría simplemente usar \"some_property\""
+
+msgid "settings.recompile_warning"
+msgstr "Cambiar estos ajustes obligará a recompilar todo el diálogo. Hazlo solo si sabes lo que estás haciendo."
+
+msgid "settings.create_lines_for_responses_with_characters"
+msgstr "Crear línea de diálogo para respuestas con nombres de personajes dentro."
+
+msgid "settings.open_in_external_editor"
+msgstr "Abrir archivos de diálogo en el editor externo"
+
+msgid "settings.external_editor_warning"
+msgstr "Nota: El resaltado de sintaxis y la verificación detallada de errores no están soportados en editores externos."
+
+msgid "settings.include_characters_in_translations"
+msgstr "Incluir nombres de personajes en las exportaciones de traducción"
+
+msgid "settings.include_notes_in_translations"
+msgstr "Incluir notas (## comentarios) en las exportaciones de traducción"
+
+msgid "n_of_n"
+msgstr "{index} de {total}"
+
+msgid "search.previous"
+msgstr "Anterior"
+
+msgid "search.next"
+msgstr "Siguiente"
+
+msgid "search.match_case"
+msgstr "Coincidir mayúsculas/minúsculas"
+
+msgid "search.toggle_replace"
+msgstr "Reemplazar"
+
+msgid "search.replace_with"
+msgstr "Reemplazar con:"
+
+msgid "search.replace"
+msgstr "Reemplazar"
+
+msgid "search.replace_all"
+msgstr "Reemplazar todo"
+
+msgid "files_list.filter"
+msgstr "Filtrar archivos"
+
+msgid "titles_list.filter"
+msgstr "Filtrar títulos"
+
+msgid "errors.key_not_found"
+msgstr "La tecla \"{key}\" no se encuentra."
+
+msgid "errors.line_and_message"
+msgstr "Error en {line}, {column}: {message}"
+
+msgid "errors_in_script"
+msgstr "Tienes errores en tu guion. Corrígelos y luego inténtalo de nuevo."
+
+msgid "errors_with_build"
+msgstr "Debes corregir los errores de diálogo antes de poder ejecutar tu juego."
+
+msgid "errors.import_errors"
+msgstr "Hay errores en este archivo importado."
+
+msgid "errors.already_imported"
+msgstr "Archivo ya importado."
+
+msgid "errors.duplicate_import"
+msgstr "Nombre de importación duplicado."
+
+msgid "errors.unknown_using"
+msgstr "Autoload desconocida en la declaración de uso."
+
+msgid "errors.empty_title"
+msgstr "Los títulos no pueden estar vacíos."
+
+msgid "errors.duplicate_title"
+msgstr "Ya hay un título con ese nombre."
+
+msgid "errors.nested_title"
+msgstr "Los títulos no pueden tener sangría."
+
+msgid "errors.invalid_title_string"
+msgstr "Los títulos solo pueden contener caracteres alfanuméricos y números."
+
+msgid "errors.invalid_title_number"
+msgstr "Los títulos no pueden empezar con un número."
+
+msgid "errors.unknown_title"
+msgstr "Título desconocido."
+
+msgid "errors.jump_to_invalid_title"
+msgstr "Este salto está apuntando a un título inválido."
+
+msgid "errors.title_has_no_content"
+msgstr "Ese título no tiene contenido. Quizá cambiarlo a \"=> FIN\"."
+
+msgid "errors.invalid_expression"
+msgstr "La expresión es inválida."
+
+msgid "errors.unexpected_condition"
+msgstr "Condición inesperada."
+
+msgid "errors.duplicate_id"
+msgstr "Este ID ya está en otra línea."
+
+msgid "errors.missing_id"
+msgstr "Esta línea está sin ID."
+
+msgid "errors.invalid_indentation"
+msgstr "Sangría no válida."
+
+msgid "errors.condition_has_no_content"
+msgstr "Una línea de condición necesita una línea sangrada debajo de ella."
+
+msgid "errors.incomplete_expression"
+msgstr "Expresión incompleta."
+
+msgid "errors.invalid_expression_for_value"
+msgstr "Expresión no válida para valor."
+
+msgid "errors.file_not_found"
+msgstr "Archivo no encontrado."
+
+msgid "errors.unexpected_end_of_expression"
+msgstr "Fin de expresión inesperado."
+
+msgid "errors.unexpected_function"
+msgstr "Función inesperada."
+
+msgid "errors.unexpected_bracket"
+msgstr "Corchete inesperado."
+
+msgid "errors.unexpected_closing_bracket"
+msgstr "Bracket de cierre inesperado."
+
+msgid "errors.missing_closing_bracket"
+msgstr "Falta cerrar corchete."
+
+msgid "errors.unexpected_operator"
+msgstr "Operador inesperado."
+
+msgid "errors.unexpected_comma"
+msgstr "Coma inesperada."
+
+msgid "errors.unexpected_colon"
+msgstr "Dos puntos inesperados"
+
+msgid "errors.unexpected_dot"
+msgstr "Punto inesperado."
+
+msgid "errors.unexpected_boolean"
+msgstr "Booleano inesperado."
+
+msgid "errors.unexpected_string"
+msgstr "String inesperado."
+
+msgid "errors.unexpected_number"
+msgstr "Número inesperado."
+
+msgid "errors.unexpected_variable"
+msgstr "Variable inesperada."
+
+msgid "errors.invalid_index"
+msgstr "Índice no válido."
+
+msgid "errors.unexpected_assignment"
+msgstr "Asignación inesperada."
+
+msgid "errors.unknown"
+msgstr "Sintaxis desconocida."
+
+msgid "update.available"
+msgstr "v{version} disponible"
+
+msgid "update.is_available_for_download"
+msgstr "¡La versión %s ya está disponible para su descarga!"
+
+msgid "update.downloading"
+msgstr "Descargando..."
+
+msgid "update.download_update"
+msgstr "Descargar actualización"
+
+msgid "update.needs_reload"
+msgstr "El proyecto debe ser recargado para instalar la actualización."
+
+msgid "update.reload_ok_button"
+msgstr "Recargar proyecto"
+
+msgid "update.reload_cancel_button"
+msgstr "Hazlo más tarde"
+
+msgid "update.reload_project"
+msgstr "Recargar proyecto"
+
+msgid "update.release_notes"
+msgstr "Leer las notas de la versión"
+
+msgid "update.success"
+msgstr "El Gestor de Diálogo ahora es v{versión}."
+
+msgid "update.failed"
+msgstr "Hubo un problema al descargar la actualización."
+
+msgid "runtime.no_resource"
+msgstr "Recurso de diálogo no proporcionado."
+
+msgid "runtime.no_content"
+msgstr "\"{file_path}\" no tiene contenido."
+
+msgid "runtime.errors"
+msgstr "Tienes {count} errores en tu diálogo de texto."
+
+msgid "runtime.error_detail"
+msgstr "Línea {line}: {message}"
+
+msgid "runtime.errors_see_details"
+msgstr "Tienes {count} errores en tu texto de diálogo. Consulta la salida para más detalles."
+
+msgid "runtime.invalid_expression"
+msgstr "\"{expression}\" no es una expresión válida: {error}"
+
+msgid "runtime.array_index_out_of_bounds"
+msgstr "Índice {index} fuera de los límites del array \"{array}\"."
+
+msgid "runtime.left_hand_size_cannot_be_assigned_to"
+msgstr "El lado izquierdo de la expresión no se puede asignar."
+
+msgid "runtime.key_not_found"
+msgstr "Clave \"{key}\" no encontrada en el diccionario \"{dictionary}\""
+
+msgid "runtime.property_not_found"
+msgstr "\"{property}\" no es una propiedad en ningún estado del juego ({states})."
+
+msgid "runtime.property_not_found_missing_export"
+msgstr "\"{property}\" no es una propiedad en ningún estado del juego ({states}). Es posible que necesites añadir un decorador [Export]."
+
+msgid "runtime.method_not_found"
+msgstr "\"{method}\" no es un método en ningún estado del juego ({states})"
+
+msgid "runtime.signal_not_found"
+msgstr "\"{signal_name}\" no es una señal en ningún estado del juego ({states})"
+
+msgid "runtime.method_not_callable"
+msgstr "\"{method}\" no es un método llamable en \"{object}\""
+
+msgid "runtime.unknown_operator"
+msgstr "Operador desconocido."
+
+msgid "runtime.unknown_autoload"
+msgstr "\"{autoload}\" parece no ser un autoload válido."
+
+msgid "runtime.something_went_wrong"
+msgstr "Algo salió mal."
+
+msgid "runtime.expected_n_got_n_args"
+msgstr "El método \"{method}\" se llamó con {received} argumentos, pero solo tiene {expected}."
+
+msgid "runtime.unsupported_array_type"
+msgstr "Array[{type}] no está soportado en mutaciones. Utiliza Array como tipo en su lugar."
+
+msgid "runtime.dialogue_balloon_missing_start_method"
+msgstr "Tu globo de diálogo no tiene un método  \"start\" o \"Start\"."
