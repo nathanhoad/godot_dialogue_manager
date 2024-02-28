@@ -2,6 +2,7 @@
 extends Button
 
 const DialogueConstants = preload("../constants.gd")
+const DialogueSettings = preload("../settings.gd")
 
 const REMOTE_RELEASES_URL = "https://api.github.com/repos/nathanhoad/godot_dialogue_manager/releases"
 
@@ -55,7 +56,8 @@ func apply_theme() -> void:
 
 
 func check_for_update() -> void:
-	http_request.request(REMOTE_RELEASES_URL)
+	if DialogueSettings.get_user_value("check_for_updates", true):
+		http_request.request(REMOTE_RELEASES_URL)
 
 
 ### Signals

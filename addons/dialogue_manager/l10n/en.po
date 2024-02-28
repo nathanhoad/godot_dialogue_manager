@@ -210,6 +210,9 @@ msgstr "Include character names in translation exports"
 msgid "settings.include_notes_in_translations"
 msgstr "Include notes (## comments) in translation exports"
 
+msgid "settings.check_for_updates"
+msgstr "Check for updates"
+
 msgid "n_of_n"
 msgstr "{index} of {total}"
 
