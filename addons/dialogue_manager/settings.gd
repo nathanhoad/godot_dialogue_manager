@@ -82,6 +82,7 @@ static func get_settings(only_keys: PackedStringArray = []) -> Dictionary:
 
 static func get_user_config() -> Dictionary:
 	var user_config: Dictionary = {
+		check_for_updates = true,
 		just_refreshed = null,
 		recent_files = [],
 		reopen_files = [],

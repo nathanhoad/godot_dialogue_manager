@@ -200,6 +200,9 @@ msgstr ""
 msgid "settings.include_notes_in_translations"
 msgstr ""
 
+msgid "settings.check_for_updates"
+msgstr ""
+
 msgid "n_of_n"
 msgstr ""
 

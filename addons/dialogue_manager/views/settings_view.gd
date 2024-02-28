@@ -31,6 +31,7 @@ enum PathTarget {
 @onready var globals_list: Tree = $Runtime/GlobalsList
 
 # Advanced
+@onready var check_for_updates: CheckBox = $Advanced/CheckForUpdates
 @onready var include_characters_in_translations: CheckBox = $Advanced/IncludeCharactersInTranslations
 @onready var include_notes_in_translations: CheckBox = $Advanced/IncludeNotesInTranslations
 @onready var open_in_external_editor_button: CheckBox = $Advanced/OpenInExternalEditorButton
@@ -65,6 +66,7 @@ func _ready() -> void:
 	$Runtime/StatesMessage.text = DialogueConstants.translate("settings.states_message")
 	$Runtime/StatesHint.text = DialogueConstants.translate("settings.states_hint")
 
+	check_for_updates.text = DialogueConstants.translate("settings.check_for_updates")
 	include_characters_in_translations.text = DialogueConstants.translate("settings.include_characters_in_translations")
 	include_notes_in_translations.text = DialogueConstants.translate("settings.include_notes_in_translations")
 	open_in_external_editor_button.text = DialogueConstants.translate("settings.open_in_external_editor")
@@ -73,6 +75,8 @@ func _ready() -> void:
 	$Advanced/RecompileWarning.text = DialogueConstants.translate("settings.recompile_warning")
 	missing_translations_button.text = DialogueConstants.translate("settings.missing_keys")
 	create_lines_for_response_characters.text = DialogueConstants.translate("settings.create_lines_for_responses_with_characters")
+
+	current_tab = 0
 
 
 func prepare() -> void:
@@ -99,6 +103,7 @@ func prepare() -> void:
 
 	states_title.add_theme_font_override("font", get_theme_font("bold", "EditorFonts"))
 
+	check_for_updates.set_pressed_no_signal(DialogueSettings.get_user_value("check_for_updates", true))
 	characters_translations_button.set_pressed_no_signal(DialogueSettings.get_setting("export_characters_in_translation", true))
 	wrap_lines_button.set_pressed_no_signal(DialogueSettings.get_setting("wrap_lines", false))
 	include_all_responses_button.set_pressed_no_signal(DialogueSettings.get_setting("include_all_responses", false))
@@ -119,7 +124,7 @@ func prepare() -> void:
 	if not use_external_editor:
 		open_in_external_editor_button.hide()
 		$Advanced/ExternalWarning.hide()
-		$Advanced/HSeparator.hide()
+		$Advanced/ExternalSeparator.hide()
 
 	var project = ConfigFile.new()
 	var err = project.load("res://project.godot")
@@ -269,3 +274,7 @@ func _on_include_characters_in_translations_toggled(toggled_on: bool) -> void:
 
 func _on_include_notes_in_translations_toggled(toggled_on: bool) -> void:
 	DialogueSettings.set_setting("include_notes_in_translation_exports", toggled_on)
+
+
+func _on_keep_up_to_date_toggled(toggled_on: bool) -> void:
+	DialogueSettings.set_user_value("check_for_updates", toggled_on)
