@@ -84,6 +84,8 @@ static func get_user_config() -> Dictionary:
 	var user_config: Dictionary = {
 		just_refreshed = null,
 		recent_files = [],
+		reopen_files = [],
+		most_recent_reopen_file = "",
 		carets = {},
 		run_title = "",
 		run_resource_path = "",

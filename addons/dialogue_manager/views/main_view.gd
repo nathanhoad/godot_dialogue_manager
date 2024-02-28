@@ -151,6 +151,14 @@ func _ready() -> void:
 	editor_settings.settings_changed.connect(_on_editor_settings_changed)
 	_on_editor_settings_changed()
 
+	# Reopen any files that were open when Godot was closed
+	if editor_settings.get_setting("text_editor/behavior/files/restore_scripts_on_load"):
+		var reopen_files: Array = DialogueSettings.get_user_value("reopen_files", [])
+		for reopen_file in reopen_files:
+			open_file(reopen_file)
+
+		self.current_file_path = DialogueSettings.get_user_value("most_recent_reopen_file", "")
+
 	save_all_button.disabled = true
 
 	close_confirmation_dialog.ok_button_text = DialogueConstants.translate("confirm_close.save")
@@ -159,6 +167,11 @@ func _ready() -> void:
 	settings_view.editor_plugin = editor_plugin
 
 	errors_dialog.dialog_text = DialogueConstants.translate("errors_in_script")
+
+
+func _exit_tree() -> void:
+	DialogueSettings.set_user_value("reopen_files", open_buffers.keys())
+	DialogueSettings.set_user_value("most_recent_reopen_file", self.current_file_path)
 
 
 func _unhandled_input(event: InputEvent) -> void:
