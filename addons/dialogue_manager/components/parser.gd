@@ -142,7 +142,7 @@ func parse(text: String, path: String) -> Error:
 		if raw_line.begins_with("using "):
 			var using_match: RegExMatch = USING_REGEX.search(raw_line)
 			if "state" in using_match.names:
-				var using_state: String = using_match.strings[using_match.names.state]
+				var using_state: String = using_match.strings[using_match.names.state].strip_edges()
 				if not using_state in autoload_names:
 					add_error(id, 0, DialogueConstants.ERR_UNKNOWN_USING)
 				elif not using_state in using_states:

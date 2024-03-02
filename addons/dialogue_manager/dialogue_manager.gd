@@ -65,6 +65,8 @@ var get_current_scene: Callable = func():
 		current_scene = get_tree().root.get_child(get_tree().root.get_child_count() - 1)
 	return current_scene
 
+var autoloads: Dictionary = {}
+
 var _node_properties: Array = []
 
 
@@ -77,7 +79,6 @@ func _ready() -> void:
 	temp_node.free()
 
 	# Add any autoloads to a generic state so we can refer to them by name
-	var autoloads: Dictionary = {}
 	for child in get_tree().root.get_children():
 		# Ignore the dialogue manager
 		if child.name == StringName("DialogueManager"): continue
@@ -747,16 +748,10 @@ func resolve(tokens: Array, extra_game_states: Array):
 						found = true
 					_:
 						for state in get_game_states(extra_game_states):
-							if Builtins.is_supported(state):
-								token["type"] = "value"
-								token["value"] = Builtins.resolve_method(state, function_name, args)
-								found = true
-							elif thing_has_method(state, function_name, args):
+							if thing_has_method(state, function_name, args):
 								token["type"] = "value"
 								token["value"] = await resolve_thing_method(state, function_name, args)
 								found = true
-
-							if found:
 								break
 
 				show_error_for_missing_state_value(DialogueConstants.translate("runtime.method_not_found").format({
@@ -1113,6 +1108,9 @@ func is_valid(line: DialogueLine) -> bool:
 
 
 func thing_has_method(thing, method: String, args: Array) -> bool:
+	if Builtins.is_supported(thing):
+		return thing != autoloads
+
 	if method in ["call", "call_deferred"]:
 		return thing.has_method(args[0])
 
@@ -1173,6 +1171,11 @@ func resolve_signal(args: Array, extra_game_states: Array):
 
 
 func resolve_thing_method(thing, method: String, args: Array):
+	if Builtins.is_supported(thing):
+		var result = Builtins.resolve_method(thing, method, args)
+		if not Builtins.has_resolve_method_failed():
+			return result
+
 	if thing.has_method(method):
 		# Try to convert any literals to the right type
 		var method_args = thing.get_method_list().filter(func(m): return method == m.name)[0].args
