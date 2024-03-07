@@ -125,7 +125,7 @@ func get_next_dialogue_line(resource: DialogueResource, key: String = "", extra_
 
 	# If our dialogue is nothing then we hit the end
 	if not is_valid(dialogue):
-		dialogue_ended.emit(resource)
+		(func(): dialogue_ended.emit(resource)).call_deferred()
 		return null
 
 	# Run the mutation if it is one
@@ -140,7 +140,7 @@ func get_next_dialogue_line(resource: DialogueResource, key: String = "", extra_
 				pass
 		if actual_next_id in [DialogueConstants.ID_END_CONVERSATION, DialogueConstants.ID_NULL, null]:
 			# End the conversation
-			dialogue_ended.emit(resource)
+			(func(): dialogue_ended.emit(resource)).call_deferred()
 			return null
 		else:
 			return await get_next_dialogue_line(resource, dialogue.next_id, extra_game_states, mutation_behaviour)
