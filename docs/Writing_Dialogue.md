@@ -264,6 +264,10 @@ Nathan: I can also emit signals[do emit("some_signal")] inline.
 
 One thing to note is that _inline mutations_ that use `await` won't be awaited so the dialogue will continue right away.
 
+### Comments
+
+Any line starting with a `#` will be ignored by the compiler so you can use those lines to write notes/comments.
+
 ### State shortcuts
 
 If you want to shorten your references to state from something like `SomeGlobal.some_property` to just `some_property` then there are two ways you can do this.
