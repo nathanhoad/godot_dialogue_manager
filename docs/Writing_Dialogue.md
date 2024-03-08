@@ -106,6 +106,10 @@ To weight lines use a `%` followed by a number to weight by. For example a `%2` 
 %2 Nathan: This line has an 40% chance of being picked
 ```
 
+## Comments
+
+Any line starting with a `#` will be ignored by the compiler so you can use those lines to write notes/comments.
+
 ## Jumps
 
 If you want to redirect flow to another title then you can use a jump line. Assuming the target title is "another_title" your jump line would be
@@ -263,10 +267,6 @@ Nathan: I can also emit signals[do emit("some_signal")] inline.
 ```
 
 One thing to note is that _inline mutations_ that use `await` won't be awaited so the dialogue will continue right away.
-
-### Comments
-
-Any line starting with a `#` will be ignored by the compiler so you can use those lines to write notes/comments.
 
 ### State shortcuts
 
