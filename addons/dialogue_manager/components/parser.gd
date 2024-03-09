@@ -465,6 +465,11 @@ func parse(text: String, path: String) -> Error:
 		# Done!
 		parsed_lines[str(id)] = line
 
+	# Assume the last line ends the dialogue
+	var last_line: Dictionary = parsed_lines.values()[parsed_lines.values().size() - 1]
+	if last_line.next_id == "":
+		last_line.next_id = DialogueConstants.ID_END
+
 	if errors.size() > 0:
 		return ERR_PARSE_ERROR
 
