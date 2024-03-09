@@ -169,54 +169,55 @@ func get_resolved_line_data(data: Dictionary, extra_game_states: Array = []) -> 
 	var markers: ResolvedLineData = parser.extract_markers(text)
 
 	# Resolve any conditionals and update marker positions as needed
-	var resolved_text: String = markers.text
-	var conditionals: Array[RegExMatch] = parser.INLINE_CONDITIONALS_REGEX.search_all(resolved_text)
-	var replacements: Array = []
-	for conditional in conditionals:
-		var condition_raw: String = conditional.strings[conditional.names.condition]
-		var body: String = conditional.strings[conditional.names.body]
-		var body_else: String = ""
-		if "[else]" in body:
-			var bits = body.split("[else]")
-			body = bits[0]
-			body_else = bits[1]
-		var condition: Dictionary = parser.extract_condition("if " + condition_raw, false, 0)
-		# If the condition fails then use the else of ""
-		if not await check_condition({ condition = condition }, extra_game_states):
-			body = body_else
-		replacements.append({
-			start = conditional.get_start(),
-			end = conditional.get_end(),
-			string = conditional.get_string(),
-			body = body
-		})
+	if data.type == DialogueConstants.TYPE_DIALOGUE:
+		var resolved_text: String = markers.text
+		var conditionals: Array[RegExMatch] = parser.INLINE_CONDITIONALS_REGEX.search_all(resolved_text)
+		var replacements: Array = []
+		for conditional in conditionals:
+			var condition_raw: String = conditional.strings[conditional.names.condition]
+			var body: String = conditional.strings[conditional.names.body]
+			var body_else: String = ""
+			if "[else]" in body:
+				var bits = body.split("[else]")
+				body = bits[0]
+				body_else = bits[1]
+			var condition: Dictionary = parser.extract_condition("if " + condition_raw, false, 0)
+			# If the condition fails then use the else of ""
+			if not await check_condition({ condition = condition }, extra_game_states):
+				body = body_else
+			replacements.append({
+				start = conditional.get_start(),
+				end = conditional.get_end(),
+				string = conditional.get_string(),
+				body = body
+			})
 
-	for i in range(replacements.size() -1, -1, -1):
-		var r: Dictionary = replacements[i]
-		resolved_text = resolved_text.substr(0, r.start) + r.body + resolved_text.substr(r.end, 9999)
-		# Move any other markers now that the text has changed
-		var offset: int = r.end - r.start - r.body.length()
-		for key in ["pauses", "speeds", "time"]:
-			if markers.get(key) == null: continue
-			var marker = markers.get(key)
-			var next_marker: Dictionary = {}
-			for index in marker:
+		for i in range(replacements.size() -1, -1, -1):
+			var r: Dictionary = replacements[i]
+			resolved_text = resolved_text.substr(0, r.start) + r.body + resolved_text.substr(r.end, 9999)
+			# Move any other markers now that the text has changed
+			var offset: int = r.end - r.start - r.body.length()
+			for key in ["pauses", "speeds", "time"]:
+				if markers.get(key) == null: continue
+				var marker = markers.get(key)
+				var next_marker: Dictionary = {}
+				for index in marker:
+					if index < r.start:
+						next_marker[index] = marker[index]
+					elif index > r.start:
+						next_marker[index - offset] = marker[index]
+				markers.set(key, next_marker)
+			var mutations: Array[Array] = markers.mutations
+			var next_mutations: Array[Array] = []
+			for mutation in mutations:
+				var index = mutation[0]
 				if index < r.start:
-					next_marker[index] = marker[index]
+					next_mutations.append(mutation)
 				elif index > r.start:
-					next_marker[index - offset] = marker[index]
-			markers.set(key, next_marker)
-		var mutations: Array[Array] = markers.mutations
-		var next_mutations: Array[Array] = []
-		for mutation in mutations:
-			var index = mutation[0]
-			if index < r.start:
-				next_mutations.append(mutation)
-			elif index > r.start:
-				next_mutations.append([index - offset, mutation[1]])
-		markers.mutations = next_mutations
+					next_mutations.append([index - offset, mutation[1]])
+			markers.mutations = next_mutations
 
-	markers.text = resolved_text
+		markers.text = resolved_text
 
 	parser.free()
 
