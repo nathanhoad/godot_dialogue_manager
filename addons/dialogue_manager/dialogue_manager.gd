@@ -528,7 +528,7 @@ func create_response(data: Dictionary, extra_game_states: Array) -> DialogueResp
 		id = data.get("id", ""),
 		type = DialogueConstants.TYPE_RESPONSE,
 		next_id = data.next_id,
-		is_allowed = await check_condition(data, extra_game_states),
+		is_allowed = data.is_allowed,
 		character = await get_resolved_character(data, extra_game_states),
 		character_replacements = data.get("character_replacements", [] as Array[Dictionary]),
 		text = resolved_data.text,
@@ -603,8 +603,9 @@ func resolve_each(array: Array, extra_game_states: Array) -> Array:
 func get_responses(ids: Array, resource: DialogueResource, id_trail: String, extra_game_states: Array) -> Array[DialogueResponse]:
 	var responses: Array[DialogueResponse] = []
 	for id in ids:
-		var data: Dictionary = resource.lines.get(id)
-		if DialogueSettings.get_setting("include_all_responses", false) or await check_condition(data, extra_game_states):
+		var data: Dictionary = resource.lines.get(id).duplicate(true)
+		data.is_allowed = await check_condition(data, extra_game_states)
+		if DialogueSettings.get_setting("include_all_responses", false) or data.is_allowed:
 			var response: DialogueResponse = await create_response(data, extra_game_states)
 			response.next_id += id_trail
 			responses.append(response)
