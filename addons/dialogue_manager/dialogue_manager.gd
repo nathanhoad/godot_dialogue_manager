@@ -411,7 +411,7 @@ func get_line(resource: DialogueResource, key: String, extra_game_states: Array)
 	if data.type == DialogueConstants.TYPE_RESPONSE:
 		# Note: For some reason C# has occasional issues with using the responses property directly
 		# so instead we use set and get here.
-		line.set("responses", await get_responses(data.get("responses"), resource, id_trail, extra_game_states))
+		line.set("responses", await get_responses(data.get("responses", []), resource, id_trail, extra_game_states))
 		return line
 
 	# Inject the next node's responses if they have any
@@ -429,7 +429,7 @@ func get_line(resource: DialogueResource, key: String, extra_game_states: Array)
 		if next_line != null and next_line.type == DialogueConstants.TYPE_RESPONSE:
 			# Note: For some reason C# has occasional issues with using the responses property directly
 			# so instead we use set and get here.
-			line.set("responses", await get_responses(next_line.get("responses"), resource, id_trail, extra_game_states))
+			line.set("responses", await get_responses(next_line.get("responses", []), resource, id_trail, extra_game_states))
 
 	line.next_id = "|".join(stack) if line.next_id == DialogueConstants.ID_NULL else line.next_id + id_trail
 	return line
