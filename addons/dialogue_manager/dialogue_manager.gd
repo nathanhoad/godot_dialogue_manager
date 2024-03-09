@@ -409,14 +409,27 @@ func get_line(resource: DialogueResource, key: String, extra_game_states: Array)
 
 	# If we are the first of a list of responses then get the other ones
 	if data.type == DialogueConstants.TYPE_RESPONSE:
-		line.responses = await get_responses(data.responses, resource, id_trail, extra_game_states)
+		# Note: For some reason C# has occasional issues with using the responses property directly
+		# so instead we use set and get here.
+		line.set("responses", await get_responses(data.get("responses", []), resource, id_trail, extra_game_states))
 		return line
 
 	# Inject the next node's responses if they have any
 	if resource.lines.has(line.next_id):
 		var next_line: Dictionary = resource.lines.get(line.next_id)
+
+		# If the response line is marked as a title then make sure to emit the passed_title signal.
+		if line.next_id in resource.titles.values():
+			passed_title.emit(resource.titles.find_key(line.next_id))
+
+		# If the next line is a title then check where it points to see if that is a set of responses.
+		if next_line.type == DialogueConstants.TYPE_GOTO:
+			next_line = resource.lines.get(next_line.next_id)
+
 		if next_line != null and next_line.type == DialogueConstants.TYPE_RESPONSE:
-			line.responses = await get_responses(next_line.responses, resource, id_trail, extra_game_states)
+			# Note: For some reason C# has occasional issues with using the responses property directly
+			# so instead we use set and get here.
+			line.set("responses", await get_responses(next_line.get("responses", []), resource, id_trail, extra_game_states))
 
 	line.next_id = "|".join(stack) if line.next_id == DialogueConstants.ID_NULL else line.next_id + id_trail
 	return line
