@@ -1451,6 +1451,14 @@ func build_token_tree(tokens: Array[Dictionary], line_type: String, expected_clo
 				if sub_tree[0].size() > 0 and sub_tree[0][0].type == DialogueConstants.TOKEN_ERROR:
 					return [build_token_tree_error(sub_tree[0][0].value, token.index), tokens]
 
+				var t = sub_tree[0]
+				for i in range(0, t.size() - 2):
+					# Convert Lua style dictionaries to string keys
+					if t[i].type == DialogueConstants.TOKEN_VARIABLE and t[i+1].type == DialogueConstants.TOKEN_ASSIGNMENT:
+						t[i].type = DialogueConstants.TOKEN_STRING
+						t[i+1].type = DialogueConstants.TOKEN_COLON
+						t[i+1].erase("value")
+
 				tree.append({
 					type = DialogueConstants.TOKEN_DICTIONARY,
 					value = tokens_to_dictionary(sub_tree[0])
@@ -1607,6 +1615,7 @@ func check_next_token(token: Dictionary, next_tokens: Array[Dictionary], line_ty
 		DialogueConstants.TOKEN_BRACE_OPEN:
 			expected_token_types = [
 				DialogueConstants.TOKEN_STRING,
+				DialogueConstants.TOKEN_VARIABLE,
 				DialogueConstants.TOKEN_NUMBER,
 				DialogueConstants.TOKEN_BRACE_CLOSE
 			]
