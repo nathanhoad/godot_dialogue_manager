@@ -266,7 +266,7 @@ Nathan: I'm not sure we've met before [do wave()]I'm Nathan.
 Nathan: I can also emit signals[do emit("some_signal")] inline.
 ```
 
-One thing to note is that _inline mutations_ that use `await` won't be awaited so the dialogue will continue right away.
+Inline mutations that use `await` in their implementation will pause typing of dialogue until they resolve.
 
 ### State shortcuts
 
