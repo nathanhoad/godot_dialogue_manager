@@ -180,3 +180,27 @@ Nathan: {{Vector2.UP}} == {{Vector2(0, -1)}}")
 
 	var line = await resource.get_next_dialogue_line("start")
 	assert(line.text == "(0, -1) == (0, -1)", "Should match up.")
+
+
+func test_can_use_lua_dictionary_syntax() -> void:
+	var resource = create_resource("
+~ start
+set StateForTests.dictionary = { key = \"value\" }
+Nathan: Stop!
+set StateForTests.dictionary = { \"key2\": \"value2\" }
+Nathan: Stop!
+set StateForTests.dictionary.key3 = \"value3\"")
+
+	assert(StateForTests.dictionary.is_empty(), "Dictionary is empty")
+
+	var line = await resource.get_next_dialogue_line("start")
+	assert(StateForTests.dictionary.size() == 1, "Dictionary has one entry")
+	assert(StateForTests.dictionary.has("key") and StateForTests.dictionary.get("key") == "value", "Dictionary should be updated.")
+
+	line = await resource.get_next_dialogue_line(line.next_id)
+	assert(StateForTests.dictionary.size() == 1, "Dictionary has one entry")
+	assert(StateForTests.dictionary.has("key2") and StateForTests.dictionary.get("key2") == "value2", "Dictionary should be updated.")
+
+	line = await resource.get_next_dialogue_line(line.next_id)
+	assert(StateForTests.dictionary.size() == 2, "Dictionary has two entries")
+	assert(StateForTests.dictionary.has("key3") and StateForTests.dictionary.get("key3") == "value3", "Dictionary should be updated.")

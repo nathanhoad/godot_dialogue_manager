@@ -4,6 +4,7 @@ extends Node
 var some_property: int = 0
 var character_name: String = "Coco"
 
+var dictionary: Dictionary = {}
 
 func noop() -> void:
 	pass
