@@ -424,7 +424,7 @@ func get_line(resource: DialogueResource, key: String, extra_game_states: Array)
 			passed_title.emit(resource.titles.find_key(line.next_id))
 
 		# If the next line is a title then check where it points to see if that is a set of responses.
-		if next_line.type == DialogueConstants.TYPE_GOTO:
+		if next_line.type == DialogueConstants.TYPE_GOTO and resource.lines.has(next_line.next_id):
 			next_line = resource.lines.get(next_line.next_id)
 
 		if next_line != null and next_line.type == DialogueConstants.TYPE_RESPONSE:
@@ -1117,7 +1117,7 @@ func is_valid(line: DialogueLine) -> bool:
 		return false
 	if line.type == DialogueConstants.TYPE_MUTATION and line.mutation == null:
 		return false
-	if line.type == DialogueConstants.TYPE_RESPONSE and line.responses.size() == 0:
+	if line.type == DialogueConstants.TYPE_RESPONSE and line.get("responses").size() == 0:
 		return false
 	return true
 
