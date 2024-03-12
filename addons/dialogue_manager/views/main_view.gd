@@ -433,7 +433,7 @@ func apply_theme() -> void:
 		save_dialog.min_size = Vector2(600, 500) * scale
 		open_dialog.min_size = Vector2(600, 500) * scale
 		export_dialog.min_size = Vector2(600, 500) * scale
-		export_dialog.min_size = Vector2(600, 500) * scale
+		import_dialog.min_size = Vector2(600, 500) * scale
 		settings_dialog.min_size = Vector2(1000, 600) * scale
 		settings_dialog.max_size = Vector2(1000, 600) * scale
 
@@ -617,6 +617,7 @@ func export_translations_to_csv(path: String) -> void:
 			notes_column = headings.size()
 			headings.append("_notes")
 		file.store_csv_line(headings)
+		column_count = headings.size()
 
 	# Write our translations to file
 	var known_keys: PackedStringArray = []
