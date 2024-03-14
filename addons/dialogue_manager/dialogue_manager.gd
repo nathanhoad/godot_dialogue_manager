@@ -65,7 +65,9 @@ var get_current_scene: Callable = func():
 		current_scene = get_tree().root.get_child(get_tree().root.get_child_count() - 1)
 	return current_scene
 
-var autoloads: Dictionary = {}
+var _has_loaded_autoloads: bool = false
+var _autoloads: Dictionary = {}
+
 
 var _node_properties: Array = []
 
@@ -77,22 +79,6 @@ func _ready() -> void:
 	for property in temp_node.get_property_list():
 		_node_properties.append(property.name)
 	temp_node.free()
-
-	# Add any autoloads to a generic state so we can refer to them by name
-	for child in get_tree().root.get_children():
-		# Ignore the dialogue manager
-		if child.name == StringName("DialogueManager"): continue
-		# Ignore the current main scene
-		if get_tree().current_scene and child.name == get_tree().current_scene.name: continue
-		# Add the node to our known autoloads
-		autoloads[child.name] = child
-	game_states = [autoloads]
-
-	# Add any other state shortcuts from settings
-	for node_name in DialogueSettings.get_setting("states", []):
-		var state: Node = get_node_or_null("/root/" + node_name)
-		if state:
-			game_states.append(state)
 
 	# Make the dialogue manager available as a singleton
 	if Engine.has_singleton("DialogueManager"):
@@ -540,6 +526,23 @@ func create_response(data: Dictionary, extra_game_states: Array) -> DialogueResp
 
 # Get the current game states
 func get_game_states(extra_game_states: Array) -> Array:
+	if not _has_loaded_autoloads:
+		_has_loaded_autoloads = true
+		# Add any autoloads to a generic state so we can refer to them by name
+		for child in get_tree().root.get_children():
+			# Ignore the dialogue manager
+			if child.name == StringName("DialogueManager"): continue
+			# Ignore the current main scene
+			if get_tree().current_scene and child.name == get_tree().current_scene.name: continue
+			# Add the node to our known autoloads
+			_autoloads[child.name] = child
+		game_states = [_autoloads]
+		# Add any other state shortcuts from settings
+		for node_name in DialogueSettings.get_setting("states", []):
+			var state: Node = get_node_or_null("/root/" + node_name)
+			if state:
+				game_states.append(state)
+
 	var current_scene: Node = get_current_scene.call()
 	var unique_states: Array = []
 	for state in extra_game_states + [current_scene] + game_states:
@@ -1124,7 +1127,7 @@ func is_valid(line: DialogueLine) -> bool:
 
 func thing_has_method(thing, method: String, args: Array) -> bool:
 	if Builtins.is_supported(thing):
-		return thing != autoloads
+		return thing != _autoloads
 
 	if method in ["call", "call_deferred"]:
 		return thing.has_method(args[0])
