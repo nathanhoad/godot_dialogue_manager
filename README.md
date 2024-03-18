@@ -21,6 +21,10 @@ You can install it via the Asset Library or [downloading a copy](https://github.
 - [API](docs/API.md)
 - [C# wrapper](docs/CSharp.md)
 
+## Example Projects
+
+[![Portraits, emotes/tags, talk sounds](docs/example-portraits.png)](https://nathanhoad.itch.io/godot-dialogue-example-project-portraits)
+
 ## Video Guides
 
 [![Dialogue in Godot 4 for Beginners](docs/beginners.png)](https://youtu.be/UhPFk8FSbd8)
