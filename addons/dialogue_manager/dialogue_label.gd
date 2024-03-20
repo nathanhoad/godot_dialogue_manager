@@ -195,6 +195,10 @@ func _should_auto_pause() -> bool:
 
 	var parsed_text: String = get_parsed_text()
 
+	# Avoid outofbounds when the label auto-translates and the text changes to one shorter while typing out
+	# Note: visible characters can be larger than parsed_text after a translation event
+	if visible_characters >= parsed_text.length(): return false
+
 	# Ignore pause characters if they are next to a non-pause character
 	if parsed_text[visible_characters] in skip_pause_at_character_if_followed_by.split():
 		return false
