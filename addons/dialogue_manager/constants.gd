@@ -177,7 +177,7 @@ static func get_error_message(error: int) -> String:
 
 
 static func translate(string: String) -> String:
-	var base_path = DialogueResource.new().get_script().resource_path.get_base_dir()
+	var base_path = new().get_script().resource_path.get_base_dir()
 
 	var language: String = TranslationServer.get_tool_locale()
 	var translations_path: String = "%s/l10n/%s.po" % [base_path, language]
