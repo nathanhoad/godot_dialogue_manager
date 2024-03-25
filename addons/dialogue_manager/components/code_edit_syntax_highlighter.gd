@@ -9,13 +9,13 @@ var dialogue_manager_parser: DialogueManagerParser = DialogueManagerParser.new()
 
 var regex_titles: RegEx = RegEx.create_from_string("^\\s*(?<title>~\\s+[^\\!\\@\\#\\$\\%\\^\\&\\*\\(\\)\\-\\=\\+\\{\\}\\[\\]\\;\\:\\\"\\'\\,\\.\\<\\>\\?\\/\\s]+)")
 var regex_comments: RegEx = RegEx.create_from_string("(?:(?>\"(?:\\\\\"|[^\"\\n])*\")[^\"\\n]*?\\s*(?<comment>#[^\\n]*)$|^[^\"#\\n]*?\\s*(?<comment2>#[^\\n]*))")
-var regex_mutation: RegEx = RegEx.create_from_string("^\\s*(do|set) (?<mutation>.*)")
+var regex_mutation: RegEx = RegEx.create_from_string("^\\s*(do|do!|set) (?<mutation>.*)")
 var regex_condition: RegEx = RegEx.create_from_string("^\\s*(if|elif|while|else if) (?<condition>.*)")
 var regex_wcondition: RegEx = RegEx.create_from_string("\\[if (?<condition>((?:[^\\[\\]]*)|(?:\\[(?1)\\]))*?)\\]")
 var regex_wendif: RegEx = RegEx.create_from_string("\\[(\\/if|else)\\]")
 var regex_rgroup: RegEx = RegEx.create_from_string("\\[\\[(?<options>.*?)\\]\\]")
 var regex_endconditions: RegEx = RegEx.create_from_string("^\\s*(endif|else):?\\s*$")
-var regex_tags: RegEx = RegEx.create_from_string("\\[(?<tag>(?!(?:ID:.*)|if)[a-zA-Z_][a-zA-Z0-9_]*)(?:[= ](?<val>[^\\[\\]]+))?\\](?:(?<text>(?!\\[\\/\\k<tag>\\]).*?)?(?<end>\\[\\/\\k<tag>\\]))?")
+var regex_tags: RegEx = RegEx.create_from_string("\\[(?<tag>(?!(?:ID:.*)|if)[a-zA-Z_][a-zA-Z0-9_]*!?)(?:[= ](?<val>[^\\[\\]]+))?\\](?:(?<text>(?!\\[\\/\\k<tag>\\]).*?)?(?<end>\\[\\/\\k<tag>\\]))?")
 var regex_dialogue: RegEx = RegEx.create_from_string("^\\s*(?:(?<random>\\%[\\d.]* )|(?<response>- ))?(?:(?<character>[^#:]*): )?(?<dialogue>.*)$")
 var regex_goto: RegEx = RegEx.create_from_string("=><? (?:(?<file>[^\\/]+)\\/)?(?<title>[^\\/]*)")
 var regex_string: RegEx = RegEx.create_from_string("^(?<delimiter>[\"'])(?<content>(?:\\\\{2})*|(?:.*?[^\\\\](?:\\\\{2})*))\\1$")
@@ -245,7 +245,6 @@ func _get_expression_syntax_highlighting(start_index: int, type: ExpressionType,
 
 			colors[start_index + assignment_match.get_start("op")] = {"color": text_edit.theme_overrides.symbols_color}
 			colors[start_index + assignment_match.get_end("op")] = {"color": text_edit.theme_overrides.text_color}
-
 			colors.merge(_get_literal_syntax_highlighting(start_index + assignment_match.get_start("val"), assignment_match.get_string("val")), true)
 	else:
 		colors.merge(_get_literal_syntax_highlighting(start_index, text), true)
@@ -346,7 +345,11 @@ func _get_literal_syntax_highlighting(start_index: int, text: String) -> Diction
 		colors.merge(_get_literal_syntax_highlighting(start_index + comparison_match.get_start("left"), comparison_match.get_string("left")), true)
 		colors[start_index + comparison_match.get_start("op")] = {"color": text_edit.theme_overrides.symbols_color}
 		colors[start_index + comparison_match.get_end("op")] = {"color": text_edit.theme_overrides.text_color}
-		colors.merge(_get_literal_syntax_highlighting(start_index + comparison_match.get_start("right"), comparison_match.get_string("right")), true)
+		var right = comparison_match.get_string("right")
+		if right.ends_with(":"):
+			right = right.substr(0, right.length() - 1)
+		colors.merge(_get_literal_syntax_highlighting(start_index + comparison_match.get_start("right"), right), true)
+		colors[start_index + comparison_match.get_start("right") + right.length()] = { "color": text_edit.theme_overrides.symbols_color }
 
 	# Logical binary operators.
 	var blogical_matches: Array[RegExMatch] = regex_blogical.search_all(text)

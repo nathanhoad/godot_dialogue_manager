@@ -115,6 +115,21 @@ Nathan: Done.")
 	assert(duration > 0.2, "Mutation should take some time.")
 
 
+func test_can_run_non_blocking_mutations() -> void:
+	var resource = create_resource("
+~ start
+Nathan: This mutation should not wait.
+do! StateForTests.long_mutation()
+Nathan: Done.")
+
+	var line = await resource.get_next_dialogue_line("start")
+
+	var started_at: float = Time.get_unix_time_from_system()
+	line = await resource.get_next_dialogue_line(line.next_id)
+	var duration: float = Time.get_unix_time_from_system() - started_at
+	assert(duration < 0.1, "Mutation should not take any time.")
+
+
 func test_can_run_mutations_with_typed_arrays() -> void:
 	var resource = create_resource("
 ~ start

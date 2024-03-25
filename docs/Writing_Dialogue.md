@@ -238,7 +238,7 @@ Nathan: You have {{num_apples}} [if num_apples == 1]apple[else]apples[/if], nice
 
 ## Mutations
 
-You can modify state with either a "set" or a "do" line.
+You can affect state with either a "set" or a "do" line.
 
 ```
 if SomeGlobal.has_met_nathan == false
@@ -266,7 +266,7 @@ Nathan: I'm not sure we've met before [do wave()]I'm Nathan.
 Nathan: I can also emit signals[do emit("some_signal")] inline.
 ```
 
-Inline mutations that use `await` in their implementation will pause typing of dialogue until they resolve.
+Inline mutations that use `await` in their implementation will pause typing of dialogue until they resolve. To ignore awaiting, add a "!" after the "do" keyword - eg. `[do! something()]`.
 
 ### State shortcuts
 
