@@ -16,7 +16,7 @@ var VALID_TITLE_REGEX: RegEx = RegEx.create_from_string("^[^\\!\\@\\#\\$\\%\\^\\
 var BEGINS_WITH_NUMBER_REGEX: RegEx = RegEx.create_from_string("^\\d")
 var TRANSLATION_REGEX: RegEx = RegEx.create_from_string("\\[ID:(?<tr>.*?)\\]")
 var TAGS_REGEX: RegEx = RegEx.create_from_string("\\[#(?<tags>.*?)\\]")
-var MUTATION_REGEX: RegEx = RegEx.create_from_string("(do|set) (?<mutation>.*)")
+var MUTATION_REGEX: RegEx = RegEx.create_from_string("(?<keyword>do|do!|set) (?<mutation>.*)")
 var CONDITION_REGEX: RegEx = RegEx.create_from_string("(if|elif|while|else if) (?<condition>.*)")
 var WRAPPED_CONDITION_REGEX: RegEx = RegEx.create_from_string("\\[if (?<condition>.*)\\]")
 var REPLACEMENTS_REGEX: RegEx = RegEx.create_from_string("{{(.*?)}}")
@@ -634,7 +634,7 @@ func is_while_condition_line(line: String) -> bool:
 
 func is_mutation_line(line: String) -> bool:
 	line = line.strip_edges(true, false)
-	return line.begins_with("do ") or line.begins_with("set ")
+	return line.begins_with("do ") or line.begins_with("do! ") or line.begins_with("set ")
 
 
 func is_goto_line(line: String) -> bool:
@@ -1102,7 +1102,8 @@ func extract_mutation(line: String) -> Dictionary:
 			}
 		else:
 			return {
-				expression = expression
+				expression = expression,
+				is_blocking = not "!" in found.strings[found.names.keyword]
 			}
 
 	else:
@@ -1240,7 +1241,7 @@ func extract_markers(line: String) -> ResolvedLineData:
 	var accumulaive_length_offset = 0
 	for position in bbcode_positions:
 		# Ignore our own markers
-		if position.code in ["wait", "speed", "/speed", "do", "set", "next", "if", "else", "/if"]:
+		if position.code in ["wait", "speed", "/speed", "do", "do!", "set", "next", "if", "else", "/if"]:
 			continue
 
 		bbcodes.append({
@@ -1350,7 +1351,7 @@ func find_bbcode_positions_in_string(string: String, find_all: bool = true) -> A
 			open_brace_count += 1
 
 		else:
-			if not is_finished_code and (string[i].to_upper() != string[i] or string[i] == "/"):
+			if not is_finished_code and (string[i].to_upper() != string[i] or string[i] == "/" or string[i] == "!"):
 				code += string[i]
 			else:
 				is_finished_code = true
@@ -1408,7 +1409,7 @@ func build_token_tree(tokens: Array[Dictionary], line_type: String, expected_clo
 		limit += 1
 		var token = tokens.pop_front()
 
-		var error = check_next_token(token, tokens, line_type)
+		var error = check_next_token(token, tokens, line_type, expected_close_token)
 		if error != OK:
 			return [build_token_tree_error(error, token.index), tokens]
 
@@ -1569,18 +1570,20 @@ func build_token_tree(tokens: Array[Dictionary], line_type: String, expected_clo
 					})
 
 	if expected_close_token != "":
-		return [build_token_tree_error(DialogueConstants.ERR_MISSING_CLOSING_BRACKET, tokens[0].index), tokens]
+		var index: int = tokens[0].index if tokens.size() > 0 else 0
+		return [build_token_tree_error(DialogueConstants.ERR_MISSING_CLOSING_BRACKET, index), tokens]
 
 	return [tree, tokens]
 
 
-func check_next_token(token: Dictionary, next_tokens: Array[Dictionary], line_type: String) -> Error:
+func check_next_token(token: Dictionary, next_tokens: Array[Dictionary], line_type: String, expected_close_token: String) -> Error:
 	var next_token: Dictionary = { type = null }
 	if next_tokens.size() > 0:
 		next_token = next_tokens.front()
 
-	# Guard for assigning in a condition
-	if token.type == DialogueConstants.TOKEN_ASSIGNMENT and line_type == DialogueConstants.TYPE_CONDITION:
+	# Guard for assigning in a condition. If the assignment token isn't inside a Lua dictionary
+	# then it's an unexpected assignment in a condition line.
+	if token.type == DialogueConstants.TOKEN_ASSIGNMENT and line_type == DialogueConstants.TYPE_CONDITION and not next_tokens.any(func(t): return t.type == expected_close_token):
 		return DialogueConstants.ERR_UNEXPECTED_ASSIGNMENT
 
 	# Special case for a negative number after this one

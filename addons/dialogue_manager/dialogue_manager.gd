@@ -581,8 +581,11 @@ func mutate(mutation: Dictionary, extra_game_states: Array, is_inline_mutation: 
 		if not mutation_contains_assignment(mutation.expression) and not is_inline_mutation:
 			mutated.emit(mutation)
 
-		await resolve(mutation.expression.duplicate(true), extra_game_states)
-		return
+		if mutation.get("is_blocking", true):
+			await resolve(mutation.expression.duplicate(true), extra_game_states)
+			return
+		else:
+			resolve(mutation.expression.duplicate(true), extra_game_states)
 
 	# Wait one frame to give the dialogue handler a chance to yield
 	await get_tree().process_frame
