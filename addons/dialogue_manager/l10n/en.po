@@ -45,6 +45,9 @@ msgstr "Translations"
 msgid "settings"
 msgstr "Settings"
 
+msgid "sponsor"
+msgstr "Sponsor"
+
 msgid "show_support"
 msgstr "Support Dialogue Manager"
 

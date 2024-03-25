@@ -393,6 +393,7 @@ func apply_theme() -> void:
 		settings_button.tooltip_text = DialogueConstants.translate("settings")
 
 		support_button.icon = get_theme_icon("Heart", "EditorIcons")
+		support_button.text = DialogueConstants.translate("sponsor")
 		support_button.tooltip_text = DialogueConstants.translate("show_support")
 
 		docs_button.icon = get_theme_icon("Help", "EditorIcons")

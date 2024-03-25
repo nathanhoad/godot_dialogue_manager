@@ -38,6 +38,9 @@ msgstr ""
 msgid "settings"
 msgstr ""
 
+msgid "sponsor"
+msgstr ""
+
 msgid "show_support"
 msgstr ""
 
