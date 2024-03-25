@@ -1266,7 +1266,7 @@ func extract_markers(line: String) -> ResolvedLineData:
 		var code = bbcode.code
 		var raw_args = bbcode.raw_args
 		var args = {}
-		if code in ["do", "set"]:
+		if code in ["do", "do!", "set"]:
 			args["value"] = extract_mutation("%s %s" % [code, raw_args])
 		else:
 			# Could be something like:
@@ -1289,7 +1289,7 @@ func extract_markers(line: String) -> ResolvedLineData:
 				speeds[index] = args.get("value").to_float()
 			"/speed":
 				speeds[index] = 1.0
-			"do", "set":
+			"do", "do!", "set":
 				mutations.append([index, args.get("value")])
 			"next":
 				time = args.get("value") if args.has("value") else "0"

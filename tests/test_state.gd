@@ -3,6 +3,16 @@ extends AbstractTest
 
 const DialogueConstants = preload("res://addons/dialogue_manager/constants.gd")
 
+var dialogue_label: DialogueLabel = DialogueLabel.new()
+
+
+func before_all() -> void:
+	Engine.get_main_loop().current_scene.add_child(dialogue_label)
+
+
+func after_all() -> void:
+	dialogue_label.queue_free()
+
 
 func test_can_parse_conditions() -> void:
 	var output = parse("
@@ -128,6 +138,29 @@ Nathan: Done.")
 	line = await resource.get_next_dialogue_line(line.next_id)
 	var duration: float = Time.get_unix_time_from_system() - started_at
 	assert(duration < 0.1, "Mutation should not take any time.")
+
+
+func test_can_run_non_blocking_inline_mutations() -> void:
+	var resource = create_resource("
+~ start
+Nathan: This mutation [do StateForTests.long_mutation()]should wait.
+Nathan: This one [do! StateForTests.long_mutation()] won't.")
+
+	var line = await resource.get_next_dialogue_line("start")
+	dialogue_label.dialogue_line = line
+	var started_at: float = Time.get_unix_time_from_system()
+	dialogue_label.type_out()
+	await dialogue_label.finished_typing
+	var duration: float = Time.get_unix_time_from_system() - started_at
+	assert(duration >= 0.6, "Mutation should take some time.")
+
+	line = await resource.get_next_dialogue_line(line.next_id)
+	dialogue_label.dialogue_line = line
+	started_at = Time.get_unix_time_from_system()
+	dialogue_label.type_out()
+	await dialogue_label.finished_typing
+	duration = Time.get_unix_time_from_system() - started_at
+	assert(duration <= 0.3, "Mutation should not take any time.")
 
 
 func test_can_run_mutations_with_typed_arrays() -> void:
