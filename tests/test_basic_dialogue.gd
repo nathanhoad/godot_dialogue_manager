@@ -188,3 +188,31 @@ Nathan: Jump 3.")
 	assert(output.lines["5"].siblings.size() == 3, "Should have 3 random siblings.")
 	assert(output.lines["5"].siblings[0].weight == 1, "Undefined weight should be 1.")
 	assert(output.lines["5"].siblings[2].weight == 3, "Weight of 3 should be 3.")
+
+
+class TestClass:
+	var string: String = ""
+	var number: int = -1
+
+	func set_values(s: String, i: int = 0):
+		string = s
+		number = i
+
+func test_can_run_methods() -> void:
+	var resource = create_resource("
+~ start
+do set_values(\"foo\")
+Nathan: Without optional arguments.
+do set_values(\"bar\", 1)
+Nathan: With optional arguments.
+")
+
+	var test = TestClass.new()
+
+	var line = await resource.get_next_dialogue_line("start", [test])
+	assert(test.string == "foo", "Method call should set required argument")
+	assert(test.number == 0, "Method call should set optional argument to default value")
+
+	line = await resource.get_next_dialogue_line(line.next_id, [test])
+	assert(test.string == "bar", "Method call should set required argument")
+	assert(test.number == 1, "Method call should set optional argument")
