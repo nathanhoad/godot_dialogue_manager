@@ -50,6 +50,7 @@ var result_index: int = -1:
 func _ready() -> void:
 	apply_theme()
 
+	input.placeholder_text = DialogueConstants.translate("search.placeholder")
 	previous_button.tooltip_text = DialogueConstants.translate("search.previous")
 	next_button.tooltip_text = DialogueConstants.translate("search.next")
 	match_case_button.text = DialogueConstants.translate("search.match_case")

@@ -17,6 +17,7 @@ layout_mode = 2
 [node name="Input" type="LineEdit" parent="Search"]
 layout_mode = 2
 size_flags_horizontal = 3
+placeholder_text = "Text to search for"
 metadata/_edit_use_custom_anchors = true
 
 [node name="MatchCaseCheckBox" type="CheckBox" parent="Search"]

@@ -1,0 +1,139 @@
+[gd_scene load_steps=3 format=3 uid="uid://0n7hwviyyly4"]
+
+[ext_resource type="Script" path="res://addons/dialogue_manager/components/find_in_files.gd" id="1_3xicy"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_owohg"]
+bg_color = Color(0.266667, 0.278431, 0.352941, 0.243137)
+corner_detail = 1
+
+[node name="FindInFiles" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+script = ExtResource("1_3xicy")
+
+[node name="VBoxContainer" type="VBoxContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="HBoxContainer" type="HBoxContainer" parent="VBoxContainer"]
+layout_mode = 2
+
+[node name="FindContainer" type="VBoxContainer" parent="VBoxContainer/HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="Label" type="Label" parent="VBoxContainer/HBoxContainer/FindContainer"]
+layout_mode = 2
+text = "Find:"
+
+[node name="Input" type="LineEdit" parent="VBoxContainer/HBoxContainer/FindContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+clear_button_enabled = true
+
+[node name="FindToolbar" type="HBoxContainer" parent="VBoxContainer/HBoxContainer/FindContainer"]
+layout_mode = 2
+
+[node name="SearchButton" type="Button" parent="VBoxContainer/HBoxContainer/FindContainer/FindToolbar"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Find all..."
+
+[node name="MatchCaseButton" type="CheckBox" parent="VBoxContainer/HBoxContainer/FindContainer/FindToolbar"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Match case"
+
+[node name="Control" type="Control" parent="VBoxContainer/HBoxContainer/FindContainer/FindToolbar"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="ReplaceToggle" type="CheckButton" parent="VBoxContainer/HBoxContainer/FindContainer/FindToolbar"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Replace"
+
+[node name="ReplaceContainer" type="VBoxContainer" parent="VBoxContainer/HBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="ReplaceLabel" type="Label" parent="VBoxContainer/HBoxContainer/ReplaceContainer"]
+layout_mode = 2
+text = "Replace with:"
+
+[node name="ReplaceInput" type="LineEdit" parent="VBoxContainer/HBoxContainer/ReplaceContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+clear_button_enabled = true
+
+[node name="ReplaceToolbar" type="HBoxContainer" parent="VBoxContainer/HBoxContainer/ReplaceContainer"]
+layout_mode = 2
+
+[node name="ReplaceSelectedButton" type="Button" parent="VBoxContainer/HBoxContainer/ReplaceContainer/ReplaceToolbar"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Replace selected"
+
+[node name="ReplaceAllButton" type="Button" parent="VBoxContainer/HBoxContainer/ReplaceContainer/ReplaceToolbar"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Replace all"
+
+[node name="VBoxContainer" type="VBoxContainer" parent="VBoxContainer"]
+layout_mode = 2
+
+[node name="ReplaceToolbar" type="HBoxContainer" parent="VBoxContainer/VBoxContainer"]
+layout_mode = 2
+
+[node name="ScrollContainer" type="ScrollContainer" parent="VBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 3
+follow_focus = true
+
+[node name="ResultsContainer" type="VBoxContainer" parent="VBoxContainer/ScrollContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+theme_override_constants/separation = 0
+
+[node name="ResultTemplate" type="HBoxContainer" parent="."]
+unique_name_in_owner = true
+layout_mode = 0
+offset_left = 155.0
+offset_top = -74.0
+offset_right = 838.0
+offset_bottom = -51.0
+
+[node name="CheckBox" type="CheckBox" parent="ResultTemplate"]
+layout_mode = 2
+
+[node name="Label" type="RichTextLabel" parent="ResultTemplate"]
+layout_mode = 2
+size_flags_horizontal = 3
+focus_mode = 2
+theme_override_styles/focus = SubResource("StyleBoxFlat_owohg")
+bbcode_enabled = true
+text = "Result"
+fit_content = true
+scroll_active = false
+
+[connection signal="text_submitted" from="VBoxContainer/HBoxContainer/FindContainer/Input" to="." method="_on_input_text_submitted"]
+[connection signal="pressed" from="VBoxContainer/HBoxContainer/FindContainer/FindToolbar/SearchButton" to="." method="_on_search_button_pressed"]
+[connection signal="toggled" from="VBoxContainer/HBoxContainer/FindContainer/FindToolbar/MatchCaseButton" to="." method="_on_match_case_button_toggled"]
+[connection signal="toggled" from="VBoxContainer/HBoxContainer/FindContainer/FindToolbar/ReplaceToggle" to="." method="_on_replace_toggle_toggled"]
+[connection signal="text_changed" from="VBoxContainer/HBoxContainer/ReplaceContainer/ReplaceInput" to="." method="_on_replace_input_text_changed"]
+[connection signal="pressed" from="VBoxContainer/HBoxContainer/ReplaceContainer/ReplaceToolbar/ReplaceSelectedButton" to="." method="_on_replace_selected_button_pressed"]
+[connection signal="pressed" from="VBoxContainer/HBoxContainer/ReplaceContainer/ReplaceToolbar/ReplaceAllButton" to="." method="_on_replace_all_button_pressed"]
