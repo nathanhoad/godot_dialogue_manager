@@ -41,11 +41,14 @@ enum TranslationSource {
 @onready var build_error_dialog: AcceptDialog = $BuildErrorDialog
 @onready var close_confirmation_dialog: ConfirmationDialog = $CloseConfirmationDialog
 @onready var updated_dialog: AcceptDialog = $UpdatedDialog
+@onready var find_in_files_dialog: AcceptDialog = $FindInFilesDialog
+@onready var find_in_files: Control = $FindInFilesDialog/FindInFiles
 
 # Toolbar
 @onready var new_button: Button = %NewButton
 @onready var open_button: MenuButton = %OpenButton
 @onready var save_all_button: Button = %SaveAllButton
+@onready var find_in_files_button: Button = %FindInFilesButton
 @onready var test_button: Button = %TestButton
 @onready var search_button: Button = %SearchButton
 @onready var insert_button: MenuButton = %InsertButton
@@ -188,6 +191,9 @@ func _unhandled_input(event: InputEvent) -> void:
 			"Ctrl+F5", "Command+F5":
 				get_viewport().set_input_as_handled()
 				_on_test_button_pressed()
+			"Ctrl+Shift+F", "Command+Shift+F":
+				get_viewport().set_input_as_handled()
+				_on_find_in_files_button_pressed()
 
 
 func apply_changes() -> void:
@@ -354,6 +360,9 @@ func apply_theme() -> void:
 			current_line_color = editor_settings.get_setting("text_editor/theme/highlighting/current_line_color"),
 			error_line_color = editor_settings.get_setting("text_editor/theme/highlighting/mark_color"),
 
+			critical_color = editor_settings.get_setting("text_editor/theme/highlighting/comment_markers/critical_color"),
+			notice_color = editor_settings.get_setting("text_editor/theme/highlighting/comment_markers/notice_color"),
+
 			titles_color = editor_settings.get_setting("text_editor/theme/highlighting/control_flow_keyword_color"),
 			text_color = editor_settings.get_setting("text_editor/theme/highlighting/text_color"),
 			conditions_color = editor_settings.get_setting("text_editor/theme/highlighting/keyword_color"),
@@ -376,6 +385,9 @@ func apply_theme() -> void:
 
 		save_all_button.icon = get_theme_icon("Save", "EditorIcons")
 		save_all_button.tooltip_text = DialogueConstants.translate("start_all_files")
+
+		find_in_files_button.icon = get_theme_icon("ViewportZoom", "EditorIcons")
+		find_in_files_button.tooltip_text = DialogueConstants.translate("find_in_files")
 
 		test_button.icon = get_theme_icon("PlayScene", "EditorIcons")
 		test_button.tooltip_text = DialogueConstants.translate("test_dialogue")
@@ -437,6 +449,7 @@ func apply_theme() -> void:
 		import_dialog.min_size = Vector2(600, 500) * scale
 		settings_dialog.min_size = Vector2(1000, 600) * scale
 		settings_dialog.max_size = Vector2(1000, 600) * scale
+		find_in_files_dialog.min_size = Vector2(800, 600) * scale
 
 
 ### Helpers
@@ -921,6 +934,11 @@ func _on_save_all_button_pressed() -> void:
 	save_files()
 
 
+func _on_find_in_files_button_pressed() -> void:
+	find_in_files_dialog.popup_centered()
+	find_in_files.prepare()
+
+
 func _on_code_edit_text_changed() -> void:
 	title_list.titles = code_edit.get_titles()
 
@@ -1075,3 +1093,8 @@ func _on_close_confirmation_dialog_custom_action(action: StringName) -> void:
 	if action == "discard":
 		remove_file_from_open_buffers(current_file_path)
 	close_confirmation_dialog.hide()
+
+
+func _on_find_in_files_result_selected(path: String, cursor: Vector2, length: int) -> void:
+	open_file(path)
+	code_edit.select(cursor.y, cursor.x, cursor.y, cursor.x + length)

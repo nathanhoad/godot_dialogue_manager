@@ -30,6 +30,9 @@ msgstr "Clear recent files"
 msgid "save_all_files"
 msgstr "Save all files"
 
+msgid "find_in_files"
+msgstr "Find in files..."
+
 msgid "test_dialogue"
 msgstr "Test dialogue"
 
@@ -218,6 +221,21 @@ msgstr "Check for updates"
 
 msgid "n_of_n"
 msgstr "{index} of {total}"
+
+msgid "search.find"
+msgstr "Find:"
+
+msgid "search.find_all"
+msgstr "Find all..."
+
+msgid "search.placeholder"
+msgstr "Text to search for"
+
+msgid "search.replace_placeholder"
+msgstr "Text to replace it with"
+
+msgid "search.replace_selected"
+msgstr "Replace selected"
 
 msgid "search.previous"
 msgstr "Previous"
