@@ -186,6 +186,9 @@ namespace DialogueManagerRuntime
                 }
             }
 
+            // Add a single frame wait in case the method returns before signals can listen
+            await ToSignal(Engine.GetMainLoop(), SceneTree.SignalName.ProcessFrame);
+
             if (info.ReturnType == typeof(Task))
             {
                 await (Task)info.Invoke(thing, _args);
