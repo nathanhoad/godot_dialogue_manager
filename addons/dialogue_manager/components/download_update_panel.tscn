@@ -46,14 +46,14 @@ layout_mode = 2
 [node name="DownloadButton" type="Button" parent="VBox/Center"]
 unique_name_in_owner = true
 layout_mode = 2
-text = "Download and install update"
+text = "Download update"
 
 [node name="Center2" type="CenterContainer" parent="VBox"]
 layout_mode = 2
 
 [node name="NotesButton" type="LinkButton" parent="VBox/Center2"]
 layout_mode = 2
-text = "Read release notes..."
+text = "Read release notes"
 
 [connection signal="request_completed" from="HTTPRequest" to="." method="_on_http_request_request_completed"]
 [connection signal="pressed" from="VBox/Center/DownloadButton" to="." method="_on_download_button_pressed"]

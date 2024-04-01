@@ -47,13 +47,14 @@ func _enter_tree() -> void:
 		add_tool_menu_item("Create copy of dialogue example balloon...", _copy_dialogue_balloon)
 
 		# Prevent the project from showing as unsaved even though it was only just opened
-		if Engine.get_physics_frames() < 120:
+		if Engine.get_physics_frames() == 0:
 			var timer: Timer = Timer.new()
 			var suppress_unsaved_marker: Callable
 			suppress_unsaved_marker = func():
-				timer.stop()
-				get_editor_interface().save_all_scenes()
-				timer.queue_free()
+				if Engine.get_frames_per_second() >= 10:
+					timer.stop()
+					get_editor_interface().save_all_scenes()
+					timer.queue_free()
 			timer.timeout.connect(suppress_unsaved_marker)
 			add_child(timer)
 			timer.start(0.1)
