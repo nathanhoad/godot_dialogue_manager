@@ -28,7 +28,7 @@ var filter: String:
 func _ready() -> void:
 	apply_theme()
 
-	filter_edit.placeholder_text = DialogueConstants.translate("titles_list.filter")
+	filter_edit.placeholder_text = DialogueConstants.translate(&"titles_list.filter")
 
 
 func select_title(title: String) -> void:

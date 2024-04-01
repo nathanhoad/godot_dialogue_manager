@@ -44,7 +44,7 @@ var filter: String:
 func _ready() -> void:
 	apply_theme()
 
-	filter_edit.placeholder_text = DialogueConstants.translate("files_list.filter")
+	filter_edit.placeholder_text = DialogueConstants.translate(&"files_list.filter")
 
 
 func select_file(file: String) -> void:

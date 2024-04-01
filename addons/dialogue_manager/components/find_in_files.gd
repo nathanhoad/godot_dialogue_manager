@@ -47,17 +47,17 @@ func prepare() -> void:
 	replace_toggle.set_pressed_no_signal(false)
 	replace_container.hide()
 
-	$VBoxContainer/HBoxContainer/FindContainer/Label.text = DialogueConstants.translate("search.find")
-	input.placeholder_text = DialogueConstants.translate("search.placeholder")
+	$VBoxContainer/HBoxContainer/FindContainer/Label.text = DialogueConstants.translate(&"search.find")
+	input.placeholder_text = DialogueConstants.translate(&"search.placeholder")
 	input.text = ""
-	search_button.text = DialogueConstants.translate("search.find_all")
-	match_case_button.text = DialogueConstants.translate("search.match_case")
-	replace_toggle.text = DialogueConstants.translate("search.toggle_replace")
-	$VBoxContainer/HBoxContainer/ReplaceContainer/ReplaceLabel.text = DialogueConstants.translate("search.replace_with")
-	replace_input.placeholder_text = DialogueConstants.translate("search.replace_placeholder")
+	search_button.text = DialogueConstants.translate(&"search.find_all")
+	match_case_button.text = DialogueConstants.translate(&"search.match_case")
+	replace_toggle.text = DialogueConstants.translate(&"search.toggle_replace")
+	$VBoxContainer/HBoxContainer/ReplaceContainer/ReplaceLabel.text = DialogueConstants.translate(&"search.replace_with")
+	replace_input.placeholder_text = DialogueConstants.translate(&"search.replace_placeholder")
 	replace_input.text = ""
-	replace_all_button.text = DialogueConstants.translate("search.replace_all")
-	replace_selected_button.text = DialogueConstants.translate("search.replace_selected")
+	replace_all_button.text = DialogueConstants.translate(&"search.replace_all")
+	replace_selected_button.text = DialogueConstants.translate(&"search.replace_selected")
 
 	selections.clear()
 	self.current_results = {}

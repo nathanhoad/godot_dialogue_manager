@@ -6,56 +6,56 @@ const CACHE_PATH = "user://dialogue_manager_cache.json"
 
 # Token types
 
-const TOKEN_FUNCTION = "function"
-const TOKEN_DICTIONARY_REFERENCE = "dictionary_reference"
-const TOKEN_DICTIONARY_NESTED_REFERENCE = "dictionary_nested_reference"
-const TOKEN_GROUP = "group"
-const TOKEN_ARRAY = "array"
-const TOKEN_DICTIONARY = "dictionary"
-const TOKEN_PARENS_OPEN = "parens_open"
-const TOKEN_PARENS_CLOSE = "parens_close"
-const TOKEN_BRACKET_OPEN = "bracket_open"
-const TOKEN_BRACKET_CLOSE = "bracket_close"
-const TOKEN_BRACE_OPEN = "brace_open"
-const TOKEN_BRACE_CLOSE = "brace_close"
-const TOKEN_COLON = "colon"
-const TOKEN_COMPARISON = "comparison"
-const TOKEN_ASSIGNMENT = "assignment"
-const TOKEN_OPERATOR = "operator"
-const TOKEN_COMMA = "comma"
-const TOKEN_DOT = "dot"
-const TOKEN_CONDITION = "condition"
-const TOKEN_BOOL = "bool"
-const TOKEN_NOT = "not"
-const TOKEN_AND_OR = "and_or"
-const TOKEN_STRING = "string"
-const TOKEN_NUMBER = "number"
-const TOKEN_VARIABLE = "variable"
-const TOKEN_COMMENT = "comment"
+const TOKEN_FUNCTION = &"function"
+const TOKEN_DICTIONARY_REFERENCE = &"dictionary_reference"
+const TOKEN_DICTIONARY_NESTED_REFERENCE = &"dictionary_nested_reference"
+const TOKEN_GROUP = &"group"
+const TOKEN_ARRAY = &"array"
+const TOKEN_DICTIONARY = &"dictionary"
+const TOKEN_PARENS_OPEN = &"parens_open"
+const TOKEN_PARENS_CLOSE = &"parens_close"
+const TOKEN_BRACKET_OPEN = &"bracket_open"
+const TOKEN_BRACKET_CLOSE = &"bracket_close"
+const TOKEN_BRACE_OPEN = &"brace_open"
+const TOKEN_BRACE_CLOSE = &"brace_close"
+const TOKEN_COLON = &"colon"
+const TOKEN_COMPARISON = &"comparison"
+const TOKEN_ASSIGNMENT = &"assignment"
+const TOKEN_OPERATOR = &"operator"
+const TOKEN_COMMA = &"comma"
+const TOKEN_DOT = &"dot"
+const TOKEN_CONDITION = &"condition"
+const TOKEN_BOOL = &"bool"
+const TOKEN_NOT = &"not"
+const TOKEN_AND_OR = &"and_or"
+const TOKEN_STRING = &"string"
+const TOKEN_NUMBER = &"number"
+const TOKEN_VARIABLE = &"variable"
+const TOKEN_COMMENT = &"comment"
 
-const TOKEN_ERROR = "error"
+const TOKEN_ERROR = &"error"
 
 # Line types
 
-const TYPE_UNKNOWN = "unknown"
-const TYPE_RESPONSE = "response"
-const TYPE_TITLE = "title"
-const TYPE_CONDITION = "condition"
-const TYPE_MUTATION = "mutation"
-const TYPE_GOTO = "goto"
-const TYPE_DIALOGUE = "dialogue"
-const TYPE_ERROR = "error"
+const TYPE_UNKNOWN = &"unknown"
+const TYPE_RESPONSE = &"response"
+const TYPE_TITLE = &"title"
+const TYPE_CONDITION = &"condition"
+const TYPE_MUTATION = &"mutation"
+const TYPE_GOTO = &"goto"
+const TYPE_DIALOGUE = &"dialogue"
+const TYPE_ERROR = &"error"
 
-const TYPE_ELSE = "else"
+const TYPE_ELSE = &"else"
 
 # Line IDs
 
-const ID_NULL = ""
-const ID_ERROR = "error"
-const ID_ERROR_INVALID_TITLE = "invalid title"
-const ID_ERROR_TITLE_HAS_NO_BODY = "title has no body"
-const ID_END = "end"
-const ID_END_CONVERSATION = "end!"
+const ID_NULL = &""
+const ID_ERROR = &"error"
+const ID_ERROR_INVALID_TITLE = &"invalid title"
+const ID_ERROR_TITLE_HAS_NO_BODY = &"title has no body"
+const ID_END = &"end"
+const ID_END_CONVERSATION = &"end!"
 
 # Errors
 
@@ -101,79 +101,79 @@ const ERR_UNKNOWN_USING = 135
 static func get_error_message(error: int) -> String:
 	match error:
 		ERR_ERRORS_IN_IMPORTED_FILE:
-			return translate("errors.import_errors")
+			return translate(&"errors.import_errors")
 		ERR_FILE_ALREADY_IMPORTED:
-			return translate("errors.already_imported")
+			return translate(&"errors.already_imported")
 		ERR_DUPLICATE_IMPORT_NAME:
-			return translate("errors.duplicate_import")
+			return translate(&"errors.duplicate_import")
 		ERR_EMPTY_TITLE:
-			return translate("errors.empty_title")
+			return translate(&"errors.empty_title")
 		ERR_DUPLICATE_TITLE:
-			return translate("errors.duplicate_title")
+			return translate(&"errors.duplicate_title")
 		ERR_NESTED_TITLE:
-			return translate("errors.nested_title")
+			return translate(&"errors.nested_title")
 		ERR_TITLE_INVALID_CHARACTERS:
-			return translate("errors.invalid_title_string")
+			return translate(&"errors.invalid_title_string")
 		ERR_TITLE_BEGINS_WITH_NUMBER:
-			return translate("errors.invalid_title_number")
+			return translate(&"errors.invalid_title_number")
 		ERR_UNKNOWN_TITLE:
-			return translate("errors.unknown_title")
+			return translate(&"errors.unknown_title")
 		ERR_INVALID_TITLE_REFERENCE:
-			return translate("errors.jump_to_invalid_title")
+			return translate(&"errors.jump_to_invalid_title")
 		ERR_TITLE_REFERENCE_HAS_NO_CONTENT:
-			return translate("errors.title_has_no_content")
+			return translate(&"errors.title_has_no_content")
 		ERR_INVALID_EXPRESSION:
-			return translate("errors.invalid_expression")
+			return translate(&"errors.invalid_expression")
 		ERR_UNEXPECTED_CONDITION:
-			return translate("errors.unexpected_condition")
+			return translate(&"errors.unexpected_condition")
 		ERR_DUPLICATE_ID:
-			return translate("errors.duplicate_id")
+			return translate(&"errors.duplicate_id")
 		ERR_MISSING_ID:
-			return translate("errors.missing_id")
+			return translate(&"errors.missing_id")
 		ERR_INVALID_INDENTATION:
-			return translate("errors.invalid_indentation")
+			return translate(&"errors.invalid_indentation")
 		ERR_INVALID_CONDITION_INDENTATION:
-			return translate("errors.condition_has_no_content")
+			return translate(&"errors.condition_has_no_content")
 		ERR_INCOMPLETE_EXPRESSION:
-			return translate("errors.incomplete_expression")
+			return translate(&"errors.incomplete_expression")
 		ERR_INVALID_EXPRESSION_FOR_VALUE:
-			return translate("errors.invalid_expression_for_value")
+			return translate(&"errors.invalid_expression_for_value")
 		ERR_FILE_NOT_FOUND:
-			return translate("errors.file_not_found")
+			return translate(&"errors.file_not_found")
 		ERR_UNEXPECTED_END_OF_EXPRESSION:
-			return translate("errors.unexpected_end_of_expression")
+			return translate(&"errors.unexpected_end_of_expression")
 		ERR_UNEXPECTED_FUNCTION:
-			return translate("errors.unexpected_function")
+			return translate(&"errors.unexpected_function")
 		ERR_UNEXPECTED_BRACKET:
-			return translate("errors.unexpected_bracket")
+			return translate(&"errors.unexpected_bracket")
 		ERR_UNEXPECTED_CLOSING_BRACKET:
-			return translate("errors.unexpected_closing_bracket")
+			return translate(&"errors.unexpected_closing_bracket")
 		ERR_MISSING_CLOSING_BRACKET:
-			return translate("errors.missing_closing_bracket")
+			return translate(&"errors.missing_closing_bracket")
 		ERR_UNEXPECTED_OPERATOR:
-			return translate("errors.unexpected_operator")
+			return translate(&"errors.unexpected_operator")
 		ERR_UNEXPECTED_COMMA:
-			return translate("errors.unexpected_comma")
+			return translate(&"errors.unexpected_comma")
 		ERR_UNEXPECTED_COLON:
-			return translate("errors.unexpected_colon")
+			return translate(&"errors.unexpected_colon")
 		ERR_UNEXPECTED_DOT:
-			return translate("errors.unexpected_dot")
+			return translate(&"errors.unexpected_dot")
 		ERR_UNEXPECTED_BOOLEAN:
-			return translate("errors.unexpected_boolean")
+			return translate(&"errors.unexpected_boolean")
 		ERR_UNEXPECTED_STRING:
-			return translate("errors.unexpected_string")
+			return translate(&"errors.unexpected_string")
 		ERR_UNEXPECTED_NUMBER:
-			return translate("errors.unexpected_number")
+			return translate(&"errors.unexpected_number")
 		ERR_UNEXPECTED_VARIABLE:
-			return translate("errors.unexpected_variable")
+			return translate(&"errors.unexpected_variable")
 		ERR_INVALID_INDEX:
-			return translate("errors.invalid_index")
+			return translate(&"errors.invalid_index")
 		ERR_UNEXPECTED_ASSIGNMENT:
-			return translate("errors.unexpected_assignment")
+			return translate(&"errors.unexpected_assignment")
 		ERR_UNKNOWN_USING:
-			return translate("errors.unknown_using")
+			return translate(&"errors.unknown_using")
 
-	return translate("errors.unknown")
+	return translate(&"errors.unknown")
 
 
 static func translate(string: String) -> String:

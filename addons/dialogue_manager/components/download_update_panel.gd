@@ -19,14 +19,14 @@ const TEMP_FILE_NAME = "user://temp.zip"
 var next_version_release: Dictionary:
 	set(value):
 		next_version_release = value
-		label.text = DialogueConstants.translate("update.is_available_for_download") % value.tag_name.substr(1)
+		label.text = DialogueConstants.translate(&"update.is_available_for_download") % value.tag_name.substr(1)
 	get:
 		return next_version_release
 
 
 func _ready() -> void:
-	$VBox/Center/DownloadButton.text = DialogueConstants.translate("update.download_update")
-	$VBox/Center2/NotesButton.text = DialogueConstants.translate("update.release_notes")
+	$VBox/Center/DownloadButton.text = DialogueConstants.translate(&"update.download_update")
+	$VBox/Center2/NotesButton.text = DialogueConstants.translate(&"update.release_notes")
 
 
 ### Signals
@@ -41,7 +41,7 @@ func _on_download_button_pressed() -> void:
 
 	http_request.request(next_version_release.zipball_url)
 	download_button.disabled = true
-	download_button.text = DialogueConstants.translate("update.downloading")
+	download_button.text = DialogueConstants.translate(&"update.downloading")
 
 
 func _on_http_request_request_completed(result: int, response_code: int, headers: PackedStringArray, body: PackedByteArray) -> void:

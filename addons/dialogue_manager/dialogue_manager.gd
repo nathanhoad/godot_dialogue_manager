@@ -94,15 +94,15 @@ func _ready() -> void:
 func get_next_dialogue_line(resource: DialogueResource, key: String = "", extra_game_states: Array = [], mutation_behaviour: MutationBehaviour = MutationBehaviour.Wait) -> DialogueLine:
 	# You have to provide a valid dialogue resource
 	if resource == null:
-		assert(false, DialogueConstants.translate("runtime.no_resource"))
+		assert(false, DialogueConstants.translate(&"runtime.no_resource"))
 	if resource.lines.size() == 0:
-		assert(false, DialogueConstants.translate("runtime.no_content").format({ file_path = resource.resource_path }))
+		assert(false, DialogueConstants.translate(&"runtime.no_content").format({ file_path = resource.resource_path }))
 
 	# Inject any "using" states into the game_states
 	for state_name in resource.using_states:
 		var autoload = get_tree().root.get_node_or_null(state_name)
 		if autoload == null:
-			printerr(DialogueConstants.translate("runtime.unknown_autoload").format({ autoload = state_name }))
+			printerr(DialogueConstants.translate(&"runtime.unknown_autoload").format({ autoload = state_name }))
 		else:
 			extra_game_states = [autoload] + extra_game_states
 
@@ -239,13 +239,13 @@ func create_resource_from_text(text: String) -> Resource:
 	parser.free()
 
 	if errors.size() > 0:
-		printerr(DialogueConstants.translate("runtime.errors").format({ count = errors.size() }))
+		printerr(DialogueConstants.translate(&"runtime.errors").format({ count = errors.size() }))
 		for error in errors:
-			printerr(DialogueConstants.translate("runtime.error_detail").format({
+			printerr(DialogueConstants.translate(&"runtime.error_detail").format({
 				line = error.line_number + 1,
 				message = DialogueConstants.get_error_message(error.error)
 			}))
-		assert(false, DialogueConstants.translate("runtime.errors_see_details").format({ count = errors.size() }))
+		assert(false, DialogueConstants.translate(&"runtime.errors_see_details").format({ count = errors.size() }))
 
 	var resource: DialogueResource = DialogueResource.new()
 	resource.using_states = results.using_states
@@ -289,7 +289,7 @@ func show_dialogue_balloon_scene(balloon_scene, resource: DialogueResource, titl
 	elif balloon.has_method(&"Start"):
 		balloon.Start(resource, title, extra_game_states)
 	else:
-		assert(false, DialogueConstants.translate("runtime.dialogue_balloon_missing_start_method"))
+		assert(false, DialogueConstants.translate(&"runtime.dialogue_balloon_missing_start_method"))
 	return balloon
 
 
@@ -355,7 +355,7 @@ func get_line(resource: DialogueResource, key: String, extra_game_states: Array)
 		passed_title.emit(resource.titles.find_key(key))
 
 	if not resource.lines.has(key):
-		assert(false, DialogueConstants.translate("errors.key_not_found").format({ key = key }))
+		assert(false, DialogueConstants.translate(&"errors.key_not_found").format({ key = key }))
 
 	var data: Dictionary = resource.lines.get(key)
 
@@ -635,7 +635,7 @@ func get_state_value(property: String, extra_game_states: Array):
 
 	var expression = Expression.new()
 	if expression.parse(property) != OK:
-		assert(false, DialogueConstants.translate("runtime.invalid_expression").format({ expression = property, error = expression.get_error_text() }))
+		assert(false, DialogueConstants.translate(&"runtime.invalid_expression").format({ expression = property, error = expression.get_error_text() }))
 
 	for state in get_game_states(extra_game_states):
 		if typeof(state) == TYPE_DICTIONARY:
@@ -654,7 +654,7 @@ func get_state_value(property: String, extra_game_states: Array):
 			if class_data.get(&"class") == property:
 				return load(class_data.path).new()
 
-	show_error_for_missing_state_value(DialogueConstants.translate("runtime.property_not_found").format({ property = property, states = str(get_game_states(extra_game_states)) }))
+	show_error_for_missing_state_value(DialogueConstants.translate(&"runtime.property_not_found").format({ property = property, states = str(get_game_states(extra_game_states)) }))
 
 
 # Set a value on the current scene or game state
@@ -669,9 +669,9 @@ func set_state_value(property: String, value, extra_game_states: Array) -> void:
 			return
 
 	if property.to_snake_case() != property:
-		show_error_for_missing_state_value(DialogueConstants.translate("runtime.property_not_found_missing_export").format({ property = property, states = str(get_game_states(extra_game_states)) }))
+		show_error_for_missing_state_value(DialogueConstants.translate(&"runtime.property_not_found_missing_export").format({ property = property, states = str(get_game_states(extra_game_states)) }))
 	else:
-		show_error_for_missing_state_value(DialogueConstants.translate("runtime.property_not_found").format({ property = property, states = str(get_game_states(extra_game_states)) }))
+		show_error_for_missing_state_value(DialogueConstants.translate(&"runtime.property_not_found").format({ property = property, states = str(get_game_states(extra_game_states)) }))
 
 
 # Collapse any expressions
@@ -709,7 +709,7 @@ func resolve(tokens: Array, extra_game_states: Array):
 					tokens.remove_at(i-1)
 					i -= 2
 				else:
-					show_error_for_missing_state_value(DialogueConstants.translate("runtime.method_not_callable").format({ method = function_name, object = str(caller.value) }))
+					show_error_for_missing_state_value(DialogueConstants.translate(&"runtime.method_not_callable").format({ method = function_name, object = str(caller.value) }))
 			else:
 				var found: bool = false
 				match function_name:
@@ -775,7 +775,7 @@ func resolve(tokens: Array, extra_game_states: Array):
 								found = true
 								break
 
-				show_error_for_missing_state_value(DialogueConstants.translate("runtime.method_not_found").format({
+				show_error_for_missing_state_value(DialogueConstants.translate(&"runtime.method_not_found").format({
 					method = args[0] if function_name in ["call", "call_deferred"] else function_name,
 					states = str(get_game_states(extra_game_states))
 				}), not found)
@@ -809,7 +809,7 @@ func resolve(tokens: Array, extra_game_states: Array):
 						token["type"] = "value"
 						token["value"] = value[index]
 					else:
-						show_error_for_missing_state_value(DialogueConstants.translate("runtime.key_not_found").format({ key = str(index), dictionary = token.variable }))
+						show_error_for_missing_state_value(DialogueConstants.translate(&"runtime.key_not_found").format({ key = str(index), dictionary = token.variable }))
 			elif typeof(value) == TYPE_ARRAY:
 				if tokens.size() > i + 1 and tokens[i + 1].type == DialogueConstants.TOKEN_ASSIGNMENT:
 					# If the next token is an assignment then we need to leave this as a reference
@@ -822,7 +822,7 @@ func resolve(tokens: Array, extra_game_states: Array):
 						token["type"] = "value"
 						token["value"] = value[index]
 					else:
-						show_error_for_missing_state_value(DialogueConstants.translate("runtime.array_index_out_of_bounds").format({ index = index, array = token.variable }))
+						show_error_for_missing_state_value(DialogueConstants.translate(&"runtime.array_index_out_of_bounds").format({ index = index, array = token.variable }))
 
 		elif token.type == DialogueConstants.TOKEN_DICTIONARY_NESTED_REFERENCE:
 			var dictionary: Dictionary = tokens[i - 1]
@@ -843,7 +843,7 @@ func resolve(tokens: Array, extra_game_states: Array):
 						tokens.remove_at(i)
 						i -= 1
 					else:
-						show_error_for_missing_state_value(DialogueConstants.translate("runtime.key_not_found").format({ key = str(index), dictionary = value }))
+						show_error_for_missing_state_value(DialogueConstants.translate(&"runtime.key_not_found").format({ key = str(index), dictionary = value }))
 			elif typeof(value) == TYPE_ARRAY:
 				if tokens.size() > i + 1 and tokens[i + 1].type == DialogueConstants.TOKEN_ASSIGNMENT:
 					# If the next token is an assignment then we need to leave this as a reference
@@ -859,7 +859,7 @@ func resolve(tokens: Array, extra_game_states: Array):
 						tokens.remove_at(i)
 						i -= 1
 					else:
-						show_error_for_missing_state_value(DialogueConstants.translate("runtime.array_index_out_of_bounds").format({ index = index, array = value }))
+						show_error_for_missing_state_value(DialogueConstants.translate(&"runtime.array_index_out_of_bounds").format({ index = index, array = value }))
 
 		elif token.type == DialogueConstants.TOKEN_ARRAY:
 			token["type"] = "value"
@@ -925,7 +925,7 @@ func resolve(tokens: Array, extra_game_states: Array):
 		i += 1
 
 	if limit >= 1000:
-		assert(false, DialogueConstants.translate("runtime.something_went_wrong"))
+		assert(false, DialogueConstants.translate(&"runtime.something_went_wrong"))
 
 	# Then addition and subtraction
 	i = 0
@@ -942,7 +942,7 @@ func resolve(tokens: Array, extra_game_states: Array):
 		i += 1
 
 	if limit >= 1000:
-		assert(false, DialogueConstants.translate("runtime.something_went_wrong"))
+		assert(false, DialogueConstants.translate(&"runtime.something_went_wrong"))
 
 	# Then negations
 	i = 0
@@ -958,7 +958,7 @@ func resolve(tokens: Array, extra_game_states: Array):
 		i += 1
 
 	if limit >= 1000:
-		assert(false, DialogueConstants.translate("runtime.something_went_wrong"))
+		assert(false, DialogueConstants.translate(&"runtime.something_went_wrong"))
 
 	# Then comparisons
 	i = 0
@@ -975,7 +975,7 @@ func resolve(tokens: Array, extra_game_states: Array):
 		i += 1
 
 	if limit >= 1000:
-		assert(false, DialogueConstants.translate("runtime.something_went_wrong"))
+		assert(false, DialogueConstants.translate(&"runtime.something_went_wrong"))
 
 	# Then and/or
 	i = 0
@@ -992,7 +992,7 @@ func resolve(tokens: Array, extra_game_states: Array):
 		i += 1
 
 	if limit >= 1000:
-		assert(false, DialogueConstants.translate("runtime.something_went_wrong"))
+		assert(false, DialogueConstants.translate(&"runtime.something_went_wrong"))
 
 	# Lastly, resolve any assignments
 	i = 0
@@ -1019,13 +1019,13 @@ func resolve(tokens: Array, extra_game_states: Array):
 					lhs.value[lhs.key] = value
 				&"array":
 					show_error_for_missing_state_value(
-						DialogueConstants.translate("runtime.array_index_out_of_bounds").format({ index = lhs.key, array = lhs.value }),
+						DialogueConstants.translate(&"runtime.array_index_out_of_bounds").format({ index = lhs.key, array = lhs.value }),
 						lhs.key >= lhs.value.size()
 					)
 					value = apply_operation(token.value, lhs.value[lhs.key], tokens[i+1].value)
 					lhs.value[lhs.key] = value
 				_:
-					show_error_for_missing_state_value(DialogueConstants.translate("runtime.left_hand_size_cannot_be_assigned_to"))
+					show_error_for_missing_state_value(DialogueConstants.translate(&"runtime.left_hand_size_cannot_be_assigned_to"))
 
 			token["type"] = "value"
 			token["value"] = value
@@ -1035,7 +1035,7 @@ func resolve(tokens: Array, extra_game_states: Array):
 		i += 1
 
 	if limit >= 1000:
-		assert(false, DialogueConstants.translate("runtime.something_went_wrong"))
+		assert(false, DialogueConstants.translate(&"runtime.something_went_wrong"))
 
 	return tokens[0].value
 
@@ -1114,7 +1114,7 @@ func apply_operation(operator: String, first_value, second_value):
 		&"or":
 			return first_value or second_value
 
-	assert(false, DialogueConstants.translate("runtime.unknown_operator"))
+	assert(false, DialogueConstants.translate(&"runtime.unknown_operator"))
 
 
 # Check if a dialogue line contains meaningful information
@@ -1191,7 +1191,7 @@ func resolve_signal(args: Array, extra_game_states: Array):
 			return
 
 	# The signal hasn't been found anywhere
-	show_error_for_missing_state_value(DialogueConstants.translate("runtime.signal_not_found").format({ signal_name = args[0], states = str(get_game_states(extra_game_states)) }))
+	show_error_for_missing_state_value(DialogueConstants.translate(&"runtime.signal_not_found").format({ signal_name = args[0], states = str(get_game_states(extra_game_states)) }))
 
 
 func resolve_thing_method(thing, method: String, args: Array):
@@ -1205,7 +1205,7 @@ func resolve_thing_method(thing, method: String, args: Array):
 		var method_info: Dictionary = thing.get_method_list().filter(func(m): return method == m.name)[0]
 		var method_args: Array = method_info.args
 		if method_info.flags & METHOD_FLAG_VARARG == 0 and method_args.size() < args.size():
-			assert(false, DialogueConstants.translate("runtime.expected_n_got_n_args").format({ expected = method_args.size(), method = method, received = args.size()}))
+			assert(false, DialogueConstants.translate(&"runtime.expected_n_got_n_args").format({ expected = method_args.size(), method = method, received = args.size()}))
 		for i in range(0, args.size()):
 			var m: Dictionary = method_args[i]
 			var to_type:int = typeof(args[i])
@@ -1223,7 +1223,7 @@ func resolve_thing_method(thing, method: String, args: Array):
 						to_type = TYPE_PACKED_VECTOR3_ARRAY
 					_:
 						if m.hint_string != "":
-							assert(false, DialogueConstants.translate("runtime.unsupported_array_type").format({ type = m.hint_string}))
+							assert(false, DialogueConstants.translate(&"runtime.unsupported_array_type").format({ type = m.hint_string}))
 			if typeof(args[i]) != to_type:
 				args[i] = convert(args[i], to_type)
 

@@ -53,28 +53,28 @@ var _recompile_if_changed_settings: Dictionary
 
 
 func _ready() -> void:
-	new_template_button.text = DialogueConstants.translate("settings.new_template")
-	$Editor/MissingTranslationsHint.text = DialogueConstants.translate("settings.missing_keys_hint")
-	characters_translations_button.text = DialogueConstants.translate("settings.characters_translations")
-	wrap_lines_button.text = DialogueConstants.translate("settings.wrap_long_lines")
-	$Editor/DefaultCSVLocaleLabel.text = DialogueConstants.translate("settings.default_csv_locale")
+	new_template_button.text = DialogueConstants.translate(&"settings.new_template")
+	$Editor/MissingTranslationsHint.text = DialogueConstants.translate(&"settings.missing_keys_hint")
+	characters_translations_button.text = DialogueConstants.translate(&"settings.characters_translations")
+	wrap_lines_button.text = DialogueConstants.translate(&"settings.wrap_long_lines")
+	$Editor/DefaultCSVLocaleLabel.text = DialogueConstants.translate(&"settings.default_csv_locale")
 
-	include_all_responses_button.text = DialogueConstants.translate("settings.include_failed_responses")
-	ignore_missing_state_values.text = DialogueConstants.translate("settings.ignore_missing_state_values")
-	$Runtime/CustomBalloonLabel.text = DialogueConstants.translate("settings.default_balloon_hint")
-	states_title.text = DialogueConstants.translate("settings.states_shortcuts")
-	$Runtime/StatesMessage.text = DialogueConstants.translate("settings.states_message")
-	$Runtime/StatesHint.text = DialogueConstants.translate("settings.states_hint")
+	include_all_responses_button.text = DialogueConstants.translate(&"settings.include_failed_responses")
+	ignore_missing_state_values.text = DialogueConstants.translate(&"settings.ignore_missing_state_values")
+	$Runtime/CustomBalloonLabel.text = DialogueConstants.translate(&"settings.default_balloon_hint")
+	states_title.text = DialogueConstants.translate(&"settings.states_shortcuts")
+	$Runtime/StatesMessage.text = DialogueConstants.translate(&"settings.states_message")
+	$Runtime/StatesHint.text = DialogueConstants.translate(&"settings.states_hint")
 
-	check_for_updates.text = DialogueConstants.translate("settings.check_for_updates")
-	include_characters_in_translations.text = DialogueConstants.translate("settings.include_characters_in_translations")
-	include_notes_in_translations.text = DialogueConstants.translate("settings.include_notes_in_translations")
-	open_in_external_editor_button.text = DialogueConstants.translate("settings.open_in_external_editor")
-	$Advanced/ExternalWarning.text = DialogueConstants.translate("settings.external_editor_warning")
-	$Advanced/CustomTestSceneLabel.text = DialogueConstants.translate("settings.custom_test_scene")
-	$Advanced/RecompileWarning.text = DialogueConstants.translate("settings.recompile_warning")
-	missing_translations_button.text = DialogueConstants.translate("settings.missing_keys")
-	create_lines_for_response_characters.text = DialogueConstants.translate("settings.create_lines_for_responses_with_characters")
+	check_for_updates.text = DialogueConstants.translate(&"settings.check_for_updates")
+	include_characters_in_translations.text = DialogueConstants.translate(&"settings.include_characters_in_translations")
+	include_notes_in_translations.text = DialogueConstants.translate(&"settings.include_notes_in_translations")
+	open_in_external_editor_button.text = DialogueConstants.translate(&"settings.open_in_external_editor")
+	$Advanced/ExternalWarning.text = DialogueConstants.translate(&"settings.external_editor_warning")
+	$Advanced/CustomTestSceneLabel.text = DialogueConstants.translate(&"settings.custom_test_scene")
+	$Advanced/RecompileWarning.text = DialogueConstants.translate(&"settings.recompile_warning")
+	missing_translations_button.text = DialogueConstants.translate(&"settings.missing_keys")
+	create_lines_for_response_characters.text = DialogueConstants.translate(&"settings.create_lines_for_responses_with_characters")
 
 	current_tab = 0
 
@@ -85,17 +85,17 @@ func prepare() -> void:
 	test_scene_path_input.placeholder_text = DialogueSettings.get_setting("custom_test_scene_path", _default_test_scene_path)
 	revert_test_scene_button.visible = test_scene_path_input.placeholder_text != _default_test_scene_path
 	revert_test_scene_button.icon = get_theme_icon("RotateLeft", "EditorIcons")
-	revert_test_scene_button.tooltip_text = DialogueConstants.translate("settings.revert_to_default_test_scene")
+	revert_test_scene_button.tooltip_text = DialogueConstants.translate(&"settings.revert_to_default_test_scene")
 	load_test_scene_button.icon = get_theme_icon("Load", "EditorIcons")
 
 	var balloon_path: String = DialogueSettings.get_setting("balloon_path", "")
 	if not FileAccess.file_exists(balloon_path):
 		DialogueSettings.set_setting("balloon_path", "")
 		balloon_path = ""
-	balloon_path_input.placeholder_text = balloon_path if balloon_path != "" else DialogueConstants.translate("settings.default_balloon_path")
+	balloon_path_input.placeholder_text = balloon_path if balloon_path != "" else DialogueConstants.translate(&"settings.default_balloon_path")
 	revert_balloon_button.visible = balloon_path != ""
 	revert_balloon_button.icon = get_theme_icon("RotateLeft", "EditorIcons")
-	revert_balloon_button.tooltip_text = DialogueConstants.translate("settings.revert_to_default_balloon")
+	revert_balloon_button.tooltip_text = DialogueConstants.translate(&"settings.revert_to_default_balloon")
 	load_balloon_button.icon = get_theme_icon("Load", "EditorIcons")
 
 	var scale: float = editor_plugin.get_editor_interface().get_editor_scale()
@@ -152,9 +152,9 @@ func prepare() -> void:
 	globals_list.set_column_expand(1, false)
 	globals_list.set_column_custom_minimum_width(1, 40)
 	globals_list.set_column_titles_visible(true)
-	globals_list.set_column_title(0, DialogueConstants.translate("settings.autoload"))
+	globals_list.set_column_title(0, DialogueConstants.translate(&"settings.autoload"))
 	globals_list.set_column_title(1, "")
-	globals_list.set_column_title(2, DialogueConstants.translate("settings.path"))
+	globals_list.set_column_title(2, DialogueConstants.translate(&"settings.path"))
 
 
 func apply_settings_changes() -> void:
@@ -231,7 +231,7 @@ func _on_custom_test_scene_file_dialog_file_selected(path: String) -> void:
 				revert_test_scene_button.visible = test_scene_path_input.placeholder_text != _default_test_scene_path
 			else:
 				var accept: AcceptDialog = AcceptDialog.new()
-				accept.dialog_text = DialogueConstants.translate("settings.invalid_test_scene").format({ path = path })
+				accept.dialog_text = DialogueConstants.translate(&"settings.invalid_test_scene").format({ path = path })
 				add_child(accept)
 				accept.popup_centered.call_deferred()
 
@@ -251,7 +251,7 @@ func _on_default_csv_locale_text_changed(new_text: String) -> void:
 
 func _on_revert_balloon_path_pressed() -> void:
 	DialogueSettings.set_setting("balloon_path", "")
-	balloon_path_input.placeholder_text = DialogueConstants.translate("settings.default_balloon_path")
+	balloon_path_input.placeholder_text = DialogueConstants.translate(&"settings.default_balloon_path")
 	revert_balloon_button.visible = DialogueSettings.get_setting("balloon_path", "") != ""
 
 

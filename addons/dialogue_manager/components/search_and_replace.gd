@@ -42,7 +42,7 @@ var result_index: int = -1:
 			if is_instance_valid(code_edit):
 				code_edit.deselect()
 
-		result_label.text = DialogueConstants.translate("n_of_n").format({ index = result_index + 1, total = results.size() })
+		result_label.text = DialogueConstants.translate(&"n_of_n").format({ index = result_index + 1, total = results.size() })
 	get:
 		return result_index
 
@@ -50,14 +50,14 @@ var result_index: int = -1:
 func _ready() -> void:
 	apply_theme()
 
-	input.placeholder_text = DialogueConstants.translate("search.placeholder")
-	previous_button.tooltip_text = DialogueConstants.translate("search.previous")
-	next_button.tooltip_text = DialogueConstants.translate("search.next")
-	match_case_button.text = DialogueConstants.translate("search.match_case")
-	$Search/ReplaceCheckButton.text = DialogueConstants.translate("search.toggle_replace")
-	replace_button.text = DialogueConstants.translate("search.replace")
-	replace_all_button.text = DialogueConstants.translate("search.replace_all")
-	$Replace/ReplaceLabel.text = DialogueConstants.translate("search.replace_with")
+	input.placeholder_text = DialogueConstants.translate(&"search.placeholder")
+	previous_button.tooltip_text = DialogueConstants.translate(&"search.previous")
+	next_button.tooltip_text = DialogueConstants.translate(&"search.next")
+	match_case_button.text = DialogueConstants.translate(&"search.match_case")
+	$Search/ReplaceCheckButton.text = DialogueConstants.translate(&"search.toggle_replace")
+	replace_button.text = DialogueConstants.translate(&"search.replace")
+	replace_all_button.text = DialogueConstants.translate(&"search.replace_all")
+	$Replace/ReplaceLabel.text = DialogueConstants.translate(&"search.replace_with")
 
 	self.result_index = -1
 
