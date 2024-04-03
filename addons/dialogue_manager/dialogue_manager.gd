@@ -142,7 +142,8 @@ func get_resolved_line_data(data: Dictionary, extra_game_states: Array = []) -> 
 	for replacement in data.text_replacements:
 		var value = await resolve(replacement.expression.duplicate(true), extra_game_states)
 		var index: int = text.find(replacement.value_in_text)
-		text = text.substr(0, index) + str(value) + text.substr(index + replacement.value_in_text.length())
+		if index > -1:
+			text = text.substr(0, index) + str(value) + text.substr(index + replacement.value_in_text.length())
 
 	var parser: DialogueManagerParser = DialogueManagerParser.new()
 
@@ -218,7 +219,8 @@ func get_resolved_character(data: Dictionary, extra_game_states: Array = []) -> 
 	for replacement in data.get(&"character_replacements", []):
 		var value = await resolve(replacement.expression.duplicate(true), extra_game_states)
 		var index: int = character.find(replacement.value_in_text)
-		character = character.substr(0, index) + str(value) + character.substr(index + replacement.value_in_text.length())
+		if index > -1:
+			character = character.substr(0, index) + str(value) + character.substr(index + replacement.value_in_text.length())
 
 	# Resolve random groups
 	var random_regex: RegEx = RegEx.new()

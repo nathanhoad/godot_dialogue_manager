@@ -230,6 +230,7 @@ func parse(text: String, path: String) -> Error:
 					line["character"] = first_child.character
 					line["character_replacements"] = first_child.character_replacements
 					line["text"] = first_child.text
+					line["text_replacements"] = extract_dialogue_replacements(line.text, indent_size + 2)
 					line["translation_key"] = first_child.translation_key
 					parsed_lines[str(id) + ".2"] = first_child
 					line["next_id"] = str(id) + ".2"
