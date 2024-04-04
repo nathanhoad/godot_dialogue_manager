@@ -928,8 +928,8 @@ func find_next_line_after_responses(line_number: int) -> String:
 			if get_indent(line) <= expected_indent:
 				return str(line_number)
 
-	# EOF so must be end of conversation
-	return DialogueConstants.ID_END_CONVERSATION
+	# EOF so it's also the end of a block
+	return DialogueConstants.ID_END
 
 
 ## Get the names of any autoloads in the project
