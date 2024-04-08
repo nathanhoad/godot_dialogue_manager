@@ -4,7 +4,7 @@ msgstr ""
 "POT-Creation-Date: \n"
 "PO-Revision-Date: \n"
 "Last-Translator: \n"
-"Language-Team: 憨憨羊の宇航鴿鴿\n"
+"Language-Team: 憨憨羊の宇航鴿鴿、ABShinri\n"
 "Language: zh_TW\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -29,6 +29,9 @@ msgstr "清空歷史記錄"
 msgid "save_all_files"
 msgstr "儲存所有檔案"
 
+msgid "find_in_files"
+msgstr "在檔案中查找"
+
 msgid "test_dialogue"
 msgstr "測試對話"
 
@@ -51,10 +54,10 @@ msgid "docs"
 msgstr "文檔"
 
 msgid "insert.wave_bbcode"
-msgstr "BBCode [lb]wave[rb]"
+msgstr "波浪特效"
 
 msgid "insert.shake_bbcode"
-msgstr "BBCode [lb]wave[rb]"
+msgstr "震動特效"
 
 msgid "insert.typing_pause"
 msgstr "輸入間隔"
@@ -95,6 +98,9 @@ msgstr "結束對話"
 msgid "generate_line_ids"
 msgstr "生成行 ID"
 
+msgid "save_characters_to_csv"
+msgstr "保存角色到 CSV"
+
 msgid "save_to_csv"
 msgstr "生成 CSV"
 
@@ -133,6 +139,9 @@ msgstr "在 Godot 側邊欄中顯示"
 
 msgid "settings.revert_to_default_test_scene"
 msgstr "重置測試場景設定"
+
+msgid "settings.default_balloon_hint"
+msgstr "設置使用 \"DialogueManager.show_balloon()\" 时的对话框"
 
 msgid "settings.autoload"
 msgstr "Autoload"
@@ -176,8 +185,38 @@ msgstr "當一個 Autoload 在這裏被勾選，他的所有成員會被映射�
 msgid "settings.states_hint"
 msgstr "比如，當你開啓對於“Foo”的映射時，你可以將“Foo.bar”簡寫成“bar”。"
 
+msgid "settings.recompile_warning"
+msgstr "更改這些選項會強制重新編譯所有的對話框，當你清楚在做什麼的時候更改。"
+
+msgid "settings.create_lines_for_responses_with_characters"
+msgstr "回覆項目帶角色名稱時（- char: response），會自動產生為選擇後的下一句對話"
+
+msgid "settings.include_characters_in_translations"
+msgstr "匯出 CSV 時包含角色名"
+
+msgid "settings.include_notes_in_translations"
+msgstr "匯出 CSV 時包括註解（## comments）"
+
+msgid "settings.check_for_updates"
+msgstr "檢查升級"
+
 msgid "n_of_n"
 msgstr "第{index}個，共{total}個"
+
+msgid "search.find"
+msgstr "搜尋:"
+
+msgid "search.find_all"
+msgstr "搜尋全部..."
+
+msgid "search.placeholder"
+msgstr "請輸入搜尋的內容"
+
+msgid "search.replace_placeholder"
+msgstr "請輸入替換的內容"
+
+msgid "search.replace_selected"
+msgstr "替換勾選"
 
 msgid "search.previous"
 msgstr "搜尋上一個"
