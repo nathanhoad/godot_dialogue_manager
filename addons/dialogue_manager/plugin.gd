@@ -202,15 +202,10 @@ func _create_event(string: String) -> InputEventKey:
 	var event: InputEventKey = InputEventKey.new()
 	var bits = string.split("+")
 	event.keycode = OS.find_keycode_from_string(bits[bits.size() - 1])
-	if "Shift" in bits:
-		event.shift_pressed = true
-	if "Alt" in bits:
-		event.alt_pressed = true
-	if "Ctrl" in bits:
-		event.ctrl_pressed = true
-	if "Command" in bits:
-		event.meta_pressed = true
-	event.command_or_control_autoremap = true
+	event.shift_pressed = bits.has("Shift")
+	event.alt_pressed = bits.has("Alt")
+	if bits.has("Ctrl") or bits.has("Command"):
+		event.command_or_control_autoremap = true
 	return event
 
 
@@ -219,7 +214,7 @@ func get_editor_shortcut(event: InputEventKey) -> String:
 	var shortcuts: Dictionary = get_editor_shortcuts()
 	for key in shortcuts:
 		for shortcut in shortcuts.get(key, []):
-			if event.is_match(shortcut, false):
+			if event.is_match(shortcut):
 				return key
 	return ""
 
