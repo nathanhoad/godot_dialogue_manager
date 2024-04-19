@@ -70,25 +70,27 @@ func _ready() -> void:
 
 
 func _gui_input(event: InputEvent) -> void:
+	# Handle shortcuts that come from the editor
 	if event is InputEventKey and event.is_pressed():
-		match event.as_text():
-			"Ctrl+Equal", "Command+Equal":
-				self.font_size += 1
-				get_viewport().set_input_as_handled()
-			"Ctrl+Minus", "Command+Minus":
-				self.font_size -= 1
-				get_viewport().set_input_as_handled()
-			"Ctrl+0", "Command+0":
-				self.font_size = theme_overrides.font_size
-				get_viewport().set_input_as_handled()
-			"Ctrl+K", "Command+K":
+		var shortcut: String = Engine.get_meta("DialogueManagerPlugin").get_editor_shortcut(event)
+		match shortcut:
+			"toggle_comment":
 				toggle_comment()
 				get_viewport().set_input_as_handled()
-			"Alt+Up":
+			"move_up":
 				move_line(-1)
 				get_viewport().set_input_as_handled()
-			"Alt+Down":
+			"move_down":
 				move_line(1)
+				get_viewport().set_input_as_handled()
+			"text_size_increase":
+				self.font_size += 1
+				get_viewport().set_input_as_handled()
+			"text_size_decrease":
+				self.font_size -= 1
+				get_viewport().set_input_as_handled()
+			"text_size_reset":
+				self.font_size = theme_overrides.font_size
 				get_viewport().set_input_as_handled()
 
 	elif event is InputEventMouse:

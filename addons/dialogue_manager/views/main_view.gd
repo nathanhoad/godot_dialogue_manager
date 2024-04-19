@@ -181,19 +181,20 @@ func _unhandled_input(event: InputEvent) -> void:
 	if not visible: return
 
 	if event is InputEventKey and event.is_pressed():
-		match event.as_text():
-			"Ctrl+Alt+S", "Command+Alt+S":
-				get_viewport().set_input_as_handled()
-				save_file(current_file_path)
-			"Ctrl+W", "Command+W":
+		var shortcut: String = Engine.get_meta("DialogueManagerPlugin").get_editor_shortcut(event)
+		match shortcut:
+			"close_file":
 				get_viewport().set_input_as_handled()
 				close_file(current_file_path)
-			"Ctrl+F5", "Command+F5":
+			"save":
 				get_viewport().set_input_as_handled()
-				_on_test_button_pressed()
-			"Ctrl+Shift+F", "Command+Shift+F":
+				save_file(current_file_path)
+			"find_in_files":
 				get_viewport().set_input_as_handled()
 				_on_find_in_files_button_pressed()
+			"run_test_scene":
+				get_viewport().set_input_as_handled()
+				_on_test_button_pressed()
 
 
 func apply_changes() -> void:
@@ -1044,9 +1045,11 @@ func _on_files_list_file_middle_clicked(path: String):
 func _on_files_popup_menu_about_to_popup() -> void:
 	files_popup_menu.clear()
 
-	files_popup_menu.add_item(DialogueConstants.translate(&"buffer.save"), ITEM_SAVE, KEY_MASK_CTRL | KEY_MASK_ALT | KEY_S)
+	var shortcuts: Dictionary = Engine.get_meta("DialogueManagerPlugin").get_editor_shortcuts()
+
+	files_popup_menu.add_item(DialogueConstants.translate(&"buffer.save"), ITEM_SAVE, OS.find_keycode_from_string(shortcuts.get("save")[0].as_text_keycode()))
 	files_popup_menu.add_item(DialogueConstants.translate(&"buffer.save_as"), ITEM_SAVE_AS)
-	files_popup_menu.add_item(DialogueConstants.translate(&"buffer.close"), ITEM_CLOSE, KEY_MASK_CTRL | KEY_W)
+	files_popup_menu.add_item(DialogueConstants.translate(&"buffer.close"), ITEM_CLOSE, OS.find_keycode_from_string(shortcuts.get("close_file")[0].as_text_keycode()))
 	files_popup_menu.add_item(DialogueConstants.translate(&"buffer.close_all"), ITEM_CLOSE_ALL)
 	files_popup_menu.add_item(DialogueConstants.translate(&"buffer.close_other_files"), ITEM_CLOSE_OTHERS)
 	files_popup_menu.add_separator()
