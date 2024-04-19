@@ -692,12 +692,7 @@ func get_line_after_line(id: int, indent_size: int, line: Dictionary) -> String:
 	var next_nonempty_line_id = get_next_nonempty_line_id(id)
 	if next_nonempty_line_id != DialogueConstants.ID_NULL \
 		and indent_size <= get_indent(raw_lines[next_nonempty_line_id.to_int()]):
-		# The next line is a title so we need the next nonempty line after that
-		if is_title_line(raw_lines[next_nonempty_line_id.to_int()]):
-			return get_next_nonempty_line_id(next_nonempty_line_id.to_int())
-		# Otherwise it's a normal line
-		else:
-			return next_nonempty_line_id
+		return next_nonempty_line_id
 	# Otherwise, we grab the ID from the parents next ID after children
 	elif line.has("parent_id") and parsed_lines.has(line.parent_id):
 		return parsed_lines[line.parent_id].next_id_after
