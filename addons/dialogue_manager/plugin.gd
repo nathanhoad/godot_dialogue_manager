@@ -145,6 +145,85 @@ func _build() -> bool:
 	return true
 
 
+## Get the shortcuts used by the plugin
+func get_editor_shortcuts() -> Dictionary:
+	var shortcuts: Dictionary = {
+		toggle_comment = [
+			_create_event("Ctrl+K"),
+			_create_event("Ctrl+Slash")
+		],
+		move_up = [
+			_create_event("Alt+Up")
+		],
+		move_down = [
+			_create_event("Alt+Down")
+		],
+		save = [
+			_create_event("Ctrl+Alt+S")
+		],
+		close_file = [
+			_create_event("Ctrl+W")
+		],
+		find_in_files = [
+			_create_event("Ctrl+Shift+F")
+		],
+
+		run_test_scene = [
+			_create_event("Ctrl+F5")
+		],
+		text_size_increase = [
+			_create_event("Ctrl+Equal")
+		],
+		text_size_decrease = [
+			_create_event("Ctrl+Minus")
+		],
+		text_size_reset = [
+			_create_event("Ctrl+0")
+		]
+	}
+
+	var paths = get_editor_interface().get_editor_paths()
+	var settings = load(paths.get_config_dir() + "/editor_settings-4.tres")
+
+	if not settings: return shortcuts
+
+	for s in settings.get("shortcuts"):
+		for key in shortcuts:
+			if s.name == "script_text_editor/%s" % key or s.name == "script_editor/%s" % key:
+				shortcuts[key] = []
+				for event in s.shortcuts:
+					if event is InputEventKey:
+						shortcuts[key].append(event)
+
+	return shortcuts
+
+
+func _create_event(string: String) -> InputEventKey:
+	var event: InputEventKey = InputEventKey.new()
+	var bits = string.split("+")
+	event.keycode = OS.find_keycode_from_string(bits[bits.size() - 1])
+	if "Shift" in bits:
+		event.shift_pressed = true
+	if "Alt" in bits:
+		event.alt_pressed = true
+	if "Ctrl" in bits:
+		event.ctrl_pressed = true
+	if "Command" in bits:
+		event.meta_pressed = true
+	event.command_or_control_autoremap = true
+	return event
+
+
+## Get the editor shortcut that matches an event
+func get_editor_shortcut(event: InputEventKey) -> String:
+	var shortcuts: Dictionary = get_editor_shortcuts()
+	for key in shortcuts:
+		for shortcut in shortcuts.get(key, []):
+			if event.is_match(shortcut, false):
+				return key
+	return ""
+
+
 ## Get the current version
 func get_version() -> String:
 	var config: ConfigFile = ConfigFile.new()
