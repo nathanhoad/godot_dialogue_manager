@@ -361,6 +361,10 @@ func get_line(resource: DialogueResource, key: String, extra_game_states: Array)
 
 	var data: Dictionary = resource.lines.get(key)
 
+	# This title key points to another title key so we should jump there instead
+	if data.type == DialogueConstants.TYPE_TITLE and data.next_id in resource.titles.values():
+		return await get_line(resource, data.next_id + id_trail, extra_game_states)
+
 	# Check for weighted random lines
 	if data.has(&"siblings"):
 		var target_weight: float = randf_range(0, data.siblings.reduce(func(total, sibling): return total + sibling.weight, 0))

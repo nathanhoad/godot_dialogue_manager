@@ -198,6 +198,7 @@ class TestClass:
 		string = s
 		number = i
 
+
 func test_can_run_methods() -> void:
 	var resource = create_resource("
 ~ start
@@ -216,3 +217,14 @@ Nathan: With optional arguments.
 	line = await resource.get_next_dialogue_line(line.next_id, [test])
 	assert(test.string == "bar", "Method call should set required argument")
 	assert(test.number == 1, "Method call should set optional argument")
+
+
+func test_can_have_subsequent_titles() -> void:
+	var resource = create_resource("
+~ start
+~ another_title
+~ third_title
+Nathan: Hello.")
+
+	var line = await resource.get_next_dialogue_line("start")
+	assert(line.text == "Hello.", "Should jump to dialogue.")
