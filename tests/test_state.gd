@@ -252,3 +252,12 @@ set StateForTests.dictionary.key3 = \"value3\"")
 	line = await resource.get_next_dialogue_line(line.next_id)
 	assert(StateForTests.dictionary.size() == 2, "Dictionary has two entries")
 	assert(StateForTests.dictionary.has("key3") and StateForTests.dictionary.get("key3") == "value3", "Dictionary should be updated.")
+
+
+func test_can_use_callable() -> void:
+	var resource = create_resource("
+~ start
+Nathan: The number is {{Callable(StateForTests, \"some_method\").bind(\"blah\").call(10)}}.")
+
+	var line = await resource.get_next_dialogue_line("start")
+	assert(line.text == "The number is 40.", "Should resolve callable.")
