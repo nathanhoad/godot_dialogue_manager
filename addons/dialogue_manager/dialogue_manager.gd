@@ -751,6 +751,16 @@ func resolve(tokens: Array, extra_game_states: Array):
 						token["type"] = "value"
 						token["value"] = Quaternion(args[0], args[1], args[2], args[3])
 						found = true
+					&"Callable":
+						token["type"] = "value"
+						match args.size():
+							0:
+								token["value"] = Callable()
+							1:
+								token["value"] = Callable(args[0])
+							2:
+								token["value"] = Callable(args[0], args[1])
+						found = true
 					&"Color":
 						token["type"] = "value"
 						match args.size():
