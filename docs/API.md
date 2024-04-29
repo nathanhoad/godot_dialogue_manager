@@ -11,19 +11,17 @@
 
 ### Methods
 
-#### `func show_dialogue_balloon(resource: DialoueResource, title: String = "", extra_game_states: Array = []) -> Node`
+#### `func show_dialogue_balloon(resource: DialogueResource, title: String = "", extra_game_states: Array = []) -> Node`
 
 Opens the dialogue balloon configured in settings (or the example balloon if none has been set).
 
 Returns the balloon's base node in case you want to `queue_free()` it yourself.
 
-
-#### `func show_dialogue_balloon_scene(balloon_scene: Node | String, resource: DialoueResource, title: String = "", extra_game_states: Array = []) -> Node`
+#### `func show_dialogue_balloon_scene(balloon_scene: Node | String, resource: DialogueResource, title: String = "", extra_game_states: Array = []) -> Node`
 
 Opens a dialogue balloon given in `balloon_scene`.
 
 Returns the balloon's base node in case you want to `queue_free()` it yourself.
-
 
 #### `func get_next_dialogue_line(resource: DialogueResource, key: String = "", extra_game_states: Array = [], mutation_behaviour: MutationBehaviour = MutationBehaviour.Wait) -> DialogueLine`
 
@@ -54,7 +52,7 @@ Pass an array of nodes as `extra_game_states` in order to temporarily add to the
 
 You can specify `mutation_behaviour` to be one of the values provided in the `DialogueManager.MutationBehaviour` enum. `Wait` is the default and will `await` any mutation lines. `DoNoWait` will run the mutations but not wait for them before moving to the next line. `Skip` will skip mutations entirely. In most cases you should leave this as the default. _The example balloon only supports `Wait`_.
 
-#### `func show_example_dialogue_balloon(resource: DialoueResource, title: String = "", extra_game_states: Array = []) -> CanvasLayer`
+#### `func show_example_dialogue_balloon(resource: DialogueResource, title: String = "", extra_game_states: Array = []) -> CanvasLayer`
 
 Opens the example balloon.
 

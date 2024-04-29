@@ -14,7 +14,7 @@
 
 ### Custom balloon
 
-You can configure a default balloon to show when calling [`DialogueManager.show_dialogue_balloon()`](./API.md#func-show_dialogue_balloonresource-dialoueresource-title-string--0-extra_game_states-array-----node). This balloon will also be used when testing dialogue from the dialogue editor.
+You can configure a default balloon to show when calling [`DialogueManager.show_dialogue_balloon()`](./API.md#func-show_dialogue_balloonresource-dialogueresource-title-string--0-extra_game_states-array-----node). This balloon will also be used when testing dialogue from the dialogue editor.
 
 ### Globals shortcuts
 
