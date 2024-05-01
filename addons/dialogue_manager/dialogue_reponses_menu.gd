@@ -1,7 +1,7 @@
 @icon("./assets/responses_menu.svg")
 
-## A VBoxContainer for dialogue responses provided by [b]Dialogue Manager[/b].
-class_name DialogueResponsesMenu extends VBoxContainer
+## A [Container] for dialogue responses provided by [b]Dialogue Manager[/b].
+class_name DialogueResponsesMenu extends Container
 
 
 ## Emitted when a response is selected.
@@ -14,8 +14,10 @@ signal response_selected(response)
 ## The action for accepting a response (is possibly overridden by parent dialogue balloon).
 @export var next_action: StringName = &""
 
-# The list of dialogue responses.
+## The list of dialogue responses.
 var responses: Array = []:
+	get:
+		return responses
 	set(value):
 		responses = value
 
@@ -64,9 +66,23 @@ func _ready() -> void:
 		response_template.hide()
 
 
-# This is deprecated.
+## Get the selectable items in the menu.
+func get_menu_items() -> Array:
+	var items: Array = []
+	for child in get_children():
+		if not child.visible: continue
+		if "Disallowed" in child.name: continue
+		items.append(child)
+
+	return items
+
+
+## [b]DEPRECATED[/b]. Do not use.
 func set_responses(next_responses: Array) -> void:
 	self.responses = next_responses
+
+
+#region Internal
 
 
 # Prepare the menu for keyboard and mouse navigation.
@@ -100,18 +116,9 @@ func _configure_focus() -> void:
 	items[0].grab_focus()
 
 
-## Get the selectable items in the menu.
-func get_menu_items() -> Array:
-	var items: Array = []
-	for child in get_children():
-		if not child.visible: continue
-		if "Disallowed" in child.name: continue
-		items.append(child)
+#endregion
 
-	return items
-
-
-### Signals
+#region Signals
 
 
 func _on_response_mouse_entered(item: Control) -> void:
@@ -129,3 +136,6 @@ func _on_response_gui_input(event: InputEvent, item: Control, response) -> void:
 		response_selected.emit(response)
 	elif event.is_action_pressed(&"ui_accept" if next_action.is_empty() else next_action) and item in get_menu_items():
 		response_selected.emit(response)
+
+
+#endregion
