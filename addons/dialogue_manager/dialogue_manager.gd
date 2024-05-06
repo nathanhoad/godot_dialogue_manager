@@ -460,7 +460,7 @@ func translate(data: Dictionary) -> String:
 
 			TranslationSource.Guess:
 				var translation_files: Array = ProjectSettings.get_setting(&"internationalization/locale/translations")
-				if translation_files.filter(func(f: String): return f.get_extension() == &"po").size() > 0:
+				if translation_files.filter(func(f: String): return f.get_extension() in [&"po", &"mo"]).size() > 0:
 					# Assume PO
 					return tr(data.text, StringName(data.translation_key))
 				else:
