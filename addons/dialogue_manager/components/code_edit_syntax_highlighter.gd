@@ -186,9 +186,9 @@ func _get_dialogue_syntax_highlighting(start_index: int, text: String) -> Dictio
 	for goto_match in goto_matches:
 		colors[start_index + goto_match.get_start(0)] = {"color": text_edit.theme_overrides.jumps_color}
 		if "file" in goto_match.names:
-			colors[start_index + goto_match.get_start("file")] = {"color": text_edit.theme_overrides.members_color}
+			colors[start_index + goto_match.get_start("file")] = {"color": text_edit.theme_overrides.jumps_color}
 			colors[start_index + goto_match.get_end("file")] = {"color": text_edit.theme_overrides.symbols_color}
-		colors[start_index + goto_match.get_start("title")] = {"color": text_edit.theme_overrides.titles_color}
+		colors[start_index + goto_match.get_start("title")] = {"color": text_edit.theme_overrides.jumps_color}
 		colors[start_index + goto_match.get_end("title")] = {"color": text_edit.theme_overrides.jumps_color}
 		colors[start_index + goto_match.get_end(0)] = {"color": text_edit.theme_overrides.text_color}
 
