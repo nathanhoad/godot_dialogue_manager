@@ -103,8 +103,12 @@ public partial class Balloon : CanvasLayer
     // Detect a change of locale and update the current dialogue line to show the new language
     if (what == NotificationTranslationChanged)
     {
+      float visibleRatio = dialogueLabel.VisibleRatio;
       DialogueLine = await DialogueManager.GetNextDialogueLine(resource, DialogueLine.Id, temporaryGameStates);
-      dialogueLabel.Call("skip_typing");
+      if (visibleRatio < 1.0f)
+      {
+        dialogueLabel.Call("skip_typing");
+      }
     }
   }
 
