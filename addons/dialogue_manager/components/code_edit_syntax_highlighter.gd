@@ -26,11 +26,11 @@ var regex_dict: RegEx = RegEx.create_from_string("^\\{((?>[^\\{\\}]+|(?R))*)\\}$
 var regex_kvdict: RegEx = RegEx.create_from_string("^\\s*(?<left>.*?)\\s*(?<colon>:|=)\\s*(?<right>[^\\/]+)$")
 var regex_commas: RegEx = RegEx.create_from_string("([^,]+)(?:\\s*,\\s*)?")
 var regex_assignment: RegEx = RegEx.create_from_string("^\\s*(?<var>[a-zA-Z_][a-zA-Z_0-9]*)(?:(?<attr>(?:\\.[a-zA-Z_][a-zA-Z_0-9]*)+)|(?:\\[(?<key>[^\\]]+)\\]))?\\s*(?<op>(?:\\/|\\*|-|\\+)?=)\\s*(?<val>.*)$")
-var regex_varname: RegEx = RegEx.create_from_string("^\\s*(?!true|false|and|or|not|in|null)(?<var>[a-zA-Z_][a-zA-Z_0-9]*)(?:(?<attr>(?:\\.[a-zA-Z_][a-zA-Z_0-9]*)+)|(?:\\[(?<key>[^\\]]+)\\]))?\\s*$")
+var regex_varname: RegEx = RegEx.create_from_string("^\\s*(?!true|false|and|or|&&|\\|\\|not|in|null)(?<var>[a-zA-Z_][a-zA-Z_0-9]*)(?:(?<attr>(?:\\.[a-zA-Z_][a-zA-Z_0-9]*)+)|(?:\\[(?<key>[^\\]]+)\\]))?\\s*$")
 var regex_keyword: RegEx = RegEx.create_from_string("^\\s*(true|false|null)\\s*$")
 var regex_function: RegEx = RegEx.create_from_string("^\\s*([a-zA-Z_][a-zA-Z_0-9]*\\s*)\\(")
 var regex_comparison: RegEx = RegEx.create_from_string("^(?<left>.*?)\\s*(?<op>==|>=|<=|<|>|!=)\\s*(?<right>.*)$")
-var regex_blogical: RegEx = RegEx.create_from_string("^(?<left>.*?)\\s+(?<op>and|or|in)\\s+(?<right>.*)$")
+var regex_blogical: RegEx = RegEx.create_from_string("^(?<left>.*?)\\s+(?<op>and|or|in|&&|\\|\\|)\\s+(?<right>.*)$")
 var regex_ulogical: RegEx = RegEx.create_from_string("^\\s*(?<op>not)\\s+(?<right>.*)$")
 var regex_paren: RegEx = RegEx.create_from_string("\\((?<paren>((?:[^\\(\\)]*)|(?:\\((?1)\\)))*?)\\)")
 
