@@ -206,6 +206,13 @@ namespace DialogueManagerRuntime
 
     public partial class DialogueLine : RefCounted
     {
+        private string id = "";
+        public string Id
+        {
+            get => id;
+            set => id = value;
+        }
+
         private string type = "dialogue";
         public string Type
         {

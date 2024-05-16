@@ -21,6 +21,8 @@ public partial class Balloon : CanvasLayer
     set
     {
       isWaitingForInput = false;
+      balloon.FocusMode = Control.FocusModeEnum.All;
+      balloon.GrabFocus();
 
       if (value == null)
       {
@@ -43,10 +45,10 @@ public partial class Balloon : CanvasLayer
 
     balloon.Hide();
 
-    balloon.GuiInput += (inputEvent) =>
+    balloon.GuiInput += (@event) =>
     {
       // Finish typing out the dialogue if we click the mouse
-      if ((bool)dialogueLabel.Get("is_typing") && inputEvent is InputEventMouseButton && (inputEvent as InputEventMouseButton).ButtonIndex == MouseButton.Left && inputEvent.IsPressed())
+      if ((bool)dialogueLabel.Get("is_typing") && @event is InputEventMouseButton && (@event as InputEventMouseButton).ButtonIndex == MouseButton.Left && @event.IsPressed())
       {
         GetViewport().SetInputAsHandled();
         dialogueLabel.Call("skip_typing");
@@ -58,11 +60,11 @@ public partial class Balloon : CanvasLayer
 
       GetViewport().SetInputAsHandled();
 
-      if (inputEvent is InputEventMouseButton && inputEvent.IsPressed() && (inputEvent as InputEventMouseButton).ButtonIndex == MouseButton.Left)
+      if (@event is InputEventMouseButton && @event.IsPressed() && (@event as InputEventMouseButton).ButtonIndex == MouseButton.Left)
       {
         Next(dialogueLine.NextId);
       }
-      else if (inputEvent.IsActionPressed("ui_accept") && GetViewport().GuiGetFocusOwner() == balloon)
+      else if (@event.IsActionPressed("ui_accept") && GetViewport().GuiGetFocusOwner() == balloon)
       {
         Next(dialogueLine.NextId);
       }
@@ -89,10 +91,25 @@ public partial class Balloon : CanvasLayer
   }
 
 
-  public override void _UnhandledInput(InputEvent inputEvent)
+  public override void _UnhandledInput(InputEvent @event)
   {
     // Only the balloon is allowed to handle input while it's showing
     GetViewport().SetInputAsHandled();
+  }
+
+
+  public override async void _Notification(int what)
+  {
+    // Detect a change of locale and update the current dialogue line to show the new language
+    if (what == NotificationTranslationChanged)
+    {
+      float visibleRatio = dialogueLabel.VisibleRatio;
+      DialogueLine = await DialogueManager.GetNextDialogueLine(resource, DialogueLine.Id, temporaryGameStates);
+      if (visibleRatio < 1.0f)
+      {
+        dialogueLabel.Call("skip_typing");
+      }
+    }
   }
 
 
