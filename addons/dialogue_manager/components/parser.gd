@@ -43,7 +43,7 @@ var TOKEN_DEFINITIONS: Dictionary = {
 	DialogueConstants.TOKEN_DOT: RegEx.create_from_string("^\\."),
 	DialogueConstants.TOKEN_STRING: RegEx.create_from_string("^(\".*?\"|\'.*?\')"),
 	DialogueConstants.TOKEN_NOT: RegEx.create_from_string("^(not( |$)|!)"),
-	DialogueConstants.TOKEN_AND_OR: RegEx.create_from_string("^(and|or)( |$)"),
+	DialogueConstants.TOKEN_AND_OR: RegEx.create_from_string("^(and|or|&&|\\|\\|)( |$)"),
 	DialogueConstants.TOKEN_VARIABLE: RegEx.create_from_string("^[a-zA-Z_][a-zA-Z_0-9]*"),
 	DialogueConstants.TOKEN_COMMENT: RegEx.create_from_string("^#.*"),
 	DialogueConstants.TOKEN_CONDITION: RegEx.create_from_string("^(if|elif|else)"),
@@ -1525,10 +1525,15 @@ func build_token_tree(tokens: Array[Dictionary], line_type: String, expected_clo
 			DialogueConstants.TOKEN_ASSIGNMENT, \
 			DialogueConstants.TOKEN_OPERATOR, \
 			DialogueConstants.TOKEN_AND_OR, \
-			DialogueConstants.TOKEN_VARIABLE: \
+			DialogueConstants.TOKEN_VARIABLE:
+				var value = token.value.strip_edges()
+				if value == "&&":
+					value = "and"
+				elif value == "||":
+					value = "or"
 				tree.append({
 					type = token.type,
-					value = token.value.strip_edges()
+					value = value
 				})
 
 			DialogueConstants.TOKEN_STRING:
