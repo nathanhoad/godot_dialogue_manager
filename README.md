@@ -25,6 +25,11 @@ You can install it via the Asset Library or [downloading a copy](https://github.
 
 [![Portraits, emotes/tags, talk sounds](docs/example-portraits.png)](https://nathanhoad.itch.io/godot-dialogue-example-project-portraits)
 
+
+## Wishlist my game
+
+[![Wishlist Bravest Coconut on Steam](docs/bravest-coconut.png)](https://bravestcoconut.com/wishlist)
+
 ## Video Guides
 
 [![Dialogue in Godot 4 for Beginners](docs/beginners.png)](https://youtu.be/UhPFk8FSbd8)
