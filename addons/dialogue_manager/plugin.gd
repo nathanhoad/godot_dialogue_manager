@@ -124,7 +124,7 @@ func _apply_changes() -> void:
 
 func _build() -> bool:
 	# If this is the dotnet Godot then we need to check if the solution file exists
-	DialogueSettings.has_dotnet_solution()
+	DialogueSettings.check_for_dotnet_solution()
 
 	# Ignore errors in other files if we are just running the test scene
 	if DialogueSettings.get_user_value("is_running_test_scene", true): return true
@@ -298,7 +298,7 @@ func _copy_dialogue_balloon() -> void:
 	directory_dialog.dir_selected.connect(func(path):
 		var plugin_path: String = get_plugin_path()
 
-		var is_dotnet: bool = DialogueSettings.has_dotnet_solution()
+		var is_dotnet: bool = DialogueSettings.check_for_dotnet_solution()
 		var balloon_path: String = path + ("/Balloon.tscn" if is_dotnet else "/balloon.tscn")
 		var balloon_script_path: String = path + ("/DialogueBalloon.cs" if is_dotnet else "/balloon.gd")
 
