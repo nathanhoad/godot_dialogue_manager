@@ -168,13 +168,13 @@ static func get_caret(path: String) -> Vector2:
 
 
 static func has_dotnet_solution() -> bool:
-	if get_user_value("has_dotnet_solution", false): return true
-
-	if ProjectSettings.has_setting("dotnet/project/solution_directory"):
-		var directory: String = ProjectSettings.get("dotnet/project/solution_directory")
-		var file_name: String = ProjectSettings.get("dotnet/project/assembly_name")
-		var has_dotnet_solution: bool = FileAccess.file_exists("res://%s/%s.sln" % [directory, file_name])
+	if Engine.is_editor_hint():
+		var has_dotnet_solution: bool = false
+		if ProjectSettings.has_setting("dotnet/project/solution_directory"):
+			var directory: String = ProjectSettings.get("dotnet/project/solution_directory")
+			var file_name: String = ProjectSettings.get("dotnet/project/assembly_name")
+			has_dotnet_solution = FileAccess.file_exists("res://%s/%s.sln" % [directory, file_name])
 		set_user_value("has_dotnet_solution", has_dotnet_solution)
 		return has_dotnet_solution
 
-	return false
+	return get_user_value("has_dotnet_solution", false)
