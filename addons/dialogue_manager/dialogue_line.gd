@@ -39,7 +39,7 @@ var speeds: Dictionary = {}
 var inline_mutations: Array[Array] = []
 
 ## A list of responses attached to this line of dialogue.
-var responses: Array[DialogueResponse] = []
+var responses: Array = []
 
 ## A list of any extra game states to check when resolving variables and mutations.
 var extra_game_states: Array = []
