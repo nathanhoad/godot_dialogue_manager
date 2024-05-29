@@ -72,7 +72,7 @@ var while_loopbacks: Array[String] = []
 
 ## Parse some raw dialogue text. Returns a dictionary containing parse results
 static func parse_string(string: String, path: String) -> DialogueManagerParseResult:
-	var parser := new()
+	var parser: DialogueManagerParser = DialogueManagerParser.new()
 	var error: Error = parser.parse(string, path)
 	var data: DialogueManagerParseResult = parser.get_data()
 	parser.free()
