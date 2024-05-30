@@ -91,7 +91,7 @@ func _unhandled_input(_event: InputEvent) -> void:
 
 func _notification(what: int) -> void:
 	# Detect a change of locale and update the current dialogue line to show the new language
-	if what == NOTIFICATION_TRANSLATION_CHANGED:
+	if what == NOTIFICATION_TRANSLATION_CHANGED and is_instance_valid(dialogue_label):
 		var visible_ratio = dialogue_label.visible_ratio
 		self.dialogue_line = await resource.get_next_dialogue_line(dialogue_line.id)
 		if visible_ratio < 1:

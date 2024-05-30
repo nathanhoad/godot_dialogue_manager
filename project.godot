@@ -25,6 +25,7 @@ DialogueManager="*res://addons/dialogue_manager/dialogue_manager.gd"
 [dialogue_manager]
 
 general/states=["State", "Events"]
+general/uses_dotnet=true
 
 [display]
 
