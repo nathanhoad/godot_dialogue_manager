@@ -276,7 +276,7 @@ func insert_bbcode(open_tag: String, close_tag: String = "") -> void:
 
 # Insert text at current caret position
 # Move Caret down 1 line if not => END
-func insert_text(text: String) -> void:
+func insert_text_at_cursor(text: String) -> void:
 	if text != "=> END":
 		insert_text_at_caret(text+"\n")
 		set_caret_line(get_caret_line()+1)

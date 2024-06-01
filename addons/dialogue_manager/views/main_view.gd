@@ -846,19 +846,19 @@ func _on_insert_button_menu_id_pressed(id: int) -> void:
 		5:
 			code_edit.insert_bbcode("[next=auto]")
 		6:
-			code_edit.insert_text("~ title")
+			code_edit.insert_text_at_cursor("~ title")
 		7:
-			code_edit.insert_text("Nathan: This is Some Dialogue")
+			code_edit.insert_text_at_cursor("Nathan: This is Some Dialogue")
 		8:
-			code_edit.insert_text("Nathan: Choose a Response...\n- Option 1\n\tNathan: You chose option 1\n- Option 2\n\tNathan: You chose option 2")
+			code_edit.insert_text_at_cursor("Nathan: Choose a Response...\n- Option 1\n\tNathan: You chose option 1\n- Option 2\n\tNathan: You chose option 2")
 		9:
-			code_edit.insert_text("% Nathan: This is random line 1.\n% Nathan: This is random line 2.\n%1 Nathan: This is weighted random line 3.")
+			code_edit.insert_text_at_cursor("% Nathan: This is random line 1.\n% Nathan: This is random line 2.\n%1 Nathan: This is weighted random line 3.")
 		10:
-			code_edit.insert_text("Nathan: [[Hi|Hello|Howdy]]")
+			code_edit.insert_text_at_cursor("Nathan: [[Hi|Hello|Howdy]]")
 		11:
-			code_edit.insert_text("=> title")
+			code_edit.insert_text_at_cursor("=> title")
 		12:
-			code_edit.insert_text("=> END")
+			code_edit.insert_text_at_cursor("=> END")
 
 
 func _on_translations_button_menu_id_pressed(id: int) -> void:
