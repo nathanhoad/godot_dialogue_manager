@@ -164,42 +164,64 @@ namespace DialogueManagerRuntime
         }
 
 
-        public async void ResolveThingMethod(GodotObject thing, string method, Array<Variant> args)
-        {
-            MethodInfo? info = thing.GetType().GetMethod(method, BindingFlags.Instance | BindingFlags.Static | BindingFlags.Public);
+    public async void ResolveThingMethod(GodotObject thing, string method, Array<Variant> args)
+    {
+        MethodInfo? info = thing.GetType().GetMethod(method, BindingFlags.Instance | BindingFlags.Static | BindingFlags.Public);
 
-            if (info == null) return;
+        if (info == null) return;
 
 #nullable disable
-            // Convert the method args to something reflection can handle
-            ParameterInfo[] argTypes = info.GetParameters();
-            object[] _args = new object[argTypes.Length];
-            for (int i = 0; i < argTypes.Length; i++)
+        // Convert the method args to something reflection can handle
+        ParameterInfo[] argTypes = info.GetParameters();
+        object[] _args = new object[argTypes.Length];
+        for (int i = 0; i < argTypes.Length; i++)
+        {
+            // check if args is assignable from derived type
+            if (i < args.Count && args[i].Obj != null)
             {
-                if (i < args.Count && args[i].Obj != null)
+                if (argTypes[i].ParameterType.IsAssignableFrom(args[i].Obj.GetType()))
+                {
+                    _args[i] = args[i].Obj;
+                }
+                // fallback to assigning primitive types
+                else
                 {
                     _args[i] = Convert.ChangeType(args[i].Obj, argTypes[i].ParameterType);
                 }
-                else if (argTypes[i].DefaultValue != null)
-                {
-                    _args[i] = argTypes[i].DefaultValue;
-                }
             }
-
-            // Add a single frame wait in case the method returns before signals can listen
-            await ToSignal(Engine.GetMainLoop(), SceneTree.SignalName.ProcessFrame);
-
-            if (info.ReturnType == typeof(Task))
+            else if (argTypes[i].DefaultValue != null)
             {
-                await (Task)info.Invoke(thing, _args);
-                EmitSignal(SignalName.Resolved, null);
+                _args[i] = argTypes[i].DefaultValue;
+            }
+        }
+
+        // Add a single frame wait in case the method returns before signals can listen
+        await ToSignal(Engine.GetMainLoop(), SceneTree.SignalName.ProcessFrame);
+
+        // invoke method and handle the result based on return type
+        object result = info.Invoke(thing, _args);
+
+        if (result is Task taskResult)
+        {
+            // await Tasks and handle result if it is a Task<T>
+            await taskResult;
+            var taskType = taskResult.GetType();
+            if (taskType.IsGenericType && taskType.GetGenericTypeDefinition() == typeof(Task<>))
+            {
+                var resultProperty = taskType.GetProperty("Result");
+                var taskResultValue = resultProperty.GetValue(taskResult);
+                EmitSignal(SignalName.Resolved, (Variant)taskResultValue);
             }
             else
             {
-                var value = (Variant)info.Invoke(thing, _args);
-                EmitSignal(SignalName.Resolved, value);
+                EmitSignal(SignalName.Resolved, null);
             }
         }
+        else
+        {
+            EmitSignal(SignalName.Resolved, (Variant)result);
+        }
+    }
 #nullable enable
     }
 
