@@ -18,7 +18,7 @@ var regex_endconditions: RegEx = RegEx.create_from_string("^\\s*(endif|else):?\\
 var regex_tags: RegEx = RegEx.create_from_string("\\[(?<tag>(?!(?:ID:.*)|if)[a-zA-Z_][a-zA-Z0-9_]*!?)(?:[= ](?<val>[^\\[\\]]+))?\\](?:(?<text>(?!\\[\\/\\k<tag>\\]).*?)?(?<end>\\[\\/\\k<tag>\\]))?")
 var regex_dialogue: RegEx = RegEx.create_from_string("^\\s*(?:(?<random>\\%[\\d.]* )|(?<response>- ))?(?:(?<character>[^#:]*): )?(?<dialogue>.*)$")
 var regex_goto: RegEx = RegEx.create_from_string("=><? (?:(?<file>[^\\/]+)\\/)?(?<title>[^\\/]*)")
-var regex_string: RegEx = RegEx.create_from_string("^(?<delimiter>[\"'])(?<content>(?:\\\\{2})*|(?:.*?[^\\\\](?:\\\\{2})*))\\1$")
+var regex_string: RegEx = RegEx.create_from_string("^&?(?<delimiter>[\"'])(?<content>(?:\\\\{2})*|(?:.*?[^\\\\](?:\\\\{2})*))\\1$")
 var regex_escape: RegEx = RegEx.create_from_string("\\\\.")
 var regex_number: RegEx = RegEx.create_from_string("^-?(?:(?:0x(?:[0-9A-Fa-f]{2})+)|(?:0b[01]+)|(?:\\d+(?:(?:[\\.]\\d*)?(?:e\\d+)?)|(?:_\\d+)+)?)$")
 var regex_array: RegEx = RegEx.create_from_string("\\[((?>[^\\[\\]]+|(?R))*)\\]")
