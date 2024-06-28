@@ -1,8 +1,13 @@
 ~ start
 
-Nathan: I am Nathan. What is your name?
-do AskForName()
-Nathan: Hi {{PlayerName}}! It is nice to meet you.
+# This "Variables" property is a dictionary defined on the balloon itself
+if not Variables["HasStarted"]
+	set Variables["HasStarted"] = true
+	Nathan: I am Nathan. What is your name?
+	do AskForName()
+	Nathan: Hi {{PlayerName}}! It is nice to meet you.
+else
+	Nathan: Hi {{PlayerName}}!
 Nathan: How many treats should Coco have?
 - A couple
 	set TreatsCount = 2
@@ -10,6 +15,8 @@ Nathan: How many treats should Coco have?
 	set TreatsCount = 8
 - Just give her the whole bag
 	set TreatsCount = 50
+- Start again
+	=> start
 Nathan: Ok, Coco, here's {{TreatsCount}} treats!
 Coco: Meow!
 

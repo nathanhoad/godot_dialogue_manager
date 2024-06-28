@@ -35,6 +35,10 @@ public partial class Balloon : CanvasLayer
     }
   }
 
+  public Dictionary Variables = new Dictionary() {
+    { "HasStarted", false }
+  };
+
 
   public override void _Ready()
   {
@@ -101,7 +105,7 @@ public partial class Balloon : CanvasLayer
   public override async void _Notification(int what)
   {
     // Detect a change of locale and update the current dialogue line to show the new language
-    if (what == NotificationTranslationChanged)
+    if (what == NotificationTranslationChanged && IsInstanceValid(dialogueLabel))
     {
       float visibleRatio = dialogueLabel.VisibleRatio;
       DialogueLine = await DialogueManager.GetNextDialogueLine(resource, DialogueLine.Id, temporaryGameStates);
@@ -115,7 +119,7 @@ public partial class Balloon : CanvasLayer
 
   public async void Start(Resource dialogueResource, string title, Array<Variant> extraGameStates = null)
   {
-    temporaryGameStates = extraGameStates ?? new Array<Variant>();
+    temporaryGameStates = new Array<Variant> { this } + (extraGameStates ?? new Array<Variant>());
     isWaitingForInput = false;
     resource = dialogueResource;
 
