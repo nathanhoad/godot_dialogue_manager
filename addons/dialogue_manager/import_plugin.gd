@@ -6,6 +6,7 @@ signal compiled_resource(resource: Resource)
 
 
 const DialogueResource = preload("./dialogue_resource.gd")
+const DialogueManagerParser = preload("./components/parser.gd")
 const DialogueManagerParseResult = preload("./components/parse_result.gd")
 
 const compiler_version = 12

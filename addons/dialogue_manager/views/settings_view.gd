@@ -7,6 +7,7 @@ signal script_button_pressed(path: String)
 
 const DialogueConstants = preload("../constants.gd")
 const DialogueSettings = preload("../settings.gd")
+const BaseDialogueTestScene = preload("../test_scene.gd")
 
 
 enum PathTarget {
@@ -42,7 +43,6 @@ enum PathTarget {
 @onready var create_lines_for_response_characters: CheckBox = $Advanced/CreateLinesForResponseCharacters
 @onready var missing_translations_button: CheckBox = $Advanced/MissingTranslationsButton
 
-var editor_plugin: EditorPlugin
 var all_globals: Dictionary = {}
 var enabled_globals: Array = []
 var path_target: PathTarget = PathTarget.CustomTestScene
@@ -98,7 +98,7 @@ func prepare() -> void:
 	revert_balloon_button.tooltip_text = DialogueConstants.translate(&"settings.revert_to_default_balloon")
 	load_balloon_button.icon = get_theme_icon("Load", "EditorIcons")
 
-	var scale: float = editor_plugin.get_editor_interface().get_editor_scale()
+	var scale: float = Engine.get_meta("DialogueManagerPlugin").get_editor_interface().get_editor_scale()
 	custom_test_scene_file_dialog.min_size = Vector2(600, 500) * scale
 
 	states_title.add_theme_font_override("font", get_theme_font("bold", "EditorFonts"))
@@ -118,7 +118,7 @@ func prepare() -> void:
 	include_notes_in_translations.set_pressed_no_signal(DialogueSettings.get_setting("include_notes_in_translation_exports", false))
 	open_in_external_editor_button.set_pressed_no_signal(DialogueSettings.get_user_value("open_in_external_editor", false))
 
-	var editor_settings: EditorSettings = editor_plugin.get_editor_interface().get_editor_settings()
+	var editor_settings: EditorSettings = Engine.get_meta("DialogueManagerPlugin").get_editor_interface().get_editor_settings()
 	var external_editor: String = editor_settings.get_setting("text_editor/external/exec_path")
 	var use_external_editor: bool = editor_settings.get_setting("text_editor/external/use_external_editor") and external_editor != ""
 	if not use_external_editor:

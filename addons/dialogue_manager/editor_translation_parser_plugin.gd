@@ -3,6 +3,7 @@ extends EditorTranslationParserPlugin
 
 const DialogueConstants = preload("./constants.gd")
 const DialogueSettings = preload("./settings.gd")
+const DialogueManagerParser = preload("./components/parser.gd")
 const DialogueManagerParseResult = preload("./components/parse_result.gd")
 
 
