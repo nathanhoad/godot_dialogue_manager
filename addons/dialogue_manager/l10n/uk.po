@@ -1,0 +1,480 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: Dialogue Manager\n"
+"POT-Creation-Date: \n"
+"PO-Revision-Date: \n"
+"Last-Translator: \n"
+"Language-Team: Veydzher\n"
+"Language: uk\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Poedit 3.2.2\n"
+
+msgid "start_a_new_file"
+msgstr "Створити новий файл"
+
+msgid "open_a_file"
+msgstr "Відкрити файл"
+
+msgid "open.open"
+msgstr "Відкрити..."
+
+msgid "open.no_recent_files"
+msgstr "Немає недавніх файлів"
+
+msgid "open.clear_recent_files"
+msgstr "Очистити недавні файли"
+
+msgid "save_all_files"
+msgstr "Зберегти всі файли"
+
+msgid "find_in_files"
+msgstr "Знайти у файліх..."
+
+msgid "test_dialogue"
+msgstr "Тестувати діалог"
+
+msgid "search_for_text"
+msgstr "Шукати текст"
+
+msgid "insert"
+msgstr "Вставити"
+
+msgid "translations"
+msgstr "Переклади"
+
+msgid "settings"
+msgstr "Налаштування"
+
+msgid "sponsor"
+msgstr "Спонсор"
+
+msgid "show_support"
+msgstr "Підтримка Dialogue Manager"
+
+msgid "docs"
+msgstr "Документація"
+
+msgid "insert.wave_bbcode"
+msgstr "Хвиля BBCode"
+
+msgid "insert.shake_bbcode"
+msgstr "Тряска BBCode"
+
+msgid "insert.typing_pause"
+msgstr "Пауза друку"
+
+msgid "insert.typing_speed_change"
+msgstr "Зміна швидкості друку"
+
+msgid "insert.auto_advance"
+msgstr "Автоматичне просування"
+
+msgid "insert.templates"
+msgstr "Шаблони"
+
+msgid "insert.title"
+msgstr "Заголовок"
+
+msgid "insert.dialogue"
+msgstr "Діалог"
+
+msgid "insert.response"
+msgstr "Відповідь"
+
+msgid "insert.random_lines"
+msgstr "Випадковий рядок"
+
+msgid "insert.random_text"
+msgstr "Випадковий текст"
+
+msgid "insert.actions"
+msgstr "Дії"
+
+msgid "insert.jump"
+msgstr "Перехід до заголовку"
+
+msgid "insert.end_dialogue"
+msgstr "Кінець діалогу"
+
+msgid "generate_line_ids"
+msgstr "Згенерувати ідентифікатори рядків"
+
+msgid "save_characters_to_csv"
+msgstr "Зберегти імена персонажів в CSV..."
+
+msgid "save_to_csv"
+msgstr "Зберегти рядки в CSV..."
+
+msgid "import_from_csv"
+msgstr "Імпортувати зміни в рядках з CSV..."
+
+msgid "confirm_close"
+msgstr "Зберегти зміни до '{path}'?"
+
+msgid "confirm_close.save"
+msgstr "Зберегти зміни"
+
+msgid "confirm_close.discard"
+msgstr "Скасувати"
+
+msgid "buffer.save"
+msgstr "Зберегти"
+
+msgid "buffer.save_as"
+msgstr "Зберегти як..."
+
+msgid "buffer.close"
+msgstr "Закрити"
+
+msgid "buffer.close_all"
+msgstr "Закрити все"
+
+msgid "buffer.close_other_files"
+msgstr "Закрити інші файли"
+
+msgid "buffer.copy_file_path"
+msgstr "Копіювати шлях файлу"
+
+msgid "buffer.show_in_filesystem"
+msgstr "Показати у системі файлів"
+
+msgid "settings.invalid_test_scene"
+msgstr "«{path}» не розширює BaseDialogueTestScene."
+
+msgid "settings.revert_to_default_test_scene"
+msgstr "Повернутися до стандартної тестової сцени"
+
+msgid "settings.default_balloon_hint"
+msgstr "Користувацьке діалогове вікно для використання під час виклику «DialogueManager.show_balloon()»"
+
+msgid "settings.revert_to_default_balloon"
+msgstr "Повернутися до стандартного діалогового вікна"
+
+msgid "settings.default_balloon_path"
+msgstr "<приклад діалогового вікна>"
+
+msgid "settings.autoload"
+msgstr "Авто. завантаження"
+
+msgid "settings.path"
+msgstr "Шлях"
+
+msgid "settings.new_template"
+msgstr "Нові файли діалогів починатимуться з тексту шаблону"
+
+msgid "settings.missing_keys"
+msgstr "Вважати відсутні ключі перекладу як помилками"
+
+msgid "settings.missing_keys_hint"
+msgstr "Якщо ви використовуєте статичні ключі перекладу, увімкнення цього параметра допоможе вам знайти рядки, до яких ви ще не додали ключ."
+
+msgid "settings.characters_translations"
+msgstr "Експорт імен персонажів у файлах перекладу"
+
+msgid "settings.wrap_long_lines"
+msgstr "Переносити довгі рядки"
+
+msgid "settings.include_failed_responses"
+msgstr "Включити відповіді з невдалими умовами"
+
+msgid "settings.ignore_missing_state_values"
+msgstr "Пропускати помилки пропущених значень стану (не рекомендується)"
+
+msgid "settings.custom_test_scene"
+msgstr "Користувацька тестова сцена (повинна розширювати BaseDialogueTestScene)"
+
+msgid "settings.default_csv_locale"
+msgstr "Стандартна мова CSV"
+
+msgid "settings.states_shortcuts"
+msgstr "Скорочення станів"
+
+msgid "settings.states_message"
+msgstr "Якщо автозавантаження увімкнено, ви можете звертатися до його властивостей і методів без необхідності використовувати його назву."
+
+msgid "settings.states_hint"
+msgstr "тобто, замість «ЯкийсьСтан.якась_властивість» ви можете просто використовувати «якусь_властивість»"
+
+msgid "settings.recompile_warning"
+msgstr "Зміна цих параметрів призведе до перекомпіляції усіх діалогів. Змінюйте їх, тільки якщо ви знаєте, що робите."
+
+msgid "settings.create_lines_for_responses_with_characters"
+msgstr "Створити діалогову лінію для відповідей дочірнього елемента з іменами персонажів"
+
+msgid "settings.open_in_external_editor"
+msgstr "Відкрити файли діалогів у зовнішньому редакторі"
+
+msgid "settings.external_editor_warning"
+msgstr "Примітка: Підсвічування синтаксису та детальна перевірка помилок не підтримуються у зовнішніх редакторах."
+
+msgid "settings.include_characters_in_translations"
+msgstr "Включати імена персонажів до експорту перекладу"
+
+msgid "settings.include_notes_in_translations"
+msgstr "Включати примітки (## коментарі) до експорту перекладу"
+
+msgid "settings.check_for_updates"
+msgstr "Перевірити наявність оновлень"
+
+msgid "n_of_n"
+msgstr "{index} з {total}"
+
+msgid "search.find"
+msgstr "Знайти:"
+
+msgid "search.find_all"
+msgstr "Знайти всі..."
+
+msgid "search.placeholder"
+msgstr "Текст для пошуку"
+
+msgid "search.replace_placeholder"
+msgstr "Текст для заміни"
+
+msgid "search.replace_selected"
+msgstr "Замінити виділене"
+
+msgid "search.previous"
+msgstr "Назад"
+
+msgid "search.next"
+msgstr "Далі"
+
+msgid "search.match_case"
+msgstr "Збіг регістру"
+
+msgid "search.toggle_replace"
+msgstr "Замінити"
+
+msgid "search.replace_with"
+msgstr "Замінити на:"
+
+msgid "search.replace"
+msgstr "Замінити"
+
+msgid "search.replace_all"
+msgstr "Замінити все"
+
+msgid "files_list.filter"
+msgstr "Фільтр файлів"
+
+msgid "titles_list.filter"
+msgstr "Фільтр заголовків"
+
+msgid "errors.key_not_found"
+msgstr "Ключ «{key}» не знайдено."
+
+msgid "errors.line_and_message"
+msgstr "Помилка на {line}, {column}: {message}"
+
+msgid "errors_in_script"
+msgstr "У вашому скрипті є помилки. Виправте їх і спробуйте ще раз."
+
+msgid "errors_with_build"
+msgstr "Вам потрібно виправити помилки в діалогах, перш ніж ви зможете запустити гру."
+
+msgid "errors.import_errors"
+msgstr "В імпортованому файлі є помилки."
+
+msgid "errors.already_imported"
+msgstr "Файл уже імпортовано."
+
+msgid "errors.duplicate_import"
+msgstr "Дублювання назви імпорту."
+
+msgid "errors.unknown_using"
+msgstr "Невідоме автозавантаження в операторі використання."
+
+msgid "errors.empty_title"
+msgstr "Заголовки не можуть бути порожніми."
+
+msgid "errors.duplicate_title"
+msgstr "З такою назвою уже є заголовок."
+
+msgid "errors.nested_title"
+msgstr "Заголовки не повинні мати відступів."
+
+msgid "errors.invalid_title_string"
+msgstr "Заголовки можуть містити лише алфавітно-цифрові символи та цифри."
+
+msgid "errors.invalid_title_number"
+msgstr "Заголовки не можуть починатися з цифри."
+
+msgid "errors.unknown_title"
+msgstr "Невідомий заголовок."
+
+msgid "errors.jump_to_invalid_title"
+msgstr "Цей перехід вказує на недійсну назву."
+
+msgid "errors.title_has_no_content"
+msgstr "Цей заголовок не має змісту. Можливо, варто змінити його на «=> END»."
+
+msgid "errors.invalid_expression"
+msgstr "Вираз є недійсним."
+
+msgid "errors.unexpected_condition"
+msgstr "Несподівана умова."
+
+msgid "errors.duplicate_id"
+msgstr "Цей ідентифікатор вже на іншому рядку."
+
+msgid "errors.missing_id"
+msgstr "У цьому рядку відсутній ідентифікатор."
+
+msgid "errors.invalid_indentation"
+msgstr "Неправильний відступ."
+
+msgid "errors.condition_has_no_content"
+msgstr "Рядок умови потребує відступу під ним."
+
+msgid "errors.incomplete_expression"
+msgstr "Незавершений вираз."
+
+msgid "errors.invalid_expression_for_value"
+msgstr "Недійсний вираз для значення."
+
+msgid "errors.file_not_found"
+msgstr "Файл не знайдено."
+
+msgid "errors.unexpected_end_of_expression"
+msgstr "Несподіваний кінець виразу."
+
+msgid "errors.unexpected_function"
+msgstr "Несподівана функція."
+
+msgid "errors.unexpected_bracket"
+msgstr "Несподівана дужка."
+
+msgid "errors.unexpected_closing_bracket"
+msgstr "Несподівана закриваюча дужка."
+
+msgid "errors.missing_closing_bracket"
+msgstr "Відсутня закриваюча дужка."
+
+msgid "errors.unexpected_operator"
+msgstr "Несподіваний оператор."
+
+msgid "errors.unexpected_comma"
+msgstr "Несподівана кома."
+
+msgid "errors.unexpected_colon"
+msgstr "Несподівана двокрапка."
+
+msgid "errors.unexpected_dot"
+msgstr "Несподівана крапка."
+
+msgid "errors.unexpected_boolean"
+msgstr "Несподіваний логічний вираз."
+
+msgid "errors.unexpected_string"
+msgstr "Несподіваний рядок."
+
+msgid "errors.unexpected_number"
+msgstr "Несподіване число."
+
+msgid "errors.unexpected_variable"
+msgstr "Несподівана змінна."
+
+msgid "errors.invalid_index"
+msgstr "Недійсний індекс."
+
+msgid "errors.unexpected_assignment"
+msgstr "Несподіване призначення."
+
+msgid "errors.unknown"
+msgstr "Невідомий синтаксис."
+
+msgid "update.available"
+msgstr "Доступна версія {version}"
+
+msgid "update.is_available_for_download"
+msgstr "Версія %s доступна для завантаження!"
+
+msgid "update.downloading"
+msgstr "Завантаження..."
+
+msgid "update.download_update"
+msgstr "Завантажити оновлення"
+
+msgid "update.needs_reload"
+msgstr "Щоб встановити оновлення, проєкт потрібно перезавантажити."
+
+msgid "update.reload_ok_button"
+msgstr "Перезавантажити проєкт"
+
+msgid "update.reload_cancel_button"
+msgstr "Пізніше"
+
+msgid "update.reload_project"
+msgstr "Перезавантажити проєкт"
+
+msgid "update.release_notes"
+msgstr "Читати примітки оновлення"
+
+msgid "update.success"
+msgstr "Менеджер діалогів тепер має версію {version}."
+
+msgid "update.failed"
+msgstr "Виникла проблема із завантаженням оновлення."
+
+msgid "runtime.no_resource"
+msgstr "Ресурс для діалогу не надано."
+
+msgid "runtime.no_content"
+msgstr "«{file_path}» не має вмісту."
+
+msgid "runtime.errors"
+msgstr "У тексті діалогу було виявлено помилки ({count})."
+
+msgid "runtime.error_detail"
+msgstr "Рядок {line}: {message}"
+
+msgid "runtime.errors_see_details"
+msgstr "У тексті діалогу було виявлено помилки ({count}). Див. детальніше у розділі «Вивід»."
+
+msgid "runtime.invalid_expression"
+msgstr "«{expression}» не є допустимим виразом: {error}"
+
+msgid "runtime.array_index_out_of_bounds"
+msgstr "Індекс {index} виходить за межі масиву «{array}»."
+
+msgid "runtime.left_hand_size_cannot_be_assigned_to"
+msgstr "Ліва частина виразу не може бути присвоєна."
+
+msgid "runtime.key_not_found"
+msgstr "Ключ «{key}» у словнику «{dictionary}»"
+
+msgid "runtime.property_not_found"
+msgstr "«{property}» не є властивістю для жодного стану гри ({states})."
+
+msgid "runtime.property_not_found_missing_export"
+msgstr "«{property}» не є властивістю для жодного стану гри ({states}). Можливо, вам слід додати декоратор [Export]."
+
+msgid "runtime.method_not_found"
+msgstr "«{method}» не є методом на жодному зі станів гри ({states})"
+
+msgid "runtime.signal_not_found"
+msgstr "«{signal_name}» не є сигналом на жодному зі станів гри ({states})"
+
+msgid "runtime.method_not_callable"
+msgstr "«{method}» не є методом, який можна викликати в «{object}»"
+
+msgid "runtime.unknown_operator"
+msgstr "Невідомий оператор."
+
+msgid "runtime.unknown_autoload"
+msgstr "«{autoload}» не є дійсним автозавантаженням."
+
+msgid "runtime.something_went_wrong"
+msgstr "Щось пішло не так."
+
+msgid "runtime.expected_n_got_n_args"
+msgstr "«{method}» було викликано з аргументами «{received}», але він має лише «{expected}»."
+
+msgid "runtime.unsupported_array_type"
+msgstr "Array[{type}] не підтримується в мутаціях. Натомість використовуйте Array як тип."
+
+msgid "runtime.dialogue_balloon_missing_start_method"
+msgstr "У вашому діалоговому вікні відсутній метод «start» або «Start»."
