@@ -148,6 +148,9 @@ func get_editor_shortcuts() -> Dictionary:
 			_create_event("Ctrl+K"),
 			_create_event("Ctrl+Slash")
 		],
+		delete_line = [
+			_create_event("Ctrl+Shift+K")
+		],
 		move_up = [
 			_create_event("Alt+Up")
 		],
@@ -179,9 +182,13 @@ func get_editor_shortcuts() -> Dictionary:
 	}
 
 	var paths = get_editor_interface().get_editor_paths()
-	var settings = load(paths.get_config_dir() + "/editor_settings-4.tres")
-
-	if not settings: return shortcuts
+	var settings
+	if FileAccess.file_exists(paths.get_config_dir() + "/editor_settings-4.3.tres"):
+		settings = load(paths.get_config_dir() + "/editor_settings-4.3.tres")
+	elif FileAccess.file_exists(paths.get_config_dir() + "/editor_settings-4.tres"):
+		settings = load(paths.get_config_dir() + "/editor_settings-4.tres")
+	else:
+		return shortcuts
 
 	for s in settings.get("shortcuts"):
 		for key in shortcuts:
@@ -210,7 +217,7 @@ func get_editor_shortcut(event: InputEventKey) -> String:
 	var shortcuts: Dictionary = get_editor_shortcuts()
 	for key in shortcuts:
 		for shortcut in shortcuts.get(key, []):
-			if event.is_match(shortcut):
+			if event.as_text().split(" ")[0] == shortcut.as_text().split(" ")[0]:
 				return key
 	return ""
 
