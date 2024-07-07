@@ -14,9 +14,6 @@ const REMOTE_RELEASES_URL = "https://api.github.com/repos/nathanhoad/godot_dialo
 @onready var update_failed_dialog: AcceptDialog = $UpdateFailedDialog
 @onready var timer: Timer = $Timer
 
-# The main editor plugin
-var editor_plugin: EditorPlugin
-
 var needs_reload: bool = false
 
 # A lambda that gets called just before refreshing the plugin. Return false to stop the reload.
@@ -66,7 +63,7 @@ func check_for_update() -> void:
 func _on_http_request_request_completed(result: int, response_code: int, headers: PackedStringArray, body: PackedByteArray) -> void:
 	if result != HTTPRequest.RESULT_SUCCESS: return
 
-	var current_version: String = editor_plugin.get_version()
+	var current_version: String = Engine.get_meta("DialogueManagerPlugin").get_version()
 
 	# Work out the next version from the releases information on GitHub
 	var response = JSON.parse_string(body.get_string_from_utf8())
@@ -87,9 +84,9 @@ func _on_update_button_pressed() -> void:
 	if needs_reload:
 		var will_refresh = on_before_refresh.call()
 		if will_refresh:
-			editor_plugin.get_editor_interface().restart_editor(true)
+			Engine.get_meta("DialogueManagerPlugin").get_editor_interface().restart_editor(true)
 	else:
-		var scale: float = editor_plugin.get_editor_interface().get_editor_scale()
+		var scale: float = Engine.get_meta("DialogueManagerPlugin").get_editor_interface().get_editor_scale()
 		download_dialog.min_size = Vector2(300, 250) * scale
 		download_dialog.popup_centered()
 
@@ -118,7 +115,7 @@ func _on_download_update_panel_failed() -> void:
 
 
 func _on_needs_reload_dialog_confirmed() -> void:
-	editor_plugin.get_editor_interface().restart_editor(true)
+	Engine.get_meta("DialogueManagerPlugin").get_editor_interface().restart_editor(true)
 
 
 func _on_timer_timeout() -> void:

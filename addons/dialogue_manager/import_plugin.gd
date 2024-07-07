@@ -71,6 +71,8 @@ func _import(source_file: String, save_path: String, options: Dictionary, platfo
 	var file: FileAccess = FileAccess.open(source_file, FileAccess.READ)
 	var raw_text: String = file.get_as_text()
 
+	cache.file_content_changed.emit(source_file, raw_text)
+
 	# Parse the text
 	var parser: DialogueManagerParser = DialogueManagerParser.new()
 	var err: Error = parser.parse(raw_text, source_file)

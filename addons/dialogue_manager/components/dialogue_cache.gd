@@ -6,6 +6,9 @@ const DialogueSettings = preload("../settings.gd")
 const DialogueManagerParseResult = preload("./parse_result.gd")
 
 
+signal file_content_changed(path: String, new_content: String)
+
+
 # Keeps track of errors and dependencies.
 # {
 # 	<dialogue file path> = {
