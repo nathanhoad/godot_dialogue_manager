@@ -7,6 +7,7 @@ signal error_clicked(line_number: int)
 signal external_file_requested(path: String, title: String)
 
 
+const DialogueManagerParser = preload("./parser.gd")
 const DialogueSyntaxHighlighter = preload("./code_edit_syntax_highlighter.gd")
 
 

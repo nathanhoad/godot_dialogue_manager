@@ -8,6 +8,7 @@ const DialogueTranslationParserPlugin = preload("./editor_translation_parser_plu
 const DialogueSettings = preload("./settings.gd")
 const DialogueCache = preload("./components/dialogue_cache.gd")
 const MainView = preload("./views/main_view.tscn")
+const DialogueResource = preload("./dialogue_resource.gd")
 
 
 var import_plugin: DialogueImportPlugin

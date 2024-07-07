@@ -4,6 +4,8 @@ extends Control
 
 const DialogueConstants = preload("../constants.gd")
 const DialogueSettings = preload("../settings.gd")
+const DialogueResource = preload("../dialogue_resource.gd")
+const DialogueManagerParser = preload("../components/parser.gd")
 
 const OPEN_OPEN = 100
 const OPEN_CLEAR = 101
@@ -166,8 +168,6 @@ func _ready() -> void:
 
 	close_confirmation_dialog.ok_button_text = DialogueConstants.translate(&"confirm_close.save")
 	close_confirmation_dialog.add_button(DialogueConstants.translate(&"confirm_close.discard"), true, "discard")
-
-	settings_view.editor_plugin = editor_plugin
 
 	errors_dialog.dialog_text = DialogueConstants.translate(&"errors_in_script")
 
