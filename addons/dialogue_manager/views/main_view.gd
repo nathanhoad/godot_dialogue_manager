@@ -71,9 +71,6 @@ enum TranslationSource {
 @onready var code_edit := %CodeEdit
 @onready var errors_panel := %ErrorsPanel
 
-# The Dialogue Manager plugin
-var editor_plugin: EditorPlugin
-
 # The currently open file
 var current_file_path: String = "":
 	set(next_current_file_path):
@@ -119,16 +116,19 @@ var open_buffers: Dictionary = {}
 # Which thing are we exporting translations for?
 var translation_source: TranslationSource = TranslationSource.Lines
 
+var plugin: EditorPlugin
+
 
 func _ready() -> void:
+	plugin = Engine.get_meta("DialogueManagerPlugin")
+
 	apply_theme()
 
 	# Start with nothing open
 	self.current_file_path = ""
 
 	# Set up the update checker
-	version_label.text = "v%s" % editor_plugin.get_version()
-	update_button.editor_plugin = editor_plugin
+	version_label.text = "v%s" % plugin.get_version()
 	update_button.on_before_refresh = func on_before_refresh():
 		# Save everything
 		DialogueSettings.set_user_value("just_refreshed", {
@@ -152,7 +152,7 @@ func _ready() -> void:
 
 	code_edit.main_view = self
 	code_edit.wrap_mode = TextEdit.LINE_WRAPPING_BOUNDARY if DialogueSettings.get_setting("wrap_lines", false) else TextEdit.LINE_WRAPPING_NONE
-	var editor_settings: EditorSettings = editor_plugin.get_editor_interface().get_editor_settings()
+	var editor_settings: EditorSettings = plugin.get_editor_interface().get_editor_settings()
 	editor_settings.settings_changed.connect(_on_editor_settings_changed)
 	_on_editor_settings_changed()
 
@@ -171,6 +171,9 @@ func _ready() -> void:
 
 	errors_dialog.dialog_text = DialogueConstants.translate(&"errors_in_script")
 
+	# Update the buffer if a file was modified externally (retains undo step)
+	Engine.get_meta("DialogueCache").file_content_changed.connect(_on_cache_file_content_changed)
+
 
 func _exit_tree() -> void:
 	DialogueSettings.set_user_value("reopen_files", open_buffers.keys())
@@ -181,7 +184,7 @@ func _unhandled_input(event: InputEvent) -> void:
 	if not visible: return
 
 	if event is InputEventKey and event.is_pressed():
-		var shortcut: String = Engine.get_meta("DialogueManagerPlugin").get_editor_shortcut(event)
+		var shortcut: String = plugin.get_editor_shortcut(event)
 		match shortcut:
 			"close_file":
 				get_viewport().set_input_as_handled()
@@ -214,10 +217,11 @@ func load_from_version_refresh(just_refreshed: Dictionary) -> void:
 	else:
 		open_buffers = just_refreshed.open_buffers
 
+	var interface: EditorInterface = plugin.get_editor_interface()
 	if just_refreshed.current_file_path != "":
-		editor_plugin.get_editor_interface().edit_resource(load(just_refreshed.current_file_path))
+		interface.edit_resource(load(just_refreshed.current_file_path))
 	else:
-		editor_plugin.get_editor_interface().set_main_screen_editor("Dialogue")
+		interface.set_main_screen_editor("Dialogue")
 
 	updated_dialog.dialog_text = DialogueConstants.translate(&"update.success").format({ version = update_button.get_version() })
 	updated_dialog.popup_centered()
@@ -248,7 +252,7 @@ func new_file(path: String, content: String = "") -> void:
 	else:
 		file.store_string(content)
 
-	editor_plugin.get_editor_interface().get_resource_filesystem().scan()
+	plugin.get_editor_interface().get_resource_filesystem().scan()
 
 
 # Open a dialogue resource for editing
@@ -277,7 +281,7 @@ func open_file(path: String) -> void:
 
 
 func show_file_in_filesystem(path: String) -> void:
-	var file_system_dock: FileSystemDock = Engine.get_meta("DialogueManagerPlugin") \
+	var file_system_dock: FileSystemDock = plugin \
 		.get_editor_interface() \
 		.get_file_system_dock()
 
@@ -317,7 +321,7 @@ func save_file(path: String, rescan_file_system: bool = true) -> void:
 	file.close()
 
 	if rescan_file_system:
-		Engine.get_meta("DialogueManagerPlugin") \
+		plugin \
 			.get_editor_interface() \
 			.get_resource_filesystem()\
 			.scan()
@@ -351,9 +355,9 @@ func remove_file_from_open_buffers(file: String) -> void:
 
 # Apply theme colors and icons to the UI
 func apply_theme() -> void:
-	if is_instance_valid(editor_plugin) and is_instance_valid(code_edit):
-		var scale: float = editor_plugin.get_editor_interface().get_editor_scale()
-		var editor_settings = editor_plugin.get_editor_interface().get_editor_settings()
+	if is_instance_valid(plugin) and is_instance_valid(code_edit):
+		var scale: float = plugin.get_editor_interface().get_editor_scale()
+		var editor_settings = plugin.get_editor_interface().get_editor_settings()
 		code_edit.theme_overrides = {
 			scale = scale,
 
@@ -674,8 +678,8 @@ func export_translations_to_csv(path: String) -> void:
 
 	file.close()
 
-	editor_plugin.get_editor_interface().get_resource_filesystem().scan()
-	editor_plugin.get_editor_interface().get_file_system_dock().call_deferred("navigate_to_path", path)
+	plugin.get_editor_interface().get_resource_filesystem().scan()
+	plugin.get_editor_interface().get_file_system_dock().call_deferred("navigate_to_path", path)
 
 	# Add it to the project l10n settings if it's not already there
 	var language_code: RegExMatch = RegEx.create_from_string("^[a-z]{2,3}").search(default_locale)
@@ -737,8 +741,8 @@ func export_character_names_to_csv(path: String) -> void:
 
 	file.close()
 
-	editor_plugin.get_editor_interface().get_resource_filesystem().scan()
-	editor_plugin.get_editor_interface().get_file_system_dock().call_deferred("navigate_to_path", path)
+	plugin.get_editor_interface().get_resource_filesystem().scan()
+	plugin.get_editor_interface().get_file_system_dock().call_deferred("navigate_to_path", path)
 
 	# Add it to the project l10n settings if it's not already there
 	var translation_path: String = path.replace(".csv", ".en.translation")
@@ -809,8 +813,16 @@ func show_search_form(is_enabled: bool) -> void:
 ### Signals
 
 
+func _on_cache_file_content_changed(path: String, new_content: String) -> void:
+	if open_buffers.has(path):
+		var buffer = open_buffers[path]
+		buffer.text = new_content
+		buffer.pristine_text = new_content
+		code_edit.text = new_content
+
+
 func _on_editor_settings_changed() -> void:
-	var editor_settings: EditorSettings = editor_plugin.get_editor_interface().get_editor_settings()
+	var editor_settings: EditorSettings = plugin.get_editor_interface().get_editor_settings()
 	code_edit.minimap_draw = editor_settings.get_setting("text_editor/appearance/minimap/show_minimap")
 	code_edit.minimap_width = editor_settings.get_setting("text_editor/appearance/minimap/minimap_width")
 	code_edit.scroll_smooth = editor_settings.get_setting("text_editor/behavior/navigation/smooth_scrolling")
@@ -1002,7 +1014,7 @@ func _on_settings_button_pressed() -> void:
 
 func _on_settings_view_script_button_pressed(path: String) -> void:
 	settings_dialog.hide()
-	editor_plugin.get_editor_interface().edit_resource(load(path))
+	plugin.get_editor_interface().edit_resource(load(path))
 
 
 func _on_test_button_pressed() -> void:
@@ -1015,7 +1027,7 @@ func _on_test_button_pressed() -> void:
 	DialogueSettings.set_user_value("is_running_test_scene", true)
 	DialogueSettings.set_user_value("run_resource_path", current_file_path)
 	var test_scene_path: String = DialogueSettings.get_setting("custom_test_scene_path", "res://addons/dialogue_manager/test_scene.tscn")
-	editor_plugin.get_editor_interface().play_custom_scene(test_scene_path)
+	plugin.get_editor_interface().play_custom_scene(test_scene_path)
 
 
 func _on_settings_dialog_confirmed() -> void:
@@ -1045,7 +1057,7 @@ func _on_files_list_file_middle_clicked(path: String):
 func _on_files_popup_menu_about_to_popup() -> void:
 	files_popup_menu.clear()
 
-	var shortcuts: Dictionary = Engine.get_meta("DialogueManagerPlugin").get_editor_shortcuts()
+	var shortcuts: Dictionary = plugin.get_editor_shortcuts()
 
 	files_popup_menu.add_item(DialogueConstants.translate(&"buffer.save"), ITEM_SAVE, OS.find_keycode_from_string(shortcuts.get("save")[0].as_text_keycode()))
 	files_popup_menu.add_item(DialogueConstants.translate(&"buffer.save_as"), ITEM_SAVE_AS)

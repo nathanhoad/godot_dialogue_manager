@@ -25,6 +25,9 @@ func _enter_tree() -> void:
 
 		DialogueSettings.prepare()
 
+		dialogue_cache = DialogueCache.new()
+		Engine.set_meta("DialogueCache", dialogue_cache)
+
 		import_plugin = DialogueImportPlugin.new()
 		add_import_plugin(import_plugin)
 
@@ -32,13 +35,9 @@ func _enter_tree() -> void:
 		add_translation_parser_plugin(translation_parser_plugin)
 
 		main_view = MainView.instantiate()
-		main_view.editor_plugin = self
 		get_editor_interface().get_editor_main_screen().add_child(main_view)
 		_make_visible(false)
-
-		dialogue_cache = DialogueCache.new()
 		main_view.add_child(dialogue_cache)
-		Engine.set_meta("DialogueCache", dialogue_cache)
 
 		_update_localization()
 
