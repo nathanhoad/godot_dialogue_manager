@@ -78,6 +78,9 @@ func _gui_input(event: InputEvent) -> void:
 			"toggle_comment":
 				toggle_comment()
 				get_viewport().set_input_as_handled()
+			"delete_line":
+				delete_current_line()
+				get_viewport().set_input_as_handled()
 			"move_up":
 				move_line(-1)
 				get_viewport().set_input_as_handled()
@@ -349,6 +352,16 @@ func toggle_comment() -> void:
 	end_complex_operation()
 
 	text_set.emit()
+	text_changed.emit()
+
+
+# Remove the current line
+func delete_current_line() -> void:
+	var cursor = get_cursor()
+	var lines: PackedStringArray = text.split("\n")
+	lines.remove_at(cursor.y)
+	text = "\n".join(lines)
+	set_cursor(cursor)
 	text_changed.emit()
 
 
