@@ -174,6 +174,8 @@ func _ready() -> void:
 	# Update the buffer if a file was modified externally (retains undo step)
 	Engine.get_meta("DialogueCache").file_content_changed.connect(_on_cache_file_content_changed)
 
+	plugin.get_editor_interface().get_file_system_dock().files_moved.connect(_on_files_moved)
+
 
 func _exit_tree() -> void:
 	DialogueSettings.set_user_value("reopen_files", open_buffers.keys())
@@ -811,6 +813,13 @@ func show_search_form(is_enabled: bool) -> void:
 
 
 ### Signals
+
+
+func _on_files_moved(old_file: String, new_file: String) -> void:
+	if open_buffers.has(old_file):
+		open_buffers[new_file] = open_buffers[old_file]
+		open_buffers.erase(old_file)
+		open_buffers[new_file]
 
 
 func _on_cache_file_content_changed(path: String, new_content: String) -> void:
