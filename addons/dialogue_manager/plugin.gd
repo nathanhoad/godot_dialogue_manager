@@ -4,6 +4,7 @@ extends EditorPlugin
 
 const DialogueConstants = preload("./constants.gd")
 const DialogueImportPlugin = preload("./import_plugin.gd")
+const DialogueInspectorPlugin = preload("./inspector_plugin.gd")
 const DialogueTranslationParserPlugin = preload("./editor_translation_parser_plugin.gd")
 const DialogueSettings = preload("./settings.gd")
 const DialogueCache = preload("./components/dialogue_cache.gd")
@@ -12,6 +13,7 @@ const DialogueResource = preload("./dialogue_resource.gd")
 
 
 var import_plugin: DialogueImportPlugin
+var inspector_plugin: DialogueInspectorPlugin
 var translation_parser_plugin: DialogueTranslationParserPlugin
 var main_view
 var dialogue_cache: DialogueCache
@@ -30,6 +32,9 @@ func _enter_tree() -> void:
 
 		import_plugin = DialogueImportPlugin.new()
 		add_import_plugin(import_plugin)
+
+		inspector_plugin = DialogueInspectorPlugin.new()
+		add_inspector_plugin(inspector_plugin)
 
 		translation_parser_plugin = DialogueTranslationParserPlugin.new()
 		add_translation_parser_plugin(translation_parser_plugin)
@@ -65,6 +70,9 @@ func _exit_tree() -> void:
 
 	remove_import_plugin(import_plugin)
 	import_plugin = null
+
+	remove_inspector_plugin(inspector_plugin)
+	inspector_plugin = null
 
 	remove_translation_parser_plugin(translation_parser_plugin)
 	translation_parser_plugin = null

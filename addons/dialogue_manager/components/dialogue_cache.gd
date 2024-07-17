@@ -66,6 +66,11 @@ func get_files() -> PackedStringArray:
 	return _cache.keys()
 
 
+## Check if a file is known to the cache.
+func has_file(path: String) -> bool:
+	return _cache.has(path)
+
+
 ## Remember any errors in a dialogue file.
 func add_errors_to_file(path: String, errors: Array[Dictionary]) -> void:
 	if _cache.has(path):
