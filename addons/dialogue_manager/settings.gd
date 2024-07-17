@@ -21,7 +21,8 @@ const DEFAULT_SETTINGS = {
 	create_lines_for_responses_with_characters = true,
 	include_character_in_translation_exports = false,
 	include_notes_in_translation_exports = false,
-	uses_dotnet = false
+	uses_dotnet = false,
+	try_suppressing_startup_unsaved_indicator = false
 }
 
 
