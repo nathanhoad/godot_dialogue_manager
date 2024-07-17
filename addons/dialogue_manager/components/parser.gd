@@ -771,12 +771,18 @@ func apply_weighted_random(id: int, raw_line: String, indent_size: int, line: Di
 	if original_random_line.size() > 0:
 		original_random_line["siblings"] += [{ weight = weight, id = str(id) }]
 		if original_random_line.type != DialogueConstants.TYPE_GOTO:
-			# Update the next line for all siblings (not goto lines, though, they manager their
+			# Update the next line for all siblings (not goto lines, though, they manage their
 			# own next ID)
 			original_random_line["next_id"] = get_line_after_line(id, indent_size, line)
 			for sibling in original_random_line["siblings"]:
 				if sibling.id in parsed_lines:
 					parsed_lines[sibling.id]["next_id"] = original_random_line["next_id"]
+		elif original_random_line.has("next_id_after"):
+			original_random_line["next_id_after"] = get_line_after_line(id, indent_size, line)
+			for sibling in original_random_line["siblings"]:
+				if sibling.id in parsed_lines:
+					parsed_lines[sibling.id]["next_id_after"] = original_random_line["next_id_after"]
+
 		line["next_id"] = original_random_line.next_id
 	# Or set up this line as the original
 	else:
