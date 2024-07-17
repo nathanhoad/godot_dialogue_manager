@@ -1209,6 +1209,20 @@ func resolve_signal(args: Array, extra_game_states: Array):
 	# The signal hasn't been found anywhere
 	show_error_for_missing_state_value(DialogueConstants.translate(&"runtime.signal_not_found").format({ signal_name = args[0], states = str(get_game_states(extra_game_states)) }))
 
+var cached_thing_method_infos:Dictionary = {}
+
+func get_method_dictionary_for(thing) -> Dictionary:
+	# Use the thing instance id as a key for the caching dictionary.
+	var thing_instance_id:int = thing.get_instance_id()
+	# If this thing has already had its method infos cached, return the cached version.
+	if cached_thing_method_infos.has(thing_instance_id):
+		return cached_thing_method_infos[thing_instance_id]
+	# If not, build a new method dictionary and cache it.
+	var dictionary_methods = {}
+	for i in thing.get_method_list():
+		dictionary_methods[i.name] = i
+	cached_thing_method_infos[thing_instance_id] = dictionary_methods
+	return dictionary_methods
 
 func resolve_thing_method(thing, method: String, args: Array):
 	if Builtins.is_supported(thing):
@@ -1218,7 +1232,9 @@ func resolve_thing_method(thing, method: String, args: Array):
 
 	if thing.has_method(method):
 		# Try to convert any literals to the right type
-		var method_info: Dictionary = thing.get_method_list().filter(func(m): return method == m.name)[0]
+		var methods_dictionary = get_method_dictionary_for(thing)
+		var method_info: Dictionary = methods_dictionary[method]
+		
 		var method_args: Array = method_info.args
 		if method_info.flags & METHOD_FLAG_VARARG == 0 and method_args.size() < args.size():
 			assert(false, DialogueConstants.translate(&"runtime.expected_n_got_n_args").format({ expected = method_args.size(), method = method, received = args.size()}))
