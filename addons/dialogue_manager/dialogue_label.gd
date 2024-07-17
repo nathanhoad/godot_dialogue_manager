@@ -39,6 +39,8 @@ signal finished_typing()
 ## The amount of time to pause when exposing a character present in pause_at_characters.
 @export var seconds_per_pause_step: float = 0.3
 
+var _already_mutated_indices: PackedInt32Array = []
+
 
 ## The current line of dialogue.
 var dialogue_line:
@@ -98,6 +100,7 @@ func type_out() -> void:
 	_waiting_seconds = 0
 	_last_wait_index = -1
 	_last_mutation_index = -1
+	_already_mutated_indices.clear()
 
 	self.is_typing = true
 
@@ -182,7 +185,8 @@ func _mutate_inline_mutations(index: int) -> void:
 		# inline mutations are an array of arrays in the form of [character index, resolvable function]
 		if inline_mutation[0] > index:
 			return
-		if inline_mutation[0] == index:
+		if inline_mutation[0] == index and not _already_mutated_indices.has(index):
+			_already_mutated_indices.append(index)
 			_is_awaiting_mutation = true
 			# The DialogueManager can't be referenced directly here so we need to get it by its path
 			await Engine.get_singleton("DialogueManager").mutate(inline_mutation[1], dialogue_line.extra_game_states, true)

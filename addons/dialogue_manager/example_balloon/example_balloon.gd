@@ -23,6 +23,8 @@ var is_waiting_for_input: bool = false
 ## See if we are running a long mutation and should hide the balloon
 var will_hide_balloon: bool = false
 
+var _locale: String = TranslationServer.get_locale()
+
 ## The current line
 var dialogue_line: DialogueLine:
 	set(next_dialogue_line):
@@ -90,8 +92,9 @@ func _unhandled_input(_event: InputEvent) -> void:
 
 
 func _notification(what: int) -> void:
-	# Detect a change of locale and update the current dialogue line to show the new language
-	if what == NOTIFICATION_TRANSLATION_CHANGED and is_instance_valid(dialogue_label):
+	## Detect a change of locale and update the current dialogue line to show the new language
+	if what == NOTIFICATION_TRANSLATION_CHANGED and _locale != TranslationServer.get_locale() and is_instance_valid(dialogue_label):
+		_locale = TranslationServer.get_locale()
 		var visible_ratio = dialogue_label.visible_ratio
 		self.dialogue_line = await resource.get_next_dialogue_line(dialogue_line.id)
 		if visible_ratio < 1:
