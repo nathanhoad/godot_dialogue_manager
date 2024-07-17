@@ -343,6 +343,11 @@ func parse(text: String, path: String) -> Error:
 			if raw_line.begins_with("\\~"): raw_line = raw_line.substr(1)
 			if raw_line.begins_with("\\=>"): raw_line = raw_line.substr(1)
 
+			# Check for jumps
+			if " => " in raw_line:
+				line["next_id"] = extract_goto(raw_line)
+				raw_line = raw_line.split(" => ")[0]
+
 			# Add any doc notes
 			line["notes"] = "\n".join(doc_comments)
 			doc_comments = []
