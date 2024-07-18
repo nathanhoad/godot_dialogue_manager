@@ -72,7 +72,9 @@ func _on_http_request_request_completed(result: int, response_code: int, headers
 	# GitHub releases are in order of creation, not order of version
 	var versions = (response as Array).filter(func(release):
 		var version: String = release.tag_name.substr(1)
-		return version_to_number(version) > version_to_number(current_version)
+		var major_version: int = version.split(".")[0].to_int()
+		var current_major_version: int = current_version.split(".")[0].to_int()
+		return major_version == current_major_version and version_to_number(version) > version_to_number(current_version)
 	)
 	if versions.size() > 0:
 		download_update_panel.next_version_release = versions[0]
