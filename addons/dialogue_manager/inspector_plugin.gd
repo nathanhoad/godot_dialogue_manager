@@ -12,7 +12,7 @@ func _can_handle(object) -> bool:
 	return true
 
 
-func _parse_property(object: Object, type: int, name: String, hint_type: int, hint_string: String, usage_flags: int, wide: bool) -> bool:
+func _parse_property(object: Object, type, name: String, hint_type, hint_string: String, usage_flags: int, wide: bool) -> bool:
 	if hint_string == "DialogueResource" or ("dialogue" in name.to_lower() and hint_string == "Resource"):
 		var property_editor = DialogueEditorProperty.new()
 		add_property_editor(name, property_editor)
