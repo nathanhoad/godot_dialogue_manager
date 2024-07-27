@@ -122,9 +122,11 @@ func _on_text_edit_gui_input(event: InputEvent) -> void:
 		match event.as_text():
 			"Ctrl+F", "Command+F":
 				open_requested.emit()
+				get_viewport().set_input_as_handled()
 			"Ctrl+Shift+R", "Command+Shift+R":
 				replace_check_button.set_pressed(true)
 				open_requested.emit()
+				get_viewport().set_input_as_handled()
 
 
 func _on_text_edit_text_changed() -> void:
