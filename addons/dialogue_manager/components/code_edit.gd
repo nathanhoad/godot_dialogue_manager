@@ -358,10 +358,13 @@ func toggle_comment() -> void:
 # Remove the current line
 func delete_current_line() -> void:
 	var cursor = get_cursor()
-	var lines: PackedStringArray = text.split("\n")
-	lines.remove_at(cursor.y)
-	text = "\n".join(lines)
-	set_cursor(cursor)
+	if get_line_count() == 1:
+		select_all()
+	elif cursor.y == 0:
+		select(0, 0, 1, 0)
+	else:
+		select(cursor.y - 1, get_line_width(cursor.y - 1), cursor.y, get_line_width(cursor.y))
+	delete_selection()
 	text_changed.emit()
 
 
