@@ -19,6 +19,8 @@ const ITEM_FILESYSTEM = 400
 @onready var menu: PopupMenu = $Menu
 @onready var quick_open_dialog: ConfirmationDialog = $QuickOpenDialog
 @onready var files_list = $QuickOpenDialog/FilesList
+@onready var new_dialog: FileDialog = $NewDialog
+@onready var open_dialog: FileDialog = $OpenDialog
 
 var editor_plugin: EditorPlugin
 
@@ -36,13 +38,7 @@ var quick_selected_file: String = ""
 
 func _ready() -> void:
 	menu_button.icon = get_theme_icon("GuiDropdown", "EditorIcons")
-
 	editor_plugin = Engine.get_meta("DialogueManagerPlugin")
-	if is_instance_valid(editor_plugin):
-		editor_plugin.main_view.new_dialog.file_selected.connect(_on_file_dialog_new_file_selected)
-		editor_plugin.main_view.open_dialog.file_selected.connect(_on_file_dialog_file_selected)
-		editor_plugin.main_view.new_dialog.canceled.connect(_on_file_dialog_canceled)
-		editor_plugin.main_view.open_dialog.canceled.connect(_on_file_dialog_canceled)
 
 
 func build_menu() -> void:
@@ -64,17 +60,18 @@ func build_menu() -> void:
 ### Signals
 
 
-func _on_file_dialog_new_file_selected(file: String) -> void:
+func _on_new_dialog_file_selected(path: String) -> void:
+	editor_plugin.main_view.new_file(path)
 	is_waiting_for_file = false
-	if Engine.get_meta("DialogueCache").has_file(file):
-		resource_changed.emit(load(file))
+	if Engine.get_meta("DialogueCache").has_file(path):
+		resource_changed.emit(load(path))
 	else:
 		var next_resource: Resource = await editor_plugin.import_plugin.compiled_resource
-		next_resource.resource_path = file
+		next_resource.resource_path = path
 		resource_changed.emit(next_resource)
 
 
-func _on_file_dialog_file_selected(file: String) -> void:
+func _on_open_dialog_file_selected(file: String) -> void:
 	resource_changed.emit(load(file))
 
 
@@ -83,7 +80,7 @@ func _on_file_dialog_canceled() -> void:
 
 
 func _on_resource_button_pressed() -> void:
-	if resource:
+	if is_instance_valid(resource):
 		editor_plugin.get_editor_interface().call_deferred("edit_resource", resource)
 	else:
 		build_menu()
@@ -111,7 +108,7 @@ func _on_menu_id_pressed(id: int) -> void:
 	match id:
 		ITEM_NEW:
 			is_waiting_for_file = true
-			editor_plugin.main_view.new_dialog.popup_centered()
+			new_dialog.popup_centered()
 
 		ITEM_QUICK_LOAD:
 			quick_selected_file = ""
@@ -119,10 +116,11 @@ func _on_menu_id_pressed(id: int) -> void:
 			if resource:
 				files_list.select_file(resource.resource_path)
 			quick_open_dialog.popup_centered()
+			files_list.focus_filter()
 
 		ITEM_LOAD:
 			is_waiting_for_file = true
-			editor_plugin.main_view.open_dialog.popup_centered()
+			open_dialog.popup_centered()
 
 		ITEM_EDIT:
 			editor_plugin.get_editor_interface().call_deferred("edit_resource", resource)

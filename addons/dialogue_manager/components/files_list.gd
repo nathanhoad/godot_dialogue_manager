@@ -47,6 +47,10 @@ func _ready() -> void:
 	filter_edit.placeholder_text = DialogueConstants.translate(&"files_list.filter")
 
 
+func focus_filter() -> void:
+	filter_edit.grab_focus()
+
+
 func select_file(file: String) -> void:
 	list.deselect_all()
 	for i in range(0, list.get_item_count()):
