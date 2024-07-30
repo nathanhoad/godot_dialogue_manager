@@ -9,7 +9,7 @@ const DialogueManagerParseResult = preload("./parse_result.gd")
 signal file_content_changed(path: String, new_content: String)
 
 
-# Keeps track of errors and dependencies.
+# Keep track of errors and dependencies
 # {
 # 	<dialogue file path> = {
 # 		path = <dialogue file path>,
@@ -56,22 +56,22 @@ func add_file(path: String, parse_results: DialogueManagerParseResult = null) ->
 		_cache[path].dependencies = Array(parse_results.imported_paths).filter(func(d): return d != path)
 		_cache[path].parsed_at = Time.get_ticks_msec()
 
-	# If this is a fresh cache entry then we need to check for dependencies
+	# If this is a fresh cache entry, check for dependencies
 	if parse_results == null and not _update_dependency_paths.has(path):
 		queue_updating_dependencies(path)
 
 
-## Get the file paths in the cache.
+## Get the file paths in the cache
 func get_files() -> PackedStringArray:
 	return _cache.keys()
 
 
-## Check if a file is known to the cache.
+## Check if a file is known to the cache
 func has_file(path: String) -> bool:
 	return _cache.has(path)
 
 
-## Remember any errors in a dialogue file.
+## Remember any errors in a dialogue file
 func add_errors_to_file(path: String, errors: Array[Dictionary]) -> void:
 	if _cache.has(path):
 		_cache[path].errors = errors
@@ -84,7 +84,7 @@ func add_errors_to_file(path: String, errors: Array[Dictionary]) -> void:
 		}
 
 
-## Get a list of files that have errors in them.
+## Get a list of files that have errors
 func get_files_with_errors() -> Array[Dictionary]:
 	var files_with_errors: Array[Dictionary] = []
 	for dialogue_file in _cache.values():
@@ -93,7 +93,7 @@ func get_files_with_errors() -> Array[Dictionary]:
 	return files_with_errors
 
 
-## Queue a file to have it's dependencies checked
+## Queue a file to have its dependencies checked
 func queue_updating_dependencies(of_path: String) -> void:
 	_update_dependency_timer.stop()
 	if not _update_dependency_paths.has(of_path):
@@ -110,7 +110,7 @@ func move_file_path(from_path: String, to_path: String) -> void:
 	_cache.erase(from_path)
 
 
-## Get any dialogue files that import a given path.
+## Get every dialogue file that imports on a file of a given path
 func get_files_with_dependency(imported_path: String) -> Array:
 	return _cache.values().filter(func(d): return d.dependencies.has(imported_path))
 
@@ -122,7 +122,7 @@ func get_dependent_paths_for_reimport(on_path: String) -> PackedStringArray:
 		.map(func(d): return d.path)
 
 
-# Build the initial cache for dialogue files.
+# Build the initial cache for dialogue files
 func _build_cache() -> void:
 	var current_files: PackedStringArray = _get_dialogue_files_in_filesystem()
 	for file in current_files:

@@ -70,7 +70,7 @@ var _imported_line_count: int = 0
 var while_loopbacks: Array[String] = []
 
 
-## Parse some raw dialogue text. Returns a dictionary containing parse results
+## Parse some raw dialogue text and return a dictionary containing parse results
 static func parse_string(string: String, path: String) -> DialogueManagerParseResult:
 	var parser = new()
 	var error: Error = parser.parse(string, path)
@@ -92,7 +92,7 @@ static func extract_markers_from_string(string: String) -> ResolvedLineData:
 	return markers
 
 
-## Parse some raw dialogue text. Returns a dictionary containing parse results
+## Parse some raw dialogue text and return a dictionary containing parse results
 func parse(text: String, path: String) -> Error:
 	prepare(text, path)
 	raw_text = text
