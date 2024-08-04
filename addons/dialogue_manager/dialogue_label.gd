@@ -28,7 +28,7 @@ signal finished_typing()
 ## Automatically have a brief pause when these characters are encountered.
 @export var pause_at_characters: String = ".?!"
 
-## Don't auto pause if the charcter after the pause is one of these.
+## Don't auto pause if the character after the pause is one of these.
 @export var skip_pause_at_character_if_followed_by: String = ")\""
 
 ## Don't auto pause after these abbreviations (only if "." is in `pause_at_characters`).[br]
@@ -36,7 +36,7 @@ signal finished_typing()
 ## Does not support multi-period abbreviations (ex. "p.m.")
 @export var skip_pause_at_abbreviations: PackedStringArray = ["Mr", "Mrs", "Ms", "Dr", "etc", "eg", "ex"]
 
-## The amount of time to pause when exposing a character present in pause_at_characters.
+## The amount of time to pause when exposing a character present in `pause_at_characters`.
 @export var seconds_per_pause_step: float = 0.3
 
 var _already_mutated_indices: PackedInt32Array = []

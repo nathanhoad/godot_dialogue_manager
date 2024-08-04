@@ -11,7 +11,7 @@ const DialogueManagerParser = preload("./parser.gd")
 const DialogueSyntaxHighlighter = preload("./code_edit_syntax_highlighter.gd")
 
 
-# A link back to the owner MainView
+# A link back to the owner `MainView`
 var main_view
 
 # Theme overrides for syntax highlighting, etc
@@ -383,7 +383,7 @@ func move_line(offset: int) -> void:
 
 	var lines := text.split("\n")
 
-	# We can't move the lines out of bounds
+	# Prevent the lines from being out of bounds
 	if from + offset < 0 or to + offset >= lines.size(): return
 
 	var target_from_index = from - 1 if offset == -1 else to + 1
