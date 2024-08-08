@@ -193,7 +193,7 @@ msgid "settings.states_shortcuts"
 msgstr "State Shortcuts"
 
 msgid "settings.states_message"
-msgstr "If an autoload is enabled here you can refer to its properties and methods without having to use its name."
+msgstr "If an autoload is enabled here you can refer to its properties, methods, and signals without having to use its name."
 
 msgid "settings.states_hint"
 msgstr "ie. Instead of \"SomeState.some_property\" you could just use \"some_property\""
@@ -448,16 +448,16 @@ msgid "runtime.key_not_found"
 msgstr "Key \"{key}\" not found in dictionary \"{dictionary}\""
 
 msgid "runtime.property_not_found"
-msgstr "\"{property}\" is not a property on any game states ({states})."
+msgstr "\"{property}\" not found. States with directly referenceable properties/methods/signals include {states}. Autoloads need to be referenced by their name to use their properties."
 
 msgid "runtime.property_not_found_missing_export"
-msgstr "\"{property}\" is not a property on any game states ({states}). You might need to add an [Export] decorator."
+msgstr "\"{property}\" not found. You might need to add an [Export] decorator. States with directly referenceable properties/methods/signals include {states}. Autoloads need to be referenced by their name to use their properties."
 
 msgid "runtime.method_not_found"
-msgstr "\"{method}\" is not a method on any game states ({states})"
+msgstr "Method \"{method}\" not found. States with directly referenceable properties/methods/signals include {states}. Autoloads need to be referenced by their name to use their properties."
 
 msgid "runtime.signal_not_found"
-msgstr "\"{signal_name}\" is not a signal on any game states ({states})"
+msgstr "Signal \"{signal_name}\" not found. States with directly referenceable properties/methods/signals include {states}. Autoloads need to be referenced by their name to use their properties."
 
 msgid "runtime.method_not_callable"
 msgstr "\"{method}\" is not a callable method on \"{object}\""
