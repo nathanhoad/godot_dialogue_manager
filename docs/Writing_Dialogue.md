@@ -255,7 +255,6 @@ You can pass an array of nodes/objects when [requesting a line of dialogue](API.
 
 There are also a couple of special built-in mutations you can use:
 
-- `emit(...)` - emit a signal on a game state or the current scene.
 - `wait(float)` - wait for `float` seconds (this has no effect when used inline).
 - `debug(...)` - print something to the Output window.
 
@@ -263,10 +262,20 @@ Mutations can also be used inline. Inline mutations will be called as the typed 
 
 ```
 Nathan: I'm not sure we've met before [do wave()]I'm Nathan.
-Nathan: I can also emit signals[do emit("some_signal")] inline.
+Nathan: I can also emit signals[do SomeGlobal.some_signal.emit()] inline.
 ```
 
 Inline mutations that use `await` in their implementation will pause typing of dialogue until they resolve. To ignore awaiting, add a "!" after the "do" keyword - eg. `[do! something()]`.
+
+### Signals
+
+Signals can be emitted similarly to how they are emitted in GDScript - by calling `emit` on them.
+
+For example, if `SomeGlobal` has a signal called `some_signal` that has a single string parameter then you can emit it from dialogue like this:
+
+```
+do SomeGlobal.some_signal.emit("some argument")
+```
 
 ### State shortcuts
 

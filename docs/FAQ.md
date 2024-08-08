@@ -18,6 +18,10 @@ One of the most common causes is that you've implemented player movement inside 
 
 For more of a guide then check out the code for my [beginner dialogue example project](https://github.com/nathanhoad/beginner_godot4_dialogue/blob/finished/characters/coco/coco.gd#L17) and [the video that goes with it](https://youtu.be/UhPFk8FSbd8).
 
+## How do I detect when dialogue has finished?
+
+You can connect to the `DialogueManager.dialogue_ended(resource)` signal. The `resource` parameter is the `DialogueResource` that was used to start the dialogue chain.
+
 ## How do I make the example balloon look more like my game?
 
 There is a **Project > Tools** menu option to create a copy of the example balloon into somewhere in your project (never edit the original example balloon directly because any changes you make will be overwritten when updating the addon).
