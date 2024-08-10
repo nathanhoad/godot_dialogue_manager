@@ -177,7 +177,9 @@ static func get_error_message(error: int) -> String:
 
 
 static func translate(string: String) -> String:
-	var base_path = new().get_script().resource_path.get_base_dir()
+	var temp_node = new()
+	var base_path = temp_node.get_script().resource_path.get_base_dir()
+	temp_node.free()
 
 	var language: String = TranslationServer.get_tool_locale()
 	var translations_path: String = "%s/l10n/%s.po" % [base_path, language]
