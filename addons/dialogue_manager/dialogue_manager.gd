@@ -415,6 +415,10 @@ func get_line(resource: DialogueResource, key: String, extra_game_states: Array)
 		if line.next_id in resource.titles.values():
 			passed_title.emit(resource.titles.find_key(line.next_id))
 
+		# If the responses come from a snippet then we need to come back here afterwards
+		if next_line.type == DialogueConstants.TYPE_GOTO and next_line.is_snippet:
+			id_trail = "|" + next_line.next_id_after + id_trail
+
 		# If the next line is a title then check where it points to see if that is a set of responses.
 		if next_line.type == DialogueConstants.TYPE_GOTO and resource.lines.has(next_line.next_id):
 			next_line = resource.lines.get(next_line.next_id)
