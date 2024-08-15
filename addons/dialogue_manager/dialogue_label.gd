@@ -210,7 +210,7 @@ func _should_auto_pause() -> bool:
 	# Ignore "." if it's between two numbers
 	if visible_characters > 3 and parsed_text[visible_characters - 1] == ".":
 		var possible_number: String = parsed_text.substr(visible_characters - 2, 3)
-		if str(float(possible_number)) == possible_number:
+		if str(float(possible_number)).pad_decimals(1) == possible_number:
 			return false
 
 	# Ignore "." if it's used in an abbreviation
