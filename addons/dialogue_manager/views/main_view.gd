@@ -266,6 +266,8 @@ func open_resource(resource: DialogueResource) -> void:
 
 
 func open_file(path: String) -> void:
+	if not FileAccess.file_exists(path): return
+
 	if not open_buffers.has(path):
 		var file: FileAccess = FileAccess.open(path, FileAccess.READ)
 		var text = file.get_as_text()

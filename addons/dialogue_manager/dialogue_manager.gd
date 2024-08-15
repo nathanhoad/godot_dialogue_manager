@@ -386,7 +386,7 @@ func get_line(resource: DialogueResource, key: String, extra_game_states: Array)
 
 	# Evaluate jumps
 	elif data.type == DialogueConstants.TYPE_GOTO:
-		if data.is_snippet:
+		if data.is_snippet and not id_trail.begins_with("|" + data.next_id_after):
 			id_trail = "|" + data.next_id_after + id_trail
 		return await get_line(resource, data.next_id + id_trail, extra_game_states)
 
@@ -416,7 +416,7 @@ func get_line(resource: DialogueResource, key: String, extra_game_states: Array)
 			passed_title.emit(resource.titles.find_key(line.next_id))
 
 		# If the responses come from a snippet then we need to come back here afterwards
-		if next_line.type == DialogueConstants.TYPE_GOTO and next_line.is_snippet:
+		if next_line.type == DialogueConstants.TYPE_GOTO and next_line.is_snippet and not id_trail.begins_with("|" + next_line.next_id_after):
 			id_trail = "|" + next_line.next_id_after + id_trail
 
 		# If the next line is a title then check where it points to see if that is a set of responses.

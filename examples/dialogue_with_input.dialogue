@@ -1,6 +1,5 @@
 ~ start
 
-{{test}}
 Nathan: I am Nathan. What is your name?
 do ask_for_name()
 Nathan: Hi {{player_name}}! It is nice to meet you.

@@ -361,3 +361,4 @@ func _on_file_removed(file: String) -> void:
 	update_import_paths(file, "")
 	if is_instance_valid(main_view):
 		main_view.close_file(file)
+	_update_localization()
