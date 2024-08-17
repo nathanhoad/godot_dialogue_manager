@@ -25,7 +25,6 @@ You can install it via the Asset Library or [downloading a copy](https://github.
 
 [![Portraits, emotes/tags, talk sounds](docs/example-portraits.png)](https://nathanhoad.itch.io/godot-dialogue-example-project-portraits)
 
-
 ## Wishlist my game
 
 [![Wishlist Bravest Coconut on Steam](docs/bravest-coconut.png)](https://bravestcoconut.com/wishlist)
@@ -33,6 +32,7 @@ You can install it via the Asset Library or [downloading a copy](https://github.
 ## Video Guides
 
 [![Dialogue in Godot 4 for Beginners](docs/beginners.png)](https://youtu.be/UhPFk8FSbd8)
+[![Making cut-scenes](docs/cutscenes.png)](https://youtu.be/G_TN8jz4v9o)
 [![Dialogue in Godot 4 for C# developers](docs/dotnet.png)](https://youtu.be/U3Mimia-904)
 [![Cool balloons in Godot 4: Part 1](docs/make-balloons.png)](https://youtu.be/X0e-n7dbff8)
 [![Cool balloons in Godot 4: Part 2](docs/make-balloons-2.png)](https://youtu.be/DfdcyHwqXdo)
