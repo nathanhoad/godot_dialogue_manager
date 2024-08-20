@@ -301,6 +301,10 @@ namespace DialogueManagerRuntime
         }
 
         private Array<Variant> extra_game_states = new Array<Variant>();
+        public Array<Variant> ExtraGameStates
+        {
+            get => extra_game_states;
+        }
 
         private Array<string> tags = new Array<string>();
         public Array<string> Tags
