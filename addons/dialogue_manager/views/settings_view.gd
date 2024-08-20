@@ -18,6 +18,7 @@ enum PathTarget {
 
 # Editor
 @onready var new_template_button: CheckBox = $Editor/NewTemplateButton
+@onready var new_template: CodeEdit = $Editor/NewTemplate
 @onready var characters_translations_button: CheckBox = $Editor/CharactersTranslationsButton
 @onready var wrap_lines_button: Button = $Editor/WrapLinesButton
 @onready var default_csv_locale: LineEdit = $Editor/DefaultCSVLocale
@@ -54,7 +55,6 @@ var _recompile_if_changed_settings: Dictionary
 
 func _ready() -> void:
 	new_template_button.text = DialogueConstants.translate(&"settings.new_template")
-	$Editor/MissingTranslationsHint.text = DialogueConstants.translate(&"settings.missing_keys_hint")
 	characters_translations_button.text = DialogueConstants.translate(&"settings.characters_translations")
 	wrap_lines_button.text = DialogueConstants.translate(&"settings.wrap_long_lines")
 	$Editor/DefaultCSVLocaleLabel.text = DialogueConstants.translate(&"settings.default_csv_locale")
@@ -74,6 +74,7 @@ func _ready() -> void:
 	$Advanced/CustomTestSceneLabel.text = DialogueConstants.translate(&"settings.custom_test_scene")
 	$Advanced/RecompileWarning.text = DialogueConstants.translate(&"settings.recompile_warning")
 	missing_translations_button.text = DialogueConstants.translate(&"settings.missing_keys")
+	$Advanced/MissingTranslationsHint.text = DialogueConstants.translate(&"settings.missing_keys_hint")
 	create_lines_for_response_characters.text = DialogueConstants.translate(&"settings.create_lines_for_responses_with_characters")
 
 	current_tab = 0
@@ -109,6 +110,8 @@ func prepare() -> void:
 	include_all_responses_button.set_pressed_no_signal(DialogueSettings.get_setting("include_all_responses", false))
 	ignore_missing_state_values.set_pressed_no_signal(DialogueSettings.get_setting("ignore_missing_state_values", false))
 	new_template_button.set_pressed_no_signal(DialogueSettings.get_setting("new_with_template", true))
+	new_template.text = DialogueSettings.get_setting("new_template", "")
+	new_template.visible = DialogueSettings.get_setting("new_with_template", true)
 	default_csv_locale.text = DialogueSettings.get_setting("default_csv_locale", "en")
 
 	missing_translations_button.set_pressed_no_signal(DialogueSettings.get_setting("missing_translations_are_errors", false))
@@ -207,6 +210,7 @@ func _on_globals_list_button_clicked(item: TreeItem, column: int, id: int, mouse
 
 func _on_sample_template_toggled(toggled_on):
 	DialogueSettings.set_setting("new_with_template", toggled_on)
+	new_template.visible = toggled_on
 
 
 func _on_revert_test_scene_pressed() -> void:
@@ -278,3 +282,7 @@ func _on_include_notes_in_translations_toggled(toggled_on: bool) -> void:
 
 func _on_keep_up_to_date_toggled(toggled_on: bool) -> void:
 	DialogueSettings.set_user_value("check_for_updates", toggled_on)
+
+
+func _on_new_template_focus_exited() -> void:
+	DialogueSettings.set_setting("new_template", new_template.text)

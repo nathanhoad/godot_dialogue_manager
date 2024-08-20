@@ -13,6 +13,7 @@ const DEFAULT_SETTINGS = {
 	export_characters_in_translation = true,
 	wrap_lines = false,
 	new_with_template = true,
+	new_template = "~ this_is_a_node_title\nNathan: [[Hi|Hello|Howdy]], this is some dialogue.\nNathan: Here are some choices.\n- First one\n\tNathan: You picked the first one.\n- Second one\n\tNathan: You picked the second one.\n- Start again => this_is_a_node_title\n- End the conversation => END\nNathan: For more information see the online documentation.\n=> END",
 	include_all_responses = false,
 	ignore_missing_state_values = false,
 	custom_test_scene_path = preload("./test_scene.tscn").resource_path,
