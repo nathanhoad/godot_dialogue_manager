@@ -16,24 +16,25 @@ grow_vertical = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
 theme = SubResource("Theme_3a8rc")
-current_tab = 2
+current_tab = 0
 script = ExtResource("1_06uxa")
 
 [node name="Editor" type="VBoxContainer" parent="."]
-visible = false
 layout_mode = 2
+metadata/_tab_index = 0
 
 [node name="NewTemplateButton" type="CheckBox" parent="Editor"]
 layout_mode = 2
 button_pressed = true
 text = "New dialogue files will start with template text"
 
-[node name="MissingTranslationsHint" type="Label" parent="Editor"]
-modulate = Color(1, 1, 1, 0.501961)
-custom_minimum_size = Vector2(10, 0)
+[node name="NewTemplate" type="CodeEdit" parent="Editor"]
+custom_minimum_size = Vector2(0, 200)
 layout_mode = 2
-text = "If you are using static translation keys then having this enabled will help you find any lines that you haven't added a key to yet."
-autowrap_mode = 3
+size_flags_vertical = 3
+
+[node name="HSeparator" type="HSeparator" parent="Editor"]
+layout_mode = 2
 
 [node name="CharactersTranslationsButton" type="CheckBox" parent="Editor"]
 layout_mode = 2
@@ -45,7 +46,7 @@ layout_mode = 2
 button_pressed = true
 text = "Wrap long lines"
 
-[node name="HSeparator" type="HSeparator" parent="Editor"]
+[node name="HSeparator2" type="HSeparator" parent="Editor"]
 layout_mode = 2
 
 [node name="DefaultCSVLocaleLabel" type="Label" parent="Editor"]
@@ -58,6 +59,7 @@ layout_mode = 2
 [node name="Runtime" type="VBoxContainer" parent="."]
 visible = false
 layout_mode = 2
+metadata/_tab_index = 1
 
 [node name="IncludeAllResponsesButton" type="CheckBox" parent="Runtime"]
 layout_mode = 2
@@ -103,7 +105,7 @@ text = "State Shortcuts"
 
 [node name="StatesMessage" type="Label" parent="Runtime"]
 layout_mode = 2
-text = "If an autoload is enabled here you can refer to its properties and methods without having to use its name."
+text = "If an autoload is enabled here you can refer to its properties, methods, and signals without having to use its name."
 
 [node name="StatesHint" type="Label" parent="Runtime"]
 modulate = Color(1, 1, 1, 0.501961)
@@ -123,7 +125,9 @@ hide_root = true
 select_mode = 1
 
 [node name="Advanced" type="VBoxContainer" parent="."]
+visible = false
 layout_mode = 2
+metadata/_tab_index = 2
 
 [node name="CheckForUpdates" type="CheckBox" parent="Advanced"]
 layout_mode = 2
@@ -190,6 +194,13 @@ text = "Changing these settings will force a recompile of all dialogue. Only cha
 layout_mode = 2
 text = "Treat missing translation keys as errors"
 
+[node name="MissingTranslationsHint" type="Label" parent="Advanced"]
+modulate = Color(1, 1, 1, 0.501961)
+custom_minimum_size = Vector2(10, 0)
+layout_mode = 2
+text = "If you are using static translation keys then having this enabled will help you find any lines that you haven't added a key to yet."
+autowrap_mode = 3
+
 [node name="CreateLinesForResponseCharacters" type="CheckBox" parent="Advanced"]
 layout_mode = 2
 text = "Create child dialogue line for responses with character names in them"
@@ -201,6 +212,7 @@ file_mode = 0
 filters = PackedStringArray("*.tscn ; Scene")
 
 [connection signal="toggled" from="Editor/NewTemplateButton" to="." method="_on_sample_template_toggled"]
+[connection signal="focus_exited" from="Editor/NewTemplate" to="." method="_on_new_template_focus_exited"]
 [connection signal="toggled" from="Editor/CharactersTranslationsButton" to="." method="_on_characters_translations_button_toggled"]
 [connection signal="toggled" from="Editor/WrapLinesButton" to="." method="_on_wrap_lines_button_toggled"]
 [connection signal="text_changed" from="Editor/DefaultCSVLocale" to="." method="_on_default_csv_locale_text_changed"]
