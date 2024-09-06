@@ -213,8 +213,8 @@ func get_cursor() -> Vector2:
 
 # Set the caret from a Vector2
 func set_cursor(from_cursor: Vector2) -> void:
-	set_caret_line(from_cursor.y)
-	set_caret_column(from_cursor.x)
+	set_caret_line(from_cursor.y, false)
+	set_caret_column(from_cursor.x, false)
 
 
 # Check if a prompt is the start of a string without actually being that string
