@@ -367,9 +367,11 @@ func get_line(resource: DialogueResource, key: String, extra_game_states: Array)
 
 	# Check for weighted random lines
 	if data.has(&"siblings"):
-		var target_weight: float = randf_range(0, data.siblings.reduce(func(total, sibling): return total + sibling.weight, 0))
+		# Only count siblings that pass their condition (if they have one)
+		var successful_siblings: Array = data.siblings.filter(func(sibling): return not sibling.has("condition") or await check_condition(sibling, extra_game_states))
+		var target_weight: float = randf_range(0, successful_siblings.reduce(func(total, sibling): return total + sibling.weight, 0))
 		var cummulative_weight: float = 0
-		for sibling in data.siblings:
+		for sibling in successful_siblings:
 			if target_weight < cummulative_weight + sibling.weight:
 				data = resource.lines.get(sibling.id)
 				break
@@ -564,7 +566,7 @@ func get_game_states(extra_game_states: Array) -> Array:
 # Check if a condition is met
 func check_condition(data: Dictionary, extra_game_states: Array) -> bool:
 	if data.get(&"condition", null) == null: return true
-	if data.condition.size() == 0: return true
+	if data.condition.is_empty(): return true
 
 	return await resolve(data.condition.expression.duplicate(true), extra_game_states)
 

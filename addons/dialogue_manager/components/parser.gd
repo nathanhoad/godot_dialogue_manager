@@ -50,7 +50,7 @@ var TOKEN_DEFINITIONS: Dictionary = {
 	DialogueConstants.TOKEN_BOOL: RegEx.create_from_string("^(true|false)")
 }
 
-var WEIGHTED_RANDOM_SIBLINGS_REGEX: RegEx = RegEx.create_from_string("^\\%(?<weight>[\\d.]+)? ")
+var WEIGHTED_RANDOM_SIBLINGS_REGEX: RegEx = RegEx.create_from_string("^\\%(?<weight>[\\d.]+)?( \\[if (?<condition>.+?)\\])? ")
 
 var raw_lines: PackedStringArray = []
 var parent_stack: Array[String] = []
@@ -747,8 +747,12 @@ func find_previous_response_id(line_number: int) -> String:
 func apply_weighted_random(id: int, raw_line: String, indent_size: int, line: Dictionary) -> void:
 	var weight: float = 1
 	var found = WEIGHTED_RANDOM_SIBLINGS_REGEX.search(raw_line)
-	if found and found.names.has("weight"):
-		weight = found.strings[found.names.weight].to_float()
+	var condition: Dictionary = {}
+	if found:
+		if found.names.has("weight"):
+			weight = found.strings[found.names.weight].to_float()
+		if found.names.has("condition"):
+			condition = extract_condition(raw_line, true, indent_size)
 
 	# Look back up the list to find the first weighted random line in this group
 	var original_random_line: Dictionary = {}
@@ -769,7 +773,7 @@ func apply_weighted_random(id: int, raw_line: String, indent_size: int, line: Di
 
 	# Attach it to the original random line and work out where to go after the line
 	if original_random_line.size() > 0:
-		original_random_line["siblings"] += [{ weight = weight, id = str(id) }]
+		original_random_line["siblings"] += [{ weight = weight, id = str(id), condition = condition }]
 		if original_random_line.type != DialogueConstants.TYPE_GOTO:
 			# Update the next line for all siblings (not goto lines, though, they manage their
 			# own next ID)
@@ -786,7 +790,7 @@ func apply_weighted_random(id: int, raw_line: String, indent_size: int, line: Di
 		line["next_id"] = original_random_line.next_id
 	# Or set up this line as the original
 	else:
-		line["siblings"] = [{ weight = weight, id = str(id) }]
+		line["siblings"] = [{ weight = weight, id = str(id), condition = condition }]
 		line["next_id"] = get_line_after_line(id, indent_size, line)
 
 	if line.next_id == DialogueConstants.ID_NULL:

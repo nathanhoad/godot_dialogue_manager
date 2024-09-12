@@ -236,6 +236,14 @@ For simple this-or-that conditions you can write them like this:
 Nathan: You have {{num_apples}} [if num_apples == 1]apple[else]apples[/if], nice!
 ```
 
+Randomised lines and randomised jump lines can also have conditions. Conditions for randomised lines go in square brackets after the `%` and before the line's content:
+
+```
+% => some_title
+%2 => some_other_title
+% [if SomeGlobal.some_condition] => another_title
+```
+
 ## Mutations
 
 You can affect state with either a "set" or a "do" line.
