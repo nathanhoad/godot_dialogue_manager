@@ -103,7 +103,7 @@ To weight lines, use a `%` followed by a number to weight by. For example, a `%2
 
 ```
 %3 Nathan: This line has a 60% chance of being picked
-%2 Nathan: This line has an 40% chance of being picked
+%2 Nathan: This line has a 40% chance of being picked
 ```
 
 ## Comments
