@@ -1,6 +1,6 @@
 # C# wrapper
 
-If you are using C# for your project then there is a small convenience wrapper around the Dialogue Manager.
+If you are using C# for your project, there is a small convenience wrapper around the Dialogue Manager.
 
 First, add the namespace:
 
@@ -32,7 +32,7 @@ The returned line is a `DialogueLine` and will have mostly the same properties t
 
 ## State
 
-When looking for state, the Dialogue Manager will search in the current scene (ie. the scene returned from `GetTree().CurrentScene`), any autoloads, as well as anything passed in to the `extraGameStates` array in `GetNextDialogueLine(resource, key, extraGameStates)`. In order for a property to be visible to the Dialogue Manager it needs to have the `[Export]` decorator applied.
+When looking for state, the Dialogue Manager will search in the current scene (i.e. the scene returned from `GetTree().CurrentScene`), any autoloads, as well as anything passed in to the `extraGameStates` array in `GetNextDialogueLine(resource, key, extraGameStates)`. In order for a property to be visible to the Dialogue Manager, it needs to have the `[Export]` decorator applied.
 
 ## Mutations
 
@@ -92,7 +92,7 @@ DialogueManager.Mutated += (Godot.Collections.Dictionary mutation) =>
 };
 ```
 
-If you are using the built-in responses menu node then you'll have to use the `Connect` approach.
+If you are using the built-in responses menu node, you'll have to use the `Connect` approach.
 
 ```csharp
 responsesMenu.Connect("response_selected", Callable.From((DialogueResponse response) =>
@@ -103,4 +103,4 @@ responsesMenu.Connect("response_selected", Callable.From((DialogueResponse respo
 
 ## Example
 
-There is a balloon implemented in C# in the **examples** folder of the repository. If you want to have a closer look at it you'll have to clone the repository down because the automatic download ZIP removes the docs and examples folder.
+There is a balloon implemented in C# in the **examples** folder of the repository. If you want to have a closer look at it, you'll have to clone the repository down because the automatic download ZIP removes the docs and examples folder.

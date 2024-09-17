@@ -48,7 +48,7 @@ and
 Coco: This is the first line.\nThis line would show up below it in the same balloon.\nAnd even this line.
 ```
 
-_Note: When using indented line breaks and [line IDs for translations](./Translations.md) you can only specify a line ID on the first (unindented) line of each group._
+_Note: When using indented line breaks and [line IDs for translations](./Translations.md), you can only specify a line ID on the first (unindented) line of each group._
 
 ### Escaping characters
 
@@ -64,15 +64,15 @@ Character : This is how\: you escape a colon.
 
 Dialogue lines can also contain **bb_code** for RichTextEffects (if you end up using a `RichTextLabel` or the `DialogueLabel` provided by this addon).
 
-If you use the `DialogueLabel` node then you can also make use of the `[wait=N]` and `[speed=N]` codes. `wait` will pause the typing of the dialogue for `N` seconds (eg. `[wait=1.5]` will pause for 1.5 seconds). `speed` will change the typing speed of the current line of dialogue by that factor (eg `[speed=10]` will change the typing speed to be 10 times faster than normal).
+If you use the `DialogueLabel` node, you can also make use of the `[wait=N]` and `[speed=N]` codes. `wait` will pause the typing of the dialogue for `N` seconds (e.g. `[wait=1.5]` will pause for 1.5 seconds). `speed` will change the typing speed of the current line of dialogue by that factor (e.g. `[speed=10]` will change the typing speed to be 10 times faster than normal).
 
-There is also a `[next]` code that you can use to signify that a line should be auto advanced. If given no arguments it will auto advance immediately after the text has typed out. If given something like `[next=0.5]` it will wait for 0.5s after typing has finished before moving to the next line. If given `[next=auto]` it will wait for an automatic amount of time based on the length of the line.
+There is also a `[next]` code that you can use to signify that a line should be auto advanced. If given no arguments, it will auto advance immediately after the text has typed out. If given something like `[next=0.5]`, it will wait for 0.5s after typing has finished before moving to the next line. If given `[next=auto]`, it will wait for an automatic amount of time based on the length of the line.
 
-If you need to use `[` or `]` in general dialogue without markup then you can escape them like `\[` and `\]`.
+If you need to use `[` or `]` in general dialogue without markup, you can escape them like `\[` and `\]`.
 
 ### Tags
 
-If you need to annotate your lines with tags then you can wrap them in `[#` and `]`, separated by commas. So to specify "happy" and "surprised" tags for a line you would do something like:
+If you need to annotate your lines with tags, you can wrap them in `[#` and `]`, separated by commas. So to specify "happy" and "surprised" tags for a line, you would do something like:
 
 ```
 Nathan: [#happy, #surprised] Oh, Hello!
@@ -88,7 +88,7 @@ For this line of dialogue, the `tags` array would be `["mood=happy"]`, and `line
 
 ### Randomising lines of dialogue
 
-If you want to pick one from a few lines of dialogue you can mark the line with a `%` at the start like this:
+If you want to pick one from a few lines of dialogue, you can mark the line with a `%` at the start like this:
 
 ```
 Nathan: I will say this.
@@ -99,10 +99,10 @@ Nathan: I will say this.
 
 Each line will have an equal chance of being said.
 
-To weight lines use a `%` followed by a number to weight by. For example a `%2` will mean that line has twice the chance of being picked as a normal line.
+To weight lines, use a `%` followed by a number to weight by. For example, a `%2` will mean that line has twice the chance of being picked as a normal line.
 
 ```
-%3 Nathan: This line as a 60% chance of being picked
+%3 Nathan: This line has a 60% chance of being picked
 %2 Nathan: This line has an 40% chance of being picked
 ```
 
@@ -112,13 +112,13 @@ Any line starting with a `#` will be ignored by the compiler so you can use thos
 
 ## Jumps
 
-If you want to redirect flow to another title then you can use a jump line. Assuming the target title is "another_title" your jump line would be
+If you want to redirect flow to another title, you can use a jump line. Assuming the target title is "another_title", your jump line would be:
 
 ```
 => another_title
 ```
 
-If you wanted the dialogue manager to jump to that title but then return to this line when it is finished then you can write the goto line as:
+If you wanted the dialogue manager to jump to that title but then return to this line when it is finished, you can write the goto line as:
 
 ```
 =>< another_title
@@ -132,9 +132,9 @@ You can also import titles from other files. Specify your imports at the top of 
 import "res://snippets.dialogue" as snippets
 ```
 
-And then you can jump to titles by prefixing them with `snippets/`. For example, say there was a "talk_to_nathan" title in the snippets file then in the current file I could use `=> snippets/talk_to_nathan`.
+And then you can jump to titles by prefixing them with `snippets/`. For example, say there was a "talk_to_nathan" title in the snippets file, in the current file I could use `=> snippets/talk_to_nathan`.
 
-The `%` syntax also applies to jumps. So to jump to one of a random set of titles you might have something like this:
+The `%` syntax also applies to jumps. So to jump to one of a random set of titles, you might have something like this:
 
 ```
 Nathan: Let's go somewhere random.
@@ -145,7 +145,7 @@ Nathan: Let's go somewhere random.
 
 ## Responses
 
-To give the player branching options you can start a line with "- " and then a prompt. Like dialogue, prompts can also contain variables wrapped in `{{}}`.
+To give the player branching options, you can start a line with "- " and then a prompt. Like dialogue, prompts can also contain variables wrapped in `{{}}`.
 
 ```
 Nathan: What would you like?
@@ -166,7 +166,7 @@ Nathan: What would you like?
 - Nothing => END
 ```
 
-If a response prompt contains a character name then it will be treated as an actual line of dialogue when the player selects it.
+If a response prompt contains a character name, it will be treated as an actual line of dialogue when the player selects it.
 
 For example:
 
@@ -198,7 +198,7 @@ if SomeGlobal.some_property >= 10
 elif SomeGlobal.some_other_property == "some value"
     Nathan: Or we might be in here.
 else
-    Nathan: If neither are true I'll say this.
+    Nathan: If neither are true, I'll say this.
 ```
 
 You can also start a conditional block with "while". These blocks will loop as long as the condition is true.
@@ -210,7 +210,7 @@ while SomeGlobal.some_property < 10
 Nathan: Now, we can move on.
 ```
 
-To escape a condition line (ie. if you wanted to start a dialogue line with "if") then you can prefix the condition keyword with a "\".
+To escape a condition line (i.e. if you wanted to start a dialogue line with "if"), you can prefix the condition keyword with a "\".
 
 Responses can also have "if" conditions. Wrap these in "[" and "]".
 
@@ -222,7 +222,7 @@ Nathan: What would you like?
 - Nothing => END
 ```
 
-If using a condition and a goto on a response line then make sure the goto is provided last.
+If using a condition and a goto on a response line, make sure the goto is provided last.
 
 Conditions can also be used inline in a dialogue line when wrapped with "[if predicate]" and "[/if]".
 
@@ -230,7 +230,7 @@ Conditions can also be used inline in a dialogue line when wrapped with "[if pre
 Nathan: I have done this [if already_done]once again[/if]
 ```
 
-For simple this-or-that conditions you can write them like this:
+For simple this-or-that conditions, you can write them like this:
 
 ```
 Nathan: You have {{num_apples}} [if num_apples == 1]apple[else]apples[/if], nice!
@@ -279,7 +279,7 @@ Inline mutations that use `await` in their implementation will pause typing of d
 
 Signals can be emitted similarly to how they are emitted in GDScript - by calling `emit` on them.
 
-For example, if `SomeGlobal` has a signal called `some_signal` that has a single string parameter then you can emit it from dialogue like this:
+For example, if `SomeGlobal` has a signal called `some_signal` that has a single string parameter, you can emit it from dialogue like this:
 
 ```
 do SomeGlobal.some_signal.emit("some argument")
@@ -287,24 +287,24 @@ do SomeGlobal.some_signal.emit("some argument")
 
 ### State shortcuts
 
-If you want to shorten your references to state from something like `SomeGlobal.some_property` to just `some_property` then there are two ways you can do this.
+If you want to shorten your references to state from something like `SomeGlobal.some_property` to just `some_property`, there are two ways you can do this.
 
-1. If you use the same state in all of your dialogue then you can set up global state shortcuts in [Settings](./Settings.md).
-2. Or, if you want different shortcuts per dialogue file you can add a `using SomeGlobal` clause (for whatever autoload you're using) at the top of your dialogue file.
+1. If you use the same state in all of your dialogue, you can set up global state shortcuts in [Settings](./Settings.md).
+2. Or, if you want different shortcuts per dialogue file, you can add a `using SomeGlobal` clause (for whatever autoload you're using) at the top of your dialogue file.
 
 ## Error checking
 
 Your dialogue will be periodically checked for syntax or referential integrity issues.
 
-If any are found they will be highlighted and must be fixed before you can run your game.
+If any are found, they will be highlighted and must be fixed before you can run your game.
 
 ## Running a test scene
 
-For dialogue that doesn't rely too heavily on game state conditions you can do a quick test of it by clicking the "Run the test scene" button in the main toolbar.
+For dialogue that doesn't rely too heavily on game state conditions, you can do a quick test of it by clicking the "Run the test scene" button in the main toolbar.
 
 This will boot up a test scene and run from the nearest title marker above the cursor position. Use your mouse and/or `ui_up`, `ui_down`, and `ui_accept` to navigate the dialogue and responses.
 
-Once the conversation is over the scene will close.
+Once the conversation is over, the scene will close.
 
 ### Custom test scene
 
@@ -326,6 +326,6 @@ func _ready() -> void:
 
 You can export translations as CSV from the "Translations" menu in the dialogue editor.
 
-This will find any unique dialogue lines or response prompts and add them to a list. If an ID is specified for the line (eg. `[ID:SOME_KEY]`) then that will be used as the translation key, otherwise the dialogue/prompt itself will be.
+This will find any unique dialogue lines or response prompts and add them to a list. If an ID is specified for the line (e.g. `[ID:SOME_KEY]`), that will be used as the translation key, otherwise the dialogue/prompt itself will be.
 
 If the target CSV file already exists, it will be merged with.

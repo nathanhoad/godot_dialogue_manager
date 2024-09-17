@@ -18,21 +18,21 @@ You can configure a default balloon to show when calling [`DialogueManager.show_
 
 ### Globals shortcuts
 
-The dialogue runtime itself is stateless, meaning it looks to your game to provide values for variables and for methods to run. At run time, the dialogue manager will check the current scene first and then check any globals.
+The dialogue runtime itself is stateless, meaning it looks to your game to provide values for variables and methods to run. At run time, the dialogue manager will check the current scene first and then check any globals.
 
-If you don't want to type out a globals' name all of the time you can add it to the globals shortcut list.
+If you don't want to type out a globals' name all of the time, you can add it to the globals shortcut list.
 
-For example, instead of having to type out `GameState.some_variable`, you could enable `GameState` and then you would just need to type out `some_variable`.
+For example, instead of having to type out `GameState.some_variable`, you can enable `GameState`. This will allow you to simply type out `some_variable`.
 
 ![GameState and SessionState are used by dialogue](states.jpg)
 
 ## Advanced
 
 - `Include character names in translation exports` - will include a `_character` column in CSV exports.
-- `Include notes (## comments) in translation exports` - will include a `_notes` column in CSV exports populated from doc-style comments (eg. `## This is a comment`) above translatable lines.
+- `Include notes (## comments) in translation exports` - will include a `_notes` column in CSV exports populated from doc-style comments (e.g. `## This is a comment`) above translatable lines.
 - `Custom Test Scene` can be used to override the default test scene that gets run when you click the "Test dialogue" button in the dialogue editor.
 
 Changing any of the following values will result in a recompile of all dialogue files in your project.
 
 - `Treat missing translations as errors` can be enabled if you are using static translation keys and are adding them manually (there is an automatic static key button but you might be writing specific keys).
-- `Create child dialogue line for responses with character names in them` can be disabled if you don't want to automatically create a dialogue line after responses that define a character
+- `Create child dialogue line for responses with character names in them` can be disabled if you don't want to automatically create a dialogue line after responses that define a character.

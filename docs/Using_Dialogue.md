@@ -2,9 +2,9 @@
 
 The simplest way to show dialogue in your game is to call [`DialogueManager.show_dialogue_balloon(resource, title)`](./API.md#func-show_dialogue_balloonresource-dialogueresource-title-string--0-extra_game_states-array-----node) with a dialogue resource and a title to start from. This will show the example balloon by default but you can configure it in [Settings](./Settings.md) to show your custom balloon.
 
-It's up to you to implement/customise any dialogue rendering and input control to match your game but there are [a few example balloons](Example_Balloons.md) included to get you started with some of the more common things.
+It's up to you to implement/customise any dialogue rendering and input control to match your game, however, there are [a few example balloons](Example_Balloons.md) included to get you started with some of the more common things.
 
-Once you get to the stage of building your own balloon you'll need to know how to get a line of dialogue and how to use the dialogue label node.
+Once you get to the stage of building your own balloon, you'll need to know how to get a line of dialogue and how to use the dialogue label node.
 
 ## Getting a line of dialogue
 
@@ -37,7 +37,7 @@ var dialogue_line = await resource.get_next_dialogue_line("start")
 
 Then `dialogue_line` would now hold a `DialogueLine` containing information for the line `Nathan: Hi! I'm Nathan`.
 
-To get the next line of dialogue you can call `get_next_dialogue_line` again with `dialogue_line.next_id` as the title:
+To get the next line of dialogue, you can call `get_next_dialogue_line` again with `dialogue_line.next_id` as the title:
 
 ```
 dialogue_line = await DialogueManager.get_next_dialogue_line(resource, dialogue_line.next_id)
@@ -49,13 +49,13 @@ Now `dialogue_line` holds a `DialogueLine` containing the information for the li
 
 Each option also contains a `next_id` property that can be used to continue along that branch.
 
-For more information about `DialogueLine`s see the [API documentation](API.md).
+For more information about `DialogueLine`s, see the [API documentation](API.md).
 
 ## DialogueLabel node
 
 The addon provides a `DialogueLabel` node (an extension of the RichTextLabel node) which helps with rendering a line of dialogue text.
 
-This node is given a `dialogue_line` (mentioned above) and uses its properties to work out how to handling typing out the dialogue. It will automatically handle any `bb_code`, `wait`, `speed`, and `inline_mutation` references.
+This node is given a `dialogue_line` (mentioned above) and uses its properties to work out how to handle typing out the dialogue. It will automatically handle any `bb_code`, `wait`, `speed`, and `inline_mutation` references.
 
 Use `type_out()` to start typing out the text. The label will emit a `finished_typing` signal when it has finished typing.
 
@@ -65,11 +65,11 @@ The `DialogueLabel` typing speed can be configured in your balloon by changing t
 
 ## Using a custom `current_scene` implementation
 
-If your game has its own method of managing what the "current scene" is then you might want to pass an overridden `Callable` to `DialogueManager.get_current_scene`. The built-in implementation looks at `get_tree().current_scene` before assuming the last child of `get_tree().root` is the current scene. If that doesn't work for you game then you can pass in a `Callable` that returns a `Node` that represents what the current scene is.
+If your game has its own method of managing what the "current scene" is, you might want to pass an overridden `Callable` to `DialogueManager.get_current_scene`. The built-in implementation looks at `get_tree().current_scene` before assuming the last child of `get_tree().root` is the current scene. If that doesn't work for your game, you can pass in a `Callable` that returns a `Node` that represents what the current scene is.
 
 ## Generating Dialogue Resources at runtime
 
-If you need to construct a dialogue resource at runtime you can use `create_resource_from_text(string)`:
+If you need to construct a dialogue resource at runtime, you can use `create_resource_from_text(string)`:
 
 ```gdscript
 var resource = DialogueManager.create_resource_from_text("~ title\nCharacter: Hello!")
@@ -77,9 +77,9 @@ var resource = DialogueManager.create_resource_from_text("~ title\nCharacter: He
 
 This will run the given text through the parser.
 
-If there were syntax errors the method will fail.
+If there were syntax errors, the method will fail.
 
-If there were no errors then you can use this ephemeral resource like normal:
+If there were no errors, you can use this ephemeral resource like normal:
 
 ```gdscript
 var dialogue_line = await DialogueManager.get_next_dialogue_line(resource, "title")
