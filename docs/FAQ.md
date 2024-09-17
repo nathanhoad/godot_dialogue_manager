@@ -8,7 +8,7 @@ If you run into something that you think might be a bug, you can [open an issue]
 
 ## How can I support this project?
 
-There are a few ways you can support the development of Dialogue Manager. You can [become a patron on Patreon](https://patreon.com/nathanhoad) or [sponser me on GitHub](https://github.com/sponsors/nathanhoad).
+There are a few ways you can support the development of Dialogue Manager. You can [become a patron on Patreon](https://patreon.com/nathanhoad) or [sponsor me on GitHub](https://github.com/sponsors/nathanhoad).
 
 If you're not in a position to do either of those things, you can just [give me a sub or like on YouTube](https://youtube.com/@nathan_hoad).
 

@@ -88,7 +88,7 @@ For this line of dialogue, the `tags` array would be `["mood=happy"]`, and `line
 
 ### Randomising lines of dialogue
 
-If you want to pick one from a few lines of dialogue, you can mark the line with a `%` at the start like this:
+If you want to pick a random line out of multiple, you can mark the lines with a `%` at the start like this:
 
 ```
 Nathan: I will say this.
@@ -154,9 +154,9 @@ Nathan: What would you like?
 - Nothing
 ```
 
-By default responses will just continue on to the lines below the list when one is chosen.
+By default, responses will just continue on to the lines below the list when one is chosen.
 
-To branch, you can provide and indented body under a given prompt or add a `=> another_title` where "another_title" is the title of another node. If you want to end the conversation right away you can `=> END`.
+To branch, you can provide an indented body under a given prompt or add a `=> another_title` where "another_title" is the title of another node. If you want to end the conversation right away you can use `=> END`.
 
 ```
 Nathan: What would you like?
@@ -181,7 +181,7 @@ Someone: Here is a thing you can do.
 ...is the same as writing:
 
 ```
-Someone: Here is a thing you can do
+Someone: Here is a thing you can do.
 - Nathan: That's good to hear!
 - Nathan: That's definitely news
 ```
@@ -273,7 +273,7 @@ Nathan: I'm not sure we've met before [do wave()]I'm Nathan.
 Nathan: I can also emit signals[do SomeGlobal.some_signal.emit()] inline.
 ```
 
-Inline mutations that use `await` in their implementation will pause typing of dialogue until they resolve. To ignore awaiting, add a "!" after the "do" keyword - eg. `[do! something()]`.
+Inline mutations that use `await` in their implementation will pause typing of dialogue until they resolve. To ignore awaiting, add a "!" after the "do" keyword - e.g. `[do! something()]`.
 
 ### Signals
 

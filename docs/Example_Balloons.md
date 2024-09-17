@@ -6,11 +6,11 @@ You can find them in the [/examples](../examples) directory. If you want to try 
 
 Example scenes include:
 
-- A portrait balloon showing character potraits and typing noises. This also shows using a low res balloon if the viewport is set to lower than 400px.
+- A portrait balloon showing character portraits and typing noises. This also shows using a low res balloon if the viewport is set to lower than 400px.
 - Using a mutation to ask the player for their name.
 - A Point n Click Adventure style interaction that includes voice acting in multiple languages.
 - A Visual Novel style balloon with various character slots and mutations for adding/removing characters in the conversation.
-- A C# Balloon that show how you might write a custom balloon in C#.
+- A C# Balloon that shows how you might write a custom balloon in C#.
 
 To see an example in action, open the scenes in [/examples/test_scenes](../examples/test_scenes/) and run them.
 

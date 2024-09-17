@@ -92,7 +92,7 @@ DialogueManager.Mutated += (Godot.Collections.Dictionary mutation) =>
 };
 ```
 
-If you are using the built-in responses menu node, you'll have to use the `Connect` approach.
+If you are using the built-in responses menu node, you'll have to use the `Connect` approach:
 
 ```csharp
 responsesMenu.Connect("response_selected", Callable.From((DialogueResponse response) =>
