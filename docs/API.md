@@ -36,27 +36,27 @@ Returns a `DialogueLine` that looks something like this:
 - `character: String` - the name of the character speaking (or `""`).
 - `text: String` - the text that the character is saying.
 - `tags: PackedStringArray` - a list of tags.
-- `translation_key: String` - the key used to translate the text (or the whole text again if no ID was specified on the line)
+- `translation_key: String` - the key used to translate the text (or the whole text again if no ID was specified on the line).
 - `responses: Array[DialogueResponse]` - the list of responses to this line (or `[]` if none are available).
   - `id: String` - the ID of the response.
   - `next_id: String` - the ID of the next line if this response is chosen.
-  - `is_allowed: bool` - whether this line passed its condition check (useful if you have "include all responses" enabled)
+  - `is_allowed: bool` - whether this line passed its condition check (useful if you have "include all responses" enabled).
   - `character: String` - the character name (if one was provided).
   - `text: String` - the text for this response.
   - `tags: PackedStringArray` - a list of tags.
-  - `translation_key: String` - the key used to translate the text (or the whole text again if no ID was specified on the response)
+  - `translation_key: String` - the key used to translate the text (or the whole text again if no ID was specified on the response).
 
-If there is no next line of dialogue found then it will return an empty dictionary (`{}`).
+If there is no next line of dialogue found, it will return an empty dictionary (`{}`).
 
 Pass an array of nodes as `extra_game_states` in order to temporarily add to the game state shortcuts that are available to conditions and mutations.
 
-You can specify `mutation_behaviour` to be one of the values provided in the `DialogueManager.MutationBehaviour` enum. `Wait` is the default and will `await` any mutation lines. `DoNoWait` will run the mutations but not wait for them before moving to the next line. `Skip` will skip mutations entirely. In most cases you should leave this as the default. _The example balloon only supports `Wait`_.
+You can specify `mutation_behaviour` to be one of the values provided in the `DialogueManager.MutationBehaviour` enum. `Wait` is the default and will `await` any mutation lines. `DoNoWait` will run the mutations but not wait for them before moving to the next line. `Skip` will skip mutations entirely. In most cases, you should leave this as the default. _The example balloon only supports `Wait`_.
 
 #### `func show_example_dialogue_balloon(resource: DialogueResource, title: String = "", extra_game_states: Array = []) -> CanvasLayer`
 
 Opens the example balloon.
 
-If your game viewport is less than 400 it will open the low res balloon. Otherwise it will open the usual balloon.
+If your game viewport is less than 400, it will open the low res balloon. Otherwise, it will open the usual balloon.
 
 It will close once dialogue runs out.
 
@@ -66,10 +66,10 @@ Returns the example balloon's base CanvasLayer in case you want to `queue_free()
 
 ### Exports
 
-- `seconds_per_step: float = 0.02` - the speed with which the text types out.
+- `seconds_per_step: float = 0.02` - the speed at which the text types out.
 - `pause_at_characters: String = ".?!"` - automatically have a brief pause when these characters are encountered.
 - `skip_pause_at_character_if_followed_by: String = ")\""` - ignore automatic pausing if the pause character is followed by one of these.
-- `skip_pause_at_abbreviations: Array = ["Mr", "Mrs", "Ms", "Dr", "etc", "ex"] - Don't auto pause after these abbreviations (only if "." is in `pause_at_characters`).
+- `skip_pause_at_abbreviations: Array = ["Mr", "Mrs", "Ms", "Dr", "etc", "ex"]` - don't auto pause after these abbreviations (only if "." is in `pause_at_characters`).
 - `seconds_per_pause_step: float = 0.3` - the amount of time to pause when exposing a character present in pause_at_characters.
 
 ### Signals
