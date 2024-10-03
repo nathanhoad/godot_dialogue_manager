@@ -9,7 +9,7 @@ const DialogueResource = preload("./dialogue_resource.gd")
 const DialogueManagerParser = preload("./components/parser.gd")
 const DialogueManagerParseResult = preload("./components/parse_result.gd")
 
-const compiler_version = 12
+const compiler_version = 13
 
 
 func _get_importer_name() -> String:

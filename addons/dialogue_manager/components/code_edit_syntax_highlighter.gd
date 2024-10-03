@@ -125,7 +125,7 @@ func _get_line_syntax_highlighting(line: int) -> Dictionary:
 	var mutation_matches: Array[RegExMatch] = regex_mutation.search_all(text)
 	for mutation_match in mutation_matches:
 		colors[mutation_match.get_start(0)] = {"color": text_edit.theme_overrides.mutations_color}
-		colors.merge(_get_expression_syntax_highlighting(mutation_match.get_start("mutation"), ExpressionType.DO if mutation_match.strings[1] == "do" else ExpressionType.SET, mutation_match.get_string("mutation")), true)
+		colors.merge(_get_expression_syntax_highlighting(mutation_match.get_start("mutation"), ExpressionType.DO if mutation_match.strings[1].begins_with("do") else ExpressionType.SET, mutation_match.get_string("mutation")), true)
 
 	# Order the dictionary keys to prevent CodeEdit from having issues
 	var new_colors: Dictionary = {}

@@ -738,9 +738,11 @@ func find_previous_response_id(line_number: int) -> String:
 			if line.strip_edges().begins_with("- "):
 				last_found_response_id = str(i)
 			else:
-				return last_found_response_id
+				break
+		elif get_indent(line) < indent_size:
+			break
 
-	# Return itself if nothing was found
+	# Return the most relevant ID
 	return last_found_response_id
 
 
