@@ -406,11 +406,12 @@ func move_line(offset: int) -> void:
 	text = "\n".join(lines)
 
 	cursor.y += offset
+	set_cursor(cursor)
 	from += offset
 	to += offset
 	if reselect:
 		select(from, 0, to, get_line_width(to))
-	set_cursor(cursor)
+
 	text_changed.emit()
 
 
