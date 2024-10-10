@@ -1247,7 +1247,7 @@ func resolve_thing_method(thing, method: String, args: Array):
 		var method_args: Array = method_info.args
 		if method_info.flags & METHOD_FLAG_VARARG == 0 and method_args.size() < args.size():
 			assert(false, DialogueConstants.translate(&"runtime.expected_n_got_n_args").format({ expected = method_args.size(), method = method, received = args.size()}))
-		for i in range(0, args.size()):
+		for i in range(0, min(method_args.size(), args.size())):
 			var m: Dictionary = method_args[i]
 			var to_type:int = typeof(args[i])
 			if m.type == TYPE_ARRAY:
