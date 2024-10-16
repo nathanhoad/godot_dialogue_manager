@@ -10,9 +10,9 @@ const ResolvedTagData = preload("./resolved_tag_data.gd")
 const DialogueManagerParseResult = preload("./parse_result.gd")
 
 
-var IMPORT_REGEX: RegEx = RegEx.create_from_string("import \"(?<path>[^\"]+)\" as (?<prefix>[^\\!\\@\\#\\$\\%\\^\\&\\*\\(\\)\\-\\=\\+\\{\\}\\[\\]\\;\\:\\\"\\'\\,\\.\\<\\>\\?\\/\\s]+)")
+var IMPORT_REGEX: RegEx = RegEx.create_from_string("import \"(?<path>[^\"]+)\" as (?<prefix>[a-zA-Z_\\p{Emoji_Presentation}\\p{Han}\\p{Katakana}\\p{Hiragana}\\p{Cyrillic}][a-zA-Z_0-9\\p{Emoji_Presentation}\\p{Han}\\p{Katakana}\\p{Hiragana}\\p{Cyrillic}]+)")
 var USING_REGEX: RegEx = RegEx.create_from_string("^using (?<state>.*)$")
-var VALID_TITLE_REGEX: RegEx = RegEx.create_from_string("^[^\\!\\@\\#\\$\\%\\^\\&\\*\\(\\)\\-\\=\\+\\{\\}\\[\\]\\;\\:\\\"\\'\\,\\.\\<\\>\\?\\/\\s]+$")
+var VALID_TITLE_REGEX: RegEx = RegEx.create_from_string("^[a-zA-Z_\\p{Emoji_Presentation}\\p{Han}\\p{Katakana}\\p{Hiragana}\\p{Cyrillic}][a-zA-Z_0-9\\p{Emoji_Presentation}\\p{Han}\\p{Katakana}\\p{Hiragana}\\p{Cyrillic}]+$")
 var BEGINS_WITH_NUMBER_REGEX: RegEx = RegEx.create_from_string("^\\d")
 var TRANSLATION_REGEX: RegEx = RegEx.create_from_string("\\[ID:(?<tr>.*?)\\]")
 var TAGS_REGEX: RegEx = RegEx.create_from_string("\\[#(?<tags>.*?)\\]")
@@ -26,8 +26,8 @@ var INLINE_RANDOM_REGEX: RegEx = RegEx.create_from_string("\\[\\[(?<options>.*?)
 var INLINE_CONDITIONALS_REGEX: RegEx = RegEx.create_from_string("\\[if (?<condition>.+?)\\](?<body>.*?)\\[\\/if\\]")
 
 var TOKEN_DEFINITIONS: Dictionary = {
-	DialogueConstants.TOKEN_FUNCTION: RegEx.create_from_string("^[a-zA-Z_][a-zA-Z_0-9]*\\("),
-	DialogueConstants.TOKEN_DICTIONARY_REFERENCE: RegEx.create_from_string("^[a-zA-Z_][a-zA-Z_0-9]*\\["),
+	DialogueConstants.TOKEN_FUNCTION: RegEx.create_from_string("^[a-zA-Z_\\p{Emoji_Presentation}\\p{Han}\\p{Katakana}\\p{Hiragana}\\p{Cyrillic}][a-zA-Z_0-9\\p{Emoji_Presentation}\\p{Han}\\p{Katakana}\\p{Hiragana}\\p{Cyrillic}]*\\("),
+	DialogueConstants.TOKEN_DICTIONARY_REFERENCE: RegEx.create_from_string("^[a-zA-Z_\\p{Emoji_Presentation}\\p{Han}\\p{Katakana}\\p{Hiragana}\\p{Cyrillic}][a-zA-Z_0-9\\p{Emoji_Presentation}\\p{Han}\\p{Katakana}\\p{Hiragana}\\p{Cyrillic}]*\\["),
 	DialogueConstants.TOKEN_PARENS_OPEN: RegEx.create_from_string("^\\("),
 	DialogueConstants.TOKEN_PARENS_CLOSE: RegEx.create_from_string("^\\)"),
 	DialogueConstants.TOKEN_BRACKET_OPEN: RegEx.create_from_string("^\\["),
@@ -44,7 +44,7 @@ var TOKEN_DEFINITIONS: Dictionary = {
 	DialogueConstants.TOKEN_STRING: RegEx.create_from_string("^&?(\".*?\"|\'.*?\')"),
 	DialogueConstants.TOKEN_NOT: RegEx.create_from_string("^(not( |$)|!)"),
 	DialogueConstants.TOKEN_AND_OR: RegEx.create_from_string("^(and|or|&&|\\|\\|)( |$)"),
-	DialogueConstants.TOKEN_VARIABLE: RegEx.create_from_string("^[a-zA-Z_][a-zA-Z_0-9]*"),
+	DialogueConstants.TOKEN_VARIABLE: RegEx.create_from_string("^[a-zA-Z_\\p{Emoji_Presentation}\\p{Han}\\p{Katakana}\\p{Hiragana}\\p{Cyrillic}][a-zA-Z_0-9\\p{Emoji_Presentation}\\p{Han}\\p{Katakana}\\p{Hiragana}\\p{Cyrillic}]*"),
 	DialogueConstants.TOKEN_COMMENT: RegEx.create_from_string("^#.*"),
 	DialogueConstants.TOKEN_CONDITION: RegEx.create_from_string("^(if|elif|else)"),
 	DialogueConstants.TOKEN_BOOL: RegEx.create_from_string("^(true|false)")
