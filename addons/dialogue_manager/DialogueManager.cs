@@ -78,12 +78,17 @@ namespace DialogueManagerRuntime
         }
 
 
+        public static void Prepare(GodotObject instance)
+        {
+            instance.Connect("passed_title", Callable.From((string title) => PassedTitle?.Invoke(title)));
+            instance.Connect("got_dialogue", Callable.From((RefCounted line) => GotDialogue?.Invoke(new DialogueLine(line))));
+            instance.Connect("mutated", Callable.From((Dictionary mutation) => Mutated?.Invoke(mutation)));
+            instance.Connect("dialogue_ended", Callable.From((Resource dialogueResource) => DialogueEnded?.Invoke(dialogueResource)));
+        }
+
         public void Prepare()
         {
-            Instance.Connect("passed_title", Callable.From((string title) => PassedTitle?.Invoke(title)));
-            Instance.Connect("got_dialogue", Callable.From((RefCounted line) => GotDialogue?.Invoke(new DialogueLine(line))));
-            Instance.Connect("mutated", Callable.From((Dictionary mutation) => Mutated?.Invoke(mutation)));
-            Instance.Connect("dialogue_ended", Callable.From((Resource dialogueResource) => DialogueEnded?.Invoke(dialogueResource)));
+            Prepare(Instance);
         }
 
 
@@ -113,8 +118,11 @@ namespace DialogueManagerRuntime
 
         public static async Task<DialogueLine?> GetNextDialogueLine(Resource dialogueResource, string key = "", Array<Variant>? extraGameStates = null)
         {
-            Instance.Call("_bridge_get_next_dialogue_line", dialogueResource, key, extraGameStates ?? new Array<Variant>());
-            var result = await Instance.ToSignal(Instance, "bridge_get_next_dialogue_line_completed");
+            var instance = (Node)Instance.Call("_bridge_get_new_instance");
+            Prepare(instance);
+            instance.Call("_bridge_get_next_dialogue_line", dialogueResource, key, extraGameStates ?? new Array<Variant>());
+            var result = await instance.ToSignal(instance, "bridge_get_next_dialogue_line_completed");
+            instance.QueueFree();
 
             if ((RefCounted)result[0] == null) return null;
 
@@ -164,64 +172,64 @@ namespace DialogueManagerRuntime
         }
 
 
-    public async void ResolveThingMethod(GodotObject thing, string method, Array<Variant> args)
-    {
-        MethodInfo? info = thing.GetType().GetMethod(method, BindingFlags.Instance | BindingFlags.Static | BindingFlags.Public);
+        public async void ResolveThingMethod(GodotObject thing, string method, Array<Variant> args)
+        {
+            MethodInfo? info = thing.GetType().GetMethod(method, BindingFlags.Instance | BindingFlags.Static | BindingFlags.Public);
 
-        if (info == null) return;
+            if (info == null) return;
 
 #nullable disable
-        // Convert the method args to something reflection can handle
-        ParameterInfo[] argTypes = info.GetParameters();
-        object[] _args = new object[argTypes.Length];
-        for (int i = 0; i < argTypes.Length; i++)
-        {
-            // check if args is assignable from derived type
-            if (i < args.Count && args[i].Obj != null)
+            // Convert the method args to something reflection can handle
+            ParameterInfo[] argTypes = info.GetParameters();
+            object[] _args = new object[argTypes.Length];
+            for (int i = 0; i < argTypes.Length; i++)
             {
-                if (argTypes[i].ParameterType.IsAssignableFrom(args[i].Obj.GetType()))
+                // check if args is assignable from derived type
+                if (i < args.Count && args[i].Obj != null)
                 {
-                    _args[i] = args[i].Obj;
+                    if (argTypes[i].ParameterType.IsAssignableFrom(args[i].Obj.GetType()))
+                    {
+                        _args[i] = args[i].Obj;
+                    }
+                    // fallback to assigning primitive types
+                    else
+                    {
+                        _args[i] = Convert.ChangeType(args[i].Obj, argTypes[i].ParameterType);
+                    }
                 }
-                // fallback to assigning primitive types
+                else if (argTypes[i].DefaultValue != null)
+                {
+                    _args[i] = argTypes[i].DefaultValue;
+                }
+            }
+
+            // Add a single frame wait in case the method returns before signals can listen
+            await ToSignal(Engine.GetMainLoop(), SceneTree.SignalName.ProcessFrame);
+
+            // invoke method and handle the result based on return type
+            object result = info.Invoke(thing, _args);
+
+            if (result is Task taskResult)
+            {
+                // await Tasks and handle result if it is a Task<T>
+                await taskResult;
+                var taskType = taskResult.GetType();
+                if (taskType.IsGenericType && taskType.GetGenericTypeDefinition() == typeof(Task<>))
+                {
+                    var resultProperty = taskType.GetProperty("Result");
+                    var taskResultValue = resultProperty.GetValue(taskResult);
+                    EmitSignal(SignalName.Resolved, (Variant)taskResultValue);
+                }
                 else
                 {
-                    _args[i] = Convert.ChangeType(args[i].Obj, argTypes[i].ParameterType);
+                    EmitSignal(SignalName.Resolved, null);
                 }
-            }
-            else if (argTypes[i].DefaultValue != null)
-            {
-                _args[i] = argTypes[i].DefaultValue;
-            }
-        }
-
-        // Add a single frame wait in case the method returns before signals can listen
-        await ToSignal(Engine.GetMainLoop(), SceneTree.SignalName.ProcessFrame);
-
-        // invoke method and handle the result based on return type
-        object result = info.Invoke(thing, _args);
-
-        if (result is Task taskResult)
-        {
-            // await Tasks and handle result if it is a Task<T>
-            await taskResult;
-            var taskType = taskResult.GetType();
-            if (taskType.IsGenericType && taskType.GetGenericTypeDefinition() == typeof(Task<>))
-            {
-                var resultProperty = taskType.GetProperty("Result");
-                var taskResultValue = resultProperty.GetValue(taskResult);
-                EmitSignal(SignalName.Resolved, (Variant)taskResultValue);
             }
             else
             {
-                EmitSignal(SignalName.Resolved, null);
+                EmitSignal(SignalName.Resolved, (Variant)result);
             }
         }
-        else
-        {
-            EmitSignal(SignalName.Resolved, (Variant)result);
-        }
-    }
 #nullable enable
     }
 
