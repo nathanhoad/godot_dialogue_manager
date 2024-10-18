@@ -309,6 +309,10 @@ func _get_dotnet_dialogue_manager() -> Node:
 	return load(get_script().resource_path.get_base_dir() + "/DialogueManager.cs").new()
 
 
+func _bridge_get_new_instance() -> Node:
+	return new()
+
+
 func _bridge_get_next_dialogue_line(resource: DialogueResource, key: String, extra_game_states: Array = []) -> void:
 	# dotnet needs at least one await tick of the signal gets called too quickly
 	await get_tree().process_frame
