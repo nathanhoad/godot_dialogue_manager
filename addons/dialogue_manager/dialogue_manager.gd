@@ -60,9 +60,9 @@ var translation_source: TranslationSource = TranslationSource.Guess
 
 ## Used to resolve the current scene. Override if your game manages the current scene itself.
 var get_current_scene: Callable = func():
-	var current_scene: Node = get_tree().current_scene
+	var current_scene: Node = Engine.get_main_loop().current_scene
 	if current_scene == null:
-		current_scene = get_tree().root.get_child(get_tree().root.get_child_count() - 1)
+		current_scene = Engine.get_main_loop().root.get_child(Engine.get_main_loop().root.get_child_count() - 1)
 	return current_scene
 
 var _has_loaded_autoloads: bool = false
@@ -100,7 +100,7 @@ func get_next_dialogue_line(resource: DialogueResource, key: String = "", extra_
 
 	# Inject any "using" states into the game_states
 	for state_name in resource.using_states:
-		var autoload = get_tree().root.get_node_or_null(state_name)
+		var autoload = Engine.get_main_loop().root.get_node_or_null(state_name)
 		if autoload == null:
 			printerr(DialogueConstants.translate(&"runtime.unknown_autoload").format({ autoload = state_name }))
 		else:
@@ -545,11 +545,11 @@ func get_game_states(extra_game_states: Array) -> Array:
 	if not _has_loaded_autoloads:
 		_has_loaded_autoloads = true
 		# Add any autoloads to a generic state so we can refer to them by name
-		for child in get_tree().root.get_children():
+		for child in Engine.get_main_loop().root.get_children():
 			# Ignore the dialogue manager
 			if child.name == &"DialogueManager": continue
 			# Ignore the current main scene
-			if get_tree().current_scene and child.name == get_tree().current_scene.name: continue
+			if Engine.get_main_loop().current_scene and child.name == Engine.get_main_loop().current_scene.name: continue
 			# Add the node to our known autoloads
 			_autoloads[child.name] = child
 		game_states = [_autoloads]
@@ -585,12 +585,12 @@ func mutate(mutation: Dictionary, extra_game_states: Array, is_inline_mutation: 
 		match expression[0].function:
 			&"wait":
 				mutated.emit(mutation)
-				await get_tree().create_timer(float(args[0])).timeout
+				await Engine.get_main_loop().create_timer(float(args[0])).timeout
 				return
 
 			&"debug":
 				prints("Debug:", args)
-				await get_tree().process_frame
+				await Engine.get_main_loop().process_frame
 
 	# Or pass through to the resolver
 	else:
@@ -604,7 +604,7 @@ func mutate(mutation: Dictionary, extra_game_states: Array, is_inline_mutation: 
 			resolve(mutation.expression.duplicate(true), extra_game_states)
 
 	# Wait one frame to give the dialogue handler a chance to yield
-	await get_tree().process_frame
+	await Engine.get_main_loop().process_frame
 
 
 func mutation_contains_assignment(mutation: Array) -> bool:
