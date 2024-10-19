@@ -555,7 +555,7 @@ func get_game_states(extra_game_states: Array) -> Array:
 		game_states = [_autoloads]
 		# Add any other state shortcuts from settings
 		for node_name in DialogueSettings.get_setting(&"states", []):
-			var state: Node = get_node_or_null("/root/" + node_name)
+			var state: Node = Engine.get_main_loop().root.get_node_or_null(node_name)
 			if state:
 				game_states.append(state)
 
