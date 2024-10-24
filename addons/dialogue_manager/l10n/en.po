@@ -21,6 +21,9 @@ msgstr "Open a file"
 msgid "open.open"
 msgstr "Open..."
 
+msgid "open.quick_open"
+msgstr "Quick open..."
+
 msgid "open.no_recent_files"
 msgstr "No recent files"
 

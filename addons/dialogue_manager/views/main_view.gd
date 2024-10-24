@@ -8,7 +8,8 @@ const DialogueResource = preload("../dialogue_resource.gd")
 const DialogueManagerParser = preload("../components/parser.gd")
 
 const OPEN_OPEN = 100
-const OPEN_CLEAR = 101
+const OPEN_QUICK = 101
+const OPEN_CLEAR = 102
 
 const TRANSLATIONS_GENERATE_LINE_IDS = 100
 const TRANSLATIONS_SAVE_CHARACTERS_TO_CSV = 201
@@ -38,6 +39,8 @@ signal confirmation_closed()
 @onready var new_dialog: FileDialog = $NewDialog
 @onready var save_dialog: FileDialog = $SaveDialog
 @onready var open_dialog: FileDialog = $OpenDialog
+@onready var quick_open_dialog: ConfirmationDialog = $QuickOpenDialog
+@onready var quick_open_files_list: VBoxContainer = $QuickOpenDialog/QuickOpenFilesList
 @onready var export_dialog: FileDialog = $ExportDialog
 @onready var import_dialog: FileDialog = $ImportDialog
 @onready var errors_dialog: AcceptDialog = $ErrorsDialog
@@ -446,6 +449,7 @@ func apply_theme() -> void:
 		new_dialog.min_size = Vector2(600, 500) * scale
 		save_dialog.min_size = Vector2(600, 500) * scale
 		open_dialog.min_size = Vector2(600, 500) * scale
+		quick_open_dialog.min_size = Vector2(400, 600) * scale
 		export_dialog.min_size = Vector2(600, 500) * scale
 		import_dialog.min_size = Vector2(600, 500) * scale
 		settings_dialog.min_size = Vector2(1000, 600) * scale
@@ -461,6 +465,7 @@ func build_open_menu() -> void:
 	var menu = open_button.get_popup()
 	menu.clear()
 	menu.add_icon_item(get_theme_icon("Load", "EditorIcons"), DialogueConstants.translate(&"open.open"), OPEN_OPEN)
+	menu.add_icon_item(get_theme_icon("Load", "EditorIcons"), DialogueConstants.translate(&"open.quick_open"), OPEN_QUICK)
 	menu.add_separator()
 
 	var recent_files = DialogueSettings.get_recent_files()
@@ -836,6 +841,10 @@ func _on_open_menu_id_pressed(id: int) -> void:
 	match id:
 		OPEN_OPEN:
 			open_dialog.popup_centered()
+		OPEN_QUICK:
+			quick_open_files_list.files = Engine.get_meta("DialogueCache").get_files()
+			quick_open_dialog.popup_centered()
+			quick_open_files_list.focus_filter()
 		OPEN_CLEAR:
 			DialogueSettings.clear_recent_files()
 			build_open_menu()
@@ -945,6 +954,16 @@ func _on_open_button_about_to_popup() -> void:
 
 func _on_open_dialog_file_selected(path: String) -> void:
 	open_file(path)
+
+
+func _on_quick_open_files_list_file_double_clicked(file_path: String) -> void:
+	quick_open_dialog.hide()
+	open_file(file_path)
+
+
+func _on_quick_open_dialog_confirmed() -> void:
+	if quick_open_files_list.current_file_path:
+		open_file(quick_open_files_list.current_file_path)
 
 
 func _on_save_all_button_pressed() -> void:
