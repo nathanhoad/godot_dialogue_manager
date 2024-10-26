@@ -82,7 +82,7 @@ var current_file_path: String = "":
 	set(next_current_file_path):
 		current_file_path = next_current_file_path
 		files_list.current_file_path = current_file_path
-		if current_file_path == "":
+		if current_file_path == "" or not open_buffers.has(current_file_path):
 			save_all_button.disabled = true
 			test_button.disabled = true
 			search_button.disabled = true
@@ -934,8 +934,15 @@ func _on_main_view_visibility_changed() -> void:
 
 
 func _on_new_button_pressed() -> void:
-	new_dialog.current_file = ""
+	new_dialog.current_file = "dialogue"
 	new_dialog.popup_centered()
+
+
+func _on_new_dialog_confirmed() -> void:
+	if new_dialog.current_file.get_basename() == "":
+		var path = "res://untitled.dialogue"
+		new_file(path)
+		open_file(path)
 
 
 func _on_new_dialog_file_selected(path: String) -> void:
@@ -944,6 +951,8 @@ func _on_new_dialog_file_selected(path: String) -> void:
 
 
 func _on_save_dialog_file_selected(path: String) -> void:
+	if path == "": path = "res://untitled.dialogue"
+
 	new_file(path, code_edit.text)
 	open_file(path)
 
