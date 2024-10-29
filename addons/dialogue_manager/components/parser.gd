@@ -12,7 +12,7 @@ const DialogueManagerParseResult = preload("./parse_result.gd")
 
 var IMPORT_REGEX: RegEx = RegEx.create_from_string("import \"(?<path>[^\"]+)\" as (?<prefix>[a-zA-Z_\\p{Emoji_Presentation}\\p{Han}\\p{Katakana}\\p{Hiragana}\\p{Cyrillic}][a-zA-Z_0-9\\p{Emoji_Presentation}\\p{Han}\\p{Katakana}\\p{Hiragana}\\p{Cyrillic}]+)")
 var USING_REGEX: RegEx = RegEx.create_from_string("^using (?<state>.*)$")
-var VALID_TITLE_REGEX: RegEx = RegEx.create_from_string("^[a-zA-Z_\\p{Emoji_Presentation}\\p{Han}\\p{Katakana}\\p{Hiragana}\\p{Cyrillic}][a-zA-Z_0-9\\p{Emoji_Presentation}\\p{Han}\\p{Katakana}\\p{Hiragana}\\p{Cyrillic}]+$")
+var VALID_TITLE_REGEX: RegEx = RegEx.create_from_string("^[a-zA-Z_0-9\\p{Emoji_Presentation}\\p{Han}\\p{Katakana}\\p{Hiragana}\\p{Cyrillic}][a-zA-Z_0-9\\p{Emoji_Presentation}\\p{Han}\\p{Katakana}\\p{Hiragana}\\p{Cyrillic}]+$")
 var BEGINS_WITH_NUMBER_REGEX: RegEx = RegEx.create_from_string("^\\d")
 var TRANSLATION_REGEX: RegEx = RegEx.create_from_string("\\[ID:(?<tr>.*?)\\]")
 var TAGS_REGEX: RegEx = RegEx.create_from_string("\\[#(?<tags>.*?)\\]")
@@ -242,17 +242,14 @@ func parse(text: String, path: String) -> Error:
 		# Title
 		elif is_title_line(raw_line):
 			line["type"] = DialogueConstants.TYPE_TITLE
-			if not raw_lines[id].begins_with("~"):
-				add_error(id, indent_size + 2, DialogueConstants.ERR_NESTED_TITLE)
-			else:
-				line["text"] = extract_title(raw_line)
-				# Titles can't have numbers as the first letter (unless they are external titles which get replaced with hashes)
-				if id >= _imported_line_count and BEGINS_WITH_NUMBER_REGEX.search(line.text):
-					add_error(id, 2, DialogueConstants.ERR_TITLE_BEGINS_WITH_NUMBER)
-				# Only import titles are allowed to have "/" in them
-				var valid_title = VALID_TITLE_REGEX.search(raw_line.replace("/", "").substr(2).strip_edges())
-				if not valid_title:
-					add_error(id, 2, DialogueConstants.ERR_TITLE_INVALID_CHARACTERS)
+			line["text"] = extract_title(raw_line)
+			# Titles can't have numbers as the first letter (unless they are external titles which get replaced with hashes)
+			if id >= _imported_line_count and BEGINS_WITH_NUMBER_REGEX.search(line.text):
+				add_error(id, 2, DialogueConstants.ERR_TITLE_BEGINS_WITH_NUMBER)
+			# Only import titles are allowed to have "/" in them
+			var valid_title = VALID_TITLE_REGEX.search(raw_line.replace("/", "").substr(raw_line.find("~ ") + 2).strip_edges())
+			if not valid_title:
+				add_error(id, 2, DialogueConstants.ERR_TITLE_INVALID_CHARACTERS)
 
 		# Condition
 		elif is_condition_line(raw_line, false):
@@ -434,7 +431,6 @@ func parse(text: String, path: String) -> Error:
 				DialogueConstants.TYPE_TITLE,
 				DialogueConstants.TYPE_DIALOGUE,
 				DialogueConstants.TYPE_MUTATION,
-				DialogueConstants.TYPE_GOTO
 			] and is_valid_id(line.next_id):
 			var next_line = raw_lines[line.next_id.to_int()]
 			if next_line != null and get_indent(next_line) > indent_size:
@@ -564,7 +560,7 @@ func prepare(text: String, path: String, include_imported_titles_hashes: bool = 
 
 	# Find all titles first
 	for id in range(0, raw_lines.size()):
-		if raw_lines[id].begins_with("~ "):
+		if raw_lines[id].strip_edges().begins_with("~ "):
 			var title: String = extract_title(raw_lines[id])
 			if title == "":
 				add_error(id, 2, DialogueConstants.ERR_EMPTY_TITLE)
@@ -1047,7 +1043,7 @@ func extract_import_path_and_name(line: String) -> Dictionary:
 
 
 func extract_title(line: String) -> String:
-	return line.substr(2).strip_edges()
+	return line.substr(line.find("~ ") + 2).strip_edges()
 
 
 func extract_translation(line: String) -> String:
