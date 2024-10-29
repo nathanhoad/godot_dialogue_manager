@@ -287,9 +287,6 @@ msgstr ""
 msgid "errors.duplicate_title"
 msgstr ""
 
-msgid "errors.nested_title"
-msgstr ""
-
 msgid "errors.invalid_title_string"
 msgstr ""
 

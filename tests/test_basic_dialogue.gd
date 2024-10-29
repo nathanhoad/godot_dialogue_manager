@@ -12,12 +12,6 @@ func test_can_parse_titles() -> void:
 	assert(output.titles.has("some_title"), "Should have known title.")
 	assert(output.titles["some_title"] == "2", "Should point to the next line.")
 
-	output = parse(" ~ indented_title\nNathan: Oh no!")
-
-	assert(output.errors.size() > 0, "Should have an error.")
-	assert(output.errors[0].line_number == 0, "Should be an indentation error.")
-	assert(output.errors[0].error == DialogueConstants.ERR_NESTED_TITLE, "Should be an indentation error.")
-
 
 func test_can_parse_basic_dialogue() -> void:
 	var output = parse("Nathan: This is dialogue with a name.\nThis is dialogue without a name")

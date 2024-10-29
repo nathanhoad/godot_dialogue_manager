@@ -64,7 +64,6 @@ const ERR_FILE_ALREADY_IMPORTED = 101
 const ERR_DUPLICATE_IMPORT_NAME = 102
 const ERR_EMPTY_TITLE = 103
 const ERR_DUPLICATE_TITLE = 104
-const ERR_NESTED_TITLE = 105
 const ERR_TITLE_INVALID_CHARACTERS = 106
 const ERR_UNKNOWN_TITLE = 107
 const ERR_INVALID_TITLE_REFERENCE = 108
@@ -110,8 +109,6 @@ static func get_error_message(error: int) -> String:
 			return translate(&"errors.empty_title")
 		ERR_DUPLICATE_TITLE:
 			return translate(&"errors.duplicate_title")
-		ERR_NESTED_TITLE:
-			return translate(&"errors.nested_title")
 		ERR_TITLE_INVALID_CHARACTERS:
 			return translate(&"errors.invalid_title_string")
 		ERR_TITLE_BEGINS_WITH_NUMBER:

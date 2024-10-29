@@ -272,9 +272,6 @@ msgstr "标题名不能为空。"
 msgid "errors.duplicate_title"
 msgstr "标题名不能重复。"
 
-msgid "errors.nested_title"
-msgstr "标题不能嵌套。"
-
 msgid "errors.invalid_title_string"
 msgstr "标题名无效。"
 

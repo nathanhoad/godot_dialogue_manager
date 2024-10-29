@@ -293,9 +293,6 @@ msgstr "Заголовки не можуть бути порожніми."
 msgid "errors.duplicate_title"
 msgstr "З такою назвою уже є заголовок."
 
-msgid "errors.nested_title"
-msgstr "Заголовки не повинні мати відступів."
-
 msgid "errors.invalid_title_string"
 msgstr "Заголовки можуть містити лише алфавітно-цифрові символи та цифри."
 

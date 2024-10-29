@@ -272,9 +272,6 @@ msgstr "標題名不能爲空。"
 msgid "errors.duplicate_title"
 msgstr "標題名不能重複。"
 
-msgid "errors.nested_title"
-msgstr "標題不能嵌套。"
-
 msgid "errors.invalid_title_string"
 msgstr "標題名無效。"
 
