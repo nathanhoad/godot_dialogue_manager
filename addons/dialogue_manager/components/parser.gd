@@ -691,13 +691,12 @@ func is_line_empty(line: String) -> bool:
 func get_line_after_line(id: int, indent_size: int, line: Dictionary) -> String:
 	# Unless the next line is an outdent we can assume it comes next
 	var next_nonempty_line_id = get_next_nonempty_line_id(id)
-	if next_nonempty_line_id != DialogueConstants.ID_NULL \
-		and indent_size <= get_indent(raw_lines[next_nonempty_line_id.to_int()]):
+
+	if next_nonempty_line_id != DialogueConstants.ID_NULL and indent_size <= get_indent(raw_lines[next_nonempty_line_id.to_int()]):
 		return next_nonempty_line_id
 	# Otherwise, we grab the ID from the parents next ID after children
 	elif line.has("parent_id") and parsed_lines.has(line.parent_id):
 		return parsed_lines[line.parent_id].next_id_after
-
 	else:
 		return DialogueConstants.ID_NULL
 
@@ -836,10 +835,7 @@ func find_next_line_after_conditions(line_number: int) -> String:
 		var line_indent = get_indent(line)
 		line = line.strip_edges()
 
-		if is_title_line(line):
-			return get_next_nonempty_line_id(i)
-
-		elif line_indent > expected_indent:
+		if line_indent > expected_indent:
 			continue
 
 		elif line_indent == expected_indent:
@@ -860,6 +856,7 @@ func find_next_line_after_conditions(line_number: int) -> String:
 					return parsed_lines[str(p)].get("next_id_after", DialogueConstants.ID_NULL)
 
 	return DialogueConstants.ID_END_CONVERSATION
+
 
 func find_last_line_within_conditions(line_number: int) -> String:
 	var line = raw_lines[line_number]
