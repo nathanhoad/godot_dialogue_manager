@@ -426,7 +426,7 @@ func get_line(resource: DialogueResource, key: String, extra_game_states: Array)
 			id_trail = "|" + next_line.next_id_after + id_trail
 
 		# If the next line is a title then check where it points to see if that is a set of responses.
-		if next_line.type == DialogueConstants.TYPE_GOTO and resource.lines.has(next_line.next_id):
+		while [DialogueConstants.TYPE_TITLE, DialogueConstants.TYPE_GOTO].has(next_line.type) and resource.lines.has(next_line.next_id):
 			next_line = resource.lines.get(next_line.next_id)
 
 		if next_line != null and next_line.type == DialogueConstants.TYPE_RESPONSE:
