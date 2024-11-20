@@ -503,6 +503,8 @@ func parse() -> void:
 	errors_panel.errors = errors
 	parser.free()
 
+	title_list.titles = code_edit.get_titles()
+
 
 func show_build_error_dialog() -> void:
 	build_error_dialog.dialog_text = DialogueConstants.translate(&"errors_with_build")
@@ -828,6 +830,7 @@ func _on_cache_file_content_changed(path: String, new_content: String) -> void:
 			buffer.text = new_content
 			buffer.pristine_text = new_content
 			code_edit.text = new_content
+			title_list.titles = code_edit.get_titles()
 
 
 func _on_editor_settings_changed() -> void:
@@ -985,8 +988,6 @@ func _on_find_in_files_button_pressed() -> void:
 
 
 func _on_code_edit_text_changed() -> void:
-	title_list.titles = code_edit.get_titles()
-
 	var buffer = open_buffers[current_file_path]
 	buffer.text = code_edit.text
 
