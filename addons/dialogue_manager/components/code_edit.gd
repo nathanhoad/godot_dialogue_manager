@@ -230,8 +230,8 @@ func get_titles() -> PackedStringArray:
 	var titles = PackedStringArray([])
 	var lines = text.split("\n")
 	for line in lines:
-		if line.begins_with("~ "):
-			titles.append(line.substr(2).strip_edges())
+		if line.strip_edges().begins_with("~ "):
+			titles.append(line.strip_edges().substr(2))
 	return titles
 
 
