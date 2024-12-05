@@ -91,7 +91,7 @@ func _ready() -> void:
 
 
 ## Step through lines and run any mutations until we either hit some dialogue or the end of the conversation
-func get_next_dialogue_line(resource: DialogueResource, key: String = "", extra_game_states: Array = [], mutation_behaviour: MutationBehaviour = MutationBehaviour.Wait) -> DialogueLine:
+func get_next_dialogue_line(resource: DialogueResource, key: String = "", extra_game_states: Array = [], mutation_behaviour: MutationBehaviour = MutationBehaviour.Wait, single_step: bool = false) -> DialogueLine:
 	# You have to provide a valid dialogue resource
 	if resource == null:
 		assert(false, DialogueConstants.translate(&"runtime.no_resource"))
@@ -129,7 +129,10 @@ func get_next_dialogue_line(resource: DialogueResource, key: String = "", extra_
 			(func(): dialogue_ended.emit(resource)).call_deferred()
 			return null
 		else:
-			return await get_next_dialogue_line(resource, dialogue.next_id, extra_game_states, mutation_behaviour)
+			if single_step:
+				return dialogue
+			else:
+				return await get_next_dialogue_line(resource, dialogue.next_id, extra_game_states, mutation_behaviour)
 	else:
 		got_dialogue.emit(dialogue)
 		return dialogue
