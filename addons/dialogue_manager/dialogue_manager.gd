@@ -646,7 +646,7 @@ func get_state_value(property: String, extra_game_states: Array):
 		return Vector3.ZERO
 	elif property == "Vector4":
 		return Vector4.ZERO
-	elif property == "Quaternian":
+	elif property == "Quaternion":
 		return Quaternion()
 
 	var expression = Expression.new()
