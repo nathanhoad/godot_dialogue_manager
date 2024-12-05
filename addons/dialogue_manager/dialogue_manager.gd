@@ -941,8 +941,12 @@ func resolve(tokens: Array, extra_game_states: Array):
 				# it until everything after it has been resolved
 				token["type"] = "variable"
 			else:
-				token["type"] = "value"
-				token["value"] = get_state_value(str(token.value), extra_game_states)
+				if token.type == DialogueConstants.TOKEN_NUMBER:
+					token["type"] = "value"
+					token["value"] = token.value
+				else:
+					token["type"] = "value"
+					token["value"] = get_state_value(str(token.value), extra_game_states)
 
 		i += 1
 
