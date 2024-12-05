@@ -116,11 +116,11 @@ namespace DialogueManagerRuntime
             return instance;
         }
 
-        public static async Task<DialogueLine?> GetNextDialogueLine(Resource dialogueResource, string key = "", Array<Variant>? extraGameStates = null, bool singleStep = false)
+        public static async Task<DialogueLine?> GetNextDialogueLine(Resource dialogueResource, string key = "", Array<Variant>? extraGameStates = null)
         {
             var instance = (Node)Instance.Call("_bridge_get_new_instance");
             Prepare(instance);
-            instance.Call("_bridge_get_next_dialogue_line", dialogueResource, key, extraGameStates ?? new Array<Variant>(), singleStep);
+            instance.Call("_bridge_get_next_dialogue_line", dialogueResource, key, extraGameStates ?? new Array<Variant>());
             var result = await instance.ToSignal(instance, "bridge_get_next_dialogue_line_completed");
             instance.QueueFree();
 
