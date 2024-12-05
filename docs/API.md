@@ -23,7 +23,7 @@ Opens a dialogue balloon given in `balloon_scene`.
 
 Returns the balloon's base node in case you want to `queue_free()` it yourself.
 
-#### `func get_next_dialogue_line(resource: DialogueResource, key: String = "", extra_game_states: Array = [], mutation_behaviour: MutationBehaviour = MutationBehaviour.Wait) -> DialogueLine`
+#### `func get_next_dialogue_line(resource: DialogueResource, key: String = "", extra_game_states: Array = [], mutation_behaviour: MutationBehaviour = MutationBehaviour.Wait, single_step: bool = false) -> DialogueLine`
 
 **Must be used with `await`.**
 
@@ -51,6 +51,8 @@ If there is no next line of dialogue found, it will return an empty dictionary (
 Pass an array of nodes as `extra_game_states` in order to temporarily add to the game state shortcuts that are available to conditions and mutations.
 
 You can specify `mutation_behaviour` to be one of the values provided in the `DialogueManager.MutationBehaviour` enum. `Wait` is the default and will `await` any mutation lines. `DoNoWait` will run the mutations but not wait for them before moving to the next line. `Skip` will skip mutations entirely. In most cases, you should leave this as the default. _The example balloon only supports `Wait`_.
+
+If `single_step` is enabled, the function will NOT run until it finds a printable line. Instead, it will run a single line from the dialogue and return a `DialogueLine` even if it is not printable (as in the case of mutations).
 
 #### `func show_example_dialogue_balloon(resource: DialogueResource, title: String = "", extra_game_states: Array = []) -> CanvasLayer`
 
