@@ -646,7 +646,7 @@ func get_state_value(property: String, extra_game_states: Array):
 		return Vector3.ZERO
 	elif property == "Vector4":
 		return Vector4.ZERO
-	elif property == "Quaternian":
+	elif property == "Quaternion":
 		return Quaternion()
 
 	var expression = Expression.new()
@@ -938,8 +938,12 @@ func resolve(tokens: Array, extra_game_states: Array):
 				# it until everything after it has been resolved
 				token["type"] = "variable"
 			else:
-				token["type"] = "value"
-				token["value"] = get_state_value(str(token.value), extra_game_states)
+				if token.type == DialogueConstants.TOKEN_NUMBER:
+					token["type"] = "value"
+					token["value"] = token.value
+				else:
+					token["type"] = "value"
+					token["value"] = get_state_value(str(token.value), extra_game_states)
 
 		i += 1
 
