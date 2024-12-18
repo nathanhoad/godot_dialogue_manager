@@ -37,11 +37,7 @@ func reimport_files(files: PackedStringArray = []) -> void:
 		.get_editor_interface() \
 		.get_resource_filesystem()
 
-	# NOTE: Godot 4.2rc1 has an issue with reimporting more than one
-	# file at a time so we do them one by one
-	for file in files:
-		file_system.reimport_files([file])
-		await get_tree().create_timer(0.2)
+	file_system.reimport_files(files)
 
 
 ## Add a dialogue file to the cache.
