@@ -19,6 +19,9 @@ var is_waiting_for_input: bool = false
 ## See if we are running a long mutation and should hide the balloon
 var will_hide_balloon: bool = false
 
+## A dictionary to store any ephemeral variables
+var locals: Dictionary = {}
+
 var _locale: String = TranslationServer.get_locale()
 
 ## The current line
