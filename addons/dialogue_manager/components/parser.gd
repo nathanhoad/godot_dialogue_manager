@@ -216,7 +216,7 @@ func parse(text: String, path: String) -> Error:
 			# If this response has a character name in it then it will automatically be
 			# injected as a line of dialogue if the player selects it
 			var response_text: String = line.text.replace("\\:", "!ESCAPED_COLON!")
-			if ": " in response_text:
+			if ":" in response_text:
 				if DialogueSettings.get_setting("create_lines_for_responses_with_characters", true):
 					var first_child: Dictionary = {
 						type = DialogueConstants.TYPE_DIALOGUE,
@@ -362,8 +362,9 @@ func parse(text: String, path: String) -> Error:
 			raw_line = tag_data.line_without_tags
 
 			var l = raw_line.replace("\\:", "!ESCAPED_COLON!")
-			if ": " in l:
-				var bits = Array(l.strip_edges().split(": "))
+
+			if ":" in l:
+				var bits = Array(l.strip_edges().split(":"))
 				line["character"] = bits.pop_front().strip_edges()
 				if not line["character"] in character_names:
 					character_names.append(line["character"])
@@ -372,7 +373,7 @@ func parse(text: String, path: String) -> Error:
 				for replacement in line.character_replacements:
 					if replacement.has("error"):
 						add_error(id, replacement.index, replacement.error)
-				line["text"] = ": ".join(bits).replace("!ESCAPED_COLON!", ":")
+				line["text"] = ":".join(bits).replace("!ESCAPED_COLON!", ":")
 			else:
 				line["character"] = ""
 				line["character_replacements"] = [] as Array[Dictionary]
@@ -1079,7 +1080,7 @@ func parse_response_character_and_text(id: int, text: String, line: Dictionary, 
 	if not line["character"] in character_names:
 		character_names.append(line["character"])
 
-	line["text"] = ": ".join(bits).replace("!ESCAPED_COLON!", ":").strip_edges()
+	line["text"] = ":".join(bits).replace("!ESCAPED_COLON!", ":").strip_edges()
 
 	if line.get("translation_key", null) == null:
 		line["translation_key"] = line.text
