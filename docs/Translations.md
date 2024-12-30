@@ -1,6 +1,6 @@
 # Translations
 
-By default, all dialogue and response prompts will be run through Godot's `tr` function to provide translations. 
+By default, all dialogue and response prompts will be run through Godot's `tr` function to provide translations.
 
 Translations in dialogue work slightly differently depending on whether you're using CSV files or PO files to define your translated phrases.
 
@@ -12,7 +12,16 @@ You can override this behaviour by setting `DialogueManager.translation_source` 
 
 Dialogue lines and response lines can specify a unique ID per line in the form of `[ID:SOME_KEY]` where "SOME_KEY" is a unique string identifying that line/response.
 
+For example:
+
+```
+Nathan: Hi! I'm Nathan. [ID:HI_IM_NATHAN]
+Coco: Meow. [ID:MEOW]
+```
+
 Static line keys are useful if you need to match up lines with voice acted dialogue.
+
+_NOTE: Tags (eg. `[next=auto]`, `[#happy]`, `[wave]`, etc) are part of the dialogue line so they should be included in any translations._
 
 ## Generating POT files for gettext (PO) translation
 
@@ -22,7 +31,7 @@ All `.dialogue` files are automatically added to the POT Generation list in **Pr
 
 ## Exporting lines as CSV
 
-You can export translations as CSV from the "Translations" menu in the dialogue editor. 
+You can export translations as CSV from the "Translations" menu in the dialogue editor.
 
 This will find any unique dialogue lines or response prompts and add them to a list. If an ID is specified for the line (e.g. `[ID:SOME_KEY]`) then that will be used as the translation key, otherwise the dialogue/prompt itself will be.
 
