@@ -21,7 +21,7 @@ Coco: Meow. [ID:MEOW]
 
 Static line keys are useful if you need to match up lines with voice acted dialogue.
 
-_NOTE: Tags (eg. `[next=auto]`, `[#happy]`, `[wave]`, etc) are part of the dialogue line so they should be included in any translations._
+_NOTE: Runtime tags/bbcode (eg. `[next=auto]`, `[wave]`, etc) are part of the dialogue line so they should be included in any translations._
 
 ## Generating POT files for gettext (PO) translation
 
