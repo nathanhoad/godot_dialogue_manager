@@ -1,38 +1,67 @@
 # Settings
 
-## Editor
-
-- `New dialogue files will start with template text` can be enabled to start new dialogue files with example dialogue.
-- `Export character names in translation files` can be enabled to include character names when using translations.
-- `Wrap long lines` turns on word wrapping.
-- `Default CSV locale` can be modified to set the default locale heading when generating CSVs for translation.
+Dialogue Manager settings are found in Project Settings at the bottom of the General tab.
 
 ## Runtime
 
-- `Include responses with failed conditions` will include responses that failed their condition check in the list of responses attached to a given line.
-- `Skip over missing state value errors` will let you run dialogue and ignore any errors that occur when you reference state values that don't exist.
+- **State Autoload Shortcuts**
 
-### Custom balloon
+  An array of autoload names that you want to have shortcuts to in your dialogue. For example, if you had a `SomeGlobal` autoload that had a `some_property` property you might refer to it in dialogue like this:
 
-You can configure a default balloon to show when calling [`DialogueManager.show_dialogue_balloon()`](./API.md#func-show_dialogue_balloonresource-dialogueresource-title-string--0-extra_game_states-array-----node). This balloon will also be used when testing dialogue from the dialogue editor.
+  ```
+  if SomeGlobal.some_property > 0:
+    Nathan: There are {{SomeGlobal.some_property}} of them!
+  ```
 
-### Globals shortcuts
+  But if you added "SomeGlobal" to the list of State Autoload Shortcuts then in your dialogue you could just write it as:
 
-The dialogue runtime itself is stateless, meaning it looks to your game to provide values for variables and methods to run. At run time, the dialogue manager will check the current scene first and then check any globals.
+  ```
+  if some_property > 0:
+    Nathan: There are {{some_property}} of them!
+  ```
 
-If you don't want to type out a globals' name all of the time, you can add it to the globals shortcut list.
+- **Balloon Path**
 
-For example, instead of having to type out `GameState.some_variable`, you can enable `GameState`. This will allow you to simply type out `some_variable`.
+  The balloon scene to instantiate when using `DialogueManager.show_dialogue_balloon`.
 
-![GameState and SessionState are used by dialogue](states.jpg)
+- **Include All Responses**
 
-## Advanced
+  Responses in dialogue that have failed their condition check will still be present in the `responses` list on the relevant `DialogueLine`.
 
-- `Include character names in translation exports` - will include a `_character` column in CSV exports.
-- `Include notes (## comments) in translation exports` - will include a `_notes` column in CSV exports populated from doc-style comments (e.g. `## This is a comment`) above translatable lines.
-- `Custom Test Scene` can be used to override the default test scene that gets run when you click the "Test dialogue" button in the dialogue editor.
+- **Ignore Missing State Values** (Advanced)
 
-Changing any of the following values will result in a recompile of all dialogue files in your project.
+  Suppress errors when properties or mutations are missing from state.
 
-- `Treat missing translations as errors` can be enabled if you are using static translation keys and are adding them manually (there is an automatic static key button but you might be writing specific keys).
-- `Create child dialogue line for responses with character names in them` can be disabled if you don't want to automatically create a dialogue line after responses that define a character.
+## Editor
+
+- **Wrap Long Lines**
+
+  Wrap lines in the dialogue editor instead of horizontally scrolling.
+
+- **New File Template**
+
+  Start new dialogue files with this content by default.
+
+- **Missing Translations Are Errors**
+
+  Any lines that don't have a static ID will be treated as erroneous.
+
+- **Include Characters in Translatable Strings List**
+
+  Include any charactter names in the POT export.
+
+- **Default Csv Locale**
+
+  The default locale to use when first exporting a translations CSV.
+
+- **Include Character in Translation Exports** (advanced)
+
+  Include a _\_character_ column in CSV exports that shows which character was speaking the line of dialogue.
+
+- **Include Notes in Translation Exports** (advanced)
+
+  Include a _\_notes_ column in CSV exports for doc comments.
+
+- **Custom Test Scene Path** (advanced)
+
+  Use a custom test scene when running "Test" from the dialogue editor. The scene must extend `BaseDialogueTestScene`.

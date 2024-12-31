@@ -5,7 +5,6 @@
 class_name DialogueResource extends Resource
 
 
-const _DialogueManager = preload("./dialogue_manager.gd")
 const DialogueLine = preload("./dialogue_line.gd")
 
 ## A list of state shortcuts
@@ -30,7 +29,7 @@ const DialogueLine = preload("./dialogue_line.gd")
 ## Get the next printable line of dialogue, starting from a referenced line ([code]title[/code] can
 ## be a title string or a stringified line number). Runs any mutations along the way and then returns
 ## the first dialogue line encountered.
-func get_next_dialogue_line(title: String, extra_game_states: Array = [], mutation_behaviour: _DialogueManager.MutationBehaviour = _DialogueManager.MutationBehaviour.Wait) -> DialogueLine:
+func get_next_dialogue_line(title: String = "", extra_game_states: Array = [], mutation_behaviour: DMConstants.MutationBehaviour = DMConstants.MutationBehaviour.Wait) -> DialogueLine:
 	return await Engine.get_singleton("DialogueManager").get_next_dialogue_line(self, title, extra_game_states, mutation_behaviour)
 
 

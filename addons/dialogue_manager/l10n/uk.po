@@ -47,9 +47,6 @@ msgstr "Вставити"
 msgid "translations"
 msgstr "Переклади"
 
-msgid "settings"
-msgstr "Налаштування"
-
 msgid "sponsor"
 msgstr "Спонсор"
 
@@ -142,97 +139,6 @@ msgstr "Копіювати шлях файлу"
 
 msgid "buffer.show_in_filesystem"
 msgstr "Показати у файловій системі"
-
-msgid "settings.invalid_test_scene"
-msgstr "«{path}» не у розширенні BaseDialogueTestScene."
-
-msgid "settings.revert_to_default_test_scene"
-msgstr "Повернути до типової тестової сцени"
-
-msgid "settings.default_balloon_hint"
-msgstr ""
-"Нестандартна куля для використання під час виклику «DialogueManager."
-"show_balloon()»"
-
-msgid "settings.revert_to_default_balloon"
-msgstr "Повернути до типової кулі"
-
-msgid "settings.default_balloon_path"
-msgstr "<приклад кулі>"
-
-msgid "settings.autoload"
-msgstr "Автозавантаження"
-
-msgid "settings.path"
-msgstr "Шлях"
-
-msgid "settings.new_template"
-msgstr "Нові файли діалогів починатимуться з шаблонного тексту"
-
-msgid "settings.missing_keys"
-msgstr "Вважати відсутні ключі перекладу як помилками"
-
-msgid "settings.missing_keys_hint"
-msgstr ""
-"Якщо ви використовуєте статичні ключі перекладу, увімкнення цього параметра "
-"допоможе вам знайти рядки, до яких ви ще не додали ключ."
-
-msgid "settings.characters_translations"
-msgstr "Експортовувати імена персонажів у файли перекладу"
-
-msgid "settings.wrap_long_lines"
-msgstr "Переносити довгі рядки"
-
-msgid "settings.include_failed_responses"
-msgstr "Включати відповіді з невдалими умовами"
-
-msgid "settings.ignore_missing_state_values"
-msgstr "Пропускати помилки пропущених значень стану (не рекомендується)"
-
-msgid "settings.custom_test_scene"
-msgstr ""
-"Користувацька тестова сцена (має мати розширення «BaseDialogueTestScene»)"
-
-msgid "settings.default_csv_locale"
-msgstr "Типова мова файлу CSV"
-
-msgid "settings.states_shortcuts"
-msgstr "Скорочення станів"
-
-msgid "settings.states_message"
-msgstr ""
-"Якщо автозавантаження увімкнено, ви можете звертатися до його властивостей і "
-"методів без необхідності використовувати його назву."
-
-msgid "settings.states_hint"
-msgstr ""
-"Тобто, замість «ЯкийсьСтан.якась_властивість» ви можете просто "
-"використовувати «якась_властивість»"
-
-msgid "settings.recompile_warning"
-msgstr ""
-"Зміна цих параметрів призведе до перекомпіляції усіх діалогів. Змінюйте їх, "
-"тільки якщо ви знаєте, що робите."
-
-msgid "settings.create_lines_for_responses_with_characters"
-msgstr "Створювати дочірній рядок діалогу для відповідей з іменами персонажів"
-
-msgid "settings.open_in_external_editor"
-msgstr "Відкрити файли діалогів у зовнішньому редакторі"
-
-msgid "settings.external_editor_warning"
-msgstr ""
-"Примітка: підсвічування синтаксису та детальна перевірка помилок не "
-"підтримуються у зовнішніх редакторах."
-
-msgid "settings.include_characters_in_translations"
-msgstr "Включати імена персонажів до експорту перекладу"
-
-msgid "settings.include_notes_in_translations"
-msgstr "Включати примітки (## коментарі) до експорту перекладу"
-
-msgid "settings.check_for_updates"
-msgstr "Перевіряти наявність оновлень"
 
 msgid "n_of_n"
 msgstr "{index} з {total}"

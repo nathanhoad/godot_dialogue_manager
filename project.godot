@@ -17,15 +17,13 @@ config/icon="res://icon.svg"
 
 [autoload]
 
-Events="*res://examples/events.gd"
-State="*res://examples/state.gd"
 StateForTests="*res://tests/state_for_tests.gd"
 DialogueManager="*res://addons/dialogue_manager/dialogue_manager.gd"
 
 [dialogue_manager]
 
-general/states=["State", "Events"]
-general/uses_dotnet=true
+runtime/state_autoload_shortcuts=["State", "Events"]
+runtime/advanced/uses_dotnet=true
 
 [display]
 
@@ -46,17 +44,7 @@ import/fbx/enabled=false
 
 [internationalization]
 
-locale/translation_remaps={
-"res://examples/point_n_click_balloon/voice/en/t14bc171a9f.ogg": PackedStringArray("res://examples/point_n_click_balloon/voice/de/t14bc171a9f.ogg:de"),
-"res://examples/point_n_click_balloon/voice/en/t4c11347656.ogg": PackedStringArray("res://examples/point_n_click_balloon/voice/de/t4c11347656.ogg:de"),
-"res://examples/point_n_click_balloon/voice/en/t643e01443b.ogg": PackedStringArray("res://examples/point_n_click_balloon/voice/de/t643e01443b.ogg:de"),
-"res://examples/point_n_click_balloon/voice/en/tb75d1c7a40.ogg": PackedStringArray("res://examples/point_n_click_balloon/voice/de/tb75d1c7a40.ogg:de"),
-"res://examples/point_n_click_balloon/voice/en/tba678dd331.ogg": PackedStringArray("res://examples/point_n_click_balloon/voice/de/tba678dd331.ogg:de"),
-"res://examples/point_n_click_balloon/voice/en/ted9b57f70f.ogg": PackedStringArray("res://examples/point_n_click_balloon/voice/de/ted9b57f70f.ogg:de"),
-"res://examples/point_n_click_balloon/voice/en/tf885328afb.ogg": PackedStringArray("res://examples/point_n_click_balloon/voice/de/tf885328afb.ogg:de")
-}
-locale/translations=PackedStringArray("res://examples/l10n/de.po", "res://examples/l10n/en.po")
-locale/translations_pot_files=PackedStringArray("res://examples/dialogue.dialogue", "res://examples/dialogue_for_visual_novel.dialogue", "res://examples/dialogue_with_input.dialogue", "res://examples/dialogue_for_point_n_click.dialogue", "res://examples/dialogue_for_csharp.dialogue")
+locale/translation_remaps={}
 locale/language_filter=["de", "en"]
 locale/locale_filter_mode=1
 

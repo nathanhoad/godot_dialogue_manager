@@ -2,7 +2,7 @@
 
 The simplest way to show dialogue in your game is to call [`DialogueManager.show_dialogue_balloon(resource, title)`](./API.md#func-show_dialogue_balloonresource-dialogueresource-title-string--0-extra_game_states-array-----node) with a dialogue resource and a title to start from. This will show the example balloon by default but you can configure it in [Settings](./Settings.md) to show your custom balloon.
 
-It's up to you to implement/customise any dialogue rendering and input control to match your game, however, there are [a few example balloons](Example_Balloons.md) included to get you started with some of the more common things.
+It's up to you to implement/customise any dialogue rendering and input control to match your game. There are a few example projects available on [my Itch.io page](https://nathanhoad.itch.io) to get you started though.
 
 Once you get to the stage of building your own balloon, you'll need to know how to get a line of dialogue and how to use the dialogue label node.
 
@@ -75,12 +75,12 @@ If you need to construct a dialogue resource at runtime, you can use `create_res
 var resource = DialogueManager.create_resource_from_text("~ title\nCharacter: Hello!")
 ```
 
-This will run the given text through the parser.
+This will run the given text through the dialogue compiler.
 
 If there were syntax errors, the method will fail.
 
 If there were no errors, you can use this ephemeral resource like normal:
 
 ```gdscript
-var dialogue_line = await DialogueManager.get_next_dialogue_line(resource, "title")
+var dialogue_line = await resource.get_next_dialogue_line("title")
 ```

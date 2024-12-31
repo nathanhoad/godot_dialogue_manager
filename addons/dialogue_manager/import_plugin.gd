@@ -1,20 +1,16 @@
 @tool
-extends EditorImportPlugin
+class_name DMImportPlugin extends EditorImportPlugin
 
 
 signal compiled_resource(resource: Resource)
 
 
-const DialogueResource = preload("./dialogue_resource.gd")
-const DialogueManagerParser = preload("./components/parser.gd")
-const DialogueManagerParseResult = preload("./components/parse_result.gd")
-
-const compiler_version = 13
+const COMPILER_VERSION = 14
 
 
 func _get_importer_name() -> String:
 	# NOTE: A change to this forces a re-import of all dialogue
-	return "dialogue_manager_compiler_%s" % compiler_version
+	return "dialogue_manager_compiler_%s" % COMPILER_VERSION
 
 
 func _get_visible_name() -> String:
@@ -63,7 +59,7 @@ func _get_option_visibility(path: String, option_name: StringName, options: Dict
 
 
 func _import(source_file: String, save_path: String, options: Dictionary, platform_variants: Array[String], gen_files: Array[String]) -> Error:
-	var cache = Engine.get_meta("DialogueCache")
+	var cache = Engine.get_meta("DMCache")
 
 	# Get the raw file contents
 	if not FileAccess.file_exists(source_file): return ERR_FILE_NOT_FOUND
@@ -73,17 +69,12 @@ func _import(source_file: String, save_path: String, options: Dictionary, platfo
 
 	cache.file_content_changed.emit(source_file, raw_text)
 
-	# Parse the text
-	var parser: DialogueManagerParser = DialogueManagerParser.new()
-	var err: Error = parser.parse(raw_text, source_file)
-	var data: DialogueManagerParseResult = parser.get_data()
-	var errors: Array[Dictionary] = parser.get_errors()
-	parser.free()
-
-	if err != OK:
-		printerr("%d errors found in %s" % [errors.size(), source_file])
-		cache.add_errors_to_file(source_file, errors)
-		return err
+	# Compile the text
+	var result: DMCompilerResult = DMCompiler.compile_string(raw_text, source_file)
+	if result.errors.size() > 0:
+		printerr("%d errors found in %s" % [result.errors.size(), source_file])
+		cache.add_errors_to_file(source_file, result.errors)
+		return ERR_PARSE_ERROR
 
 	# Get the current addon version
 	var config: ConfigFile = ConfigFile.new()
@@ -94,17 +85,17 @@ func _import(source_file: String, save_path: String, options: Dictionary, platfo
 	var resource: DialogueResource = DialogueResource.new()
 	resource.set_meta("dialogue_manager_version", version)
 
-	resource.using_states = data.using_states
-	resource.titles = data.titles
-	resource.first_title = data.first_title
-	resource.character_names = data.character_names
-	resource.lines = data.lines
-	resource.raw_text = data.raw_text
+	resource.using_states = result.using_states
+	resource.titles = result.titles
+	resource.first_title = result.first_title
+	resource.character_names = result.character_names
+	resource.lines = result.lines
+	resource.raw_text = result.raw_text
 
 	# Clear errors and possibly trigger any cascade recompiles
-	cache.add_file(source_file, data)
+	cache.add_file(source_file, result)
 
-	err = ResourceSaver.save(resource, "%s.%s" % [save_path, _get_save_extension()])
+	var err: Error = ResourceSaver.save(resource, "%s.%s" % [save_path, _get_save_extension()])
 
 	compiled_resource.emit(resource)
 

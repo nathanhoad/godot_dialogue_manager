@@ -1,21 +1,19 @@
 extends AbstractTest
 
 
-const DialogueConstants = preload("res://addons/dialogue_manager/constants.gd")
-
 var dialogue_label: DialogueLabel = DialogueLabel.new()
 
 
-func before_all() -> void:
+func _before_all() -> void:
 	Engine.get_main_loop().current_scene.add_child(dialogue_label)
 
 
-func after_all() -> void:
+func _after_all() -> void:
 	dialogue_label.queue_free()
 
 
 func test_can_parse_conditions() -> void:
-	var output = parse("
+	var output = compile("
 if StateForTests.some_property == 0:
 	Nathan: It is 0.
 elif StateForTests.some_property == 10:
@@ -27,43 +25,43 @@ Nathan: After.")
 	assert(output.errors.is_empty(), "Should have no errors.")
 
 	# if
-	var condition = output.lines["2"]
-	assert(condition.type == DialogueConstants.TYPE_CONDITION, "Should be a condition.")
-	assert(condition.next_id == "3", "Should point to next line.")
-	assert(condition.next_conditional_id == "4", "Should reference elif.")
-	assert(condition.next_id_after == "8", "Should reference after conditions.")
+	var condition = output.lines["1"]
+	assert(condition.type == DMConstants.TYPE_CONDITION, "Should be a condition.")
+	assert(condition.next_id == "2", "Should point to next line.")
+	assert(condition.next_sibling_id == "3", "Should reference elif.")
+	assert(condition.next_id_after == "7", "Should reference after conditions.")
 
 	# elif
-	condition = output.lines["4"]
-	assert(condition.type == DialogueConstants.TYPE_CONDITION, "Should be a condition.")
-	assert(condition.next_id == "5", "Should point to next line.")
-	assert(condition.next_conditional_id == "6", "Should reference elif.")
-	assert(condition.next_id_after == "8", "Should reference after conditions.")
+	condition = output.lines["3"]
+	assert(condition.type == DMConstants.TYPE_CONDITION, "Should be a condition.")
+	assert(condition.next_id == "4", "Should point to next line.")
+	assert(condition.next_sibling_id == "5", "Should reference else.")
+	assert(condition.next_id_after == "7", "Should reference after conditions.")
 
 	# else
-	condition = output.lines["6"]
-	assert(condition.type == DialogueConstants.TYPE_CONDITION, "Should be a condition.")
-	assert(condition.next_id == "7", "Should point to next line.")
-	assert(condition.next_conditional_id == "8", "Should not reference further conditions.")
-	assert(condition.next_id_after == "8", "Should reference after conditions.")
+	condition = output.lines["5"]
+	assert(condition.type == DMConstants.TYPE_CONDITION, "Should be a condition.")
+	assert(condition.next_id == "6", "Should point to next line.")
+	assert(condition.next_sibling_id == "", "Should not reference further conditions.")
+	assert(condition.next_id_after == "7", "Should reference after conditions.")
 
 
 func test_ignore_escaped_conditions() -> void:
-	var output = parse("
+	var output = compile("
 \\if this is dialogue.
 \\elif this too.
 \\else and this one.")
 
 	assert(output.errors.is_empty(), "Should have no errors.")
 
-	assert(output.lines["2"].type == DialogueConstants.TYPE_DIALOGUE, "Should be dialogue.")
-	assert(output.lines["2"].text == "if this is dialogue.", "Should escape slash.")
+	assert(output.lines["1"].type == DMConstants.TYPE_DIALOGUE, "Should be dialogue.")
+	assert(output.lines["1"].text == "if this is dialogue.", "Should escape slash.")
 
-	assert(output.lines["3"].type == DialogueConstants.TYPE_DIALOGUE, "Should be dialogue.")
-	assert(output.lines["3"].text == "elif this too.", "Should escape slash.")
+	assert(output.lines["2"].type == DMConstants.TYPE_DIALOGUE, "Should be dialogue.")
+	assert(output.lines["2"].text == "elif this too.", "Should escape slash.")
 
-	assert(output.lines["4"].type == DialogueConstants.TYPE_DIALOGUE, "Should be dialogue.")
-	assert(output.lines["4"].text == "else and this one.", "Should escape slash.")
+	assert(output.lines["3"].type == DMConstants.TYPE_DIALOGUE, "Should be dialogue.")
+	assert(output.lines["3"].text == "else and this one.", "Should escape slash.")
 
 
 func test_can_run_conditions() -> void:
@@ -89,18 +87,152 @@ else:
 	assert(line.text == "It is something else.", "Should match else.")
 
 
+func test_can_parse_while_loops() -> void:
+	var output = compile("
+Before
+while true
+	During 1
+	During 2
+After")
+
+	assert(output.errors.is_empty(), "Should have no errors.")
+
+	assert(output.lines["2"].type == DMConstants.TYPE_WHILE, "While should be while.")
+	assert(output.lines["2"].next_id == "3", "While should point to first child.")
+	assert("expression" in output.lines["2"].condition, "While should have a condition.")
+	assert(output.lines["4"].next_id == "2", "Last child should loop back to while.")
+
+
+func test_can_run_while_loops() -> void:
+	var resource = create_resource("
+~ start
+Before
+while StateForTests.some_property < 2
+	Value is {{StateForTests.some_property}}
+	set StateForTests.some_property += 1
+After")
+
+	StateForTests.some_property = 0
+	var line = await resource.get_next_dialogue_line("start")
+	assert(line.text == "Before", "Should be before while loop.")
+
+	line = await resource.get_next_dialogue_line(line.next_id)
+	assert(line.text == "Value is 0", "Value should be 0.")
+
+	line = await resource.get_next_dialogue_line(line.next_id)
+	assert(line.text == "Value is 1", "Value should be 1.")
+
+	line = await resource.get_next_dialogue_line(line.next_id)
+	assert(line.text == "After", "Should be after the while loop.")
+
+
+func test_can_parse_match_statements() -> void:
+	var output = compile("
+Before
+match StateForTests.some_property
+	when 1
+		It was 1!
+	when < 5
+		It was less than 5
+	else
+		It was neither of those!
+After")
+
+	assert(output.errors.is_empty(), "Should have no errors.")
+
+	assert(output.lines["2"].type == DMConstants.TYPE_MATCH, "Match should be match.")
+	assert(output.lines["2"].next_id_after == "9", "Should go to After next.")
+	assert(output.lines["2"].cases.size() == 3, "Should have 3 cases.")
+	assert("expression" in output.lines["2"].cases[0].condition, "Case should have expression.")
+	assert(output.lines["2"].cases[0].next_id == "4", "Case should point to first child.")
+	assert(not "expression" in output.lines["2"].cases[2], "Else case should have no condition.")
+	assert(output.lines["2"].cases[2].next_id == "8", "Else case points to After.")
+	assert(output.lines["4"].next_id == "9", "End of body should point to after match.")
+	assert(output.lines["8"].next_id == "9", "End of body should point to after match.")
+
+
+func test_can_run_match_cases() -> void:
+	var resource = create_resource("
+~ start
+Before
+match StateForTests.some_property + 1
+	when 0
+		It's zero.
+	when 1 + 1
+		It's two.
+	when 42
+		It's 42.
+	else
+		I don't know.
+After")
+
+	StateForTests.some_property = 1
+	var line = await resource.get_next_dialogue_line("start")
+	assert(line.text == "Before", "Should be before match.")
+
+	line = await resource.get_next_dialogue_line(line.next_id)
+	assert(line.text == "It's two.", "Should match two case.")
+
+	line = await resource.get_next_dialogue_line(line.next_id)
+	assert(line.text == "After", "Should be after match.")
+
+	StateForTests.some_property = 100
+	line = await resource.get_next_dialogue_line("start")
+	assert(line.text == "Before", "Should be before match.")
+
+	line = await resource.get_next_dialogue_line(line.next_id)
+	assert(line.text == "I don't know.", "Should match else.")
+
+	resource = create_resource("
+~ start
+Before
+match StateForTests.some_property + 1
+	when 1
+		It's one.
+	when < 5
+		It's less than 5 but not one.
+	else
+		It's something else.
+After")
+
+	StateForTests.some_property = 3
+	line = await resource.get_next_dialogue_line("start")
+	assert(line.text == "Before", "Should be before match.")
+	line = await resource.get_next_dialogue_line(line.next_id)
+	assert(line.text == "It's less than 5 but not one.", "Should match comparison.")
+
+	resource = create_resource("
+~ start
+Before
+match StateForTests.some_property + 1
+	when 0
+		It's zero.
+	when 1 + 1
+		It's two.
+	when 42
+		It's 42.
+After")
+
+	StateForTests.some_property = 100
+	line = await resource.get_next_dialogue_line("start")
+	assert(line.text == "Before", "Should be before match.")
+
+	line = await resource.get_next_dialogue_line(line.next_id)
+	assert(line.text == "After", "Should go to After if nothing matches and no else.")
+
+
 func test_can_parse_mutations() -> void:
-	var output = parse("
+	var output = compile("
 set StateForTests.some_property = StateForTests.some_method(-10, \"something\")
 do long_mutation()")
 
 	assert(output.errors.is_empty(), "Should have no errors.")
 
-	var mutation = output.lines["2"]
-	assert(mutation.type == DialogueConstants.TYPE_MUTATION, "Should be a mutation.")
+	var mutation = output.lines["1"]
+	assert(mutation.type == DMConstants.TYPE_MUTATION, "Should be a mutation.")
 
-	mutation = output.lines["3"]
-	assert(mutation.type == DialogueConstants.TYPE_MUTATION, "Should be a mutation.")
+	mutation = output.lines["2"]
+	assert(mutation.type == DMConstants.TYPE_MUTATION, "Should be a mutation.")
 
 
 func test_can_run_mutations() -> void:

@@ -1,91 +1,192 @@
 @tool
-extends Node
+class_name DMSettings extends Node
 
 
-const DialogueConstants = preload("./constants.gd")
+#region Editor
 
 
-### Editor config
 
-const DEFAULT_SETTINGS = {
-	states = [],
-	missing_translations_are_errors = false,
-	export_characters_in_translation = true,
-	wrap_lines = false,
-	new_with_template = true,
-	new_template = "~ this_is_a_node_title\nNathan: [[Hi|Hello|Howdy]], this is some dialogue.\nNathan: Here are some choices.\n- First one\n\tNathan: You picked the first one.\n- Second one\n\tNathan: You picked the second one.\n- Start again => this_is_a_node_title\n- End the conversation => END\nNathan: For more information see the online documentation.\n=> END",
-	include_all_responses = false,
-	ignore_missing_state_values = false,
-	custom_test_scene_path = preload("./test_scene.tscn").resource_path,
-	default_csv_locale = "en",
-	balloon_path = "",
-	create_lines_for_responses_with_characters = true,
-	include_character_in_translation_exports = false,
-	include_notes_in_translation_exports = false,
-	uses_dotnet = false,
-	try_suppressing_startup_unsaved_indicator = false
+## Wrap lines in the dialogue editor.
+const WRAP_LONG_LINES = "editor/wrap_long_lines"
+## The template to start new dialogue files with.
+const NEW_FILE_TEMPLATE = "editor/new_file_template"
+
+## Show lines without statis IDs as errors.
+const MISSING_TRANSLATIONS_ARE_ERRORS = "editor/translations/missing_translations_are_errors"
+## Include character names in the list of translatable strings.
+const INCLUDE_CHARACTERS_IN_TRANSLATABLE_STRINGS_LIST = "editor/translations/include_characters_in_translatable_strings_list"
+## The default locale to use when exporting CSVs
+const DEFAULT_CSV_LOCALE = "editor/translations/default_csv_locale"
+## Any extra CSV locales to append to the exported translation CSV
+const EXTRA_CSV_LOCALES = "editor/translations/extra_csv_locales"
+## Includes a "_character" column in CSV exports.
+const INCLUDE_CHARACTER_IN_TRANSLATION_EXPORTS = "editor/translations/include_character_in_translation_exports"
+## Includes a "_notes" column in CSV exports
+const INCLUDE_NOTES_IN_TRANSLATION_EXPORTS = "editor/translations/include_notes_in_translation_exports"
+
+## A custom test scene to use when testing dialogue.
+const CUSTOM_TEST_SCENE_PATH = "editor/advanced/custom_test_scene_path"
+
+## The custom balloon for this game.
+const BALLOON_PATH = "runtime/balloon_path"
+## The names of any autoloads to shortcut into all dialogue files (so you don't have to write `using SomeGlobal` in each file).
+const STATE_AUTOLOAD_SHORTCUTS = "runtime/state_autoload_shortcuts"
+
+## Bypass any missing state when running dialogue.
+const IGNORE_MISSING_STATE_VALUES = "runtime/advanced/ignore_missing_state_values"
+## Whether or not the project is utilising dotnet.
+const USES_DOTNET = "runtime/advanced/uses_dotnet"
+
+
+const SETTINGS_CONFIGURATION = {
+	WRAP_LONG_LINES: {
+		value = false,
+		type = TYPE_BOOL,
+	},
+	NEW_FILE_TEMPLATE: {
+		value = "~ start\nNathan: [[Hi|Hello|Howdy]], this is some dialogue.\nNathan: Here are some choices.\n- First one\n\tNathan: You picked the first one.\n- Second one\n\tNathan: You picked the second one.\n- Start again => start\n- End the conversation => END\nNathan: For more information see the online documentation.\n=> END",
+		type = TYPE_STRING,
+		hint = PROPERTY_HINT_MULTILINE_TEXT,
+	},
+
+	MISSING_TRANSLATIONS_ARE_ERRORS: {
+		value = false,
+		type = TYPE_BOOL,
+		is_advanced = true
+	},
+	INCLUDE_CHARACTERS_IN_TRANSLATABLE_STRINGS_LIST: {
+		value = true,
+		type = TYPE_BOOL,
+	},
+	DEFAULT_CSV_LOCALE: {
+		value = "en",
+		type = TYPE_STRING,
+		hint = PROPERTY_HINT_LOCALE_ID,
+	},
+	EXTRA_CSV_LOCALES: {
+		value = [],
+		type = TYPE_PACKED_STRING_ARRAY,
+		is_advanced = true
+	},
+	INCLUDE_CHARACTER_IN_TRANSLATION_EXPORTS: {
+		value = false,
+		type = TYPE_BOOL,
+		is_advanced = true
+	},
+	INCLUDE_NOTES_IN_TRANSLATION_EXPORTS: {
+		value = false,
+		type = TYPE_BOOL,
+		is_advanced = true
+	},
+
+	CUSTOM_TEST_SCENE_PATH: {
+		value = preload("./test_scene.tscn").resource_path,
+		type = TYPE_STRING,
+		hint = PROPERTY_HINT_FILE,
+		is_advanced = true
+	},
+
+	BALLOON_PATH: {
+		value = "",
+		type = TYPE_STRING,
+		hint = PROPERTY_HINT_FILE,
+	},
+	STATE_AUTOLOAD_SHORTCUTS: {
+		value = [],
+		type = TYPE_PACKED_STRING_ARRAY,
+	},
+
+	IGNORE_MISSING_STATE_VALUES: {
+		value = false,
+		type = TYPE_BOOL,
+		is_advanced = true
+	},
+	USES_DOTNET: {
+		value = false,
+		type = TYPE_BOOL,
+		is_hidden = true
+	}
 }
 
 
 static func prepare() -> void:
-	# Migrate previous keys
-	for key in [
-		"states",
-		"missing_translations_are_errors",
-		"export_characters_in_translation",
-		"wrap_lines",
-		"new_with_template",
-		"include_all_responses",
-		"custom_test_scene_path"
-	]:
-		if ProjectSettings.has_setting("dialogue_manager/%s" % key):
-			var value = ProjectSettings.get_setting("dialogue_manager/%s" % key)
-			ProjectSettings.set_setting("dialogue_manager/%s" % key, null)
-			set_setting(key, value)
+	var should_save_settings: bool = false
+
+	# Remap any old settings into their new keys
+	var legacy_map: Dictionary = {
+		states = STATE_AUTOLOAD_SHORTCUTS,
+		missing_translations_are_errors = MISSING_TRANSLATIONS_ARE_ERRORS,
+		export_characters_in_translation = INCLUDE_CHARACTERS_IN_TRANSLATABLE_STRINGS_LIST,
+		wrap_lines = WRAP_LONG_LINES,
+		new_with_template = null,
+		new_template = NEW_FILE_TEMPLATE,
+		include_all_responses = null,
+		ignore_missing_state_values = IGNORE_MISSING_STATE_VALUES,
+		custom_test_scene_path = CUSTOM_TEST_SCENE_PATH,
+		default_csv_locale = DEFAULT_CSV_LOCALE,
+		balloon_path = BALLOON_PATH,
+		create_lines_for_responses_with_characters = null,
+		include_character_in_translation_exports = INCLUDE_CHARACTER_IN_TRANSLATION_EXPORTS,
+		include_notes_in_translation_exports = INCLUDE_NOTES_IN_TRANSLATION_EXPORTS,
+		uses_dotnet = USES_DOTNET,
+		try_suppressing_startup_unsaved_indicator = null
+	}
+
+	for legacy_key: String in legacy_map:
+		if ProjectSettings.has_setting("dialogue_manager/general/%s" % legacy_key):
+			should_save_settings = true
+			# Remove the old setting
+			var value = ProjectSettings.get_setting("dialogue_manager/general/%s" % legacy_key)
+			ProjectSettings.set_setting("dialogue_manager/general/%s" % legacy_key, null)
+			if legacy_map.get(legacy_key) != null:
+				prints("Migrating Dialogue Manager setting %s to %s with value %s" % [legacy_key, legacy_map.get(legacy_key), str(value)])
+				ProjectSettings.set_setting("dialogue_manager/%s" % [legacy_map.get(legacy_key)], value)
 
 	# Set up initial settings
-	for setting in DEFAULT_SETTINGS:
-		var setting_name: String = "dialogue_manager/general/%s" % setting
+	for key: String in SETTINGS_CONFIGURATION:
+		var setting_config: Dictionary = SETTINGS_CONFIGURATION[key]
+		var setting_name: String = "dialogue_manager/%s" % key
 		if not ProjectSettings.has_setting(setting_name):
-			set_setting(setting, DEFAULT_SETTINGS[setting])
-		ProjectSettings.set_initial_value(setting_name, DEFAULT_SETTINGS[setting])
-		if setting.ends_with("_path"):
-			ProjectSettings.add_property_info({
-				"name": setting_name,
-				"type": TYPE_STRING,
-				"hint": PROPERTY_HINT_FILE,
-			})
+			ProjectSettings.set_setting(setting_name, setting_config.value)
+		ProjectSettings.set_initial_value(setting_name, setting_config.value)
+		ProjectSettings.add_property_info({
+			"name" = setting_name,
+			"type" = setting_config.type,
+			"hint" = setting_config.get("hint", PROPERTY_HINT_NONE),
+			"hint_string" = setting_config.get("hint_string", "")
+		})
+		ProjectSettings.set_as_basic(setting_name, not setting_config.has("is_advanced"))
+		ProjectSettings.set_as_internal(setting_name, setting_config.has("is_hidden"))
 
-	# Some settings shouldn't be edited directly in the Project Settings window
-	ProjectSettings.set_as_internal("dialogue_manager/general/states", true)
-	ProjectSettings.set_as_internal("dialogue_manager/general/custom_test_scene_path", true)
-	ProjectSettings.set_as_internal("dialogue_manager/general/uses_dotnet", true)
-
-	ProjectSettings.save()
+	if should_save_settings:
+		ProjectSettings.save()
 
 
 static func set_setting(key: String, value) -> void:
-	ProjectSettings.set_setting("dialogue_manager/general/%s" % key, value)
-	ProjectSettings.set_initial_value("dialogue_manager/general/%s" % key, DEFAULT_SETTINGS[key])
-	ProjectSettings.save()
+	if get_setting(key, value) != value:
+		ProjectSettings.set_setting("dialogue_manager/%s" % key, value)
+		ProjectSettings.set_initial_value("dialogue_manager/%s" % key, SETTINGS_CONFIGURATION[key].value)
+		ProjectSettings.save()
 
 
 static func get_setting(key: String, default):
-	if ProjectSettings.has_setting("dialogue_manager/general/%s" % key):
-		return ProjectSettings.get_setting("dialogue_manager/general/%s" % key)
+	if ProjectSettings.has_setting("dialogue_manager/%s" % key):
+		return ProjectSettings.get_setting("dialogue_manager/%s" % key)
 	else:
 		return default
 
 
 static func get_settings(only_keys: PackedStringArray = []) -> Dictionary:
 	var settings: Dictionary = {}
-	for key in DEFAULT_SETTINGS.keys():
+	for key in SETTINGS_CONFIGURATION.keys():
 		if only_keys.is_empty() or key in only_keys:
-			settings[key] = get_setting(key, DEFAULT_SETTINGS[key])
+			settings[key] = get_setting(key, SETTINGS_CONFIGURATION[key].value)
 	return settings
 
 
-### User config
+#endregion
+
+#region User
 
 
 static func get_user_config() -> Dictionary:
@@ -103,15 +204,15 @@ static func get_user_config() -> Dictionary:
 		open_in_external_editor = false
 	}
 
-	if FileAccess.file_exists(DialogueConstants.USER_CONFIG_PATH):
-		var file: FileAccess = FileAccess.open(DialogueConstants.USER_CONFIG_PATH, FileAccess.READ)
+	if FileAccess.file_exists(DMConstants.USER_CONFIG_PATH):
+		var file: FileAccess = FileAccess.open(DMConstants.USER_CONFIG_PATH, FileAccess.READ)
 		user_config.merge(JSON.parse_string(file.get_as_text()), true)
 
 	return user_config
 
 
 static func save_user_config(user_config: Dictionary) -> void:
-	var file: FileAccess = FileAccess.open(DialogueConstants.USER_CONFIG_PATH, FileAccess.WRITE)
+	var file: FileAccess = FileAccess.open(DMConstants.USER_CONFIG_PATH, FileAccess.WRITE)
 	file.store_string(JSON.stringify(user_config))
 
 
@@ -182,7 +283,10 @@ static func check_for_dotnet_solution() -> bool:
 			var directory: String = ProjectSettings.get("dotnet/project/solution_directory")
 			var file_name: String = ProjectSettings.get("dotnet/project/assembly_name")
 			has_dotnet_solution = FileAccess.file_exists("res://%s/%s.sln" % [directory, file_name])
-		set_setting("uses_dotnet", has_dotnet_solution)
+		set_setting(DMSettings.USES_DOTNET, has_dotnet_solution)
 		return has_dotnet_solution
 
-	return get_setting("uses_dotnet", false)
+	return get_setting(DMSettings.USES_DOTNET, false)
+
+
+#endregion

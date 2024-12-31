@@ -406,6 +406,15 @@ static func resolve_vector2_property(vector: Vector2, property: String):
 			return Vector2.UP
 		"DOWN":
 			return Vector2.DOWN
+		
+		"DOWN_LEFT":
+			return Vector2(-1, 1)
+		"DOWN_RIGHT":
+			return Vector2(1, 1)
+		"UP_LEFT":
+			return Vector2(-1, -1)
+		"UP_RIGHT":
+			return Vector2(1, -1)
 
 	return vector[property]
 

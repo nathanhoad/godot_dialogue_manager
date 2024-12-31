@@ -32,6 +32,9 @@ msgstr ""
 msgid "test_dialogue"
 msgstr ""
 
+msgid "test_dialogue_from_line"
+msgstr ""
+
 msgid "search_for_text"
 msgstr ""
 
@@ -39,9 +42,6 @@ msgid "insert"
 msgstr ""
 
 msgid "translations"
-msgstr ""
-
-msgid "settings"
 msgstr ""
 
 msgid "sponsor"
@@ -132,84 +132,6 @@ msgid "buffer.copy_file_path"
 msgstr ""
 
 msgid "buffer.show_in_filesystem"
-msgstr ""
-
-msgid "settings.invalid_test_scene"
-msgstr ""
-
-msgid "settings.revert_to_default_test_scene"
-msgstr ""
-
-msgid "settings.default_balloon_hint"
-msgstr ""
-
-msgid "settings.revert_to_default_balloon"
-msgstr ""
-
-msgid "settings.default_balloon_path"
-msgstr ""
-
-msgid "settings.autoload"
-msgstr ""
-
-msgid "settings.path"
-msgstr ""
-
-msgid "settings.new_template"
-msgstr ""
-
-msgid "settings.missing_keys"
-msgstr ""
-
-msgid "settings.missing_keys_hint"
-msgstr ""
-
-msgid "settings.characters_translations"
-msgstr ""
-
-msgid "settings.wrap_long_lines"
-msgstr ""
-
-msgid "settings.include_failed_responses"
-msgstr ""
-
-msgid "settings.ignore_missing_state_values"
-msgstr ""
-
-msgid "settings.custom_test_scene"
-msgstr ""
-
-msgid "settings.default_csv_locale"
-msgstr ""
-
-msgid "settings.states_shortcuts"
-msgstr ""
-
-msgid "settings.states_message"
-msgstr ""
-
-msgid "settings.states_hint"
-msgstr ""
-
-msgid "settings.recompile_warning"
-msgstr ""
-
-msgid "settings.create_lines_for_responses_with_characters"
-msgstr ""
-
-msgid "settings.open_in_external_editor"
-msgstr ""
-
-msgid "settings.external_editor_warning"
-msgstr ""
-
-msgid "settings.include_characters_in_translations"
-msgstr ""
-
-msgid "settings.include_notes_in_translations"
-msgstr ""
-
-msgid "settings.check_for_updates"
 msgstr ""
 
 msgid "n_of_n"
@@ -372,6 +294,15 @@ msgid "errors.invalid_index"
 msgstr ""
 
 msgid "errors.unexpected_assignment"
+msgstr ""
+
+msgid "errors.expected_when_or_else"
+msgstr ""
+
+msgid "errors.only_one_else_allowed"
+msgstr ""
+
+msgid "errors.when_must_belong_to_match"
 msgstr ""
 
 msgid "errors.unknown"

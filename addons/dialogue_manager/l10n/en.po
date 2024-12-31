@@ -37,7 +37,10 @@ msgid "find_in_files"
 msgstr "Find in files..."
 
 msgid "test_dialogue"
-msgstr "Test dialogue"
+msgstr "Test dialogue from start of file"
+
+msgid "test_dialogue_from_line"
+msgstr "Test dialogue from current line"
 
 msgid "search_for_text"
 msgstr "Search for text"
@@ -47,9 +50,6 @@ msgstr "Insert"
 
 msgid "translations"
 msgstr "Translations"
-
-msgid "settings"
-msgstr "Settings"
 
 msgid "sponsor"
 msgstr "Sponsor"
@@ -143,84 +143,6 @@ msgstr "Copy file path"
 
 msgid "buffer.show_in_filesystem"
 msgstr "Show in FileSystem"
-
-msgid "settings.invalid_test_scene"
-msgstr "\"{path}\" does not extend BaseDialogueTestScene."
-
-msgid "settings.revert_to_default_test_scene"
-msgstr "Revert to default test scene"
-
-msgid "settings.default_balloon_hint"
-msgstr "Custom balloon to use when calling \"DialogueManager.show_balloon()\""
-
-msgid "settings.revert_to_default_balloon"
-msgstr "Revert to default balloon"
-
-msgid "settings.default_balloon_path"
-msgstr "<example balloon>"
-
-msgid "settings.autoload"
-msgstr "Autoload"
-
-msgid "settings.path"
-msgstr "Path"
-
-msgid "settings.new_template"
-msgstr "New dialogue files will start with template text"
-
-msgid "settings.missing_keys"
-msgstr "Treat missing translation keys as errors"
-
-msgid "settings.missing_keys_hint"
-msgstr "If you are using static translation keys then having this enabled will help you find any lines that you haven't added a key to yet."
-
-msgid "settings.characters_translations"
-msgstr "Export character names in translation files"
-
-msgid "settings.wrap_long_lines"
-msgstr "Wrap long lines"
-
-msgid "settings.include_failed_responses"
-msgstr "Include responses with failed conditions"
-
-msgid "settings.ignore_missing_state_values"
-msgstr "Skip over missing state value errors (not recommended)"
-
-msgid "settings.custom_test_scene"
-msgstr "Custom test scene (must extend BaseDialogueTestScene)"
-
-msgid "settings.default_csv_locale"
-msgstr "Default CSV Locale"
-
-msgid "settings.states_shortcuts"
-msgstr "State Shortcuts"
-
-msgid "settings.states_message"
-msgstr "If an autoload is enabled here you can refer to its properties, methods, and signals without having to use its name."
-
-msgid "settings.states_hint"
-msgstr "ie. Instead of \"SomeState.some_property\" you could just use \"some_property\""
-
-msgid "settings.recompile_warning"
-msgstr "Changing these settings will force a recompile of all dialogue. Only change them if you know what you are doing."
-
-msgid "settings.create_lines_for_responses_with_characters"
-msgstr "Create child dialogue line for responses with character names in them"
-
-msgid "settings.open_in_external_editor"
-msgstr "Open dialogue files in external editor"
-
-msgid "settings.external_editor_warning"
-msgstr "Note: Syntax highlighting and detailed error checking are not supported in external editors."
-
-msgid "settings.include_characters_in_translations"
-msgstr "Include character names in translation exports"
-
-msgid "settings.include_notes_in_translations"
-msgstr "Include notes (## comments) in translation exports"
-
-msgid "settings.check_for_updates"
-msgstr "Check for updates"
 
 msgid "n_of_n"
 msgstr "{index} of {total}"
@@ -383,6 +305,15 @@ msgstr "Invalid index."
 
 msgid "errors.unexpected_assignment"
 msgstr "Unexpected assignment."
+
+msgid "errors.expected_when_or_else"
+msgstr "Expecting a when or an else case."
+
+msgid "errors.only_one_else_allowed"
+msgstr "Only one else case is allowed per match."
+
+msgid "errors.when_must_belong_to_match"
+msgstr "When statements can only appear as children of match statements."
 
 msgid "errors.unknown"
 msgstr "Unknown syntax."

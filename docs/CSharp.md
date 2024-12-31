@@ -36,22 +36,21 @@ When looking for state, the Dialogue Manager will search in the current scene (i
 
 ## Mutations
 
-When writing mutations in C#, you'll generally want an `async` method that returns a `Task`. Here is an example method from the C# Example:
+When writing mutations in C#, you'll generally want an `async` method that returns a `Task`. Here is an example method for asking for a player's name and storing it in a property called `PlayerName`:
 
 ```csharp
 public async Task AskForName()
 {
-  var nameInputDialogue = GD.Load<PackedScene>("res://examples/name_input_dialog/name_input_dialog.tscn").Instantiate() as AcceptDialog;
+  var nameInputDialogue = GD.Load<PackedScene>("res://path/to/some/name_input_dialog.tscn").Instantiate() as AcceptDialog;
   GetTree().Root.AddChild(nameInputDialogue);
   nameInputDialogue.PopupCentered();
-
   await ToSignal(nameInputDialogue, "confirmed");
   PlayerName = nameInputDialogue.GetNode<LineEdit>("NameEdit").Text;
   nameInputDialogue.QueueFree();
 }
 ```
 
-And you would need to declare that `PlayerName` property like so (make sure to include the `[Export]` decorator or the Dialogue Manager won't be able to see it):
+You would need to declare that `PlayerName` property like this:
 
 ```csharp
 [Export] string PlayerName = "Player";
@@ -62,6 +61,20 @@ Then, in your dialogue you would call the mutation like this:
 ```
 do AskForName()
 Nathan: Hello {{PlayerName}}!
+```
+
+If you wanted to do the same thing but instead of storing it in the same property each time you can return the value as a `Variant`:
+
+```csharp
+public async Task<Variant> AskForName()
+{
+  var nameInputDialogue = GD.Load<PackedScene>("res://path/to/some/name_input_dialog.tscn").Instantiate() as AcceptDialog;
+  GetTree().Root.AddChild(nameInputDialogue);
+  nameInputDialogue.PopupCentered();\
+  await ToSignal(nameInputDialogue, "confirmed");
+  nameInputDialogue.QueueFree();
+  return nameInputDialogue.GetNode<LineEdit>("NameEdit").Text;
+}
 ```
 
 ## Signals
@@ -120,6 +133,6 @@ If there were no errors, you can use this ephemeral resource like normal:
  var line = DialogueManager.ShowExampleDialogueBalloon(resource, "start");
 ```
 
-## Example
+## Examples
 
-There is a balloon implemented in C# in the **examples** folder of the repository. If you want to have a closer look at it, you'll have to clone the repository down because the automatic download ZIP removes the docs and examples folder.
+There are a few example projects available on [my Itch.io](https://nathanhoad.itch.io) page, all of which include C# versions of the entire project.

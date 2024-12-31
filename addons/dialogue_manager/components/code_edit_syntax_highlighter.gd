@@ -1,25 +1,24 @@
 @tool
-extends SyntaxHighlighter
-
-
-const DialogueManagerParser = preload("./parser.gd")
+class_name DMSyntaxHighlighter extends SyntaxHighlighter
 
 
 enum ExpressionType {DO, SET, IF}
 
 
-var dialogue_manager_parser: DialogueManagerParser = DialogueManagerParser.new()
+var regex: DMCompilerRegEx = DMCompilerRegEx.new()
+var compilation: DMCompilation = DMCompilation.new()
 
 var regex_titles: RegEx = RegEx.create_from_string("^\\s*(?<title>~\\s+[^\\!\\@\\#\\$\\%\\^\\&\\*\\(\\)\\-\\=\\+\\{\\}\\[\\]\\;\\:\\\"\\'\\,\\.\\<\\>\\?\\/\\s]+)")
 var regex_comments: RegEx = RegEx.create_from_string("(?:(?>\"(?:\\\\\"|[^\"\\n])*\")[^\"\\n]*?\\s*(?<comment>#[^\\n]*)$|^[^\"#\\n]*?\\s*(?<comment2>#[^\\n]*))")
 var regex_mutation: RegEx = RegEx.create_from_string("^\\s*(do|do!|set) (?<mutation>.*)")
-var regex_condition: RegEx = RegEx.create_from_string("^\\s*(if|elif|while|else if) (?<condition>.*)")
+var regex_condition: RegEx = RegEx.create_from_string("^\\s*(if|elif|while|else if|match|when) (?<condition>.*):?")
 var regex_wcondition: RegEx = RegEx.create_from_string("\\[if (?<condition>((?:[^\\[\\]]*)|(?:\\[(?1)\\]))*?)\\]")
 var regex_wendif: RegEx = RegEx.create_from_string("\\[(\\/if|else)\\]")
 var regex_rgroup: RegEx = RegEx.create_from_string("\\[\\[(?<options>.*?)\\]\\]")
 var regex_endconditions: RegEx = RegEx.create_from_string("^\\s*(endif|else):?\\s*$")
 var regex_tags: RegEx = RegEx.create_from_string("\\[(?<tag>(?!(?:ID:.*)|if)[a-zA-Z_][a-zA-Z0-9_]*!?)(?:[= ](?<val>[^\\[\\]]+))?\\](?:(?<text>(?!\\[\\/\\k<tag>\\]).*?)?(?<end>\\[\\/\\k<tag>\\]))?")
 var regex_dialogue: RegEx = RegEx.create_from_string("^\\s*(?:(?<random>\\%[\\d.]* )|(?<response>- ))?(?:(?<character>[^#:]*): )?(?<dialogue>.*)$")
+var regex_random_block: RegEx = RegEx.create_from_string("^\\%(?<weight>[\\d.]+)?( \\[if (?<condition>.+?)\\])?:?$")
 var regex_goto: RegEx = RegEx.create_from_string("=><? (?:(?<file>[^\\/]+)\\/)?(?<title>[^\\/]*)")
 var regex_string: RegEx = RegEx.create_from_string("^&?(?<delimiter>[\"'])(?<content>(?:\\\\{2})*|(?:.*?[^\\\\](?:\\\\{2})*))\\1$")
 var regex_escape: RegEx = RegEx.create_from_string("\\\\.")
@@ -38,11 +37,6 @@ var regex_ulogical: RegEx = RegEx.create_from_string("^\\s*(?<op>not)\\s+(?<righ
 var regex_paren: RegEx = RegEx.create_from_string("\\((?<paren>((?:[^\\(\\)]*)|(?:\\((?1)\\)))*?)\\)")
 
 var cache: Dictionary = {}
-
-
-func _notification(what: int) -> void:
-	if what == NOTIFICATION_PREDELETE:
-		dialogue_manager_parser.free()
 
 
 func _clear_highlighting_cache() -> void:
@@ -66,13 +60,17 @@ func _get_line_syntax_highlighting(line: int) -> Dictionary:
 	# Comments have to be removed to make the remaining processing easier.
 	# Count both end-of-line and single-line comments
 	# Comments are not allowed within dialogue lines or response lines, so we ask the parser what it thinks the current line is
-	if not (dialogue_manager_parser.is_dialogue_line(text) or dialogue_manager_parser.is_response_line(text)) or dialogue_manager_parser.is_line_empty(text) or dialogue_manager_parser.is_import_line(text):
+	if not ([DMConstants.TYPE_DIALOGUE, DMConstants.TYPE_RESPONSE, DMConstants.TYPE_UNKNOWN].has(compilation.get_line_type(text)) or compilation.is_import_line(text)):
 		var comment_matches: Array[RegExMatch] = regex_comments.search_all(text)
 		for comment_match in comment_matches:
 			for i in ["comment", "comment2"]:
 				if i in comment_match.names:
 					colors[comment_match.get_start(i)] = {"color": text_edit.theme_overrides.comments_color}
 					text = text.substr(0, comment_match.get_start(i))
+
+	# Random blocks
+	if regex_random_block.search(text):
+		colors[0] = {"color": text_edit.theme_overrides.symbols_color}
 
 	# Dialogues
 	var dialogue_matches: Array[RegExMatch] = regex_dialogue.search_all(text)
@@ -89,13 +87,13 @@ func _get_line_syntax_highlighting(line: int) -> Dictionary:
 		colors.merge(_get_dialogue_syntax_highlighting(dialogue_match.get_start("dialogue"), dialogue_match.get_string("dialogue")), true)
 
 	# Title lines
-	if dialogue_manager_parser.is_title_line(text):
+	if compilation.get_line_type(text) == DMConstants.TYPE_TITLE:
 		var title_matches: Array[RegExMatch] = regex_titles.search_all(text)
 		for title_match in title_matches:
 			colors[title_match.get_start("title")] = {"color": text_edit.theme_overrides.titles_color}
 
 	# Import lines
-	var import_matches: Array[RegExMatch] = dialogue_manager_parser.IMPORT_REGEX.search_all(text)
+	var import_matches: Array[RegExMatch] = regex.IMPORT_REGEX.search_all(text)
 	for import_match in import_matches:
 		colors[import_match.get_start(0)] = {"color": text_edit.theme_overrides.conditions_color}
 		colors[import_match.get_start("path") - 1] = {"color": text_edit.theme_overrides.strings_color}
@@ -104,7 +102,7 @@ func _get_line_syntax_highlighting(line: int) -> Dictionary:
 		colors[import_match.get_end("prefix")] = {"color": text_edit.theme_overrides.conditions_color}
 
 	# Using clauses
-	var using_matches: Array[RegExMatch] = dialogue_manager_parser.USING_REGEX.search_all(text)
+	var using_matches: Array[RegExMatch] = regex.USING_REGEX.search_all(text)
 	for using_match in using_matches:
 		colors[using_match.get_start(0)] = {"color": text_edit.theme_overrides.conditions_color}
 		colors[using_match.get_start("state") - 1] = {"color": text_edit.theme_overrides.text_color}
@@ -144,7 +142,7 @@ func _get_dialogue_syntax_highlighting(start_index: int, text: String) -> Dictio
 	var colors: Dictionary = {}
 
 	# #tag style tags
-	var hashtag_matches: Array[RegExMatch] = dialogue_manager_parser.TAGS_REGEX.search_all(text)
+	var hashtag_matches: Array[RegExMatch] = regex.TAGS_REGEX.search_all(text)
 	for hashtag_match in hashtag_matches:
 		colors[start_index + hashtag_match.get_start(0)] = { "color": text_edit.theme_overrides.comments_color }
 		colors[start_index + hashtag_match.get_end(0)] = { "color": text_edit.theme_overrides.text_color }
@@ -170,13 +168,13 @@ func _get_dialogue_syntax_highlighting(start_index: int, text: String) -> Dictio
 		colors[start_index + tag_match.get_end(0)] = {"color": text_edit.theme_overrides.text_color}
 
 	# ID tag
-	var translation_matches: Array[RegExMatch] = dialogue_manager_parser.TRANSLATION_REGEX.search_all(text)
+	var translation_matches: Array[RegExMatch] = regex.STATIC_LINE_ID_REGEX.search_all(text)
 	for translation_match in translation_matches:
 		colors[start_index + translation_match.get_start(0)] = {"color": text_edit.theme_overrides.comments_color}
 		colors[start_index + translation_match.get_end(0)] = {"color": text_edit.theme_overrides.text_color}
 
 	# Replacements
-	var replacement_matches: Array[RegExMatch] = dialogue_manager_parser.REPLACEMENTS_REGEX.search_all(text)
+	var replacement_matches: Array[RegExMatch] = regex.REPLACEMENTS_REGEX.search_all(text)
 	for replacement_match in replacement_matches:
 		colors[start_index + replacement_match.get_start(0)] = {"color": text_edit.theme_overrides.symbols_color}
 		colors[start_index + replacement_match.get_start(1)] = {"color": text_edit.theme_overrides.text_color}
@@ -190,10 +188,12 @@ func _get_dialogue_syntax_highlighting(start_index: int, text: String) -> Dictio
 		colors[start_index + goto_match.get_start(0)] = {"color": text_edit.theme_overrides.jumps_color}
 		if "file" in goto_match.names:
 			colors[start_index + goto_match.get_start("file")] = {"color": text_edit.theme_overrides.jumps_color}
-			colors[start_index + goto_match.get_end("file")] = {"color": text_edit.theme_overrides.symbols_color}
+			colors[start_index + goto_match.get_end("file") + 1] = {"color": text_edit.theme_overrides.symbols_color}
 		colors[start_index + goto_match.get_start("title")] = {"color": text_edit.theme_overrides.jumps_color}
 		colors[start_index + goto_match.get_end("title")] = {"color": text_edit.theme_overrides.jumps_color}
 		colors[start_index + goto_match.get_end(0)] = {"color": text_edit.theme_overrides.text_color}
+	if goto_matches.size() > 0 and text.strip_edges().ends_with("}}"):
+		colors[start_index + text.length() - 2] = {"color": text_edit.theme_overrides.jumps_color}
 
 	# Wrapped condition
 	var wcondition_matches: Array[RegExMatch] = regex_wcondition.search_all(text)

@@ -190,7 +190,7 @@ func _mutate_inline_mutations(index: int) -> void:
 			_already_mutated_indices.append(index)
 			_is_awaiting_mutation = true
 			# The DialogueManager can't be referenced directly here so we need to get it by its path
-			await Engine.get_singleton("DialogueManager").mutate(inline_mutation[1], dialogue_line.extra_game_states, true)
+			await Engine.get_singleton("DialogueManager")._mutate(inline_mutation[1], dialogue_line.extra_game_states, true)
 			_is_awaiting_mutation = false
 
 

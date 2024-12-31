@@ -41,9 +41,6 @@ msgstr "Insertar"
 msgid "translations"
 msgstr "Traducciones"
 
-msgid "settings"
-msgstr "Ajustes"
-
 msgid "show_support"
 msgstr "Contribuye con Dialogue Manager"
 
@@ -133,82 +130,6 @@ msgstr "Copiar la ruta del archivo"
 
 msgid "buffer.show_in_filesystem"
 msgstr "Mostrar en el sistema de archivos"
-
-msgid "settings.invalid_test_scene"
-msgstr "\"{path}\" no extiende BaseDialogueTestScene."
-
-msgid "settings.revert_to_default_test_scene"
-msgstr "Revertir a la escena de prueba por defecto"
-
-msgid "settings.default_balloon_hint"
-msgstr ""
-"Globo personalizado para usar al llamar a \"DialogueManager.show_balloon()\""
-
-msgid "settings.revert_to_default_balloon"
-msgstr "Volver al globo predeterminado"
-
-msgid "settings.default_balloon_path"
-msgstr "<globo de ejemplo>"
-
-msgid "settings.autoload"
-msgstr "Autocarga"
-
-msgid "settings.path"
-msgstr "Ruta"
-
-msgid "settings.new_template"
-msgstr "Los nuevos archivos de diálogo empezarán con una plantilla"
-
-msgid "settings.missing_keys"
-msgstr "Tratar las claves de traducción faltantes como errores"
-
-msgid "settings.missing_keys_hint"
-msgstr "Si estás utilizando claves de traducción estáticas, tener esta opción habilitada te ayudará a encontrar cualquier línea a la que aún no le hayas añadido una clave."
-
-msgid "settings.characters_translations"
-msgstr "Exportar nombres de personajes en archivos de traducción"
-
-msgid "settings.wrap_long_lines"
-msgstr "Romper líneas largas"
-
-msgid "settings.include_failed_responses"
-msgstr "Incluir respuestas con condiciones fallidas"
-
-msgid "settings.ignore_missing_state_values"
-msgstr "Omitir errores de valores de estado faltantes (no recomendado)"
-
-msgid "settings.custom_test_scene"
-msgstr "Escena de prueba personalizada (debe extender BaseDialogueTestScene)"
-
-msgid "settings.default_csv_locale"
-msgstr "Localización CSV por defecto"
-
-msgid "settings.states_shortcuts"
-msgstr "Atajos de teclado"
-
-msgid "settings.states_message"
-msgstr "Si un autoload está habilitado aquí, puedes referirte a sus propiedades y métodos sin tener que usar su nombre."
-
-msgid "settings.states_hint"
-msgstr "ie. En lugar de \"SomeState.some_property\" podría simplemente usar \"some_property\""
-
-msgid "settings.recompile_warning"
-msgstr "Cambiar estos ajustes obligará a recompilar todo el diálogo. Hazlo solo si sabes lo que estás haciendo."
-
-msgid "settings.create_lines_for_responses_with_characters"
-msgstr "Crear línea de diálogo para respuestas con nombres de personajes dentro."
-
-msgid "settings.open_in_external_editor"
-msgstr "Abrir archivos de diálogo en el editor externo"
-
-msgid "settings.external_editor_warning"
-msgstr "Nota: El resaltado de sintaxis y la verificación detallada de errores no están soportados en editores externos."
-
-msgid "settings.include_characters_in_translations"
-msgstr "Incluir nombres de personajes en las exportaciones de traducción"
-
-msgid "settings.include_notes_in_translations"
-msgstr "Incluir notas (## comentarios) en las exportaciones de traducción"
 
 msgid "n_of_n"
 msgstr "{index} de {total}"
