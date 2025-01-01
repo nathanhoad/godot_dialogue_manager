@@ -47,6 +47,7 @@ var dialogue_line:
 	set(next_dialogue_line):
 		dialogue_line = next_dialogue_line
 		custom_minimum_size = Vector2.ZERO
+		text = ""
 		text = dialogue_line.text
 	get:
 		return dialogue_line
