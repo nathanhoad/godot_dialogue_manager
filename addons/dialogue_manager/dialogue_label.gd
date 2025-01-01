@@ -107,11 +107,11 @@ func type_out() -> void:
 	# Allow typing listeners a chance to connect
 	await get_tree().process_frame
 
-	if get_total_character_count() == 0:
+	if call_deferred("get_total_character_count") == 0:
 		self.is_typing = false
 	elif seconds_per_step == 0:
 		_mutate_remaining_mutations()
-		visible_characters = get_total_character_count()
+		visible_characters = call_deferred("get_total_character_count")
 		self.is_typing = false
 
 
