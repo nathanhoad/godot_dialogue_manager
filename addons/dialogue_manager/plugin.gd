@@ -322,9 +322,15 @@ func _copy_dialogue_balloon() -> void:
 		# Copy the balloon scene file and change the script reference
 		var is_small_window: bool = ProjectSettings.get_setting("display/window/size/viewport_width") < 400
 		var example_balloon_file_name: String = "small_example_balloon.tscn" if is_small_window else "example_balloon.tscn"
+		var example_balloon_path: String = plugin_path + "/example_balloon/" + example_balloon_file_name
 		var example_balloon_script_file_name: String = "ExampleBalloon.cs" if is_dotnet else "example_balloon.gd"
-		var file: FileAccess = FileAccess.open(plugin_path + "/example_balloon/" + example_balloon_file_name, FileAccess.READ)
+		var file: FileAccess = FileAccess.open(example_balloon_path, FileAccess.READ)
 		var file_contents: String = file.get_as_text().replace(plugin_path + "/example_balloon/example_balloon.gd", balloon_script_path)
+		# Give the balloon a unique UID
+		var example_balloon_uid: String = ResourceUID.id_to_text(ResourceLoader.get_resource_uid(example_balloon_path))
+		var new_balloon_uid: String = ResourceUID.id_to_text(ResourceUID.create_id())
+		file_contents = file_contents.replace(example_balloon_uid, new_balloon_uid)
+		# Save the new balloon
 		file = FileAccess.open(balloon_path, FileAccess.WRITE)
 		file.store_string(file_contents)
 		file.close()
