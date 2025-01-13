@@ -285,7 +285,7 @@ func show_dialogue_balloon_scene(balloon_scene, resource: DialogueResource, titl
 		balloon_scene = balloon_scene.instantiate()
 
 	var balloon: Node = balloon_scene
-	get_current_scene.call().add_child(balloon)
+	get_current_scene.call().add_child.call_deferred(balloon)
 	if balloon.has_method(&"start"):
 		balloon.start(resource, title, extra_game_states)
 	elif balloon.has_method(&"Start"):
