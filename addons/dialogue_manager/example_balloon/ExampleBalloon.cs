@@ -122,6 +122,11 @@ namespace DialogueManagerRuntime
 
     public async void Start(Resource dialogueResource, string title, Array<Variant> extraGameStates = null)
     {
+      if (!IsNodeReady())
+      {
+        await ToSignal(this, SignalName.Ready);
+      }
+
       temporaryGameStates = extraGameStates ?? new Array<Variant>();
       isWaitingForInput = false;
       resource = dialogueResource;
