@@ -22,6 +22,8 @@ var _cache: Dictionary = {}
 var _update_dependency_timer: Timer = Timer.new()
 var _update_dependency_paths: PackedStringArray = []
 
+var _files_marked_for_reimport: PackedStringArray = []
+
 
 func _ready() -> void:
 	add_child(_update_dependency_timer)
@@ -30,14 +32,24 @@ func _ready() -> void:
 	_build_cache()
 
 
-func reimport_files(files: PackedStringArray = []) -> void:
-	if files.is_empty(): files = get_files()
+func mark_files_for_reimport(files: PackedStringArray) -> void:
+	for file in files:
+		if not _files_marked_for_reimport.has(file):
+			_files_marked_for_reimport.append(file)
+
+
+func reimport_files(and_files: PackedStringArray = []) -> void:
+	for file in and_files:
+		if not _files_marked_for_reimport.has(file):
+			_files_marked_for_reimport.append(file)
+	
+	if _files_marked_for_reimport.is_empty(): return
 
 	var file_system: EditorFileSystem = Engine.get_meta("DialogueManagerPlugin") \
 		.get_editor_interface() \
 		.get_resource_filesystem()
 
-	file_system.reimport_files(files)
+	file_system.reimport_files(_files_marked_for_reimport)
 
 
 ## Add a dialogue file to the cache.

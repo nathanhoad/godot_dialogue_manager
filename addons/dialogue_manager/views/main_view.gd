@@ -295,7 +295,7 @@ func save_files() -> void:
 		save_file(path, false)
 
 	if saved_files.size() > 0:
-		Engine.get_meta("DialogueCache").reimport_files(saved_files)
+		Engine.get_meta("DialogueCache").mark_files_for_reimport(saved_files)
 
 
 # Save a file
@@ -1054,8 +1054,9 @@ func _on_settings_view_script_button_pressed(path: String) -> void:
 
 
 func _on_test_button_pressed() -> void:
-	save_file(current_file_path)
-
+	save_file(current_file_path, false)
+	Engine.get_meta("DialogueCache").reimport_files([current_file_path])
+	
 	if errors_panel.errors.size() > 0:
 		errors_dialog.popup_centered()
 		return
