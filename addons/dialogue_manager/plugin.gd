@@ -156,6 +156,8 @@ func _build() -> bool:
 	if DialogueSettings.get_user_value("is_running_test_scene", true): return true
 
 	if dialogue_cache != null:
+		dialogue_cache.reimport_files()
+		
 		var files_with_errors = dialogue_cache.get_files_with_errors()
 		if files_with_errors.size() > 0:
 			for dialogue_file in files_with_errors:
