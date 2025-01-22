@@ -107,18 +107,18 @@ If you need to construct a dialogue resource at runtime, you can use `CreateReso
 Please note, a balloon or Dialogue must be opened for the dialogue to attach to.
 
 ```csharp
-var Dialogue= GD.Load<Resource>("res://exampleBalloonScene.tscn");
-var resource = DialogueManager.CreateResourceFromText("~ title\nCharacter: Hello!")
+var resource = DialogueManager.CreateResourceFromText("~ title\nCharacter: Hello!");
 ```
+
 This will run the given text through the parser.
 
 If there were syntax errors, the method will fail.
 
 If there were no errors, you can use this ephemeral resource like normal:
+
 ```csharp
  var line = DialogueManager.ShowExampleDialogueBalloon(resource, "start");
 ```
-
 
 ## Example
 
