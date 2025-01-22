@@ -116,6 +116,11 @@ namespace DialogueManagerRuntime
             return instance;
         }
 
+        public static Resource CreateResourceFromText(string text)
+        {
+            return (Resource)Instance.Call("create_resource_from_text", text);
+        }
+
         public static async Task<DialogueLine?> GetNextDialogueLine(Resource dialogueResource, string key = "", Array<Variant>? extraGameStates = null)
         {
             var instance = (Node)Instance.Call("_bridge_get_new_instance");
