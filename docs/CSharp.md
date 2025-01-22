@@ -101,6 +101,25 @@ responsesMenu.Connect("response_selected", Callable.From((DialogueResponse respo
 }));
 ```
 
+## Generating Dialogue Resources at runtime
+
+If you need to construct a dialogue resource at runtime, you can use `CreateResoureFromString(string)`:
+Please note, a balloon or Dialogue must be opened for the dialogue to attach to.
+
+```csharp
+var Dialogue= GD.Load<Resource>("res://exampleBalloonScene.tscn");
+var resource = DialogueManager.CreateResourceFromText("~ title\nCharacter: Hello!")
+```
+This will run the given text through the parser.
+
+If there were syntax errors, the method will fail.
+
+If there were no errors, you can use this ephemeral resource like normal:
+```csharp
+ var line = DialogueManager.ShowExampleDialogueBalloon(resource, "start");
+```
+
+
 ## Example
 
 There is a balloon implemented in C# in the **examples** folder of the repository. If you want to have a closer look at it, you'll have to clone the repository down because the automatic download ZIP removes the docs and examples folder.
