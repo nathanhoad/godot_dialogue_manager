@@ -4,6 +4,7 @@
 
 ### Signals
 
+- `dialogue_started(resource: DialogueResource)` - emitted when a dialogue balloon is created and dialogue begins.
 - `passed_title(title)` - emitted when a title marker is passed through.
 - `got_dialogue(line: DialogueLine)` - emitted when a dialogue line is found.
 - `mutated(mutation: Dictionary)` - emitted when a mutation line is about to be run (not including `set` lines).
