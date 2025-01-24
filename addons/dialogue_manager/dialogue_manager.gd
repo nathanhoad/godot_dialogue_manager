@@ -12,6 +12,9 @@ const DialogueManagerParseResult = preload("./components/parse_result.gd")
 const ResolvedLineData = preload("./components/resolved_line_data.gd")
 
 
+## Emitted when a dialogue balloon is created and dialogue starts
+signal dialogue_started(resource: DialogueResource)
+
 ## Emitted when a title is encountered while traversing dialogue, usually when jumping from a
 ## goto line
 signal passed_title(title: String)
@@ -269,6 +272,7 @@ func show_example_dialogue_balloon(resource: DialogueResource, title: String = "
 	var balloon: Node = load(_get_example_balloon_path()).instantiate()
 	get_current_scene.call().add_child(balloon)
 	balloon.start(resource, title, extra_game_states)
+	dialogue_started.emit(resource)
 
 	return balloon
 
@@ -278,6 +282,7 @@ func show_dialogue_balloon(resource: DialogueResource, title: String = "", extra
 	var balloon_path: String = DialogueSettings.get_setting(&"balloon_path", _get_example_balloon_path())
 	if not ResourceLoader.exists(balloon_path):
 		balloon_path = _get_example_balloon_path()
+	dialogue_started.emit(resource)
 	return show_dialogue_balloon_scene(balloon_path, resource, title, extra_game_states)
 
 
