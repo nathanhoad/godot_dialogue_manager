@@ -1,29 +1,24 @@
 class_name AbstractTest extends Node
 
 
-func before_all() -> void:
+func _before_all() -> void:
 	pass
 
 
-func before_each() -> void:
+func _before_each() -> void:
 	pass
 
 
-func after_all() -> void:
+func _after_all() -> void:
 	pass
 
 
-func after_each() -> void:
+func _after_each() -> void:
 	pass
 
 
-func parse(text: String) -> DialogueManagerParseResult:
-	var parser: DialogueManagerParser = DialogueManagerParser.new()
-	parser.parse(text, "")
-	var data: DialogueManagerParseResult = parser.get_data()
-	parser.free()
-
-	return data
+func compile(text: String) -> DMCompilerResult:
+	return DMCompiler.compile_string(text, "")
 
 
 func create_resource(text: String) -> DialogueResource:

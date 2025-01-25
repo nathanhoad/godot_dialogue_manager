@@ -27,7 +27,9 @@ _NOTE: Runtime tags/bbcode (eg. `[next=auto]`, `[wave]`, etc) are part of the di
 
 All `.dialogue` files are automatically added to the POT Generation list in **Project Settings > Localization** for them to be included in the general PO template.
 
-![Adding dialogue files to the POT generation list](pot-generation.jpg)
+![Adding dialogue files to the POT generation list](media/pot-generation.jpg)
+
+_NOTE: If static translation keys are present in lines of dialogue that key will be used as POT context for that line, and the dialogue itself will be the actual POT key._
 
 _NOTE: If static translation keys are present in lines of dialogue that key will be used as POT context for that line, and the dialogue itself will be the actual POT key._
 

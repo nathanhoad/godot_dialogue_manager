@@ -1,8 +1,22 @@
-extends Node
+class_name DMConstants extends RefCounted
 
 
 const USER_CONFIG_PATH = "user://dialogue_manager_user_config.json"
 const CACHE_PATH = "user://dialogue_manager_cache.json"
+
+
+enum MutationBehaviour {
+	Wait,
+	DoNotWait,
+	Skip
+}
+
+enum TranslationSource {
+	None,
+	Guess,
+	CSV,
+	PO
+}
 
 # Token types
 
@@ -33,20 +47,25 @@ const TOKEN_NUMBER = &"number"
 const TOKEN_VARIABLE = &"variable"
 const TOKEN_COMMENT = &"comment"
 
+const TOKEN_VALUE = &"value"
 const TOKEN_ERROR = &"error"
 
 # Line types
 
-const TYPE_UNKNOWN = &"unknown"
+const TYPE_UNKNOWN = &""
+const TYPE_IMPORT = &"import"
+const TYPE_COMMENT = &"comment"
 const TYPE_RESPONSE = &"response"
 const TYPE_TITLE = &"title"
 const TYPE_CONDITION = &"condition"
+const TYPE_WHILE = &"while"
+const TYPE_MATCH = &"match"
+const TYPE_WHEN = &"when"
 const TYPE_MUTATION = &"mutation"
 const TYPE_GOTO = &"goto"
 const TYPE_DIALOGUE = &"dialogue"
+const TYPE_RANDOM = &"random"
 const TYPE_ERROR = &"error"
-
-const TYPE_ELSE = &"else"
 
 # Line IDs
 
@@ -94,6 +113,9 @@ const ERR_UNEXPECTED_VARIABLE = 132
 const ERR_INVALID_INDEX = 133
 const ERR_UNEXPECTED_ASSIGNMENT = 134
 const ERR_UNKNOWN_USING = 135
+const ERR_EXPECTED_WHEN_OR_ELSE = 136
+const ERR_ONLY_ONE_ELSE_ALLOWED = 137
+const ERR_WHEN_MUST_BELONG_TO_MATCH = 138
 
 
 ## Get the error message
@@ -169,14 +191,18 @@ static func get_error_message(error: int) -> String:
 			return translate(&"errors.unexpected_assignment")
 		ERR_UNKNOWN_USING:
 			return translate(&"errors.unknown_using")
+		ERR_EXPECTED_WHEN_OR_ELSE:
+			return translate(&"errors.expected_when_or_else")
+		ERR_ONLY_ONE_ELSE_ALLOWED:
+			return translate(&"errors.only_one_else_allowed")
+		ERR_WHEN_MUST_BELONG_TO_MATCH:
+			return translate(&"errors.when_must_belong_to_match")
 
 	return translate(&"errors.unknown")
 
 
 static func translate(string: String) -> String:
-	var temp_node = new()
-	var base_path = temp_node.get_script().resource_path.get_base_dir()
-	temp_node.free()
+	var base_path = new().get_script().resource_path.get_base_dir()
 
 	var language: String = TranslationServer.get_tool_locale()
 	var translations_path: String = "%s/l10n/%s.po" % [base_path, language]

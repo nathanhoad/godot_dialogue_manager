@@ -59,7 +59,7 @@ func show_error() -> void:
 		show()
 		count_label.text = DialogueConstants.translate(&"n_of_n").format({ index = error_index + 1, total = errors.size() })
 		var error = errors[error_index]
-		error_button.text = DialogueConstants.translate(&"errors.line_and_message").format({ line = error.line_number + 1, column = error.column_number, message = DialogueConstants.get_error_message(error.error) })
+		error_button.text = DialogueConstants.translate(&"errors.line_and_message").format({ line = error.line_number, column = error.column_number, message = DialogueConstants.get_error_message(error.error) })
 		if error.has("external_error"):
 			error_button.text += " " + DialogueConstants.get_error_message(error.external_error)
 
@@ -72,7 +72,7 @@ func _on_errors_panel_theme_changed() -> void:
 
 
 func _on_error_button_pressed() -> void:
-	emit_signal("error_pressed", errors[error_index].line_number, errors[error_index].column_number)
+	error_pressed.emit(errors[error_index].line_number, errors[error_index].column_number)
 
 
 func _on_previous_button_pressed() -> void:

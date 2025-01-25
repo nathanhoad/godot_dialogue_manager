@@ -1,16 +1,12 @@
 extends AbstractTest
 
 
-const DialogueConstants = preload("res://addons/dialogue_manager/constants.gd")
-const ResolvedLineData = preload("res://addons/dialogue_manager/components/resolved_line_data.gd")
+func _extract(text: String) -> DMResolvedLineData:
+	return DMResolvedLineData.new(text)
 
 
-func _extract(text: String) -> ResolvedLineData:
-	return DialogueManagerParser.extract_markers_from_string(text)
-
-
-func _resolve(text: String) -> ResolvedLineData:
-	return await DialogueManager.get_resolved_line_data(parse(text).lines["1"])
+func _resolve(text: String) -> DMResolvedLineData:
+	return await DialogueManager.get_resolved_line_data(compile(text).lines["0"])
 
 
 func test_ignores_rich_text_bbcode() -> void:
@@ -60,7 +56,7 @@ func test_mutations_can_have_errors() -> void:
 	var data = _extract("Nathan: [wave]Hey![/wave] [do incomplete(]This is an error?")
 
 	assert("error" in data.mutations[0][1], "Should have an error.")
-	assert(data.mutations[0][1].error == DialogueConstants.ERR_UNEXPECTED_END_OF_EXPRESSION, "Should have an error.")
+	assert(data.mutations[0][1].error == DMConstants.ERR_UNEXPECTED_END_OF_EXPRESSION, "Should have an error.")
 
 
 func test_can_resolve_inline_conditions() -> void:

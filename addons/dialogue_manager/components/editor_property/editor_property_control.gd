@@ -63,7 +63,7 @@ func build_menu() -> void:
 func _on_new_dialog_file_selected(path: String) -> void:
 	editor_plugin.main_view.new_file(path)
 	is_waiting_for_file = false
-	if Engine.get_meta("DialogueCache").has_file(path):
+	if Engine.get_meta("DMCache").has_file(path):
 		resource_changed.emit(load(path))
 	else:
 		var next_resource: Resource = await editor_plugin.import_plugin.compiled_resource
@@ -81,7 +81,7 @@ func _on_file_dialog_canceled() -> void:
 
 func _on_resource_button_pressed() -> void:
 	if is_instance_valid(resource):
-		editor_plugin.get_editor_interface().call_deferred("edit_resource", resource)
+		EditorInterface.call_deferred("edit_resource", resource)
 	else:
 		build_menu()
 		menu.position = get_viewport().position + Vector2i(
@@ -112,7 +112,7 @@ func _on_menu_id_pressed(id: int) -> void:
 
 		ITEM_QUICK_LOAD:
 			quick_selected_file = ""
-			files_list.files = Engine.get_meta("DialogueCache").get_files()
+			files_list.files = Engine.get_meta("DMCache").get_files()
 			if resource:
 				files_list.select_file(resource.resource_path)
 			quick_open_dialog.popup_centered()
@@ -123,13 +123,13 @@ func _on_menu_id_pressed(id: int) -> void:
 			open_dialog.popup_centered()
 
 		ITEM_EDIT:
-			editor_plugin.get_editor_interface().call_deferred("edit_resource", resource)
+			EditorInterface.call_deferred("edit_resource", resource)
 
 		ITEM_CLEAR:
 			resource_changed.emit(null)
 
 		ITEM_FILESYSTEM:
-			var file_system = editor_plugin.get_editor_interface().get_file_system_dock()
+			var file_system = EditorInterface.get_file_system_dock()
 			file_system.navigate_to_path(resource.resource_path)
 
 

@@ -2,7 +2,7 @@
 
 ## How can I get help?
 
-You can [ask on my Discord](https://nathanhoad.net/discord), [ask me on Mastodon](https://mastodon.social/@nathanhoad), or [open a discussion on GitHub](https://github.com/nathanhoad/godot_dialogue_manager/discussions).
+You can [ask on my Discord](https://nathanhoad.net/discord), [ask me on Bluesky](https://bsky.app/profile/nathanhoad.net), or [open a discussion on GitHub](https://github.com/nathanhoad/godot_dialogue_manager/discussions).
 
 If you run into something that you think might be a bug, you can [open an issue](https://github.com/nathanhoad/godot_dialogue_manager/issues) (make sure to include your Godot version and Dialogue Manager version).
 
@@ -39,3 +39,7 @@ If you want to also credit it specifically, you can include something like "Dial
 ## Why isn't something like Dialogue Manager built into Godot?
 
 The short answer is that not all games need to have any kind of dialogue, let alone branching dialogue trees, so it would just be introducing bloat into the engine for little benefit. Another good reason to have it as an addon means I can iterate on it much faster than having to wait for engine releases.
+
+## How do I get you to add my great idea for a feature?
+
+You can open an issue on GitHub with your suggestion but keep in mind that I don't usually add features just because someone suggested them. If your idea can be used widely enough I'll consider it though.

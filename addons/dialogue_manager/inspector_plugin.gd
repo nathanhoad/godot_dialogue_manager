@@ -1,5 +1,5 @@
 @tool
-extends EditorInspectorPlugin
+class_name DMInspectorPlugin extends EditorInspectorPlugin
 
 
 const DialogueEditorProperty = preload("./components/editor_property/editor_property.gd")

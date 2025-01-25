@@ -1,21 +1,15 @@
-extends EditorTranslationParserPlugin
-
-
-const DialogueConstants = preload("./constants.gd")
-const DialogueSettings = preload("./settings.gd")
-const DialogueManagerParser = preload("./components/parser.gd")
-const DialogueManagerParseResult = preload("./components/parse_result.gd")
+class_name DMTranslationParserPlugin extends EditorTranslationParserPlugin
 
 
 func _parse_file(path: String, msgids: Array, msgids_context_plural: Array) -> void:
 	var file: FileAccess = FileAccess.open(path, FileAccess.READ)
 	var text: String = file.get_as_text()
 
-	var data: DialogueManagerParseResult = DialogueManagerParser.parse_string(text, path)
+	var data: DMCompilerResult = DMCompiler.compile_string(text, path)
 	var known_keys: PackedStringArray = PackedStringArray([])
 
 	# Add all character names if settings ask for it
-	if DialogueSettings.get_setting("export_characters_in_translation", true):
+	if DMSettings.get_setting(DMSettings.INCLUDE_CHARACTERS_IN_TRANSLATABLE_STRINGS_LIST, true):
 		var character_names: PackedStringArray = data.character_names
 		for character_name in character_names:
 			if character_name in known_keys: continue
@@ -29,7 +23,7 @@ func _parse_file(path: String, msgids: Array, msgids_context_plural: Array) -> v
 	for key in dialogue.keys():
 		var line: Dictionary = dialogue.get(key)
 
-		if not line.type in [DialogueConstants.TYPE_DIALOGUE, DialogueConstants.TYPE_RESPONSE]: continue
+		if not line.type in [DMConstants.TYPE_DIALOGUE, DMConstants.TYPE_RESPONSE]: continue
 		if line.translation_key in known_keys: continue
 
 		known_keys.append(line.translation_key)

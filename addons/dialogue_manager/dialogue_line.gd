@@ -2,14 +2,11 @@
 class_name DialogueLine extends RefCounted
 
 
-const _DialogueConstants = preload("./constants.gd")
-
-
 ## The ID of this line
 var id: String
 
 ## The internal type of this dialogue object. One of [code]TYPE_DIALOGUE[/code] or [code]TYPE_MUTATION[/code]
-var type: String = _DialogueConstants.TYPE_DIALOGUE
+var type: String = DMConstants.TYPE_DIALOGUE
 
 ## The next line ID after this line.
 var next_id: String = ""
@@ -65,7 +62,7 @@ func _init(data: Dictionary = {}) -> void:
 		extra_game_states = data.get("extra_game_states", [])
 
 		match type:
-			_DialogueConstants.TYPE_DIALOGUE:
+			DMConstants.TYPE_DIALOGUE:
 				character = data.character
 				character_replacements = data.get("character_replacements", [] as Array[Dictionary])
 				text = data.text
@@ -77,15 +74,15 @@ func _init(data: Dictionary = {}) -> void:
 				time = data.get("time", "")
 				tags = data.get("tags", [])
 
-			_DialogueConstants.TYPE_MUTATION:
+			DMConstants.TYPE_MUTATION:
 				mutation = data.mutation
 
 
 func _to_string() -> String:
 	match type:
-		_DialogueConstants.TYPE_DIALOGUE:
+		DMConstants.TYPE_DIALOGUE:
 			return "<DialogueLine character=\"%s\" text=\"%s\">" % [character, text]
-		_DialogueConstants.TYPE_MUTATION:
+		DMConstants.TYPE_MUTATION:
 			return "<DialogueLine mutation>"
 	return ""
 

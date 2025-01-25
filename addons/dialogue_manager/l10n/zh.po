@@ -44,9 +44,6 @@ msgstr "插入"
 msgid "translations"
 msgstr "翻译"
 
-msgid "settings"
-msgstr "设置"
-
 msgid "show_support"
 msgstr "支持 Dialogue Manager"
 
@@ -136,69 +133,6 @@ msgstr "复制文件路径"
 
 msgid "buffer.show_in_filesystem"
 msgstr "在 Godot 侧边栏中显示"
-
-msgid "settings.revert_to_default_test_scene"
-msgstr "重置测试场景设定"
-
-msgid "settings.default_balloon_hint"
-msgstr "设置调用 \"DialogueManager.show_balloon()\" 时使用的对话框"
-
-msgid "settings.autoload"
-msgstr "Autoload"
-
-msgid "settings.path"
-msgstr "路径"
-
-msgid "settings.new_template"
-msgstr "新建文件时自动插入模板"
-
-msgid "settings.missing_keys"
-msgstr "将翻译键缺失视为错误"
-
-msgid "settings.missing_keys_hint"
-msgstr "如果你使用静态键，这将会帮助你寻找未添加至翻译文件的键。"
-
-msgid "settings.characters_translations"
-msgstr "在翻译文件中导出角色名"
-
-msgid "settings.wrap_long_lines"
-msgstr "文本编辑器自动换行"
-
-msgid "settings.include_failed_responses"
-msgstr "在判断条件失败时仍显示回复选项"
-
-msgid "settings.ignore_missing_state_values"
-msgstr "忽略全局变量缺失错误（不建议）"
-
-msgid "settings.custom_test_scene"
-msgstr "自定义测试场景（必须继承自BaseDialogueTestScene）"
-
-msgid "settings.default_csv_locale"
-msgstr "默认 CSV 区域格式"
-
-msgid "settings.states_shortcuts"
-msgstr "全局变量映射"
-
-msgid "settings.states_message"
-msgstr "当一个 Autoload 在这里被勾选，他的所有成员会被映射为全局变量。"
-
-msgid "settings.states_hint"
-msgstr "比如，当你开启对于“Foo”的映射时，你可以将“Foo.bar”简写成“bar”。"
-
-msgid "settings.recompile_warning"
-msgstr "更改这些选项会强制重新编译所有的对话框，当你清楚在做什么的时候更改。"
-
-msgid "settings.create_lines_for_responses_with_characters"
-msgstr "回复项带角色名时（- char: response），会自动生成为选择后的下一句对话"
-
-msgid "settings.include_characters_in_translations"
-msgstr "导出 CSV 时包括角色名"
-
-msgid "settings.include_notes_in_translations"
-msgstr "导出 CSV 时包括注释（## comments）"
-
-msgid "settings.check_for_updates"
-msgstr "检查升级"
 
 msgid "n_of_n"
 msgstr "第{index}个，共{total}个"

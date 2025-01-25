@@ -1,4 +1,4 @@
-[gd_scene load_steps=16 format=3 uid="uid://cbuf1q3xsse3q"]
+[gd_scene load_steps=15 format=3 uid="uid://cbuf1q3xsse3q"]
 
 [ext_resource type="Script" path="res://addons/dialogue_manager/views/main_view.gd" id="1_h6qfq"]
 [ext_resource type="PackedScene" uid="uid://civ6shmka5e8u" path="res://addons/dialogue_manager/components/code_edit.tscn" id="2_f73fm"]
@@ -8,10 +8,9 @@
 [ext_resource type="PackedScene" uid="uid://gr8nakpbrhby" path="res://addons/dialogue_manager/components/search_and_replace.tscn" id="6_ylh0t"]
 [ext_resource type="PackedScene" uid="uid://cs8pwrxr5vxix" path="res://addons/dialogue_manager/components/errors_panel.tscn" id="7_5cvl4"]
 [ext_resource type="Script" path="res://addons/dialogue_manager/components/code_edit_syntax_highlighter.gd" id="7_necsa"]
-[ext_resource type="PackedScene" uid="uid://cpg4lg1r3ff6m" path="res://addons/dialogue_manager/views/settings_view.tscn" id="9_8bf36"]
 [ext_resource type="PackedScene" uid="uid://0n7hwviyyly4" path="res://addons/dialogue_manager/components/find_in_files.tscn" id="10_yold3"]
 
-[sub_resource type="Image" id="Image_68x0r"]
+[sub_resource type="Image" id="Image_060f1"]
 data = {
 "data": PackedByteArray(255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 93, 93, 255, 255, 93, 93, 255, 255, 93, 93, 255, 255, 93, 93, 255, 255, 93, 93, 255, 255, 93, 93, 255, 255, 93, 93, 255, 255, 255, 255, 0, 255, 94, 94, 127, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 93, 93, 255, 255, 93, 93, 255, 255, 93, 93, 255, 255, 93, 93, 255, 255, 93, 93, 255, 255, 93, 93, 255, 255, 93, 93, 255, 255, 255, 255, 0, 255, 93, 93, 255, 255, 94, 94, 127, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 93, 93, 255, 255, 93, 93, 255, 255, 93, 93, 255, 255, 93, 93, 255, 255, 93, 93, 255, 255, 93, 93, 255, 255, 93, 93, 255, 255, 255, 255, 0, 255, 93, 93, 255, 255, 93, 93, 255, 255, 94, 94, 127, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 93, 93, 255, 255, 93, 93, 255, 255, 93, 93, 255, 255, 93, 93, 255, 255, 93, 93, 255, 255, 93, 93, 255, 255, 93, 93, 255, 255, 255, 255, 0, 255, 93, 93, 255, 255, 93, 93, 255, 255, 93, 93, 255, 255, 94, 94, 127, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 93, 93, 255, 255, 93, 93, 255, 255, 93, 93, 255, 255, 93, 93, 255, 255, 93, 93, 255, 255, 93, 93, 255, 255, 93, 93, 255, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 93, 93, 255, 255, 93, 93, 255, 255, 93, 93, 255, 255, 93, 93, 255, 255, 93, 93, 255, 255, 93, 93, 255, 255, 93, 93, 255, 255, 93, 93, 255, 255, 93, 93, 255, 255, 93, 93, 255, 255, 93, 93, 255, 255, 93, 93, 255, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 93, 93, 255, 255, 93, 93, 255, 255, 93, 93, 255, 255, 93, 93, 255, 255, 93, 93, 255, 255, 93, 93, 255, 255, 93, 93, 255, 255, 93, 93, 255, 255, 93, 93, 255, 255, 93, 93, 255, 255, 93, 93, 255, 255, 93, 93, 255, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 93, 93, 231, 255, 94, 94, 54, 255, 94, 94, 57, 255, 93, 93, 233, 255, 93, 93, 255, 255, 93, 93, 255, 255, 93, 93, 231, 255, 94, 94, 54, 255, 94, 94, 57, 255, 93, 93, 233, 255, 93, 93, 255, 255, 93, 93, 255, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 97, 97, 42, 255, 255, 255, 0, 255, 255, 255, 0, 255, 97, 97, 42, 255, 93, 93, 233, 255, 93, 93, 232, 255, 93, 93, 41, 255, 255, 255, 0, 255, 255, 255, 0, 255, 97, 97, 42, 255, 93, 93, 233, 255, 93, 93, 232, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 96, 96, 45, 255, 93, 93, 44, 255, 255, 255, 0, 255, 97, 97, 42, 255, 97, 97, 42, 255, 255, 255, 0, 255, 96, 96, 45, 255, 93, 93, 44, 255, 255, 255, 0, 255, 97, 97, 42, 255, 97, 97, 42, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 96, 96, 45, 255, 93, 93, 235, 255, 94, 94, 234, 255, 95, 95, 43, 255, 255, 255, 0, 255, 255, 255, 0, 255, 96, 96, 45, 255, 93, 93, 235, 255, 94, 94, 234, 255, 95, 95, 43, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 93, 93, 235, 255, 93, 93, 255, 255, 93, 93, 255, 255, 93, 93, 233, 255, 95, 95, 59, 255, 96, 96, 61, 255, 93, 93, 235, 255, 93, 93, 255, 255, 93, 93, 255, 255, 93, 93, 233, 255, 95, 95, 59, 255, 96, 96, 61, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 93, 93, 255, 255, 93, 93, 255, 255, 93, 93, 255, 255, 93, 93, 255, 255, 93, 93, 255, 255, 93, 93, 255, 255, 93, 93, 255, 255, 93, 93, 255, 255, 93, 93, 255, 255, 93, 93, 255, 255, 93, 93, 255, 255, 93, 93, 255, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 93, 93, 255, 255, 93, 93, 255, 255, 93, 93, 255, 255, 93, 93, 255, 255, 93, 93, 255, 255, 93, 93, 255, 255, 93, 93, 255, 255, 93, 93, 255, 255, 93, 93, 255, 255, 93, 93, 255, 255, 93, 93, 255, 255, 93, 93, 255, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0),
 "format": "RGBA8",
@@ -21,9 +20,9 @@ data = {
 }
 
 [sub_resource type="ImageTexture" id="ImageTexture_ka3gk"]
-image = SubResource("Image_68x0r")
+image = SubResource("Image_060f1")
 
-[sub_resource type="Image" id="Image_j5bhl"]
+[sub_resource type="Image" id="Image_3kpnu"]
 data = {
 "data": PackedByteArray(255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 93, 93, 255, 255, 93, 93, 255, 255, 93, 93, 255, 255, 93, 93, 255, 255, 93, 93, 255, 255, 93, 93, 255, 255, 93, 93, 255, 255, 255, 255, 0, 255, 94, 94, 127, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 93, 93, 255, 255, 93, 93, 255, 255, 93, 93, 255, 255, 93, 93, 255, 255, 93, 93, 255, 255, 93, 93, 255, 255, 93, 93, 255, 255, 255, 255, 0, 255, 93, 93, 255, 255, 94, 94, 127, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 93, 93, 255, 255, 93, 93, 255, 255, 93, 93, 255, 255, 93, 93, 255, 255, 93, 93, 255, 255, 93, 93, 255, 255, 93, 93, 255, 255, 255, 255, 0, 255, 93, 93, 255, 255, 93, 93, 255, 255, 94, 94, 127, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 93, 93, 255, 255, 93, 93, 255, 255, 93, 93, 255, 255, 93, 93, 255, 255, 93, 93, 255, 255, 93, 93, 255, 255, 93, 93, 255, 255, 255, 255, 0, 255, 93, 93, 255, 255, 93, 93, 255, 255, 93, 93, 255, 255, 94, 94, 127, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 93, 93, 255, 255, 93, 93, 255, 255, 93, 93, 255, 255, 93, 93, 255, 255, 93, 93, 255, 255, 93, 93, 255, 255, 93, 93, 255, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 93, 93, 255, 255, 93, 93, 255, 255, 93, 93, 255, 255, 93, 93, 255, 255, 93, 93, 255, 255, 93, 93, 255, 255, 93, 93, 255, 255, 93, 93, 255, 255, 93, 93, 255, 255, 93, 93, 255, 255, 93, 93, 255, 255, 93, 93, 255, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 93, 93, 255, 255, 93, 93, 255, 255, 93, 93, 255, 255, 93, 93, 255, 255, 93, 93, 255, 255, 93, 93, 255, 255, 93, 93, 255, 255, 93, 93, 255, 255, 93, 93, 255, 255, 93, 93, 255, 255, 93, 93, 255, 255, 93, 93, 255, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 93, 93, 231, 255, 94, 94, 54, 255, 94, 94, 57, 255, 93, 93, 233, 255, 93, 93, 255, 255, 93, 93, 255, 255, 93, 93, 231, 255, 94, 94, 54, 255, 94, 94, 57, 255, 93, 93, 233, 255, 93, 93, 255, 255, 93, 93, 255, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 97, 97, 42, 255, 255, 255, 0, 255, 255, 255, 0, 255, 97, 97, 42, 255, 93, 93, 233, 255, 93, 93, 232, 255, 93, 93, 41, 255, 255, 255, 0, 255, 255, 255, 0, 255, 97, 97, 42, 255, 93, 93, 233, 255, 93, 93, 232, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 96, 96, 45, 255, 93, 93, 44, 255, 255, 255, 0, 255, 97, 97, 42, 255, 97, 97, 42, 255, 255, 255, 0, 255, 96, 96, 45, 255, 93, 93, 44, 255, 255, 255, 0, 255, 97, 97, 42, 255, 97, 97, 42, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 96, 96, 45, 255, 93, 93, 235, 255, 94, 94, 234, 255, 95, 95, 43, 255, 255, 255, 0, 255, 255, 255, 0, 255, 96, 96, 45, 255, 93, 93, 235, 255, 94, 94, 234, 255, 95, 95, 43, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 93, 93, 235, 255, 93, 93, 255, 255, 93, 93, 255, 255, 93, 93, 233, 255, 95, 95, 59, 255, 96, 96, 61, 255, 93, 93, 235, 255, 93, 93, 255, 255, 93, 93, 255, 255, 93, 93, 233, 255, 95, 95, 59, 255, 96, 96, 61, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 93, 93, 255, 255, 93, 93, 255, 255, 93, 93, 255, 255, 93, 93, 255, 255, 93, 93, 255, 255, 93, 93, 255, 255, 93, 93, 255, 255, 93, 93, 255, 255, 93, 93, 255, 255, 93, 93, 255, 255, 93, 93, 255, 255, 93, 93, 255, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 93, 93, 255, 255, 93, 93, 255, 255, 93, 93, 255, 255, 93, 93, 255, 255, 93, 93, 255, 255, 93, 93, 255, 255, 93, 93, 255, 255, 93, 93, 255, 255, 93, 93, 255, 255, 93, 93, 255, 255, 93, 93, 255, 255, 93, 93, 255, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0),
 "format": "RGBA8",
@@ -33,9 +32,9 @@ data = {
 }
 
 [sub_resource type="ImageTexture" id="ImageTexture_57eek"]
-image = SubResource("Image_j5bhl")
+image = SubResource("Image_3kpnu")
 
-[sub_resource type="SyntaxHighlighter" id="SyntaxHighlighter_bxc68"]
+[sub_resource type="SyntaxHighlighter" id="SyntaxHighlighter_kb7f8"]
 script = ExtResource("7_necsa")
 
 [node name="MainView" type="Control"]
@@ -233,6 +232,9 @@ disabled = true
 toggle_mode = true
 flat = true
 
+[node name="Separator2" type="VSeparator" parent="Margin/Content/CodePanel/Toolbar"]
+layout_mode = 2
+
 [node name="TestButton" type="Button" parent="Margin/Content/CodePanel/Toolbar"]
 unique_name_in_owner = true
 layout_mode = 2
@@ -240,13 +242,11 @@ tooltip_text = "Test dialogue"
 disabled = true
 flat = true
 
-[node name="Separator3" type="VSeparator" parent="Margin/Content/CodePanel/Toolbar"]
-layout_mode = 2
-
-[node name="SettingsButton" type="Button" parent="Margin/Content/CodePanel/Toolbar"]
+[node name="TestLineButton" type="Button" parent="Margin/Content/CodePanel/Toolbar"]
 unique_name_in_owner = true
 layout_mode = 2
-tooltip_text = "Settings"
+tooltip_text = "Test dialogue"
+disabled = true
 flat = true
 
 [node name="Spacer2" type="Control" parent="Margin/Content/CodePanel/Toolbar"]
@@ -279,6 +279,7 @@ vertical_alignment = 1
 [node name="UpdateButton" parent="Margin/Content/CodePanel/Toolbar" instance=ExtResource("2_ph3vs")]
 unique_name_in_owner = true
 layout_mode = 2
+text = "v2.44.1 available"
 
 [node name="SearchAndReplace" parent="Margin/Content/CodePanel" instance=ExtResource("6_ylh0t")]
 unique_name_in_owner = true
@@ -311,7 +312,7 @@ Coco: Meow.
 
 => END"
 scroll_smooth = true
-syntax_highlighter = SubResource("SyntaxHighlighter_bxc68")
+syntax_highlighter = SubResource("SyntaxHighlighter_kb7f8")
 
 [node name="ErrorsPanel" parent="Margin/Content/CodePanel" instance=ExtResource("7_5cvl4")]
 unique_name_in_owner = true
@@ -362,20 +363,6 @@ filters = PackedStringArray("*.csv ; Translation CSV")
 title = "Error"
 dialog_text = "You have errors in your script. Fix them and then try again."
 
-[node name="SettingsDialog" type="AcceptDialog" parent="."]
-title = "Settings"
-size = Vector2i(1000, 600)
-unresizable = true
-min_size = Vector2i(1000, 600)
-max_size = Vector2i(1000, 600)
-ok_button_text = "Done"
-
-[node name="SettingsView" parent="SettingsDialog" instance=ExtResource("9_8bf36")]
-offset_left = 8.0
-offset_top = 8.0
-offset_right = -8.0
-offset_bottom = -49.0
-
 [node name="BuildErrorDialog" type="AcceptDialog" parent="."]
 title = "Errors"
 dialog_text = "You need to fix dialogue errors before you can run your game."
@@ -419,7 +406,7 @@ code_edit = NodePath("../../Margin/Content/CodePanel/CodeEdit")
 [connection signal="title_selected" from="Margin/Content/SidePanel/Bookmarks/TitleList" to="." method="_on_title_list_title_selected"]
 [connection signal="toggled" from="Margin/Content/CodePanel/Toolbar/SearchButton" to="." method="_on_search_button_toggled"]
 [connection signal="pressed" from="Margin/Content/CodePanel/Toolbar/TestButton" to="." method="_on_test_button_pressed"]
-[connection signal="pressed" from="Margin/Content/CodePanel/Toolbar/SettingsButton" to="." method="_on_settings_button_pressed"]
+[connection signal="pressed" from="Margin/Content/CodePanel/Toolbar/TestLineButton" to="." method="_on_test_line_button_pressed"]
 [connection signal="pressed" from="Margin/Content/CodePanel/Toolbar/SupportButton" to="." method="_on_support_button_pressed"]
 [connection signal="pressed" from="Margin/Content/CodePanel/Toolbar/DocsButton" to="." method="_on_docs_button_pressed"]
 [connection signal="close_requested" from="Margin/Content/CodePanel/SearchAndReplace" to="." method="_on_search_and_replace_close_requested"]
@@ -438,8 +425,6 @@ code_edit = NodePath("../../Margin/Content/CodePanel/CodeEdit")
 [connection signal="file_double_clicked" from="QuickOpenDialog/QuickOpenFilesList" to="." method="_on_quick_open_files_list_file_double_clicked"]
 [connection signal="file_selected" from="ExportDialog" to="." method="_on_export_dialog_file_selected"]
 [connection signal="file_selected" from="ImportDialog" to="." method="_on_import_dialog_file_selected"]
-[connection signal="confirmed" from="SettingsDialog" to="." method="_on_settings_dialog_confirmed"]
-[connection signal="script_button_pressed" from="SettingsDialog/SettingsView" to="." method="_on_settings_view_script_button_pressed"]
 [connection signal="confirmed" from="CloseConfirmationDialog" to="." method="_on_close_confirmation_dialog_confirmed"]
 [connection signal="custom_action" from="CloseConfirmationDialog" to="." method="_on_close_confirmation_dialog_custom_action"]
 [connection signal="result_selected" from="FindInFilesDialog/FindInFiles" to="." method="_on_find_in_files_result_selected"]
