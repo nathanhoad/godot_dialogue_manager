@@ -88,3 +88,42 @@ Nathan: After
 	assert(line.text == "After", "Should be after responses.")
 	line = await resource.get_next_dialogue_line(line.next_id)
 	assert(line.text == "Responses?", "Should be back at responses.")
+
+
+func test_can_parse_expression_jumps() -> void:
+	var output = compile("
+~ start
+Nathan: Restart?
+=> {{StateForTests.jump_target}}")
+
+	assert(output.errors.is_empty(), "Should have no errors.")
+
+	assert(output.lines["3"].has("next_id_expression"), "Jump should have expression.")
+	assert(output.lines["3"].next_id_expression.size() > 0, "Jump should have expression.")
+
+	output = compile("
+~ start
+Nathan: Restart?
+=> {{error + }}")
+
+	assert(output.errors.size() > 0, "Should have errors.")
+	assert(output.errors[0].error == DMConstants.ERR_UNEXPECTED_END_OF_EXPRESSION, "Error should be bad expression.")
+
+
+func test_can_run_expression_jumps() -> void:
+	var resource = create_resource("
+~ start
+Nathan: Start.
+Nathan: Restart?
+=> {{StateForTests.jump_target}}")
+
+	StateForTests.jump_target = "start"
+
+	var line = await resource.get_next_dialogue_line("start")
+	assert(line.text == "Start.", "Line should be first line.")
+
+	line = await resource.get_next_dialogue_line(line.next_id)
+	assert(line.text == "Restart?", "Line should be second line.")
+
+	line = await resource.get_next_dialogue_line(line.next_id)
+	assert(line.text == "Start.", "Line should be back to first line.")

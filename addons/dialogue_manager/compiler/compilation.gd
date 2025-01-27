@@ -85,6 +85,9 @@ func inject_imported_files(text: String, path: String) -> PackedStringArray:
 		var line = raw_lines[id]
 		if is_import_line(line):
 			var import_data: Dictionary = extract_import_path_and_name(line)
+
+			if not import_data.has("path"): continue
+
 			var import_hash: int = import_data.path.hash()
 			if import_data.size() > 0:
 				# Keep track of titles so we can add imported ones later
