@@ -274,7 +274,7 @@ func update_import_paths(from_path: String, to_path: String) -> void:
 		# Update the live buffer
 		if main_view.current_file_path == dependent.path:
 			main_view.code_edit.text = main_view.code_edit.text.replace(from_path, to_path)
-			main_view.pristine_text = main_view.code_edit.text
+			main_view.open_buffers[main_view.current_file_path].pristine_text = main_view.code_edit.text
 
 		# Open the file and update the path
 		var file: FileAccess = FileAccess.open(dependent.path, FileAccess.READ)

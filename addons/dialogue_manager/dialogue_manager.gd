@@ -133,9 +133,12 @@ func get_line(resource: DialogueResource, key: String, extra_game_states: Array)
 	key = stack.pop_front()
 	var id_trail: String = "" if stack.size() == 0 else "|" + "|".join(stack)
 
-	# Key is blank so just use the first title
+	# Key is blank so just use the first title (or start of file)
 	if key == null or key == "":
-		key = resource.first_title
+		if resource.first_title.is_empty():
+			key = resource.lines.keys()[0]
+		else:
+			key = resource.first_title
 
 	# See if we just ended the conversation
 	if key in [DMConstants.ID_END, DMConstants.ID_NULL, null]:
@@ -428,7 +431,7 @@ func show_dialogue_balloon_scene(balloon_scene, resource: DialogueResource, titl
 		balloon.Start(resource, title, extra_game_states)
 	else:
 		assert(false, DMConstants.translate(&"runtime.dialogue_balloon_missing_start_method"))
-	
+
 	dialogue_started.emit(resource)
 	return balloon
 
