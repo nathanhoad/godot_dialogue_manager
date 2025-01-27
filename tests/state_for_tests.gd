@@ -6,6 +6,8 @@ var character_name: String = "Coco"
 
 var dictionary: Dictionary = {}
 
+var jump_target: String = "start"
+
 func noop() -> void:
 	pass
 
