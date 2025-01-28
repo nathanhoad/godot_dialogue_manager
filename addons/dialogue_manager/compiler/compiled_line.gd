@@ -82,7 +82,8 @@ func to_data() -> Dictionary:
 	match type:
 		DMConstants.TYPE_CONDITION:
 			d.condition = expression
-			d.next_sibling_id = next_sibling_id
+			if not next_sibling_id.is_empty():
+				d.next_sibling_id = next_sibling_id
 			d.next_id_after = next_id_after
 
 		DMConstants.TYPE_WHILE:

@@ -42,8 +42,17 @@ Nathan: After.")
 	condition = output.lines["5"]
 	assert(condition.type == DMConstants.TYPE_CONDITION, "Should be a condition.")
 	assert(condition.next_id == "6", "Should point to next line.")
-	assert(condition.next_sibling_id == "", "Should not reference further conditions.")
+	assert(condition.has("next_sibling_id") == false, "Should not reference further conditions.")
 	assert(condition.next_id_after == "7", "Should reference after conditions.")
+
+	output = compile("
+if StateForTests.some_property == 1
+	Nathan: True
+Nathan: After")
+
+	assert(output.errors.is_empty(), "Should have no errors.")
+	assert(output.lines["1"].type == DMConstants.TYPE_CONDITION, "Condition should be condition.")
+	assert(output.lines["1"].has("next_sibling_id") == false, "Condition should have no sibling.")
 
 
 func test_ignore_escaped_conditions() -> void:
