@@ -219,7 +219,7 @@ func get_line(resource: DialogueResource, key: String, extra_game_states: Array)
 		# "else" will have no actual condition
 		if await _check_condition(data, extra_game_states):
 			return await get_line(resource, data.next_id + id_trail, extra_game_states)
-		elif data.has("next_sibling_id"):
+		elif data.has("next_sibling_id") and not data.next_sibling_id.is_empty():
 			return await get_line(resource, data.next_sibling_id + id_trail, extra_game_states)
 		else:
 			return await get_line(resource, data.next_id_after + id_trail, extra_game_states)
