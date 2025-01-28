@@ -268,7 +268,7 @@ func build_line_tree(raw_lines: PackedStringArray) -> DMTreeLine:
 			parent_chain.resize(tree_line.indent + 1)
 
 		# Add any titles to the list of known titles
-		elif tree_line.type == DMConstants.TYPE_TITLE:
+		if tree_line.type == DMConstants.TYPE_TITLE:
 			var title: String = tree_line.text.substr(2)
 			if title == "":
 				add_error(i, 2, DMConstants.ERR_EMPTY_TITLE)

@@ -9,6 +9,17 @@ func test_can_parse_titles() -> void:
 	assert(output.titles.has("some_title"), "Should have known title.")
 	assert(output.titles["some_title"] == "1", "Should point to the next line.")
 
+	output = compile("
+~ start
+if StateForTests.some_property
+	Nathan: Some unrelated but indented line.
+	=> title_directly_after_dedent
+~ title_directly_after_dedent")
+
+	assert(output.errors.is_empty(), "Should have no errors.")
+	assert(output.titles.size() == 2, "Should have two titles.")
+	assert(output.titles.keys()[1] == "title_directly_after_dedent", "Should have second title.")
+
 
 func test_can_parse_basic_dialogue() -> void:
 	var output = compile("Nathan: This is dialogue with a name.\nThis is dialogue without a name")
