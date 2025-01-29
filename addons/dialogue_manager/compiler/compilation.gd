@@ -764,11 +764,13 @@ func parse_character_and_dialogue(tree_line: DMTreeLine, line: DMCompiledLine, s
 			result = add_error(tree_line.line_number, replacement.index, replacement.error)
 
 	# Replace any newlines.
-	line.text = text.replace("\\n", "\n").strip_edges()
+	text = text.replace("\\n", "\n").strip_edges()
 
 	# If there was no manual translation key then just use the text itself
 	if line.translation_key == "":
 		line.translation_key = text
+
+	line.text = text
 
 	# IDs can't be duplicated for text that doesn't match.
 	if static_line_id != "":
