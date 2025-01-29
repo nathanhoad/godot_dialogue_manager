@@ -24,6 +24,7 @@ You can add some spice to your dialogue with [BBCode](https://docs.godotengine.o
 
 - `[wait=N]` where N is the number of seconds to pause typing of dialogue.
 - `[speed=N]` where N is a number to multiply the default typing speed by.
+- `[next=N]` where N is a number of seconds to wait before automatically continuing to the next line of dialogue. You can also use `[next=auto]` to have the label determine a length of time to wait based on the length of the text.
 
 Lines of dialogue are written one after another:
 
@@ -57,6 +58,13 @@ Nathan: How many projects have you started and not finished?
 		Nathan: That's great!
 	- I haven't actually started any
 		Nathan: That's what I thought.
+```
+
+Responses can include conditions that determine if they are selectable. To include a condition in a response, add a condition expression wrapped in square brackets, like this:
+
+```
+- This is a normal response
+- This is a conditional response [if SomeGlobal.some_property == true]
 ```
 
 ## Randomising lines of dialogue
@@ -95,8 +103,7 @@ You can also have whole blocks be random:
 %
 	Nathan: This is the first block.
 	Nathan: Still the first block.
-%
-	Nathan: This is the second block.
+% Nathan: This is the possible outcome.
 ```
 
 If the first random item is chosen it will play through both nested lines.
