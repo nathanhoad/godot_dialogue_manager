@@ -24,6 +24,23 @@ Nathan: Line after.")
 	assert(responses[3].text == "Condition", "Should match text")
 	assert("expression" in responses[3].condition, "Should match text")
 
+	output = compile("
+~ start
+Nathan: All of these responses should count.
+- First
+- Second
+
+- Third
+	Nathan: Nested
+
+- Fourth
+
+=> END")
+
+	assert(output.errors.is_empty(), "Should be no errors.")
+	assert(output.lines["3"].responses.size() == 4, "Should have four responses in group.")
+	assert(output.lines["3"].next_id == "11", "Should point to END after.")
+
 
 func test_can_have_responses_without_dialogue() -> void:
 	var output = compile("

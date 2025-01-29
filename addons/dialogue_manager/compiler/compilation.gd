@@ -562,14 +562,14 @@ func parse_response_line(tree_line: DMTreeLine, line: DMCompiledLine, siblings: 
 	for i in range(sibling_index - 1, 0, -1):
 		if siblings[i].type == DMConstants.TYPE_RESPONSE:
 			original_response = siblings[i]
-		else:
+		elif siblings[i].type != DMConstants.TYPE_UNKNOWN:
 			break
 
 	# If it's the original response then set up an original line.
 	if original_response == tree_line:
 		line.next_id_after = get_next_matching_sibling_id(siblings, sibling_index, parent, (func(s: DMTreeLine):
 			# The next line that isn't a response.
-			return s.type != DMConstants.TYPE_RESPONSE
+			return not s.type in [DMConstants.TYPE_RESPONSE, DMConstants.TYPE_UNKNOWN]
 		), true)
 		line.responses = [line.id]
 		# If this line has children then the next ID is the first child.
