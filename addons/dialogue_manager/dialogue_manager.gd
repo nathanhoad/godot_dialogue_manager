@@ -453,7 +453,9 @@ func _get_dotnet_dialogue_manager() -> Node:
 
 
 func _bridge_get_new_instance() -> Node:
-	return new()
+	var instance = new()
+	instance.get_current_scene = get_current_scene
+	return instance
 
 
 func _bridge_get_next_dialogue_line(resource: DialogueResource, key: String, extra_game_states: Array = []) -> void:
