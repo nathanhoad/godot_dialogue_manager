@@ -29,6 +29,18 @@ func test_can_parse_basic_dialogue() -> void:
 	assert(not output.lines.values()[1].has("character"), "Second line should not have a character.")
 
 
+func test_can_parse_dialogue_with_static_ids() -> void:
+	var output = compile("
+~ start
+Nathan: Hello [ID:HELLO]
+Nathan: Something[if true] conditional[/if] [ID:SOMETHING]
+=> END")
+
+	assert(output.errors.is_empty(), "Should have no errors.")
+	assert(output.lines["2"].translation_key == "HELLO", "Should have correct translation key.")
+	assert(output.lines["3"].translation_key == "SOMETHING", "Should have correct translation key.")
+
+
 func test_can_run_basic_dialogue() -> void:
 	var resource = create_resource("
 ~ start

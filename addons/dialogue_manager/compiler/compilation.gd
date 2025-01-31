@@ -556,6 +556,12 @@ func parse_response_line(tree_line: DMTreeLine, line: DMCompiledLine, siblings: 
 	# Remove the "- "
 	tree_line.text = tree_line.text.substr(2)
 
+	# Extract the static line ID
+	var static_line_id: String = extract_static_line_id(tree_line.text)
+	if static_line_id:
+		tree_line.text = tree_line.text.replace("[ID:%s]" % [static_line_id], "")
+		line.translation_key = static_line_id
+
 	# Handle conditional responses and remove them from the prompt text.
 	if " [if " in tree_line.text:
 		var condition = extract_condition(tree_line.text, true, tree_line.indent)
@@ -684,6 +690,12 @@ func parse_dialogue_line(tree_line: DMTreeLine, line: DMCompiledLine, siblings: 
 		else:
 			result = add_error(child.line_number, child.indent, DMConstants.ERR_INVALID_INDENTATION)
 
+	# Extract the static line ID
+	var static_line_id: String = extract_static_line_id(tree_line.text)
+	if static_line_id:
+		tree_line.text = tree_line.text.replace("[ID:%s]" % [static_line_id], "")
+		line.translation_key = static_line_id
+
 	parse_character_and_dialogue(tree_line, line, siblings, sibling_index, parent)
 
 	# If the line isn't part of a weighted random group then make it point to the next
@@ -702,12 +714,6 @@ func parse_character_and_dialogue(tree_line: DMTreeLine, line: DMCompiledLine, s
 
 	# Attach any doc comments.
 	line.notes = tree_line.notes
-
-	# Extract the static line ID
-	var static_line_id: String = extract_static_line_id(text)
-	if static_line_id:
-		text = text.replace("[ID:%s]" % [static_line_id], "")
-		line.translation_key = static_line_id
 
 	# Extract tags.
 	var tag_data: DMResolvedTagData = DMResolvedTagData.new(text)
@@ -781,11 +787,11 @@ func parse_character_and_dialogue(tree_line: DMTreeLine, line: DMCompiledLine, s
 	line.text = text
 
 	# IDs can't be duplicated for text that doesn't match.
-	if static_line_id != "":
-		if _known_translation_keys.has(static_line_id) and _known_translation_keys.get(static_line_id) != line.text:
+	if line.translation_key != "":
+		if _known_translation_keys.has(line.translation_key) and _known_translation_keys.get(line.translation_key) != line.text:
 			result = add_error(tree_line.line_number, tree_line.indent, DMConstants.ERR_DUPLICATE_ID)
 		else:
-			_known_translation_keys[static_line_id] = line.text
+			_known_translation_keys[line.translation_key] = line.text
 	# Show an error if missing translations is enabled
 	elif DMSettings.get_setting(DMSettings.MISSING_TRANSLATIONS_ARE_ERRORS, false):
 		result = add_error(tree_line.line_number, tree_line.indent, DMConstants.ERR_MISSING_ID)

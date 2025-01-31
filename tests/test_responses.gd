@@ -42,6 +42,18 @@ Nathan: All of these responses should count.
 	assert(output.lines["3"].next_id == "11", "Should point to END after.")
 
 
+func test_can_parse_responses_with_static_ids() -> void:
+	var output = compile("
+~ start
+Nathan: Here are some responses. [ID:HERE]
+- First [ID:FIRST]
+- Second [if true] [ID:SECOND]
+- Third [if false] [ID:THIRD] => start
+=> END")
+
+	assert(output.errors.is_empty(), "Should have no errors.")
+
+
 func test_can_have_responses_without_dialogue() -> void:
 	var output = compile("
 Nathan: Hello.
