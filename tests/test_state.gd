@@ -55,6 +55,23 @@ Nathan: After")
 	assert(output.lines["1"].has("next_sibling_id") == false, "Condition should have no sibling.")
 
 
+func test_can_group_conditions() -> void:
+	var output = compile("
+~ start
+if false
+	Nathan: False
+if true
+	Nathan: True
+else
+	Nathan: Else
+=> END")
+
+	assert(output.errors.is_empty(), "Should have no errors.")
+	assert(not output.lines["2"].has("next_sibling_id"), "Should not have a sibling.")
+	assert(output.lines["4"].has("next_sibling_id"), "Should have no sibling.")
+	assert(output.lines["4"].next_sibling_id == "6", "Should have else as sibling.")
+
+
 func test_ignore_escaped_conditions() -> void:
 	var output = compile("
 \\if this is dialogue.
