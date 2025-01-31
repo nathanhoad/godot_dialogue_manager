@@ -406,10 +406,18 @@ func parse_goto_line(tree_line: DMTreeLine, line: DMCompiledLine, siblings: Arra
 func parse_condition_line(tree_line: DMTreeLine, line: DMCompiledLine, siblings: Array[DMTreeLine], sibling_index: int, parent: DMCompiledLine) -> Error:
 	# Work out the next IDs before parsing the condition line itself so that the last
 	# child can inherit from the chain.
-	line.next_sibling_id = get_next_matching_sibling_id(siblings, sibling_index, parent, func(s: DMTreeLine):
-		# The next conditional that isn't starting a new conditional group
-		return s.type == DMConstants.TYPE_CONDITION and not s.text.begins_with("if ")
-	)
+
+	# Find the next conditional sibling that is part of this grouping (if there is one).
+	for next_sibling: DMTreeLine in siblings.slice(sibling_index + 1):
+		if not next_sibling.type in [DMConstants.TYPE_UNKNOWN, DMConstants.TYPE_CONDITION]:
+			break
+		elif next_sibling.type == DMConstants.TYPE_CONDITION:
+			if next_sibling.text.begins_with("el"):
+				line.next_sibling_id = next_sibling.id
+				break
+			else:
+				break
+
 	line.next_id_after = get_next_matching_sibling_id(siblings, sibling_index, parent, func(s: DMTreeLine):
 		# The next line that isn't a conditional or is a new "if"
 		return s.type != DMConstants.TYPE_CONDITION or s.text.begins_with("if ")
