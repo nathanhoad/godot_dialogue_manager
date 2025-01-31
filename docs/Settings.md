@@ -20,7 +20,7 @@ Dialogue Manager settings are found in Project Settings at the bottom of the Gen
     Nathan: There are {{some_property}} of them!
   ```
 
-- **Warn about method property or signal name conflicts**
+- **Warn about method property or signal name conflicts** (Advanced)
 
   If enabled, when there is more than one property, method, or signal sharing the same name at the top-level (ie. extra game states, current scene, or autoload shortcut) a warning will be shown in the Debugger panel.
 
