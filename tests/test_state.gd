@@ -419,3 +419,16 @@ Nathan: The number is {{Callable(StateForTests, \"some_method\").bind(\"blah\").
 
 	var line = await resource.get_next_dialogue_line("start")
 	assert(line.text == "The number is 40.", "Should resolve callable.")
+
+
+func test_can_warn_about_conflicts() -> void:
+	var resource = create_resource("
+using StateForTests
+~ start
+set some_property = 1
+Value is {{some_property}}")
+
+	ProjectSettings.set_setting("dialogue_manager/runtime/warn_about_method_property_or_signal_name_conflicts", true)
+
+	var line = await resource.get_next_dialogue_line("start", [{ some_property = 1000 }])
+	assert(line.text == "Value is 1", "Should process first occurance of property.")

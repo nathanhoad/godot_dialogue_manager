@@ -400,3 +400,6 @@ msgstr ""
 
 msgid "runtime.dialogue_balloon_missing_start_method"
 msgstr ""
+
+msgid "runtime.top_level_states_share_name"
+msgstr ""

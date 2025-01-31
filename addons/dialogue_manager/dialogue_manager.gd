@@ -723,6 +723,9 @@ func _get_state_value(property: String, extra_game_states: Array):
 	if expression.parse(property) != OK:
 		assert(false, DMConstants.translate(&"runtime.invalid_expression").format({ expression = property, error = expression.get_error_text() }))
 
+	# Warn about possible name collisions
+	_warn_about_state_name_collisions(property, extra_game_states)
+
 	for state in _get_game_states(extra_game_states):
 		if typeof(state) == TYPE_DICTIONARY:
 			if state.has(property):
@@ -741,6 +744,50 @@ func _get_state_value(property: String, extra_game_states: Array):
 				return load(class_data.path).new()
 
 	show_error_for_missing_state_value(DMConstants.translate(&"runtime.property_not_found").format({ property = property, states = _get_state_shortcut_names(extra_game_states) }))
+
+
+# Print warnings for top-level state name collisions.
+func _warn_about_state_name_collisions(target_key: String, extra_game_states: Array) -> void:
+	# Don't run the check if this is a release build
+	if not OS.is_debug_build(): return
+	# Also don't run if the setting is off
+	if not DMSettings.get_setting(DMSettings.WARN_ABOUT_METHOD_PROPERTY_OR_SIGNAL_NAME_CONFLICTS, false): return
+
+	# Get the list of state shortcuts.
+	var state_shortcuts: Array = []
+	for node_name in DMSettings.get_setting(DMSettings.STATE_AUTOLOAD_SHORTCUTS, ""):
+		var state: Node = Engine.get_main_loop().root.get_node_or_null(node_name)
+		if state:
+			state_shortcuts.append(state)
+
+	# Check any top level names for a collision
+	var states_with_key: Array = []
+	for state in extra_game_states + [get_current_scene.call()] + state_shortcuts:
+		if state is Dictionary:
+			if state.keys().has(target_key):
+				states_with_key.append("Dictionary")
+		else:
+			var script: Script = (state as Object).get_script()
+			if script == null:
+				continue
+
+			for method in script.get_script_method_list():
+				if method.name == target_key and not states_with_key.has(state.name):
+					states_with_key.append(state.name)
+					break
+
+			for property in script.get_script_property_list():
+				if property.name == target_key and not states_with_key.has(state.name):
+					states_with_key.append(state.name)
+					break
+
+			for signal_info in script.get_script_signal_list():
+				if signal_info.name == target_key and not states_with_key.has(state.name):
+					states_with_key.append(state.name)
+					break
+
+	if states_with_key.size() > 1:
+		push_warning(DMConstants.translate(&"runtime.top_level_states_share_name").format({ states = ", ".join(states_with_key), key = target_key }))
 
 
 # Set a value on the current scene or game state
@@ -871,6 +918,9 @@ func _resolve(tokens: Array, extra_game_states: Array):
 						token.value = randi_range(1, args[0])
 						found = true
 					_:
+						# Check for top level name conflicts
+						_warn_about_state_name_collisions(function_name, extra_game_states)
+
 						for state in _get_game_states(extra_game_states):
 							if _thing_has_method(state, function_name, args):
 								token.type = DMConstants.TOKEN_VALUE
