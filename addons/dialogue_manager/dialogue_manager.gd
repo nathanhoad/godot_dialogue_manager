@@ -95,6 +95,9 @@ func get_next_dialogue_line(resource: DialogueResource, key: String = "", extra_
 		else:
 			extra_game_states = [autoload] + extra_game_states
 
+	# Inject "self" into the extra game states.
+	extra_game_states = [{ "self": resource }] + extra_game_states
+
 	# Get the line data
 	var dialogue: DialogueLine = await get_line(resource, key, extra_game_states)
 
@@ -1034,6 +1037,9 @@ func _resolve(tokens: Array, extra_game_states: Array):
 			if str(token.value) == "null":
 				token.type = DMConstants.TOKEN_VALUE
 				token.value = null
+			elif str(token.value) == "self":
+				token.type = DMConstants.TOKEN_VALUE
+				token.value = extra_game_states[0].self
 			elif tokens[i - 1].type == DMConstants.TOKEN_DOT:
 				var caller: Dictionary = tokens[i - 2]
 				var property = token.value
@@ -1289,8 +1295,10 @@ func _is_valid(line: DialogueLine) -> bool:
 
 # Check that a thing has a given method.
 func _thing_has_method(thing, method: String, args: Array) -> bool:
-	if Builtins.is_supported(thing):
+	if Builtins.is_supported(thing, method):
 		return thing != _autoloads
+	elif thing is Dictionary:
+		return false
 
 	if method in [&"call", &"call_deferred"]:
 		return thing.has_method(args[0])
