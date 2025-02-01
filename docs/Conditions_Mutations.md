@@ -93,11 +93,6 @@ In the example above, the dialogue manager would expect a global called `SomeGlo
 
 You can pass an array of nodes/objects as the `extra_game_states` parameter when [requesting a line of dialogue](API.md#func-get_next_dialogue_lineresource-resource-key-string--0-extra_game_states-array-----dictionary) which will also be checked for possible mutation methods.
 
-There are also a couple of special built-in mutations you can use:
-
-- `wait(float)` - wait for `float` seconds (this has no effect when used inline).
-- `debug(...)` - print something to the Output window.
-
 Mutations can also be used inline. Inline mutations will be called as the typed out dialogue reaches that point in the text.
 
 ```
@@ -123,3 +118,12 @@ If you want to shorten your references to state from something like `SomeGlobal.
 
 1. If you use the same state in all of your dialogue, you can set up global state shortcuts in [Settings](./Settings.md).
 2. Or, if you want different shortcuts per dialogue file, you can add a `using SomeGlobal` clause (for whatever autoload you're using) at the top of your dialogue file.
+
+## Special variables/mutations
+
+There are a couple of special built-in mutations you can use:
+
+- `do wait(float)` - wait for `float` seconds (this has no effect when used inline).
+- `do debug(...)` - print something to the Output window.
+
+There is also a special property `self` that you can use in dialogue to refer to the `DialogueResource` that is currently being run.

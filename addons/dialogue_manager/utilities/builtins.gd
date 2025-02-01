@@ -22,8 +22,32 @@ const SUPPORTED_BUILTIN_TYPES = [
 static var resolve_method_error: Error = OK
 
 
-static func is_supported(thing) -> bool:
-	return typeof(thing) in SUPPORTED_BUILTIN_TYPES
+static func is_supported(thing, with_method: String = "") -> bool:
+	if not typeof(thing) in SUPPORTED_BUILTIN_TYPES: return false
+
+	# If given a Dictionary and a method then make sure it's a known Dictionary method.
+	if typeof(thing) == TYPE_DICTIONARY and with_method != "":
+		return with_method in [
+			&"clear",
+			&"duplicate",
+			&"erase",
+			&"find_key",
+			&"get",
+			&"get_or_add",
+			&"has",
+			&"has_all",
+			&"hash",
+			&"is_empty",
+			&"is_read_only",
+			&"keys",
+			&"make_read_only",
+			&"merge",
+			&"merged",
+			&"recursive_equal",
+			&"size",
+			&"values"]
+
+	return true
 
 
 static func resolve_property(builtin, property: String):

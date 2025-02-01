@@ -432,3 +432,18 @@ Value is {{some_property}}")
 
 	var line = await resource.get_next_dialogue_line("start", [{ some_property = 1000 }])
 	assert(line.text == "Value is 1", "Should process first occurance of property.")
+
+
+func test_can_use_self() -> void:
+	var resource = create_resource("
+~ start
+set what_is_self = self
+Nathan: That should not be null.
+=> END")
+
+	var extra_state = {
+		what_is_self = null
+	}
+
+	await resource.get_next_dialogue_line("start", [extra_state])
+	assert(extra_state.what_is_self == resource, "Self should be the given DialogueResource.")
