@@ -137,7 +137,7 @@ namespace DialogueManagerRuntime
         await ToSignal(this, SignalName.Ready);
       }
 
-      temporaryGameStates = extraGameStates ?? new Array<Variant>();
+      temporaryGameStates = new Array<Variant> { this } + (extraGameStates ?? new Array<Variant>());
       isWaitingForInput = false;
       resource = dialogueResource;
 
