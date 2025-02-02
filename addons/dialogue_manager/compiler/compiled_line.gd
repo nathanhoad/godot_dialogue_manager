@@ -20,6 +20,8 @@ var text_replacements: Array[Dictionary] = []
 var responses: PackedStringArray = []
 ## Any randomise or case siblings for this line.
 var siblings: Array[Dictionary] = []
+## Any lines said simultaneously.
+var concurrent_lines: PackedStringArray = []
 ## Any tags on this line.
 var tags: PackedStringArray = []
 ## The condition or mutation expression for this line.
@@ -146,6 +148,8 @@ func to_data() -> Dictionary:
 				d.notes = notes
 			if not siblings.is_empty():
 				d.siblings = siblings
+			if not concurrent_lines.is_empty():
+				d.concurrent_lines = concurrent_lines
 
 	return d
 

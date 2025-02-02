@@ -193,9 +193,9 @@ func get_line(resource: DialogueResource, key: String, extra_game_states: Array)
 				next_id = data.next_id_after
 		return await get_line(resource, next_id + id_trail, extra_game_states)
 
-	# Check for weighted random lines
+	# Check for weighted random lines.
 	if data.has(&"siblings"):
-		# Only count siblings that pass their condition (if they have one)
+		# Only count siblings that pass their condition (if they have one).
 		var successful_siblings: Array = data.siblings.filter(func(sibling): return not sibling.has("condition") or await _check_condition(sibling, extra_game_states))
 		var target_weight: float = randf_range(0, successful_siblings.reduce(func(total, sibling): return total + sibling.weight, 0))
 		var cummulative_weight: float = 0
@@ -205,6 +205,19 @@ func get_line(resource: DialogueResource, key: String, extra_game_states: Array)
 				break
 			else:
 				cummulative_weight += sibling.weight
+
+	# Find any simultaneously said lines.
+	if data.has(&"concurrent_lines"):
+		# If the list includes this line then it isn't the origin line so ignore it.
+		if data.concurrent_lines.has(data.id):
+			data.concurrent_lines = [] as Array[DialogueLine]
+		else:
+			var concurrent_lines: Array[DialogueLine] = []
+			for concurrent_id: String in data.concurrent_lines:
+				var concurrent_line: DialogueLine = await get_line(resource, concurrent_id, extra_game_states)
+				if concurrent_line:
+					concurrent_lines.append(concurrent_line)
+			data.concurrent_lines = concurrent_lines
 
 	# If this line is blank and it's the last line then check for returning snippets.
 	if data.type in [DMConstants.TYPE_COMMENT, DMConstants.TYPE_UNKNOWN] and data.next_id in [DMConstants.ID_END, DMConstants.ID_NULL, null]:
@@ -217,9 +230,9 @@ func get_line(resource: DialogueResource, key: String, extra_game_states: Array)
 	elif data.type == DMConstants.TYPE_RANDOM:
 		data = resource.lines.get(data.next_id)
 
-	# Check condtiions
+	# Check conditions.
 	elif data.type in [DMConstants.TYPE_CONDITION, DMConstants.TYPE_WHILE]:
-		# "else" will have no actual condition
+		# "else" will have no actual condition.
 		if await _check_condition(data, extra_game_states):
 			return await get_line(resource, data.next_id + id_trail, extra_game_states)
 		elif data.has("next_sibling_id") and not data.next_sibling_id.is_empty():
@@ -227,7 +240,7 @@ func get_line(resource: DialogueResource, key: String, extra_game_states: Array)
 		else:
 			return await get_line(resource, data.next_id_after + id_trail, extra_game_states)
 
-	# Evaluate jumps
+	# Evaluate jumps.
 	elif data.type == DMConstants.TYPE_GOTO:
 		if data.is_snippet and not id_trail.begins_with("|" + data.next_id_after):
 			id_trail = "|" + data.next_id_after + id_trail
@@ -237,20 +250,20 @@ func get_line(resource: DialogueResource, key: String, extra_game_states: Array)
 		if not data.has(&"id"):
 			data.id = key
 
-	# Set up a line object
+	# Set up a line object.
 	var line: DialogueLine = await create_dialogue_line(data, extra_game_states)
 
-	# If the jump point somehow has no content then just end
+	# If the jump point somehow has no content then just end.
 	if not line: return null
 
-	# If we are the first of a list of responses then get the other ones
+	# If we are the first of a list of responses then get the other ones.
 	if data.type == DMConstants.TYPE_RESPONSE:
 		# Note: For some reason C# has occasional issues with using the responses property directly
 		# so instead we use set and get here.
 		line.set(&"responses", await _get_responses(data.get(&"responses", []), resource, id_trail, extra_game_states))
 		return line
 
-	# Inject the next node's responses if they have any
+	# Inject the next node's responses if they have any.
 	if resource.lines.has(line.next_id):
 		var next_line: Dictionary = resource.lines.get(line.next_id)
 
@@ -258,7 +271,7 @@ func get_line(resource: DialogueResource, key: String, extra_game_states: Array)
 		if line.next_id in resource.titles.values():
 			passed_title.emit(resource.titles.find_key(line.next_id))
 
-		# If the responses come from a snippet then we need to come back here afterwards
+		# If the responses come from a snippet then we need to come back here afterwards.
 		if next_line.type == DMConstants.TYPE_GOTO and next_line.is_snippet and not id_trail.begins_with("|" + next_line.next_id_after):
 			id_trail = "|" + next_line.next_id_after + id_trail
 
@@ -542,6 +555,7 @@ func create_dialogue_line(data: Dictionary, extra_game_states: Array) -> Dialogu
 				inline_mutations = resolved_data.mutations,
 				time = resolved_data.time,
 				tags = data.get(&"tags", []),
+				concurrent_lines = data.get(&"concurrent_lines", [] as Array[DialogueLine]),
 				extra_game_states = extra_game_states
 			})
 

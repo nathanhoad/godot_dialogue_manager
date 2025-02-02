@@ -315,6 +315,12 @@ msgstr "Only one else case is allowed per match."
 msgid "errors.when_must_belong_to_match"
 msgstr "When statements can only appear as children of match statements."
 
+msgid "errors.concurrent_line_without_origin"
+msgstr "Concurrent lines need an origin line that doesn't start with \"| \"."
+
+msgid "errors.goto_not_allowed_on_concurrect_lines"
+msgstr "Goto references are not allowed on concurrent dialogue lines."
+
 msgid "errors.unknown"
 msgstr "Unknown syntax."
 

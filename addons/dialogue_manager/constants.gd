@@ -116,6 +116,8 @@ const ERR_UNKNOWN_USING = 135
 const ERR_EXPECTED_WHEN_OR_ELSE = 136
 const ERR_ONLY_ONE_ELSE_ALLOWED = 137
 const ERR_WHEN_MUST_BELONG_TO_MATCH = 138
+const ERR_CONCURRENT_LINE_WITHOUT_ORIGIN = 139
+const ERR_GOTO_NOT_ALLOWED_ON_CONCURRECT_LINES = 140
 
 
 ## Get the error message
@@ -197,6 +199,10 @@ static func get_error_message(error: int) -> String:
 			return translate(&"errors.only_one_else_allowed")
 		ERR_WHEN_MUST_BELONG_TO_MATCH:
 			return translate(&"errors.when_must_belong_to_match")
+		ERR_CONCURRENT_LINE_WITHOUT_ORIGIN:
+			return translate(&"errors.concurrent_line_without_origin")
+		ERR_GOTO_NOT_ALLOWED_ON_CONCURRECT_LINES:
+			return translate(&"errors.goto_not_allowed_on_concurrect_lines")
 
 	return translate(&"errors.unknown")
 
