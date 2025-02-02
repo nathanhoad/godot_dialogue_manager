@@ -107,3 +107,18 @@ You can also have whole blocks be random:
 ```
 
 If the first random item is chosen it will play through both nested lines.
+
+
+## Simultaneous dialogue
+
+If you would like multiple characters to speak at once the you can use the concurrent lines syntax. After a regular line of dialogue any lines that are to be spoken at the same time as it can be prefixed with "| ".
+
+```
+Nathan: This is a regular line of dialogue.
+| Coco: And I'll say this line at the same time!
+| Lilly: And I'll say this too!
+```
+
+To use concurrent line, access the `concurrent_lines` property on a `DialogueLine`.
+
+_NOTE: In an effort to keeps things simple, the built-in example balloon does not contain an implementation for concurrent lines._

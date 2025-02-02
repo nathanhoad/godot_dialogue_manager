@@ -696,12 +696,32 @@ func parse_dialogue_line(tree_line: DMTreeLine, line: DMCompiledLine, siblings: 
 		tree_line.text = tree_line.text.replace("[ID:%s]" % [static_line_id], "")
 		line.translation_key = static_line_id
 
+	# Check for simultaneous lines
+	if tree_line.text.begins_with("| "):
+		# Jumps are only allowed on the origin line.
+		if " =>" in tree_line.text:
+			result = add_error(tree_line.line_number, tree_line.indent, DMConstants.ERR_GOTO_NOT_ALLOWED_ON_CONCURRECT_LINES)
+		# Check for a valid previous line.
+		tree_line.text = tree_line.text.substr(2)
+		var previous_sibling: DMTreeLine = siblings[sibling_index - 1]
+		if previous_sibling.type != DMConstants.TYPE_DIALOGUE:
+			result = add_error(tree_line.line_number, tree_line.indent, DMConstants.ERR_CONCURRENT_LINE_WITHOUT_ORIGIN)
+		else:
+			# Because the previous line's concurrent_lines array is the same as
+			# any line before that this doesn't need to check any higher up.
+			var previous_line: DMCompiledLine = lines[previous_sibling.id]
+			previous_line.concurrent_lines.append(line.id)
+			line.concurrent_lines = previous_line.concurrent_lines
+
 	parse_character_and_dialogue(tree_line, line, siblings, sibling_index, parent)
 
 	# If the line isn't part of a weighted random group then make it point to the next
 	# available sibling.
 	if line.next_id == DMConstants.ID_NULL and line.siblings.size() == 0:
-		line.next_id = get_next_matching_sibling_id(siblings, sibling_index, parent, _first)
+		line.next_id = get_next_matching_sibling_id(siblings, sibling_index, parent, func(s: DMTreeLine):
+			# Ignore concurrent lines.
+			return not s.text.begins_with("| ")
+		)
 
 	return result
 

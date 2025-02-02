@@ -46,6 +46,7 @@ Returns a `DialogueLine` that looks something like this:
   - `text: String` - the text for this response.
   - `tags: PackedStringArray` - a list of tags.
   - `translation_key: String` - the key used to translate the text (or the whole text again if no ID was specified on the response).
+- `concurrent_lines: Array[DialogueLine]` - A list of lines that are to be spoken at the same time as this one.
 
 If there is no next line of dialogue found, it will return an empty dictionary (`{}`).
 

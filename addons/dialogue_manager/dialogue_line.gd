@@ -38,6 +38,9 @@ var inline_mutations: Array[Array] = []
 ## A list of responses attached to this line of dialogue.
 var responses: Array = []
 
+## A list of lines that are spoken simultaneously with this one.
+var concurrent_lines: Array[DialogueLine] = []
+
 ## A list of any extra game states to check when resolving variables and mutations.
 var extra_game_states: Array = []
 
@@ -73,6 +76,7 @@ func _init(data: Dictionary = {}) -> void:
 				inline_mutations = data.get("inline_mutations", [] as Array[Array])
 				time = data.get("time", "")
 				tags = data.get("tags", [])
+				concurrent_lines = data.get("concurrent_lines", [] as Array[DialogueLine])
 
 			DMConstants.TYPE_MUTATION:
 				mutation = data.mutation
