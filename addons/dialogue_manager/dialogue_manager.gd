@@ -220,11 +220,14 @@ func get_line(resource: DialogueResource, key: String, extra_game_states: Array)
 			data.concurrent_lines = concurrent_lines
 
 	# If this line is blank and it's the last line then check for returning snippets.
-	if data.type in [DMConstants.TYPE_COMMENT, DMConstants.TYPE_UNKNOWN] and data.next_id in [DMConstants.ID_END, DMConstants.ID_NULL, null]:
-		if stack.size() > 0:
-			return await get_line(resource, "|".join(stack), extra_game_states)
+	if data.type in [DMConstants.TYPE_COMMENT, DMConstants.TYPE_UNKNOWN]:
+		if data.next_id in [DMConstants.ID_END, DMConstants.ID_NULL, null]:
+			if stack.size() > 0:
+				return await get_line(resource, "|".join(stack), extra_game_states)
+			else:
+				return null
 		else:
-			return null
+			return await get_line(resource, data.next_id + id_trail, extra_game_states)
 
 	# If the line is a random block then go to the start of the block.
 	elif data.type == DMConstants.TYPE_RANDOM:

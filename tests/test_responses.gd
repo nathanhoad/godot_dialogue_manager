@@ -41,6 +41,20 @@ Nathan: All of these responses should count.
 	assert(output.lines["3"].responses.size() == 4, "Should have four responses in group.")
 	assert(output.lines["3"].next_id == "11", "Should point to END after.")
 
+	output = compile("
+~ start
+Nathan: Responses.
+- First
+	# Comment on first line
+	Nathan: You picked the first one.
+- Second
+=> END")
+
+	assert(output.errors.is_empty(), "Should be no errors.")
+	assert(output.lines["3"].next_id == "4", "Should point to next line.")
+	assert(output.lines["4"].next_id == "5", "Should point to next line.")
+	assert(output.lines["5"].next_id == "7", "Should point to next line.")
+
 
 func test_can_parse_responses_with_static_ids() -> void:
 	var output = compile("
@@ -108,3 +122,16 @@ Nathan: Line after.")
 
 	line = await resource.get_next_dialogue_line(responses[2].next_id)
 	assert(line.text == "Here are some options.", "Third response starts again.")
+
+	resource = create_resource("
+~ start
+Nathan: Responses.
+- First
+	# Comment on first line
+	Nathan: You picked the first one.
+- Second
+=> END")
+
+	line = await resource.get_next_dialogue_line("start")
+	line = await resource.get_next_dialogue_line(line.responses[0].next_id)
+	assert(line.text == "You picked the first one.", "Should go to the first nested line.")
