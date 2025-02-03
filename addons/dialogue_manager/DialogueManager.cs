@@ -16,13 +16,15 @@ namespace DialogueManagerRuntime
         PO
     }
 
-    public partial class DialogueManager : Node
+    public partial class DialogueManager : RefCounted
     {
+        public delegate void DialogueStartedEventHandler(Resource dialogueResource);
         public delegate void PassedTitleEventHandler(string title);
         public delegate void GotDialogueEventHandler(DialogueLine dialogueLine);
         public delegate void MutatedEventHandler(Dictionary mutation);
         public delegate void DialogueEndedEventHandler(Resource dialogueResource);
 
+        public static DialogueStartedEventHandler? DialogueStarted;
         public static PassedTitleEventHandler? PassedTitle;
         public static GotDialogueEventHandler? GotDialogue;
         public static MutatedEventHandler? Mutated;
@@ -80,6 +82,7 @@ namespace DialogueManagerRuntime
 
         public static void Prepare(GodotObject instance)
         {
+            instance.Connect("dialogue_started", Callable.From((Resource dialogueResource) => DialogueStarted?.Invoke(dialogueResource)));
             instance.Connect("passed_title", Callable.From((string title) => PassedTitle?.Invoke(title)));
             instance.Connect("got_dialogue", Callable.From((RefCounted line) => GotDialogue?.Invoke(new DialogueLine(line))));
             instance.Connect("mutated", Callable.From((Dictionary mutation) => Mutated?.Invoke(mutation)));
