@@ -811,11 +811,11 @@ func _on_files_moved(old_file: String, new_file: String) -> void:
 func _on_cache_file_content_changed(path: String, new_content: String) -> void:
 	if open_buffers.has(path):
 		var buffer = open_buffers[path]
-		if buffer.text != new_content:
+		if buffer.text == buffer.pristine_text and buffer.text != new_content:
 			buffer.text = new_content
-			buffer.pristine_text = new_content
 			code_edit.text = new_content
 			title_list.titles = code_edit.get_titles()
+		buffer.pristine_text = new_content
 
 
 func _on_editor_settings_changed() -> void:
