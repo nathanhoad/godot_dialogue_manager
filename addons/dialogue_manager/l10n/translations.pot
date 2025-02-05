@@ -409,3 +409,6 @@ msgstr ""
 
 msgid "runtime.top_level_states_share_name"
 msgstr ""
+
+msgid "translation_plugin.character_name"
+msgstr ""

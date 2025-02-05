@@ -419,3 +419,6 @@ msgstr "Your dialogue balloon is missing a \"start\" or \"Start\" method."
 
 msgid "runtime.top_level_states_share_name"
 msgstr "Multiple top-level states ({states}) share method/property/signal name \"{key}\". Only the first occurance is accessible to dialogue."
+
+msgid "translation_plugin.character_name"
+msgstr "Character name"
