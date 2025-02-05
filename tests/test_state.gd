@@ -376,7 +376,7 @@ func test_can_use_color_constants() -> void:
 Nathan: {{Color.BLUE}} == {{Color(0,0,1)}}")
 
 	var line = await resource.get_next_dialogue_line("start")
-	assert(line.text == "(0, 0, 1, 1) == (0, 0, 1, 1)", "Should match blue.")
+	assert(line.text == "%s == %s" % [Color.BLUE, Color(0, 0, 1)], "Should match blue.")
 
 
 func test_can_use_vector_constants() -> void:
@@ -385,7 +385,7 @@ func test_can_use_vector_constants() -> void:
 Nathan: {{Vector2.UP}} == {{Vector2(0, -1)}}")
 
 	var line = await resource.get_next_dialogue_line("start")
-	assert(line.text == "(0, -1) == (0, -1)", "Should match up.")
+	assert(line.text == "%s == %s" % [str(Vector2.UP), str(Vector2(0, -1))], "Should match up.")
 
 
 func test_can_use_lua_dictionary_syntax() -> void:
