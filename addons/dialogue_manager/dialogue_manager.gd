@@ -164,7 +164,7 @@ func get_line(resource: DialogueResource, key: String, extra_game_states: Array)
 	var data: Dictionary = resource.lines.get(key)
 
 	# If next_id is an expression we need to resolve it.
-	if data.has("next_id_expression"):
+	if data.has(&"next_id_expression"):
 		data.next_id = await _resolve(data.next_id_expression, extra_game_states)
 
 	# This title key points to another title key so we should jump there instead
@@ -204,17 +204,14 @@ func get_line(resource: DialogueResource, key: String, extra_game_states: Array)
 				cummulative_weight += sibling.weight
 
 	# Find any simultaneously said lines.
+	var concurrent_lines: Array[DialogueLine] = []
 	if data.has(&"concurrent_lines"):
 		# If the list includes this line then it isn't the origin line so ignore it.
-		if data.concurrent_lines.has(data.id):
-			data.concurrent_lines = [] as Array[DialogueLine]
-		else:
-			var concurrent_lines: Array[DialogueLine] = []
+		if not data.concurrent_lines.has(data.id):
 			for concurrent_id: String in data.concurrent_lines:
 				var concurrent_line: DialogueLine = await get_line(resource, concurrent_id, extra_game_states)
 				if concurrent_line:
 					concurrent_lines.append(concurrent_line)
-			data.concurrent_lines = concurrent_lines
 
 	# If this line is blank and it's the last line then check for returning snippets.
 	if data.type in [DMConstants.TYPE_COMMENT, DMConstants.TYPE_UNKNOWN]:
@@ -252,6 +249,7 @@ func get_line(resource: DialogueResource, key: String, extra_game_states: Array)
 
 	# Set up a line object.
 	var line: DialogueLine = await create_dialogue_line(data, extra_game_states)
+	line.concurrent_lines = concurrent_lines
 
 	# If the jump point somehow has no content then just end.
 	if not line: return null
@@ -568,7 +566,6 @@ func create_dialogue_line(data: Dictionary, extra_game_states: Array) -> Dialogu
 				inline_mutations = resolved_data.mutations,
 				time = resolved_data.time,
 				tags = data.get(&"tags", []),
-				concurrent_lines = data.get(&"concurrent_lines", [] as Array[DialogueLine]),
 				extra_game_states = extra_game_states
 			})
 
