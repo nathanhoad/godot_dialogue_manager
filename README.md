@@ -14,10 +14,7 @@ You can install it via the Asset Library or [downloading a copy](https://github.
 
 - [FAQ](docs/FAQ.md)
 - [Basic Dialogue](docs/Basic_Dialogue.md)
-- [Titles and Jumps](docs/Titles_and_Jumps.md)
-- [Tags](docs/Tags.md)
 - [Conditions and Mutations](docs/Conditions_Mutations.md)
-- [Importing dialogue into other dialogue](docs/Importing.md)
 - [Settings](docs/Settings.md)
 - [Using dialogue in your game](docs/Using_Dialogue.md)
 - [Example balloons](docs/Example_Balloons.md)
