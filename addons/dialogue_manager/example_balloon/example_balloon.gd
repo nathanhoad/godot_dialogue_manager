@@ -81,8 +81,6 @@ func _notification(what: int) -> void:
 
 ## Start some dialogue
 func start(dialogue_resource: DialogueResource, title: String, extra_game_states: Array = []) -> void:
-	if not is_node_ready():
-		await ready
 	temporary_game_states = [self] + extra_game_states
 	is_waiting_for_input = false
 	resource = dialogue_resource
@@ -91,10 +89,6 @@ func start(dialogue_resource: DialogueResource, title: String, extra_game_states
 
 ## Apply any changes to the balloon given a new [DialogueLine].
 func apply_dialogue_line() -> void:
-	# If the node isn't ready yet then none of the labels will be ready yet either
-	if not is_node_ready():
-		await ready
-
 	mutation_cooldown.stop()
 
 	is_waiting_for_input = false
