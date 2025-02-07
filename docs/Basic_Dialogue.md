@@ -108,6 +108,19 @@ You can also have whole blocks be random:
 
 If the first random item is chosen it will play through both nested lines.
 
+## Variables in dialogue
+
+To show some value of game state within a line of dialogue, wrap it in double curlies.
+
+```
+Nathan: The value of some property is {{SomeGlobal.some_property}}.
+```
+
+Similarly, if the name of a character is based on a variable you can provide it in double curlies too:
+
+```
+{{SomeGlobal.some_character_name}}: My name was provided by the player.
+```
 
 ## Simultaneous dialogue
 
