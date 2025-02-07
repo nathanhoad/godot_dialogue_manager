@@ -122,6 +122,24 @@ Similarly, if the name of a character is based on a variable you can provide it 
 {{SomeGlobal.some_character_name}}: My name was provided by the player.
 ```
 
+## Tags
+
+If you need to annotate your lines with tags, you can wrap them in `[#` and `]`, separated by commas. So to specify "happy" and "surprised" tags for a line, you would do something like:
+
+```
+Nathan: [#happy, #surprised] Oh, Hello!
+```
+
+At runtime, the `DialogueLine`'s `tags` property would include `["happy", "surprised"]`.
+
+You can also give tags values that can be accessed with the `get_tag_value` method on a `DialogueLine`:
+
+```
+Nathan: [#mood=happy] Oh, Hello!
+```
+
+For this line of dialogue, the `tags` array would be `["mood=happy"]`, and `line.get_tag_value("mood")` would return `"happy"`.
+
 ## Simultaneous dialogue
 
 If you would like multiple characters to speak at once the you can use the concurrent lines syntax. After a regular line of dialogue any lines that are to be spoken at the same time as it can be prefixed with "| ".
@@ -135,3 +153,90 @@ Nathan: This is a regular line of dialogue.
 To use concurrent line, access the `concurrent_lines` property on a `DialogueLine`.
 
 _NOTE: In an effort to keeps things simple, the built-in example balloon does not contain an implementation for concurrent lines._
+
+## Titles and Jumps
+
+Titles are markers within your dialogue that you can start from and jump to. Usually, in your game you would start some dialogue by providing a title (the default title is `start` but it could be whatever you've written in your dialogue).
+
+Titles start with a `~ ` and are named (without any spaces):
+
+```
+~ this_is_a_title
+```
+
+To jump to a title from somewhere in dialogue you can use a jump/goto line. Jump lines are prefixed with a `=> ` and then specify the title to go to.
+
+```
+=> this_is_a_title
+```
+
+When the dialogue runtime encounters a jump it will then direct the flow to that title marker and continue from there.
+
+If you want to end the flow from within the dialogue you can jump to `END`:
+
+```
+=> END
+```
+
+This will end the current flow of dialogue.
+
+You can also use a "jump and return" kind of jump that redirects the flow of dialogue and then returns to where it jumped from. Those lines are prefixed with `=>< ` and then specify the title to jump to. Once the flow encounters an `END` (or the end of the file) flow will return to where it jumped from and continue from there.
+
+If you want to force the end of the conversation regardless of any chained "jump and returns", you can use an `=> END!` line.
+
+Jumps can also be used inline for responses:
+
+```
+~ start
+Nathan: Well?
+- First one
+- Another one => another_title
+- Start again => start
+=> END
+
+~ another_title
+Nathan: Another one?
+=> END
+```
+
+### Expression Jumps
+
+You can use expressions as jump directives. The expression needs to resolve to a known title name or results will be unexpected.
+
+**Use these with caution** as the dialogue compiler can't verify expression values match any titles at compile time.
+
+Expression jumps look something like:
+
+`=> {{SomeGlobal.some_property}}`
+
+## Importing dialogue into other dialogue
+
+If you have a dialogue file that contains common dialogue that you want to use in multiple other files you can `import` it into those files.
+
+For example, we can have a `snippets.dialogue` file:
+
+```
+~ banter
+Nathan: Blah blah blah.
+=> END
+```
+
+Which we can then import into another dialogue file and jump to the `banter` title from the snippets file (note the `=><` syntax which denotes to return to this line after the jumped dialogue finishes):
+
+```
+import "res://snippets.dialogue" as snippets
+
+~ start
+Nathan: The next line will be from the snippets file:
+=>< snippets/banter
+Nathan: That was some banter!
+=> END
+```
+
+## Conditions & Mutations
+
+See [Conditions & Mutations](./Conditions_Mutations.md).
+
+## Translations
+
+See [Translations](./Translations.md).
