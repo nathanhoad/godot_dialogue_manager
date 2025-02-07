@@ -132,11 +132,6 @@ namespace DialogueManagerRuntime
 
     public async void Start(Resource dialogueResource, string title, Array<Variant> extraGameStates = null)
     {
-      if (!IsNodeReady())
-      {
-        await ToSignal(this, SignalName.Ready);
-      }
-
       temporaryGameStates = new Array<Variant> { this } + (extraGameStates ?? new Array<Variant>());
       isWaitingForInput = false;
       resource = dialogueResource;
@@ -156,11 +151,6 @@ namespace DialogueManagerRuntime
 
     private async void ApplyDialogueLine()
     {
-      if (!IsNodeReady())
-      {
-        await ToSignal(this, SignalName.Ready);
-      }
-
       MutationCooldown.Stop();
 
       isWaitingForInput = false;
