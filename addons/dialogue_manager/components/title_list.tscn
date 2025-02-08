@@ -1,6 +1,6 @@
 [gd_scene load_steps=2 format=3 uid="uid://ctns6ouwwd68i"]
 
-[ext_resource type="Script" path="res://addons/dialogue_manager/components/title_list.gd" id="1_5qqmd"]
+[ext_resource type="Script" uid="uid://d0k2wndjj0ifm" path="res://addons/dialogue_manager/components/title_list.gd" id="1_5qqmd"]
 
 [node name="TitleList" type="VBoxContainer"]
 anchors_preset = 15

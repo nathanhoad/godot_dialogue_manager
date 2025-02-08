@@ -683,7 +683,7 @@ func _mutate(mutation: Dictionary, extra_game_states: Array, is_inline_mutation:
 		var args: Array = await _resolve_each(expression[0].value, extra_game_states)
 		match expression[0].function:
 			&"wait", &"Wait":
-				mutated.emit(mutation)
+				mutated.emit(mutation.merged({ is_inline = is_inline_mutation }))
 				await Engine.get_main_loop().create_timer(float(args[0])).timeout
 				return
 
@@ -694,7 +694,7 @@ func _mutate(mutation: Dictionary, extra_game_states: Array, is_inline_mutation:
 	# Or pass through to the resolver
 	else:
 		if not _mutation_contains_assignment(mutation.expression) and not is_inline_mutation:
-			mutated.emit(mutation)
+			mutated.emit(mutation.merged({ is_inline = is_inline_mutation }))
 
 		if mutation.get("is_blocking", true):
 			await _resolve(mutation.expression.duplicate(true), extra_game_states)

@@ -1,6 +1,6 @@
 [gd_scene load_steps=4 format=3 uid="uid://ycn6uaj7dsrh"]
 
-[ext_resource type="Script" path="res://addons/dialogue_manager/components/editor_property/editor_property_control.gd" id="1_het12"]
+[ext_resource type="Script" uid="uid://dooe2pflnqtve" path="res://addons/dialogue_manager/components/editor_property/editor_property_control.gd" id="1_het12"]
 [ext_resource type="PackedScene" uid="uid://b16uuqjuof3n5" path="res://addons/dialogue_manager/components/editor_property/resource_button.tscn" id="2_hh3d4"]
 [ext_resource type="PackedScene" uid="uid://dnufpcdrreva3" path="res://addons/dialogue_manager/components/files_list.tscn" id="3_l8fp6"]
 
