@@ -1,6 +1,6 @@
 [gd_scene load_steps=2 format=3 uid="uid://b16uuqjuof3n5"]
 
-[ext_resource type="Script" path="res://addons/dialogue_manager/components/editor_property/resource_button.gd" id="1_7u2i7"]
+[ext_resource type="Script" uid="uid://damhqta55t67c" path="res://addons/dialogue_manager/components/editor_property/resource_button.gd" id="1_7u2i7"]
 
 [node name="ResourceButton" type="Button"]
 offset_right = 8.0

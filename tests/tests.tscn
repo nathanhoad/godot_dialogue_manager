@@ -1,6 +1,6 @@
 [gd_scene load_steps=5 format=3 uid="uid://k2pif7ljmrxq"]
 
-[ext_resource type="Script" path="res://tests/tests.gd" id="1_ds4fl"]
+[ext_resource type="Script" uid="uid://cqc4dndvofmp1" path="res://tests/tests.gd" id="1_ds4fl"]
 
 [sub_resource type="Theme" id="Theme_mxx6t"]
 default_font_size = 18

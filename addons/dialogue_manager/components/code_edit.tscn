@@ -1,7 +1,7 @@
 [gd_scene load_steps=4 format=3 uid="uid://civ6shmka5e8u"]
 
-[ext_resource type="Script" path="res://addons/dialogue_manager/components/code_edit_syntax_highlighter.gd" id="1_58cfo"]
-[ext_resource type="Script" path="res://addons/dialogue_manager/components/code_edit.gd" id="1_g324i"]
+[ext_resource type="Script" uid="uid://klpiq4tk3t7a" path="res://addons/dialogue_manager/components/code_edit_syntax_highlighter.gd" id="1_58cfo"]
+[ext_resource type="Script" uid="uid://djeybvlb332mp" path="res://addons/dialogue_manager/components/code_edit.gd" id="1_g324i"]
 
 [sub_resource type="SyntaxHighlighter" id="SyntaxHighlighter_cobxx"]
 script = ExtResource("1_58cfo")

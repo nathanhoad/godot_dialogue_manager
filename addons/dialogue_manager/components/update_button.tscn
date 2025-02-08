@@ -1,6 +1,6 @@
 [gd_scene load_steps=3 format=3 uid="uid://co8yl23idiwbi"]
 
-[ext_resource type="Script" path="res://addons/dialogue_manager/components/update_button.gd" id="1_d2tpb"]
+[ext_resource type="Script" uid="uid://cr1tt12dh5ecr" path="res://addons/dialogue_manager/components/update_button.gd" id="1_d2tpb"]
 [ext_resource type="PackedScene" uid="uid://qdxrxv3c3hxk" path="res://addons/dialogue_manager/components/download_update_panel.tscn" id="2_iwm7r"]
 
 [node name="UpdateButton" type="Button"]
