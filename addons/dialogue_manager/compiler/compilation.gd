@@ -367,7 +367,7 @@ func parse_title_line(tree_line: DMTreeLine, line: DMCompiledLine, siblings: Arr
 		result = add_error(tree_line.line_number, 2, DMConstants.ERR_TITLE_BEGINS_WITH_NUMBER)
 
 	# Only import titles are allowed to have "/" in them
-	var valid_title = regex.VALID_TITLE_REGEX.search(line.text.replace("/", "").substr(line.text.find("~ ") + 2).strip_edges())
+	var valid_title = regex.VALID_TITLE_REGEX.search(line.text.replace("/", ""))
 	if not valid_title:
 		result = add_error(tree_line.line_number, 2, DMConstants.ERR_TITLE_INVALID_CHARACTERS)
 

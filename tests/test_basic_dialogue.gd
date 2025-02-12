@@ -20,6 +20,11 @@ if StateForTests.some_property
 	assert(output.titles.size() == 2, "Should have two titles.")
 	assert(output.titles.keys()[1] == "title_directly_after_dedent", "Should have second title.")
 
+	output = compile("~ t")
+
+	assert(output.errors.is_empty(), "Should have no errors.")
+	assert("t" in output.titles.keys(), "Should include title.")
+
 
 func test_can_parse_basic_dialogue() -> void:
 	var output = compile("Nathan: This is dialogue with a name.\nThis is dialogue without a name")
