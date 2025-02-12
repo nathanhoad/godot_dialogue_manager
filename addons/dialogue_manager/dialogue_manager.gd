@@ -714,14 +714,6 @@ func _mutation_contains_assignment(mutation: Array) -> bool:
 	return false
 
 
-# Resolve an array of expressions.
-func _resolve_each(array: Array, extra_game_states: Array) -> Array:
-	var results: Array = []
-	for item in array:
-		results.append(await _resolve(item.duplicate(true), extra_game_states))
-	return results
-
-
 # Replace an array of line IDs with their response prompts
 func _get_responses(ids: Array, resource: DialogueResource, id_trail: String, extra_game_states: Array) -> Array[DialogueResponse]:
 	var responses: Array[DialogueResponse] = []
@@ -844,8 +836,20 @@ func _get_state_shortcut_names(extra_game_states: Array) -> String:
 	return ", ".join(states.map(func(s): return "\"%s\"" % (s.name if "name" in s else s)))
 
 
+# Resolve an array of expressions.
+func _resolve_each(array: Array, extra_game_states: Array) -> Array:
+	var results: Array = []
+	for item in array:
+		if not item[0].type in [DMConstants.TOKEN_BRACE_CLOSE, DMConstants.TOKEN_BRACKET_CLOSE, DMConstants.TOKEN_PARENS_CLOSE]:
+			results.append(await _resolve(item.duplicate(true), extra_game_states))
+	return results
+
+
 # Collapse any expressions
 func _resolve(tokens: Array, extra_game_states: Array):
+	var i: int = 0
+	var limit: int = 0
+
 	# Handle groups first
 	for token in tokens:
 		if token.type == DMConstants.TOKEN_GROUP:
@@ -853,8 +857,8 @@ func _resolve(tokens: Array, extra_game_states: Array):
 			token.value = await _resolve(token.value, extra_game_states)
 
 	# Then variables/methods
-	var i: int = 0
-	var limit: int = 0
+	i = 0
+	limit = 0
 	while i < tokens.size() and limit < 1000:
 		limit += 1
 		var token: Dictionary = tokens[i]

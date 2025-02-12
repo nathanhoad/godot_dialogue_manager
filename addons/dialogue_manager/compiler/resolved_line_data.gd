@@ -122,7 +122,7 @@ func _init(line: String) -> void:
 		text = text.left(index) + "]" + text.right(text.length() - index - 1)
 
 
-func find_bbcode_positions_in_string(string: String, find_all: bool = true) -> Array[Dictionary]:
+func find_bbcode_positions_in_string(string: String, find_all: bool = true, include_conditions: bool = false) -> Array[Dictionary]:
 	if not "[" in string: return []
 
 	var positions: Array[Dictionary] = []
@@ -152,11 +152,12 @@ func find_bbcode_positions_in_string(string: String, find_all: bool = true) -> A
 
 		if string[i] == "]":
 			open_brace_count -= 1
-			if open_brace_count == 0 and not code in ["if", "else", "/if"]:
+			if open_brace_count == 0 and (include_conditions or not code in ["if", "else", "/if"]):
 				positions.append({
 					bbcode = bbcode,
 					code = code,
 					start = start,
+					end = i,
 					raw_args = bbcode.substr(code.length() + 1, bbcode.length() - code.length() - 2).strip_edges()
 				})
 
