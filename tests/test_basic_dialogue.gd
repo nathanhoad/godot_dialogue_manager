@@ -20,6 +20,18 @@ if StateForTests.some_property
 	assert(output.titles.size() == 2, "Should have two titles.")
 	assert(output.titles.keys()[1] == "title_directly_after_dedent", "Should have second title.")
 
+	output = compile("
+~ start
+if true
+	~ indented_title
+	Nathan: Some unrelated but indented line.
+Nathan: After.
+=> indented_title")
+
+	assert(output.errors.is_empty(), "Should have no errors.")
+	assert(output.titles.size() == 2, "Should have two titles.")
+	assert(output.titles["indented_title"] == "4", "Should have second title.")
+
 	output = compile("~ t")
 
 	assert(output.errors.is_empty(), "Should have no errors.")
