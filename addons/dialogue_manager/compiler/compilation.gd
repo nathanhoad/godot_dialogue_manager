@@ -719,6 +719,19 @@ func parse_dialogue_line(tree_line: DMTreeLine, line: DMCompiledLine, siblings: 
 
 	parse_character_and_dialogue(tree_line, line, siblings, sibling_index, parent)
 
+	# Check for any inline expression errors
+	var resolved_line_data: DMResolvedLineData = DMResolvedLineData.new("")
+	var bbcodes: Array[Dictionary] = resolved_line_data.find_bbcode_positions_in_string(tree_line.text, true, true)
+	for bbcode: Dictionary in bbcodes:
+		var tag: String = bbcode.code
+		var code: String = bbcode.raw_args
+		if tag.begins_with("do") or tag.begins_with("set") or tag.begins_with("if"):
+			var expression: Array = expression_parser.tokenise(code, DMConstants.TYPE_MUTATION, bbcode.start + bbcode.code.length())
+			if expression.size() == 0:
+				add_error(tree_line.line_number, tree_line.indent, DMConstants.ERR_INVALID_EXPRESSION)
+			elif expression[0].type == DMConstants.TYPE_ERROR:
+				add_error(tree_line.line_number, tree_line.indent + expression[0].index, expression[0].value)
+
 	# If the line isn't part of a weighted random group then make it point to the next
 	# available sibling.
 	if line.next_id == DMConstants.ID_NULL and line.siblings.size() == 0:

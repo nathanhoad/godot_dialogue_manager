@@ -14,6 +14,8 @@ var text_without_goto: String = ""
 var is_snippet: bool = false
 ## A parse error if there was one.
 var error: int
+## The index in the string where
+var index: int = 0
 
 # An instance of the compiler [RegEx] list.
 var regex: DMCompilerRegEx = DMCompilerRegEx.new()
@@ -33,6 +35,7 @@ func _init(text: String, titles: Dictionary) -> void:
 		return
 
 	title = found.strings[found.names.goto].strip_edges()
+	index = found.get_start(0)
 
 	if title == "":
 		error = DMConstants.ERR_UNKNOWN_TITLE
