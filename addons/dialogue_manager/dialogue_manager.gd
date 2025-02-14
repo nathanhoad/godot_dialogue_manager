@@ -1362,16 +1362,16 @@ func _thing_has_property(thing: Object, property: String) -> bool:
 	return false
 
 
-func _get_method_info_for(thing, method: String) -> Dictionary:
+func _get_method_info_for(thing: Variant, method: String, args: Array) -> Dictionary:
 	# Use the thing instance id as a key for the caching dictionary.
 	var thing_instance_id: int = thing.get_instance_id()
 	if not _method_info_cache.has(thing_instance_id):
 		var methods: Dictionary = {}
 		for m in thing.get_method_list():
-			methods[m.name] = m
+			methods["%s:%d" % [m.name, m.args.size()]] = m
 		_method_info_cache[thing_instance_id] = methods
 
-	return _method_info_cache.get(thing_instance_id, {}).get(method)
+	return _method_info_cache.get(thing_instance_id, {}).get("%s:%d" % [method, args.size()])
 
 
 func _resolve_thing_method(thing, method: String, args: Array):
@@ -1382,7 +1382,7 @@ func _resolve_thing_method(thing, method: String, args: Array):
 
 	if thing.has_method(method):
 		# Try to convert any literals to the right type
-		var method_info: Dictionary = _get_method_info_for(thing, method)
+		var method_info: Dictionary = _get_method_info_for(thing, method, args)
 		var method_args: Array = method_info.args
 		if method_info.flags & METHOD_FLAG_VARARG == 0 and method_args.size() < args.size():
 			assert(false, DMConstants.translate(&"runtime.expected_n_got_n_args").format({ expected = method_args.size(), method = method, received = args.size()}))
