@@ -333,24 +333,28 @@ func _copy_dialogue_balloon() -> void:
 		var example_balloon_file_name: String = "small_example_balloon.tscn" if is_small_window else "example_balloon.tscn"
 		var example_balloon_path: String = plugin_path + "/example_balloon/" + example_balloon_file_name
 		var example_balloon_script_file_name: String = "ExampleBalloon.cs" if is_dotnet else "example_balloon.gd"
-		var file_contents: String = FileAccess.get_file_as_string(example_balloon_path).replace(plugin_path + "/example_balloon/example_balloon.gd", balloon_script_path)
-		# Give the balloon a unique UID
+		var example_balloon_script_uid: String = ResourceUID.id_to_text(ResourceLoader.get_resource_uid(plugin_path + "/example_balloon/example_balloon.gd"))
 		var example_balloon_uid: String = ResourceUID.id_to_text(ResourceLoader.get_resource_uid(example_balloon_path))
-		var new_balloon_uid: String = ResourceUID.id_to_text(ResourceUID.create_id())
-		file_contents = file_contents.replace(example_balloon_uid, new_balloon_uid)
-		# Save the new balloon
-		var file: FileAccess = FileAccess.open(balloon_path, FileAccess.WRITE)
-		file.store_string(file_contents)
-		file.close()
 
 		# Copy the script file
-		file = FileAccess.open(plugin_path + "/example_balloon/" + example_balloon_script_file_name, FileAccess.READ)
-		file_contents = file.get_as_text()
+		var file: FileAccess = FileAccess.open(plugin_path + "/example_balloon/" + example_balloon_script_file_name, FileAccess.READ)
+		var file_contents: String = file.get_as_text()
 		if is_dotnet:
 			file_contents = file_contents.replace("class ExampleBalloon", "class DialogueBalloon")
 		else:
 			file_contents = file_contents.replace("class_name DialogueManagerExampleBalloon ", "")
 		file = FileAccess.open(balloon_script_path, FileAccess.WRITE)
+		file.store_string(file_contents)
+		file.close()
+		var new_balloon_script_uid_raw: int = ResourceUID.create_id()
+		ResourceUID.add_id(new_balloon_script_uid_raw, balloon_script_path)
+		var new_balloon_script_uid: String = ResourceUID.id_to_text(new_balloon_script_uid_raw)
+
+		# Save the new balloon
+		file_contents = FileAccess.get_file_as_string(example_balloon_path).replace(plugin_path + "/example_balloon/example_balloon.gd", balloon_script_path)
+		var new_balloon_uid: String = ResourceUID.id_to_text(ResourceUID.create_id())
+		file_contents = file_contents.replace(example_balloon_uid, new_balloon_uid).replace(example_balloon_script_uid, new_balloon_script_uid)
+		file = FileAccess.open(balloon_path, FileAccess.WRITE)
 		file.store_string(file_contents)
 		file.close()
 
