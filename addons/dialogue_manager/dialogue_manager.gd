@@ -1369,9 +1369,16 @@ func _get_method_info_for(thing: Variant, method: String, args: Array) -> Dictio
 		var methods: Dictionary = {}
 		for m in thing.get_method_list():
 			methods["%s:%d" % [m.name, m.args.size()]] = m
+			if not methods.has(m.name):
+				methods[m.name] = m
 		_method_info_cache[thing_instance_id] = methods
 
-	return _method_info_cache.get(thing_instance_id, {}).get("%s:%d" % [method, args.size()])
+	var methods: Dictionary = _method_info_cache.get(thing_instance_id, {})
+	var method_key: String = "%s:%d" % [method, args.size()]
+	if methods.has(method_key):
+		return methods.get(method_key)
+	else:
+		return methods.get(method)
 
 
 func _resolve_thing_method(thing, method: String, args: Array):
