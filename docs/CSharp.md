@@ -84,6 +84,11 @@ There are two ways you can connect to the Dialogue Manager signals - using `Conn
 Using event handlers is the simpler method (but only works on the Dialogue Manager itself):
 
 ```csharp
+DialogueManager.DialogueStarted += (Resource dialogueResource) =>
+{
+  // ...
+};
+
 DialogueManager.DialogueEnded += (Resource dialogueResource) =>
 {
   // ...
