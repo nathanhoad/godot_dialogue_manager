@@ -30,10 +30,6 @@ Dialogue Manager settings are found in Project Settings at the bottom of the Gen
 
   The balloon scene to instantiate when using `DialogueManager.show_dialogue_balloon`.
 
-- **Include All Responses**
-
-  Responses in dialogue that have failed their condition check will still be present in the `responses` list on the relevant `DialogueLine`.
-
 - **Ignore Missing State Values** (Advanced)
 
   Suppress errors when properties or mutations are missing from state.
