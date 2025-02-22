@@ -34,7 +34,7 @@ func _ready() -> void:
 
 func _on_download_button_pressed() -> void:
 	# Safeguard the actual dialogue manager repo from accidentally updating itself
-	if FileAccess.file_exists("res://examples/test_scenes/test_scene.gd"):
+	if FileAccess.file_exists("res://tests/test_basic_dialogue.gd"):
 		prints("You can't update the addon from within itself.")
 		failed.emit()
 		return
