@@ -26,7 +26,7 @@ func _parse_file(path: String) -> Array[PackedStringArray]:
 			known_keys.append(character_name)
 
 			translated_character_names.append(character_name)
-			msgs.append([character_name.replace('"', '\"'), "dialogue", "", DMConstants.translate("translation_plugin.character_name")])
+			msgs.append(PackedStringArray([character_name.replace('"', '\"'), "dialogue", "", DMConstants.translate("translation_plugin.character_name")]))
 
 	# Add all dialogue lines and responses
 	var dialogue: Dictionary = data.lines
@@ -42,9 +42,9 @@ func _parse_file(path: String) -> Array[PackedStringArray]:
 		known_keys.append(translation_key)
 		translated_lines.append(line)
 		if translation_key == line.text:
-			msgs.append([line.text.replace('"', '\"'), "", "", line.get("notes", "")])
+			msgs.append(PackedStringArray([line.text.replace('"', '\"'), "", "", line.get("notes", "")]))
 		else:
-			msgs.append([line.text.replace('"', '\"'), line.translation_key.replace('"', '\"'), "", line.get("notes", "")])
+			msgs.append(PackedStringArray([line.text.replace('"', '\"'), line.translation_key.replace('"', '\"'), "", line.get("notes", "")]))
 
 	return msgs
 
