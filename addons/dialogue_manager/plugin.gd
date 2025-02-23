@@ -44,6 +44,32 @@ func _enter_tree() -> void:
 
 		add_tool_menu_item("Create copy of dialogue example balloon...", _copy_dialogue_balloon)
 
+		# Automatically swap the script on the example balloon depending on if dotnet is being used.
+		if not FileAccess.file_exists("res://tests/test_basic_dialogue.gd"):
+			var plugin_path: String = get_plugin_path()
+			var balloon_file_names: PackedStringArray = ["example_balloon.tscn", "small_example_balloon.tscn"]
+			for balloon_file_name: String in balloon_file_names:
+				var balloon_path: String = plugin_path + "/example_balloon/" + balloon_file_name
+				var balloon_content: String = FileAccess.get_file_as_string(balloon_path)
+				if "example_balloon.gd" in balloon_content and DMSettings.check_for_dotnet_solution():
+					balloon_content = balloon_content \
+						# Replace script path with the C# one
+						.replace("example_balloon.gd", "ExampleBalloon.cs") \
+						# Replace script UID with the C# one
+						.replace(ResourceUID.id_to_text(ResourceLoader.get_resource_uid(plugin_path + "/example_balloon/example_balloon.gd")), ResourceUID.id_to_text(ResourceLoader.get_resource_uid(plugin_path + "/example_balloon/ExampleBalloon.cs")))
+					var balloon_file: FileAccess = FileAccess.open(balloon_path, FileAccess.WRITE)
+					balloon_file.store_string(balloon_content)
+					balloon_file.close()
+				elif "ExampleBalloon.cs" in balloon_content and not DMSettings.check_for_dotnet_solution():
+					balloon_content = balloon_content \
+						# Replace script path with the GDScript one
+						.replace("ExampleBalloon.cs", "example_balloon.gd") \
+						# Replace script UID with the GDScript one
+						.replace(ResourceUID.id_to_text(ResourceLoader.get_resource_uid(plugin_path + "/example_balloon/ExampleBalloon.cs")), ResourceUID.id_to_text(ResourceLoader.get_resource_uid(plugin_path + "/example_balloon/example_balloon.gd")))
+					var balloon_file: FileAccess = FileAccess.open(balloon_path, FileAccess.WRITE)
+					balloon_file.store_string(balloon_content)
+					balloon_file.close()
+
 		# Automatically make any changes to the known custom balloon if there is one.
 		var balloon_path: String = DMSettings.get_setting(DMSettings.BALLOON_PATH, "")
 		if balloon_path != "" and FileAccess.file_exists(balloon_path):
@@ -323,8 +349,8 @@ func _copy_dialogue_balloon() -> void:
 	directory_dialog.min_size = Vector2(600, 500) * scale
 	directory_dialog.dir_selected.connect(func(path):
 		var plugin_path: String = get_plugin_path()
-
 		var is_dotnet: bool = DMSettings.check_for_dotnet_solution()
+
 		var balloon_path: String = path + ("/Balloon.tscn" if is_dotnet else "/balloon.tscn")
 		var balloon_script_path: String = path + ("/DialogueBalloon.cs" if is_dotnet else "/balloon.gd")
 
@@ -351,7 +377,11 @@ func _copy_dialogue_balloon() -> void:
 		var new_balloon_script_uid: String = ResourceUID.id_to_text(new_balloon_script_uid_raw)
 
 		# Save the new balloon
-		file_contents = FileAccess.get_file_as_string(example_balloon_path).replace(plugin_path + "/example_balloon/example_balloon.gd", balloon_script_path)
+		file_contents = FileAccess.get_file_as_string(example_balloon_path)
+		if "example_balloon.gd" in file_contents:
+			file_contents = file_contents.replace(plugin_path + "/example_balloon/example_balloon.gd", balloon_script_path)
+		else:
+			file_contents = file_contents.replace(plugin_path + "/example_balloon/ExampleBalloon.cs", balloon_script_path)
 		var new_balloon_uid: String = ResourceUID.id_to_text(ResourceUID.create_id())
 		file_contents = file_contents.replace(example_balloon_uid, new_balloon_uid).replace(example_balloon_script_uid, new_balloon_script_uid)
 		file = FileAccess.open(balloon_path, FileAccess.WRITE)
