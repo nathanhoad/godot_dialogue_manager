@@ -31,6 +31,9 @@ signal dialogue_ended(resource: DialogueResource)
 ## Used internally.
 signal bridge_get_next_dialogue_line_completed(line: DialogueLine)
 
+## Used internally
+signal bridge_dialogue_started(resource: DialogueResource)
+
 ## Used inernally
 signal bridge_mutated()
 
@@ -451,6 +454,7 @@ func _start_balloon(balloon: Node, resource: DialogueResource, title: String, ex
 		assert(false, DMConstants.translate(&"runtime.dialogue_balloon_missing_start_method"))
 
 	dialogue_started.emit(resource)
+	bridge_dialogue_started.emit(resource)
 
 
 # Get the path to the example balloon
