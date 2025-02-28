@@ -1342,7 +1342,7 @@ func _thing_has_method(thing, method: String, args: Array) -> bool:
 
 	if method.to_snake_case() != method and DMSettings.check_for_dotnet_solution():
 		# If we get this far then the method might be a C# method with a Task return type
-		return _get_dotnet_dialogue_manager().ThingHasMethod(thing, method)
+		return _get_dotnet_dialogue_manager().ThingHasMethod(thing, method, args)
 
 	return false
 
