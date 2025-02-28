@@ -173,16 +173,32 @@ namespace DialogueManagerRuntime
         }
 
 
-        public bool ThingHasMethod(GodotObject thing, string method)
+        public bool ThingHasMethod(GodotObject thing, string method, Array<Variant> args)
         {
-            MethodInfo? info = thing.GetType().GetMethod(method, BindingFlags.Instance | BindingFlags.Static | BindingFlags.Public);
-            return info != null;
+            var methodInfos = thing.GetType().GetMethods(BindingFlags.Instance | BindingFlags.Static | BindingFlags.Public | BindingFlags.DeclaredOnly);
+            foreach (var methodInfo in methodInfos)
+            {
+                if (methodInfo.Name == method && args.Count == methodInfo.GetParameters().Length)
+                {
+                    return true;
+                }
+            }
+
+            return false;
         }
 
 
         public async void ResolveThingMethod(GodotObject thing, string method, Array<Variant> args)
         {
-            MethodInfo? info = thing.GetType().GetMethod(method, BindingFlags.Instance | BindingFlags.Static | BindingFlags.Public);
+            MethodInfo? info = null;
+            var methodInfos = thing.GetType().GetMethods(BindingFlags.Instance | BindingFlags.Static | BindingFlags.Public | BindingFlags.DeclaredOnly);
+            foreach (var methodInfo in methodInfos)
+            {
+                if (methodInfo.Name == method && args.Count == methodInfo.GetParameters().Length)
+                {
+                    info = methodInfo;
+                }
+            }
 
             if (info == null) return;
 
@@ -220,12 +236,12 @@ namespace DialogueManagerRuntime
             if (result is Task taskResult)
             {
                 await taskResult;
-                try 
+                try
                 {
                     Variant value = (Variant)taskResult.GetType().GetProperty("Result").GetValue(taskResult);
                     EmitSignal(SignalName.Resolved, value);
-                } 
-                catch (Exception err) 
+                }
+                catch (Exception err)
                 {
                     EmitSignal(SignalName.Resolved);
                 }
