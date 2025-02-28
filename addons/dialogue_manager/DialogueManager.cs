@@ -313,6 +313,12 @@ namespace DialogueManagerRuntime
             get => inline_mutations;
         }
 
+        private Array<DialogueLine> concurrent_lines = new Array<DialogueLine>();
+        public Array<DialogueLine> ConcurrentLines
+        {
+            get => concurrent_lines;
+        }
+
         private Array<Variant> extra_game_states = new Array<Variant>();
         public Array<Variant> ExtraGameStates
         {
@@ -337,6 +343,11 @@ namespace DialogueManagerRuntime
             inline_mutations = (Array<Godot.Collections.Array>)data.Get("inline_mutations");
             time = (string)data.Get("time");
             tags = (Array<string>)data.Get("tags");
+
+            foreach (var concurrent_line_data in (Array<RefCounted>)data.Get("concurrent_lines"))
+            {
+                concurrent_lines.Add(new DialogueLine(concurrent_line_data));
+            }
 
             foreach (var response in (Array<RefCounted>)data.Get("responses"))
             {
