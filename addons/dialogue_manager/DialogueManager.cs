@@ -40,6 +40,7 @@ namespace DialogueManagerRuntime
                 if (instance == null)
                 {
                     instance = Engine.GetSingleton("DialogueManager");
+                    instance.Connect("bridge_dialogue_started", Callable.From((Resource dialogueResource) => DialogueStarted?.Invoke(dialogueResource)));
                 }
                 return instance;
             }
@@ -82,16 +83,10 @@ namespace DialogueManagerRuntime
 
         public static void Prepare(GodotObject instance)
         {
-            instance.Connect("dialogue_started", Callable.From((Resource dialogueResource) => DialogueStarted?.Invoke(dialogueResource)));
             instance.Connect("passed_title", Callable.From((string title) => PassedTitle?.Invoke(title)));
             instance.Connect("got_dialogue", Callable.From((RefCounted line) => GotDialogue?.Invoke(new DialogueLine(line))));
             instance.Connect("mutated", Callable.From((Dictionary mutation) => Mutated?.Invoke(mutation)));
             instance.Connect("dialogue_ended", Callable.From((Resource dialogueResource) => DialogueEnded?.Invoke(dialogueResource)));
-        }
-
-        public void Prepare()
-        {
-            Prepare(Instance);
         }
 
 
