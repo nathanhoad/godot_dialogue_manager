@@ -287,7 +287,7 @@ func build_line_tree(raw_lines: PackedStringArray) -> DMTreeLine:
 
 		# Append the current line to the current parent (note: the root is the most basic parent).
 		var parent: DMTreeLine = parent_chain[parent_chain.size() - 1]
-		tree_line.parent = parent
+		tree_line.parent = weakref(parent)
 		parent.children.append(tree_line)
 
 		previous_line = tree_line
