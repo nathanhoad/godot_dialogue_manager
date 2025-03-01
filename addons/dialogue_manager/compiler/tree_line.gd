@@ -4,8 +4,10 @@ class_name DMTreeLine extends RefCounted
 
 ## The line number where this dialogue was found (after imported files have had their content imported).
 var line_number: int = 0
-## The parent [DMTreeLine] of this line
-var parent: DMTreeLine
+## The parent [DMTreeLine] of this line.
+## This is stored as a Weak Reference so that this RefCounted can elegantly free itself.
+## Without it being a Weak Reference, this can easily cause a cyclical reference that keeps this resource alive.
+var parent: WeakRef
 ## The ID of this line.
 var id: String
 ## The type of this line (as a [String] defined in [DMConstants].
