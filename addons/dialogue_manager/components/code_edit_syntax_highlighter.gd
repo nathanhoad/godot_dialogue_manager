@@ -68,10 +68,14 @@ func _get_line_syntax_highlighting(line: int) -> Dictionary:
 		DMConstants.TYPE_DIALOGUE, DMConstants.TYPE_RESPONSE:
 			if text.strip_edges().begins_with("%"):
 				colors[index] = { color = theme.symbols_color }
-				index = text.find(" ")
-			colors[index] = { color = theme.text_color }
+				index = text.find(" ", text.find("%"))
+			colors[index] = { color = theme.text_color.lerp(theme.symbols_color, 0.5) }
 
 			var dialogue_text: String = text.substr(index, text.find("=>"))
+
+			# Highlight character name
+			var split_index: int = dialogue_text.replace("\\:", "??").find(":")
+			colors[index + split_index + 1] = { color = theme.text_color }
 
 			# Interpolation
 			var replacements: Array[RegExMatch] = regex.REPLACEMENTS_REGEX.search_all(dialogue_text)
@@ -93,32 +97,32 @@ func _get_line_syntax_highlighting(line: int) -> Dictionary:
 				var tag: String = bbcode.code
 				var code: String = bbcode.raw_args
 				if code.begins_with("["):
-					colors[bbcode.start] = { color = theme.symbols_color }
-					colors[bbcode.start + 2] = { color = theme.text_color }
+					colors[index + bbcode.start] = { color = theme.symbols_color }
+					colors[index + bbcode.start + 2] = { color = theme.text_color }
 					var pipe_cursor: int = code.find("|")
 					while pipe_cursor > -1:
-						colors[bbcode.start + pipe_cursor + 1] = { color = theme.symbols_color }
-						colors[bbcode.start + pipe_cursor + 2] = { color = theme.text_color }
+						colors[index + bbcode.start + pipe_cursor + 1] = { color = theme.symbols_color }
+						colors[index + bbcode.start + pipe_cursor + 2] = { color = theme.text_color }
 						pipe_cursor = code.find("|", pipe_cursor + 1)
-					colors[bbcode.end - 1] = { color = theme.symbols_color }
-					colors[bbcode.end + 1] = { color = theme.text_color }
+					colors[index + bbcode.end - 1] = { color = theme.symbols_color }
+					colors[index + bbcode.end + 1] = { color = theme.text_color }
 				else:
-					colors[bbcode.start] = { color = theme.symbols_color }
+					colors[index + bbcode.start] = { color = theme.symbols_color }
 					if tag.begins_with("do") or tag.begins_with("set") or tag.begins_with("if"):
 						if tag.begins_with("if"):
-							colors[bbcode.start + 1] = { color = theme.conditions_color }
+							colors[index + bbcode.start + 1] = { color = theme.conditions_color }
 						else:
-							colors[bbcode.start + 1] = { color = theme.mutations_color }
+							colors[index + bbcode.start + 1] = { color = theme.mutations_color }
 						var expression: Array = expression_parser.tokenise(code, DMConstants.TYPE_MUTATION, bbcode.start + bbcode.code.length())
 						if expression.size() == 0 or expression[0].type == DMConstants.TYPE_ERROR:
-							colors[bbcode.start + tag.length() + 1] = { color = theme.critical_color }
+							colors[index + bbcode.start + tag.length() + 1] = { color = theme.critical_color }
 						else:
 							_highlight_expression(expression, colors, index + 2)
 					# else and closing if have no expression
 					elif tag.begins_with("else") or tag.begins_with("/if"):
-						colors[bbcode.start + 1] = { color = theme.conditions_color }
-					colors[bbcode.end] = { color = theme.symbols_color }
-					colors[bbcode.end + 1] = { color = theme.text_color }
+						colors[index + bbcode.start + 1] = { color = theme.conditions_color }
+					colors[index + bbcode.end] = { color = theme.symbols_color }
+					colors[index + bbcode.end + 1] = { color = theme.text_color }
 			# Jumps
 			if "=> " in text or "=>< " in text:
 				_highlight_goto(text, colors, index)
