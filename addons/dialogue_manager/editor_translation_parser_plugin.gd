@@ -8,7 +8,8 @@ var translated_character_names: PackedStringArray = []
 var translated_lines: Array[Dictionary] = []
 
 
-func _parse_file(path: String, msgids: Array, msgids_context_plural: Array) -> void:
+func _parse_file(path: String) -> Array[PackedStringArray]:
+	var msgs: Array[PackedStringArray] = []
 	var file: FileAccess = FileAccess.open(path, FileAccess.READ)
 	var text: String = file.get_as_text()
 
@@ -25,7 +26,7 @@ func _parse_file(path: String, msgids: Array, msgids_context_plural: Array) -> v
 			known_keys.append(character_name)
 
 			translated_character_names.append(character_name)
-			msgids_context_plural.append([character_name.replace('"', '\"'), "dialogue", ""])
+			msgs.append(PackedStringArray([character_name.replace('"', '\"'), "dialogue", "", DMConstants.translate("translation_plugin.character_name")]))
 
 	# Add all dialogue lines and responses
 	var dialogue: Dictionary = data.lines
@@ -41,20 +42,11 @@ func _parse_file(path: String, msgids: Array, msgids_context_plural: Array) -> v
 		known_keys.append(translation_key)
 		translated_lines.append(line)
 		if translation_key == line.text:
-			msgids_context_plural.append([line.text.replace('"', '\"'), "", ""])
+			msgs.append(PackedStringArray([line.text.replace('"', '\"'), "", "", line.get("notes", "")]))
 		else:
-			msgids_context_plural.append([line.text.replace('"', '\"'), line.translation_key.replace('"', '\"'), ""])
+			msgs.append(PackedStringArray([line.text.replace('"', '\"'), line.translation_key.replace('"', '\"'), "", line.get("notes", "")]))
 
-
-func _get_comments(msgids_comment: Array[String], msgids_context_plural_comment: Array[String]) -> void:
-	# Add all character names if settings ask for it
-	if DMSettings.get_setting(DMSettings.INCLUDE_CHARACTERS_IN_TRANSLATABLE_STRINGS_LIST, true):
-		for character_name in translated_character_names:
-			msgids_context_plural_comment.append(DMConstants.translate("translation_plugin.character_name"))
-
-	# Add all dialogue lines and responses
-	for line: Dictionary in translated_lines:
-		msgids_context_plural_comment.append(line.get("notes", ""))
+	return msgs
 
 
 func _get_recognized_extensions() -> PackedStringArray:
