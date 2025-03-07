@@ -31,6 +31,17 @@ func _get_line_syntax_highlighting(line: int) -> Dictionary:
 	var index: int = 0
 
 	match DMCompiler.get_line_type(text):
+		DMConstants.TYPE_USING:
+			colors[index] = { color = theme.conditions_color }
+			colors[index + "using ".length()] = { color = theme.text_color }
+
+		DMConstants.TYPE_IMPORT:
+			colors[index] = { color = theme.conditions_color }
+			var import: RegExMatch = regex.IMPORT_REGEX.search(text)
+			colors[index + import.get_start("path") - 1] = { color = theme.strings_color }
+			colors[index + import.get_end("path") + 1] = { color = theme.conditions_color }
+			colors[index + import.get_start("prefix")] = { color = theme.text_color }
+
 		DMConstants.TYPE_COMMENT:
 			colors[index] = { color = theme.comments_color }
 
