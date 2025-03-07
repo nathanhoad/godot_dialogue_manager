@@ -133,10 +133,7 @@ func _drop_data(at_position: Vector2, data) -> void:
 			if cursor.x > -1 and cursor.y > -1:
 				set_cursor(cursor)
 				remove_secondary_carets()
-				if has_method("insert_text"):
-					call("insert_text", "\"%s\"" % file, cursor.y, cursor.x)
-				else:
-					call("insert_text_at_cursor", "\"%s\"" % file)
+				insert_text("\"%s\"" % file, cursor.y, cursor.x)
 	grab_focus()
 
 
