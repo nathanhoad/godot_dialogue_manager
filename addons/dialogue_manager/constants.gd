@@ -54,6 +54,7 @@ const TOKEN_ERROR = &"error"
 
 const TYPE_UNKNOWN = &""
 const TYPE_IMPORT = &"import"
+const TYPE_USING = &"using"
 const TYPE_COMMENT = &"comment"
 const TYPE_RESPONSE = &"response"
 const TYPE_TITLE = &"title"
