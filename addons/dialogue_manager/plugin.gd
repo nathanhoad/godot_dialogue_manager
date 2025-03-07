@@ -6,6 +6,7 @@ const MainView = preload("./views/main_view.tscn")
 
 
 var import_plugin: DMImportPlugin
+var export_plugin: DMExportPlugin
 var inspector_plugin: DMInspectorPlugin
 var translation_parser_plugin: DMTranslationParserPlugin
 var main_view
@@ -25,6 +26,9 @@ func _enter_tree() -> void:
 
 		import_plugin = DMImportPlugin.new()
 		add_import_plugin(import_plugin)
+
+		export_plugin = DMExportPlugin.new()
+		add_export_plugin(export_plugin)
 
 		inspector_plugin = DMInspectorPlugin.new()
 		add_inspector_plugin(inspector_plugin)
@@ -105,6 +109,9 @@ func _exit_tree() -> void:
 
 	remove_import_plugin(import_plugin)
 	import_plugin = null
+
+	remove_export_plugin(export_plugin)
+	export_plugin = null
 
 	remove_inspector_plugin(inspector_plugin)
 	inspector_plugin = null
