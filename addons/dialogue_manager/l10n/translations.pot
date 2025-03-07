@@ -26,6 +26,9 @@ msgstr ""
 msgid "save_all_files"
 msgstr ""
 
+msgid "all"
+msgstr ""
+
 msgid "find_in_files"
 msgstr ""
 

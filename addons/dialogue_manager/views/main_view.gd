@@ -374,6 +374,7 @@ func apply_theme() -> void:
 		open_button.tooltip_text = DMConstants.translate(&"open_a_file")
 
 		save_all_button.icon = get_theme_icon("Save", "EditorIcons")
+		save_all_button.text = DMConstants.translate(&"all")
 		save_all_button.tooltip_text = DMConstants.translate(&"start_all_files")
 
 		find_in_files_button.icon = get_theme_icon("ViewportZoom", "EditorIcons")
