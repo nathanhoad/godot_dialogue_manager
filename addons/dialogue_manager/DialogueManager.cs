@@ -344,6 +344,7 @@ namespace DialogueManagerRuntime
 
         public DialogueLine(RefCounted data)
         {
+            id = (string)data.Get("id");
             type = (string)data.Get("type");
             next_id = (string)data.Get("next_id");
             character = (string)data.Get("character");
