@@ -4,8 +4,15 @@ const IGNORED_PATHS = [
 	"/assets",
 	"/components",
 	"/l10n",
-	"/views"
+	"/views",
+	"inspector_plugin",
+	"test_scene"
 ]
+
+
+func _get_name() -> String:
+	return "Dialogue Manager Export Plugin"
+
 
 func _export_file(path: String, type: String, features: PackedStringArray) -> void:
 	var plugin_path: String = Engine.get_meta("DialogueManagerPlugin").get_plugin_path()
