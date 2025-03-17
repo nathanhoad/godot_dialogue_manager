@@ -38,6 +38,7 @@ var TOKEN_DEFINITIONS: Dictionary = {
 	DMConstants.TOKEN_NUMBER: RegEx.create_from_string("^\\-?\\d+(\\.\\d+)?"),
 	DMConstants.TOKEN_OPERATOR: RegEx.create_from_string("^(\\+|\\-|\\*|/|%)"),
 	DMConstants.TOKEN_COMMA: RegEx.create_from_string("^,"),
+	DMConstants.TOKEN_NULL_COALESCE: RegEx.create_from_string("^\\?\\."),
 	DMConstants.TOKEN_DOT: RegEx.create_from_string("^\\."),
 	DMConstants.TOKEN_STRING: RegEx.create_from_string("^&?(\".*?\"|\'.*?\')"),
 	DMConstants.TOKEN_NOT: RegEx.create_from_string("^(not( |$)|!)"),

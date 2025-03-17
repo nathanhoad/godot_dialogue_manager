@@ -447,3 +447,32 @@ Nathan: That should not be null.
 
 	await resource.get_next_dialogue_line("start", [extra_state])
 	assert(extra_state.what_is_self == resource, "Self should be the given DialogueResource.")
+
+
+func test_can_parse_null_coalesce() -> void:
+	var output = compile("
+~ start
+if StateForTests.something_null?.begins_with(\"value\") == true:
+	Nathan: Should not be here.
+else:
+	Nathan: Should be here.
+=> END")
+
+	assert(output.errors.size() == 0, "Should have no errors.")
+
+
+func test_can_handle_null_coalesce() -> void:
+	var resource = create_resource("
+~ start
+if StateForTests.something_null?.begins_with(\"value\") == true:
+	Nathan: Should not be here.
+else:
+	Nathan: Should be here.
+=> END")
+
+	var line = await resource.get_next_dialogue_line("start")
+	assert(line.text == "Should be here.", "Should coalesce to null and not pass condition.")
+
+	StateForTests.something_null = "value is not null"
+	line = await resource.get_next_dialogue_line("start")
+	assert(line.text == "Should not be here.", "Should now pass condition.")

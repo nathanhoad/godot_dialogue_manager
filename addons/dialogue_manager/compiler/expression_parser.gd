@@ -211,10 +211,11 @@ func _build_token_tree(tokens: Array[Dictionary], line_type: String, expected_cl
 
 			DMConstants.TOKEN_COMMA, \
 			DMConstants.TOKEN_COLON, \
-			DMConstants.TOKEN_DOT:
+			DMConstants.TOKEN_DOT, \
+			DMConstants.TOKEN_NULL_COALESCE:
 				tree.append({
 					type = token.type,
-						i = token.index
+					i = token.index
 				})
 
 			DMConstants.TOKEN_COMPARISON, \
@@ -230,7 +231,7 @@ func _build_token_tree(tokens: Array[Dictionary], line_type: String, expected_cl
 				tree.append({
 					type = token.type,
 					value = value,
-						i = token.index
+					i = token.index
 				})
 
 			DMConstants.TOKEN_STRING:
@@ -349,6 +350,7 @@ func _check_next_token(token: Dictionary, next_tokens: Array[Dictionary], line_t
 		DMConstants.TOKEN_OPERATOR, \
 		DMConstants.TOKEN_COMMA, \
 		DMConstants.TOKEN_DOT, \
+		DMConstants.TOKEN_NULL_COALESCE, \
 		DMConstants.TOKEN_NOT, \
 		DMConstants.TOKEN_AND_OR, \
 		DMConstants.TOKEN_DICTIONARY_REFERENCE:
