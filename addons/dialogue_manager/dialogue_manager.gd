@@ -867,7 +867,18 @@ func _resolve(tokens: Array, extra_game_states: Array):
 		limit += 1
 		var token: Dictionary = tokens[i]
 
-		if token.type == DMConstants.TOKEN_FUNCTION:
+		if token.type == DMConstants.TOKEN_NULL_COALESCE:
+			var caller: Dictionary = tokens[i - 1]
+			if caller.value == null:
+				# If the caller is null then the method/property is also null
+				caller.type = DMConstants.TOKEN_VALUE
+				caller.value = null
+				tokens.remove_at(i + 1)
+				tokens.remove_at(i)
+			else:
+				token.type = DMConstants.TOKEN_DOT
+
+		elif token.type == DMConstants.TOKEN_FUNCTION:
 			var function_name: String = token.function
 			var args = await _resolve_each(token.value, extra_game_states)
 			if tokens[i - 1].type == DMConstants.TOKEN_DOT:
@@ -1330,6 +1341,9 @@ func _is_valid(line: DialogueLine) -> bool:
 
 # Check that a thing has a given method.
 func _thing_has_method(thing, method: String, args: Array) -> bool:
+	if not is_instance_valid(thing):
+		return false
+
 	if Builtins.is_supported(thing, method):
 		return thing != _autoloads
 	elif thing is Dictionary:
