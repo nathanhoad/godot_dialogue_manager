@@ -48,6 +48,5 @@ func _parse_file(path: String) -> Array[PackedStringArray]:
 
 	return msgs
 
-
 func _get_recognized_extensions() -> PackedStringArray:
 	return ["dialogue"]

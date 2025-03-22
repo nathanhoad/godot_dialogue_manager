@@ -236,7 +236,7 @@ namespace DialogueManagerRuntime
                     Variant value = (Variant)taskResult.GetType().GetProperty("Result").GetValue(taskResult);
                     EmitSignal(SignalName.Resolved, value);
                 }
-                catch (Exception err)
+                catch (Exception)
                 {
                     EmitSignal(SignalName.Resolved);
                 }

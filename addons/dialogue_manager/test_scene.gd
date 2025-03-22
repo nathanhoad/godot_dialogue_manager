@@ -10,7 +10,7 @@ const DialogueResource = preload("./dialogue_resource.gd")
 
 
 func _ready():
-	if not Engine.is_embedded_in_editor:
+	if not Window.is_embedded:
 		var window: Window = get_viewport()
 		var screen_index: int = DisplayServer.get_primary_screen()
 		window.position = Vector2(DisplayServer.screen_get_position(screen_index)) + (DisplayServer.screen_get_size(screen_index) - window.size) * 0.5
