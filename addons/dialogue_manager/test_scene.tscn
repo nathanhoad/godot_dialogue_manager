@@ -1,6 +1,6 @@
 [gd_scene load_steps=2 format=3 uid="uid://ugd552efvil0"]
 
-[ext_resource type="Script" path="res://addons/dialogue_manager/test_scene.gd" id="1_yupoh"]
+[ext_resource type="Script" uid="uid://c8e16qdgu40wo" path="res://addons/dialogue_manager/test_scene.gd" id="1_yupoh"]
 
 [node name="TestScene" type="Node2D"]
 script = ExtResource("1_yupoh")
