@@ -98,10 +98,14 @@ var current_file_path: String = "":
 			title_list.show()
 			code_edit.show()
 
+			var cursor: Vector2 = DMSettings.get_caret(current_file_path)
+			var scroll_vertical: int = DMSettings.get_scroll(current_file_path)
+
 			code_edit.text = open_buffers[current_file_path].text
 			code_edit.errors = []
 			code_edit.clear_undo_history()
-			code_edit.set_cursor(DMSettings.get_caret(current_file_path))
+			code_edit.set_cursor(cursor)
+			code_edit.scroll_vertical = scroll_vertical
 			code_edit.grab_focus()
 
 			_on_code_edit_text_changed()
@@ -176,6 +180,8 @@ func _ready() -> void:
 	Engine.get_meta("DMCache").file_content_changed.connect(_on_cache_file_content_changed)
 
 	EditorInterface.get_file_system_dock().files_moved.connect(_on_files_moved)
+
+	code_edit.get_v_scroll_bar().value_changed.connect(_on_code_edit_scroll_changed)
 
 
 func _exit_tree() -> void:
@@ -981,6 +987,10 @@ func _on_code_edit_text_changed() -> void:
 	save_all_button.disabled = open_buffers.values().filter(func(d): return d.text != d.pristine_text).size() == 0
 
 	parse_timer.start(1)
+
+
+func _on_code_edit_scroll_changed(value: int) -> void:
+	DMSettings.set_scroll(current_file_path, code_edit.scroll_vertical)
 
 
 func _on_code_edit_active_title_change(title: String) -> void:
