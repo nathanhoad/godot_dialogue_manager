@@ -164,7 +164,7 @@ func get_line(resource: DialogueResource, key: String, extra_game_states: Array)
 	if not resource.lines.has(key):
 		assert(false, DMConstants.translate(&"errors.key_not_found").format({ key = key }))
 
-	var data: Dictionary = resource.lines.get(key)
+	var data: Dictionary = resource.lines.get(key).duplicate(true)
 
 	# If next_id is an expression we need to resolve it.
 	if data.has(&"next_id_expression"):
@@ -207,14 +207,13 @@ func get_line(resource: DialogueResource, key: String, extra_game_states: Array)
 				cummulative_weight += sibling.weight
 
 	# Find any simultaneously said lines.
-	var concurrent_lines: Array[DialogueLine] = []
 	if data.has(&"concurrent_lines"):
 		# If the list includes this line then it isn't the origin line so ignore it.
 		if not data.concurrent_lines.has(data.id):
-			for concurrent_id: String in data.concurrent_lines:
-				var concurrent_line: DialogueLine = await get_line(resource, concurrent_id, extra_game_states)
-				if concurrent_line:
-					concurrent_lines.append(concurrent_line)
+			# Resolve IDs to their actual lines.
+			data.concurrent_lines = data.concurrent_lines.map(func(line_id):
+				return await get_line(resource, line_id, extra_game_states)
+			)
 
 	# If this line is blank and it's the last line then check for returning snippets.
 	if data.type in [DMConstants.TYPE_COMMENT, DMConstants.TYPE_UNKNOWN]:
@@ -252,7 +251,6 @@ func get_line(resource: DialogueResource, key: String, extra_game_states: Array)
 
 	# Set up a line object.
 	var line: DialogueLine = await create_dialogue_line(data, extra_game_states)
-	line.concurrent_lines = concurrent_lines
 
 	# If the jump point somehow has no content then just end.
 	if not line: return null
