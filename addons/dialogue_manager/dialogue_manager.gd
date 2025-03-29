@@ -1356,7 +1356,7 @@ func _thing_has_method(thing, method: String, args: Array) -> bool:
 	if thing.has_method(method):
 		return true
 
-	if thing.get_script().resource_path.ends_with(".cs"):
+	if thing.get_script() and thing.get_script().resource_path.ends_with(".cs"):
 		# If we get this far then the method might be a C# method with a Task return type
 		return _get_dotnet_dialogue_manager().ThingHasMethod(thing, method, args)
 
