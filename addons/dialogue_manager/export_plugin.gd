@@ -3,7 +3,6 @@ class_name DMExportPlugin extends EditorExportPlugin
 const IGNORED_PATHS = [
 	"/assets",
 	"/components",
-	"/l10n",
 	"/views",
 	"inspector_plugin",
 	"test_scene"
