@@ -1149,3 +1149,4 @@ func _on_close_confirmation_dialog_custom_action(action: StringName) -> void:
 func _on_find_in_files_result_selected(path: String, cursor: Vector2, length: int) -> void:
 	open_file(path)
 	code_edit.select(cursor.y, cursor.x, cursor.y, cursor.x + length)
+	code_edit.set_line_as_center_visible(cursor.y)
