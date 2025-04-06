@@ -85,9 +85,10 @@ func _get_line_syntax_highlighting(line: int) -> Dictionary:
 
 			var dialogue_text: String = text.substr(index, text.find("=>"))
 
-			# Highlight character name
+			# Highlight character name (but ignore ":" within line ID reference)
 			var split_index: int = dialogue_text.replace("\\:", "??").find(":")
-			colors[index + split_index + 1] = { color = theme.text_color }
+			if text.substr(split_index - 3, 3) != "[ID":
+				colors[index + split_index + 1] = { color = theme.text_color }
 
 			# Interpolation
 			var replacements: Array[RegExMatch] = regex.REPLACEMENTS_REGEX.search_all(dialogue_text)
