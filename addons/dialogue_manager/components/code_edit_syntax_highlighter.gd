@@ -89,6 +89,9 @@ func _get_line_syntax_highlighting(line: int) -> Dictionary:
 			var split_index: int = dialogue_text.replace("\\:", "??").find(":")
 			if text.substr(split_index - 3, 3) != "[ID":
 				colors[index + split_index + 1] = { color = theme.text_color }
+			else:
+				# If there's no character name then just highlight the text as dialogue.
+				colors[index] = { color = theme.text_color }
 
 			# Interpolation
 			var replacements: Array[RegExMatch] = regex.REPLACEMENTS_REGEX.search_all(dialogue_text)
