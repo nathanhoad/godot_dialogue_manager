@@ -820,7 +820,11 @@ func parse_character_and_dialogue(tree_line: DMTreeLine, line: DMCompiledLine, s
 
 	# If there was no manual translation key then just use the text itself
 	if line.translation_key == "":
-		line.translation_key = text
+		# Show an error if missing translations is enabled
+		if DMSettings.get_setting(DMSettings.MISSING_TRANSLATIONS_ARE_ERRORS, false):
+			result = add_error(tree_line.line_number, tree_line.indent, DMConstants.ERR_MISSING_ID)
+		else:
+			line.translation_key = text
 
 	line.text = text
 
@@ -830,9 +834,6 @@ func parse_character_and_dialogue(tree_line: DMTreeLine, line: DMCompiledLine, s
 			result = add_error(tree_line.line_number, tree_line.indent, DMConstants.ERR_DUPLICATE_ID)
 		else:
 			_known_translation_keys[line.translation_key] = line.text
-	# Show an error if missing translations is enabled
-	elif DMSettings.get_setting(DMSettings.MISSING_TRANSLATIONS_ARE_ERRORS, false):
-		result = add_error(tree_line.line_number, tree_line.indent, DMConstants.ERR_MISSING_ID)
 
 	return result
 
