@@ -687,19 +687,31 @@ func parse_dialogue_line(tree_line: DMTreeLine, line: DMCompiledLine, siblings: 
 	if tree_line.text.begins_with("\\=>"): tree_line.text = tree_line.text.substr(1)
 	if tree_line.text.begins_with("\\%"): tree_line.text = tree_line.text.substr(1)
 
-	# Append any further dialogue
-	for i in range(0, tree_line.children.size()):
-		var child: DMTreeLine = tree_line.children[i]
-		if child.type == DMConstants.TYPE_DIALOGUE:
-			tree_line.text += "\n" + child.text
-		else:
-			result = add_error(child.line_number, child.indent, DMConstants.ERR_INVALID_INDENTATION)
-
 	# Extract the static line ID
 	var static_line_id: String = extract_static_line_id(tree_line.text)
 	if static_line_id:
 		tree_line.text = tree_line.text.replace("[ID:%s]" % [static_line_id], "")
+		# trim extra space character from the end
+		tree_line.text = tree_line.text.strip_edges(true)
 		line.translation_key = static_line_id
+	
+	# Trim trailing whitespace from parent
+	tree_line.text = tree_line.text.strip_edges(false, true)
+	
+	# Append any further dialogue
+	for i in range(0, tree_line.children.size()):
+		var child: DMTreeLine = tree_line.children[i]
+		if child.type == DMConstants.TYPE_DIALOGUE:
+			# Strip [ID:...] from child.text before appending
+			var child_text := child.text
+			var child_static_line_id: String = extract_static_line_id(child_text)
+			if child_static_line_id:
+				child_text = child_text.replace("[ID:%s]" % [child_static_line_id], "")
+			# Trim trailing whitespace from child
+			child_text = child_text.strip_edges(false, true)
+			tree_line.text += "\n" + child_text
+		else:
+			result = add_error(child.line_number, child.indent, DMConstants.ERR_INVALID_INDENTATION)
 
 	# Check for simultaneous lines
 	if tree_line.text.begins_with("| "):
