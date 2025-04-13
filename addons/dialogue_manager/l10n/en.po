@@ -324,6 +324,12 @@ msgstr "Concurrent lines need an origin line that doesn't start with \"| \"."
 msgid "errors.goto_not_allowed_on_concurrect_lines"
 msgstr "Goto references are not allowed on concurrent dialogue lines."
 
+msgid "errors.unexpected_syntax_on_nested_dialogue_line"
+msgstr "Nested dialogue lines may only contain dialogue."
+
+msgid "errors.err_nested_dialogue_invalid_jump"
+msgstr "Only the last line of nested dialogue is allowed to include a jump."
+
 msgid "errors.unknown"
 msgstr "Unknown syntax."
 

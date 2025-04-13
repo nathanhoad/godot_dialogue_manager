@@ -314,6 +314,12 @@ msgstr ""
 msgid "errors.goto_not_allowed_on_concurrect_lines"
 msgstr ""
 
+msgid "errors.unexpected_syntax_on_nested_dialogue_line"
+msgstr ""
+
+msgid "errors.err_nested_dialogue_invalid_jump"
+msgstr ""
+
 msgid "errors.unknown"
 msgstr ""
 

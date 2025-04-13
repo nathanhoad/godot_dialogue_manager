@@ -508,6 +508,8 @@ func generate_translations_keys() -> void:
 	var key_regex = RegEx.new()
 	key_regex.compile("\\[ID:(?<key>.*?)\\]")
 
+	var compiled_lines: Dictionary = DMCompiler.compile_string(code_edit.text, "").lines
+
 	# Make list of known keys
 	var known_keys = {}
 	for i in range(0, lines.size()):
@@ -530,6 +532,7 @@ func generate_translations_keys() -> void:
 		var l = line.strip_edges()
 
 		if not [DMConstants.TYPE_DIALOGUE, DMConstants.TYPE_RESPONSE].has(DMCompiler.get_line_type(l)): continue
+		if not compiled_lines.has(str(i)): continue
 
 		if "[ID:" in line: continue
 
