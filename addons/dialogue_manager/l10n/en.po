@@ -5,7 +5,7 @@ msgstr ""
 "PO-Revision-Date: \n"
 "Last-Translator: \n"
 "Language-Team: \n"
-"Language: de\n"
+"Language: en\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -32,6 +32,9 @@ msgstr "Clear recent files"
 
 msgid "save_all_files"
 msgstr "Save all files"
+
+msgid "all"
+msgstr "All"
 
 msgid "find_in_files"
 msgstr "Find in files..."
@@ -320,6 +323,12 @@ msgstr "Concurrent lines need an origin line that doesn't start with \"| \"."
 
 msgid "errors.goto_not_allowed_on_concurrect_lines"
 msgstr "Goto references are not allowed on concurrent dialogue lines."
+
+msgid "errors.unexpected_syntax_on_nested_dialogue_line"
+msgstr "Nested dialogue lines may only contain dialogue."
+
+msgid "errors.err_nested_dialogue_invalid_jump"
+msgstr "Only the last line of nested dialogue is allowed to include a jump."
 
 msgid "errors.unknown"
 msgstr "Unknown syntax."

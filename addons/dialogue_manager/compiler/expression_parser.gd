@@ -2,6 +2,9 @@
 class_name DMExpressionParser extends RefCounted
 
 
+var include_comments: bool = false
+
+
 # Reference to the common [RegEx] that the parser needs.
 var regex: DMCompilerRegEx = DMCompilerRegEx.new()
 
@@ -94,6 +97,14 @@ func _build_token_tree(tokens: Array[Dictionary], line_type: String, expected_cl
 			return [_build_token_tree_error(error, error_token.index), tokens]
 
 		match token.type:
+			DMConstants.TOKEN_COMMENT:
+				if include_comments:
+					tree.append({
+						type = DMConstants.TOKEN_COMMENT,
+						value = token.value,
+						i = token.index
+					})
+
 			DMConstants.TOKEN_FUNCTION:
 				var sub_tree = _build_token_tree(tokens, line_type, DMConstants.TOKEN_PARENS_CLOSE)
 
@@ -211,10 +222,11 @@ func _build_token_tree(tokens: Array[Dictionary], line_type: String, expected_cl
 
 			DMConstants.TOKEN_COMMA, \
 			DMConstants.TOKEN_COLON, \
-			DMConstants.TOKEN_DOT:
+			DMConstants.TOKEN_DOT, \
+			DMConstants.TOKEN_NULL_COALESCE:
 				tree.append({
 					type = token.type,
-						i = token.index
+					i = token.index
 				})
 
 			DMConstants.TOKEN_COMPARISON, \
@@ -230,7 +242,7 @@ func _build_token_tree(tokens: Array[Dictionary], line_type: String, expected_cl
 				tree.append({
 					type = token.type,
 					value = value,
-						i = token.index
+					i = token.index
 				})
 
 			DMConstants.TOKEN_STRING:
@@ -349,6 +361,7 @@ func _check_next_token(token: Dictionary, next_tokens: Array[Dictionary], line_t
 		DMConstants.TOKEN_OPERATOR, \
 		DMConstants.TOKEN_COMMA, \
 		DMConstants.TOKEN_DOT, \
+		DMConstants.TOKEN_NULL_COALESCE, \
 		DMConstants.TOKEN_NOT, \
 		DMConstants.TOKEN_AND_OR, \
 		DMConstants.TOKEN_DICTIONARY_REFERENCE:

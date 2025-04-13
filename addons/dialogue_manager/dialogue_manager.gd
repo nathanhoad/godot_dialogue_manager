@@ -31,6 +31,9 @@ signal dialogue_ended(resource: DialogueResource)
 ## Used internally.
 signal bridge_get_next_dialogue_line_completed(line: DialogueLine)
 
+## Used internally
+signal bridge_dialogue_started(resource: DialogueResource)
+
 ## Used inernally
 signal bridge_mutated()
 
@@ -203,16 +206,6 @@ func get_line(resource: DialogueResource, key: String, extra_game_states: Array)
 			else:
 				cummulative_weight += sibling.weight
 
-	# Find any simultaneously said lines.
-	var concurrent_lines: Array[DialogueLine] = []
-	if data.has(&"concurrent_lines"):
-		# If the list includes this line then it isn't the origin line so ignore it.
-		if not data.concurrent_lines.has(data.id):
-			for concurrent_id: String in data.concurrent_lines:
-				var concurrent_line: DialogueLine = await get_line(resource, concurrent_id, extra_game_states)
-				if concurrent_line:
-					concurrent_lines.append(concurrent_line)
-
 	# If this line is blank and it's the last line then check for returning snippets.
 	if data.type in [DMConstants.TYPE_COMMENT, DMConstants.TYPE_UNKNOWN]:
 		if data.next_id in [DMConstants.ID_END, DMConstants.ID_NULL, null]:
@@ -249,10 +242,17 @@ func get_line(resource: DialogueResource, key: String, extra_game_states: Array)
 
 	# Set up a line object.
 	var line: DialogueLine = await create_dialogue_line(data, extra_game_states)
-	line.concurrent_lines = concurrent_lines
 
 	# If the jump point somehow has no content then just end.
 	if not line: return null
+
+	# Find any simultaneously said lines.
+	if data.has(&"concurrent_lines"):
+		# If the list includes this line then it isn't the origin line so ignore it.
+		if not data.concurrent_lines.has(data.id):
+			# Resolve IDs to their actual lines.
+			for line_id: String in data.concurrent_lines:
+				line.concurrent_lines.append(await get_line(resource, line_id, extra_game_states))
 
 	# If we are the first of a list of responses then get the other ones.
 	if data.type == DMConstants.TYPE_RESPONSE:
@@ -451,6 +451,7 @@ func _start_balloon(balloon: Node, resource: DialogueResource, title: String, ex
 		assert(false, DMConstants.translate(&"runtime.dialogue_balloon_missing_start_method"))
 
 	dialogue_started.emit(resource)
+	bridge_dialogue_started.emit(resource)
 
 
 # Get the path to the example balloon
@@ -520,7 +521,7 @@ func show_error_for_missing_state_value(message: String, will_show: bool = true)
 
 # Translate a string
 func translate(data: Dictionary) -> String:
-	if translation_source == DMConstants.TranslationSource.None:
+	if TranslationServer.get_loaded_locales().size() == 0 or translation_source == DMConstants.TranslationSource.None:
 		return data.text
 
 	var translation_key: String = data.get(&"translation_key", data.text)
@@ -863,7 +864,18 @@ func _resolve(tokens: Array, extra_game_states: Array):
 		limit += 1
 		var token: Dictionary = tokens[i]
 
-		if token.type == DMConstants.TOKEN_FUNCTION:
+		if token.type == DMConstants.TOKEN_NULL_COALESCE:
+			var caller: Dictionary = tokens[i - 1]
+			if caller.value == null:
+				# If the caller is null then the method/property is also null
+				caller.type = DMConstants.TOKEN_VALUE
+				caller.value = null
+				tokens.remove_at(i + 1)
+				tokens.remove_at(i)
+			else:
+				token.type = DMConstants.TOKEN_DOT
+
+		elif token.type == DMConstants.TOKEN_FUNCTION:
 			var function_name: String = token.function
 			var args = await _resolve_each(token.value, extra_game_states)
 			if tokens[i - 1].type == DMConstants.TOKEN_DOT:
@@ -1326,6 +1338,9 @@ func _is_valid(line: DialogueLine) -> bool:
 
 # Check that a thing has a given method.
 func _thing_has_method(thing, method: String, args: Array) -> bool:
+	if not is_instance_valid(thing):
+		return false
+
 	if Builtins.is_supported(thing, method):
 		return thing != _autoloads
 	elif thing is Dictionary:
@@ -1340,9 +1355,9 @@ func _thing_has_method(thing, method: String, args: Array) -> bool:
 	if thing.has_method(method):
 		return true
 
-	if method.to_snake_case() != method and DMSettings.check_for_dotnet_solution():
+	if thing.get_script() and thing.get_script().resource_path.ends_with(".cs"):
 		# If we get this far then the method might be a C# method with a Task return type
-		return _get_dotnet_dialogue_manager().ThingHasMethod(thing, method)
+		return _get_dotnet_dialogue_manager().ThingHasMethod(thing, method, args)
 
 	return false
 

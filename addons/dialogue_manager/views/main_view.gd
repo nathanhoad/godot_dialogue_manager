@@ -98,10 +98,14 @@ var current_file_path: String = "":
 			title_list.show()
 			code_edit.show()
 
+			var cursor: Vector2 = DMSettings.get_caret(current_file_path)
+			var scroll_vertical: int = DMSettings.get_scroll(current_file_path)
+
 			code_edit.text = open_buffers[current_file_path].text
 			code_edit.errors = []
 			code_edit.clear_undo_history()
-			code_edit.set_cursor(DMSettings.get_caret(current_file_path))
+			code_edit.set_cursor(cursor)
+			code_edit.scroll_vertical = scroll_vertical
 			code_edit.grab_focus()
 
 			_on_code_edit_text_changed()
@@ -176,6 +180,8 @@ func _ready() -> void:
 	Engine.get_meta("DMCache").file_content_changed.connect(_on_cache_file_content_changed)
 
 	EditorInterface.get_file_system_dock().files_moved.connect(_on_files_moved)
+
+	code_edit.get_v_scroll_bar().value_changed.connect(_on_code_edit_scroll_changed)
 
 
 func _exit_tree() -> void:
@@ -374,6 +380,7 @@ func apply_theme() -> void:
 		open_button.tooltip_text = DMConstants.translate(&"open_a_file")
 
 		save_all_button.icon = get_theme_icon("Save", "EditorIcons")
+		save_all_button.text = DMConstants.translate(&"all")
 		save_all_button.tooltip_text = DMConstants.translate(&"start_all_files")
 
 		find_in_files_button.icon = get_theme_icon("ViewportZoom", "EditorIcons")
@@ -501,6 +508,8 @@ func generate_translations_keys() -> void:
 	var key_regex = RegEx.new()
 	key_regex.compile("\\[ID:(?<key>.*?)\\]")
 
+	var compiled_lines: Dictionary = DMCompiler.compile_string(code_edit.text, "").lines
+
 	# Make list of known keys
 	var known_keys = {}
 	for i in range(0, lines.size()):
@@ -523,6 +532,7 @@ func generate_translations_keys() -> void:
 		var l = line.strip_edges()
 
 		if not [DMConstants.TYPE_DIALOGUE, DMConstants.TYPE_RESPONSE].has(DMCompiler.get_line_type(l)): continue
+		if not compiled_lines.has(str(i)): continue
 
 		if "[ID:" in line: continue
 
@@ -982,6 +992,10 @@ func _on_code_edit_text_changed() -> void:
 	parse_timer.start(1)
 
 
+func _on_code_edit_scroll_changed(value: int) -> void:
+	DMSettings.set_scroll(current_file_path, code_edit.scroll_vertical)
+
+
 func _on_code_edit_active_title_change(title: String) -> void:
 	title_list.select_title(title)
 
@@ -1138,3 +1152,4 @@ func _on_close_confirmation_dialog_custom_action(action: StringName) -> void:
 func _on_find_in_files_result_selected(path: String, cursor: Vector2, length: int) -> void:
 	open_file(path)
 	code_edit.select(cursor.y, cursor.x, cursor.y, cursor.x + length)
+	code_edit.set_line_as_center_visible(cursor.y)
