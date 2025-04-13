@@ -14,6 +14,8 @@ func _clear_highlighting_cache() -> void:
 
 
 func _get_line_syntax_highlighting(line: int) -> Dictionary:
+	expression_parser.include_comments = true
+
 	var colors: Dictionary = {}
 	var text_edit: TextEdit = get_text_edit()
 	var text: String = text_edit.get_line(line)
@@ -160,6 +162,9 @@ func _highlight_expression(tokens: Array, colors: Dictionary, index: int) -> int
 	for token: Dictionary in tokens:
 		last_index = token.i
 		match token.type:
+			DMConstants.TOKEN_COMMENT:
+				colors[index + token.i] = { color = theme.comments_color }
+
 			DMConstants.TOKEN_CONDITION, DMConstants.TOKEN_AND_OR:
 				colors[index + token.i] = { color = theme.conditions_color }
 

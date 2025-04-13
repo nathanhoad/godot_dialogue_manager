@@ -2,6 +2,9 @@
 class_name DMExpressionParser extends RefCounted
 
 
+var include_comments: bool = false
+
+
 # Reference to the common [RegEx] that the parser needs.
 var regex: DMCompilerRegEx = DMCompilerRegEx.new()
 
@@ -94,6 +97,14 @@ func _build_token_tree(tokens: Array[Dictionary], line_type: String, expected_cl
 			return [_build_token_tree_error(error, error_token.index), tokens]
 
 		match token.type:
+			DMConstants.TOKEN_COMMENT:
+				if include_comments:
+					tree.append({
+						type = DMConstants.TOKEN_COMMENT,
+						value = token.value,
+						i = token.index
+					})
+
 			DMConstants.TOKEN_FUNCTION:
 				var sub_tree = _build_token_tree(tokens, line_type, DMConstants.TOKEN_PARENS_CLOSE)
 
