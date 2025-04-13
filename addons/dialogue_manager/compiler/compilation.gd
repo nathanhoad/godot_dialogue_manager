@@ -691,6 +691,19 @@ func parse_dialogue_line(tree_line: DMTreeLine, line: DMCompiledLine, siblings: 
 	for i in range(0, tree_line.children.size()):
 		var child: DMTreeLine = tree_line.children[i]
 		if child.type == DMConstants.TYPE_DIALOGUE:
+			# Mark this as a dialogue child of another dialogue line.
+			child.is_nested_dialogue = true
+			var child_line = DMCompiledLine.new("", DMConstants.TYPE_DIALOGUE)
+			parse_character_and_dialogue(child, child_line, [], 0, parent)
+			var child_static_line_id: String = extract_static_line_id(child.text)
+			if child_line.character != "" or child_static_line_id != "":
+				add_error(child.line_number, child.indent, DMConstants.ERR_UNEXPECTED_SYNTAX_ON_NESTED_DIALOGUE_LINE)
+			# Check that only the last child (or none) has a jump reference
+			if i < tree_line.children.size() - 1 and " =>" in child.text:
+				add_error(child.line_number, child.indent, DMConstants.ERR_NESTED_DIALOGUE_INVALID_JUMP)
+			if i == 0 and " =>" in tree_line.text:
+				add_error(tree_line.line_number, tree_line.indent, DMConstants.ERR_NESTED_DIALOGUE_INVALID_JUMP)
+
 			tree_line.text += "\n" + child.text
 		else:
 			result = add_error(child.line_number, child.indent, DMConstants.ERR_INVALID_INDENTATION)
@@ -818,8 +831,9 @@ func parse_character_and_dialogue(tree_line: DMTreeLine, line: DMCompiledLine, s
 	# Replace any newlines.
 	text = text.replace("\\n", "\n").strip_edges()
 
-	# If there was no manual translation key then just use the text itself
-	if line.translation_key == "":
+	# If there was no manual translation key then just use the text itself (unless this is a
+	# child dialogue below another dialogue line).
+	if not tree_line.is_nested_dialogue and line.translation_key == "":
 		# Show an error if missing translations is enabled
 		if DMSettings.get_setting(DMSettings.MISSING_TRANSLATIONS_ARE_ERRORS, false):
 			result = add_error(tree_line.line_number, tree_line.indent, DMConstants.ERR_MISSING_ID)

@@ -120,6 +120,8 @@ const ERR_ONLY_ONE_ELSE_ALLOWED = 137
 const ERR_WHEN_MUST_BELONG_TO_MATCH = 138
 const ERR_CONCURRENT_LINE_WITHOUT_ORIGIN = 139
 const ERR_GOTO_NOT_ALLOWED_ON_CONCURRECT_LINES = 140
+const ERR_UNEXPECTED_SYNTAX_ON_NESTED_DIALOGUE_LINE = 141
+const ERR_NESTED_DIALOGUE_INVALID_JUMP = 142
 
 
 ## Get the error message
@@ -205,6 +207,10 @@ static func get_error_message(error: int) -> String:
 			return translate(&"errors.concurrent_line_without_origin")
 		ERR_GOTO_NOT_ALLOWED_ON_CONCURRECT_LINES:
 			return translate(&"errors.goto_not_allowed_on_concurrect_lines")
+		ERR_UNEXPECTED_SYNTAX_ON_NESTED_DIALOGUE_LINE:
+			return translate(&"errors.unexpected_syntax_on_nested_dialogue_line")
+		ERR_NESTED_DIALOGUE_INVALID_JUMP:
+			return translate(&"errors.err_nested_dialogue_invalid_jump")
 
 	return translate(&"errors.unknown")
 
