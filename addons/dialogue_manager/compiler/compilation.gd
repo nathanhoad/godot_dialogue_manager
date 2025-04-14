@@ -574,7 +574,7 @@ func parse_response_line(tree_line: DMTreeLine, line: DMCompiledLine, siblings: 
 
 	# Find the original response in this group of responses.
 	var original_response: DMTreeLine = tree_line
-	for i in range(sibling_index - 1, 0, -1):
+	for i in range(sibling_index - 1, -1, -1):
 		if siblings[i].type == DMConstants.TYPE_RESPONSE:
 			original_response = siblings[i]
 		elif siblings[i].type != DMConstants.TYPE_UNKNOWN:
