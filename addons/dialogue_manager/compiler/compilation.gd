@@ -703,7 +703,10 @@ func parse_dialogue_line(tree_line: DMTreeLine, line: DMCompiledLine, siblings: 
 				add_error(child.line_number, child.indent, DMConstants.ERR_NESTED_DIALOGUE_INVALID_JUMP)
 			if i == 0 and " =>" in tree_line.text:
 				add_error(tree_line.line_number, tree_line.indent, DMConstants.ERR_NESTED_DIALOGUE_INVALID_JUMP)
-
+			# before concatenating child text, remove extra whitespace in front of ID from parent text
+			if i == 0 and tree_line.text.contains(" [ID:"):
+				tree_line.text = RegEx.create_from_string(" +\\[ID:").sub(tree_line.text, "[ID:")
+			
 			tree_line.text += "\n" + child.text
 		else:
 			result = add_error(child.line_number, child.indent, DMConstants.ERR_INVALID_INDENTATION)
