@@ -244,3 +244,15 @@ Nathan: Hello.")
 
 	var line = await resource.get_next_dialogue_line("start")
 	assert(line.text == "Hello.", "Should jump to dialogue.")
+
+
+func test_can_resolve_static_line_id() -> void:
+	var resource = create_resource("
+~ start
+Nathan: First line [ID:FIRST]
+Nathan: Second line [ID:SECOND]
+Nathan: Third line [ID:THIRD]")
+
+	var id = DialogueManager.static_id_to_line_id(resource, "SECOND")
+	var line = await resource.get_next_dialogue_line(id)
+	assert(line.text == "Second line", "Should match second line")

@@ -439,6 +439,18 @@ func show_dialogue_balloon_scene(balloon_scene, resource: DialogueResource, titl
 	return balloon
 
 
+## Resolve a static line ID to an actual line ID
+func static_id_to_line_id(resource: DialogueResource, static_id: String) -> String:
+	var ids = static_id_to_line_ids(resource, static_id)
+	if ids.size() == 0: return ""
+	return ids[0]
+
+
+## Resolve a static line ID to any actual line IDs that match
+func static_id_to_line_ids(resource: DialogueResource, static_id: String) -> PackedStringArray:
+	return resource.lines.values().filter(func(l): return l.get(&"translation_key", "") == static_id).map(func(l): return l.id)
+
+
 # Call "start" on the given balloon.
 func _start_balloon(balloon: Node, resource: DialogueResource, title: String, extra_game_states: Array) -> void:
 	get_current_scene.call().add_child(balloon)
