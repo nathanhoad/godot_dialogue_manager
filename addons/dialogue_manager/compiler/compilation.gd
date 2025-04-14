@@ -250,13 +250,13 @@ func build_line_tree(raw_lines: PackedStringArray) -> DMTreeLine:
 			tree_line.notes = "\n".join(doc_comments)
 			doc_comments.clear()
 
-		# Empty lines are only kept so that we can work out groupings of things (eg. responses and
-		# randomised lines). Therefore we only need to keep one empty line in a row even if there
+		# Empty lines are only kept so that we can work out groupings of things (eg. randomised
+		# lines). Therefore we only need to keep one empty line in a row even if there
 		# are multiple. The indent of an empty line is assumed to be the same as the non-empty line
 		# following it. That way, grouping calculations should work.
 		if tree_line.type in [DMConstants.TYPE_UNKNOWN, DMConstants.TYPE_COMMENT] and raw_lines.size() > i + 1:
 			var next_line = raw_lines[i + 1]
-			if previous_line and previous_line.type in [DMConstants.TYPE_UNKNOWN, DMConstants.TYPE_COMMENT] and tree_line.type in [DMConstants.TYPE_UNKNOWN, DMConstants.TYPE_COMMENT]:
+			if get_line_type(next_line) in [DMConstants.TYPE_UNKNOWN, DMConstants.TYPE_COMMENT]:
 				continue
 			else:
 				tree_line.type = DMConstants.TYPE_UNKNOWN
@@ -574,7 +574,7 @@ func parse_response_line(tree_line: DMTreeLine, line: DMCompiledLine, siblings: 
 
 	# Find the original response in this group of responses.
 	var original_response: DMTreeLine = tree_line
-	for i in range(sibling_index - 1, 0, -1):
+	for i in range(sibling_index - 1, -1, -1):
 		if siblings[i].type == DMConstants.TYPE_RESPONSE:
 			original_response = siblings[i]
 		elif siblings[i].type != DMConstants.TYPE_UNKNOWN:
