@@ -161,6 +161,18 @@ namespace DialogueManagerRuntime
         }
 
 
+        public static Array<string> StaticIdToLineIds(Resource dialogueResource, string staticId)
+        {
+            return (Array<string>)Instance.Call("static_id_to_line_ids", dialogueResource, staticId);
+        }
+
+
+        public static string StaticIdToLineId(Resource dialogueResource, string staticId)
+        {
+            return (string)Instance.Call("static_id_to_line_id", dialogueResource, staticId);
+        }
+
+
         public static async void Mutate(Dictionary mutation, Array<Variant>? extraGameStates = null, bool isInlineMutation = false)
         {
             Instance.Call("_bridge_mutate", mutation, extraGameStates ?? new Array<Variant>(), isInlineMutation);
