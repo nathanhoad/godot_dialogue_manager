@@ -262,6 +262,10 @@ func build_line_tree(raw_lines: PackedStringArray) -> DMTreeLine:
 				tree_line.type = DMConstants.TYPE_UNKNOWN
 				tree_line.indent = get_indent(next_line)
 
+		# Nothing should be more than a single indent past its parent.
+		if tree_line.indent > parent_chain.size():
+			add_error(tree_line.line_number, tree_line.indent, DMConstants.ERR_INVALID_INDENTATION)
+
 		# Check for indentation changes
 		if tree_line.indent > parent_chain.size() - 1:
 			parent_chain.append(previous_line)
@@ -691,6 +695,9 @@ func parse_dialogue_line(tree_line: DMTreeLine, line: DMCompiledLine, siblings: 
 	for i in range(0, tree_line.children.size()):
 		var child: DMTreeLine = tree_line.children[i]
 		if child.type == DMConstants.TYPE_DIALOGUE:
+			# Nested dialogue lines cannot have further nested dialogue.
+			if child.children.size() > 0:
+				add_error(child.children[0].line_number, child.children[0].indent, DMConstants.ERR_INVALID_INDENTATION)
 			# Mark this as a dialogue child of another dialogue line.
 			child.is_nested_dialogue = true
 			var child_line = DMCompiledLine.new("", DMConstants.TYPE_DIALOGUE)
@@ -705,13 +712,15 @@ func parse_dialogue_line(tree_line: DMTreeLine, line: DMCompiledLine, siblings: 
 				add_error(tree_line.line_number, tree_line.indent, DMConstants.ERR_NESTED_DIALOGUE_INVALID_JUMP)
 
 			tree_line.text += "\n" + child.text
+		elif child.type == DMConstants.TYPE_UNKNOWN:
+			tree_line.text += "\n"
 		else:
 			result = add_error(child.line_number, child.indent, DMConstants.ERR_INVALID_INDENTATION)
 
 	# Extract the static line ID
 	var static_line_id: String = extract_static_line_id(tree_line.text)
 	if static_line_id:
-		tree_line.text = tree_line.text.replace("[ID:%s]" % [static_line_id], "")
+		tree_line.text = tree_line.text.replace(" [ID:", "[ID:").replace("[ID:%s]" % [static_line_id], "")
 		line.translation_key = static_line_id
 
 	# Check for simultaneous lines
