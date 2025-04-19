@@ -1,6 +1,7 @@
 using Godot;
 using Godot.Collections;
 using System;
+using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
 
@@ -180,6 +181,49 @@ namespace DialogueManagerRuntime
         }
 
 
+        public static Array<Dictionary> GetMembersForAutoload(Script script)
+        {
+            Array<Dictionary> members = new Array<Dictionary>();
+
+            string typeName = script.ResourcePath.GetFile().GetBaseName();
+            var matchingTypes = Assembly.GetExecutingAssembly().GetTypes().Where(t => t.Name == typeName);
+            foreach (var matchingType in matchingTypes)
+            {
+                var memberInfos = matchingType.GetMembers(BindingFlags.Instance | BindingFlags.Static | BindingFlags.Public | BindingFlags.DeclaredOnly);
+                foreach (var memberInfo in memberInfos)
+                {
+                    string type;
+                    switch (memberInfo.MemberType)
+                    {
+                        case MemberTypes.Field:
+                            if ((memberInfo as FieldInfo).FieldType.ToString().Contains("EventHandler"))
+                            {
+                                type = "signal";
+                            }
+                            else
+                            {
+                                type = "property";
+                            }
+                            break;
+                        case MemberTypes.Method:
+                            type = "method";
+                            break;
+
+                        default:
+                            continue;
+                    }
+
+                    members.Add(new Dictionary() {
+                        { "name", memberInfo.Name },
+                        { "type", type }
+                    });
+                }
+            }
+
+            return members;
+        }
+
+
         public bool ThingHasMethod(GodotObject thing, string method, Array<Variant> args)
         {
             var methodInfos = thing.GetType().GetMethods(BindingFlags.Instance | BindingFlags.Static | BindingFlags.Public | BindingFlags.DeclaredOnly);
@@ -248,7 +292,7 @@ namespace DialogueManagerRuntime
                     Variant value = (Variant)taskResult.GetType().GetProperty("Result").GetValue(taskResult);
                     EmitSignal(SignalName.Resolved, value);
                 }
-                catch (Exception err)
+                catch (Exception)
                 {
                     EmitSignal(SignalName.Resolved);
                 }

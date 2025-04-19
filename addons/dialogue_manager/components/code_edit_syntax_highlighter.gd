@@ -56,7 +56,7 @@ func _get_line_syntax_highlighting(line: int) -> Dictionary:
 			index = text.find(" ")
 			if index > -1:
 				var expression: Array = expression_parser.tokenise(text.substr(index), DMConstants.TYPE_CONDITION, 0)
-				if expression.size() == 0 or expression[0].type == DMConstants.TYPE_ERROR:
+				if expression.size() == 0:
 					colors[index] = { color = theme.critical_color }
 				else:
 					_highlight_expression(expression, colors, index)
@@ -65,7 +65,7 @@ func _get_line_syntax_highlighting(line: int) -> Dictionary:
 			colors[0] = { color = theme.mutations_color }
 			index = text.find(" ")
 			var expression: Array = expression_parser.tokenise(text.substr(index), DMConstants.TYPE_MUTATION, 0)
-			if expression.size() == 0 or expression[0].type == DMConstants.TYPE_ERROR:
+			if expression.size() == 0:
 				colors[index] = { color = theme.critical_color }
 			else:
 				_highlight_expression(expression, colors, index)

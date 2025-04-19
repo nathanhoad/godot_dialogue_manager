@@ -1062,7 +1062,7 @@ func extract_mutation(text: String) -> Dictionary:
 			}
 		elif expression[0].type == DMConstants.TYPE_ERROR:
 			return {
-				index = expression[0].index,
+				index = expression[0].i,
 				error = expression[0].value
 			}
 		else:
