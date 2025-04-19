@@ -638,7 +638,7 @@ func _get_game_states(extra_game_states: Array) -> Array:
 		game_states = [_autoloads]
 		# Add any other state shortcuts from settings
 		for node_name in DMSettings.get_setting(DMSettings.STATE_AUTOLOAD_SHORTCUTS, ""):
-			var state: Node = Engine.get_main_loop().root.get_node_or_null(node_name)
+			var state: Node = Engine.get_main_loop().root.get_node_or_null(NodePath(node_name))
 			if state:
 				game_states.append(state)
 
@@ -791,7 +791,7 @@ func _warn_about_state_name_collisions(target_key: String, extra_game_states: Ar
 	# Get the list of state shortcuts.
 	var state_shortcuts: Array = []
 	for node_name in DMSettings.get_setting(DMSettings.STATE_AUTOLOAD_SHORTCUTS, ""):
-		var state: Node = Engine.get_main_loop().root.get_node_or_null(node_name)
+		var state: Node = Engine.get_main_loop().root.get_node_or_null(NodePath(node_name))
 		if state:
 			state_shortcuts.append(state)
 

@@ -53,6 +53,9 @@ var font_size: int:
 
 var WEIGHTED_RANDOM_PREFIX: RegEx = RegEx.create_from_string("^\\%[\\d.]+\\s")
 
+var _autoloads: Dictionary[String, String] = {}
+var _autoload_member_cache: Dictionary[String, Dictionary] = {}
+
 
 func _ready() -> void:
 	# Add error gutter
@@ -64,6 +67,10 @@ func _ready() -> void:
 		add_comment_delimiter("#", "", true)
 
 	syntax_highlighter = DMSyntaxHighlighter.new()
+
+	# Keep track of any autoloads
+	ProjectSettings.settings_changed.connect(_on_project_settings_changed)
+	_on_project_settings_changed()
 
 
 func _gui_input(event: InputEvent) -> void:
@@ -141,6 +148,7 @@ func _request_code_completion(force: bool) -> void:
 	var cursor: Vector2 = get_cursor()
 	var current_line: String = get_line(cursor.y)
 
+	# Match jumps
 	if ("=> " in current_line or "=>< " in current_line) and (cursor.x > current_line.find("=>")):
 		var prompt: String = current_line.split("=>")[1]
 		if prompt.begins_with("< "):
@@ -166,9 +174,8 @@ func _request_code_completion(force: bool) -> void:
 					add_code_completion_option(CodeEdit.KIND_CLASS, title, title.substr(prompt.length()), theme_overrides.text_color, get_theme_icon("CombineLines", "EditorIcons"))
 			elif matches_prompt(prompt, title):
 				add_code_completion_option(CodeEdit.KIND_CLASS, title, title.substr(prompt.length()), theme_overrides.text_color, get_theme_icon("ArrowRight", "EditorIcons"))
-		update_code_completion_options(true)
-		return
 
+	# Match character names
 	var name_so_far: String = WEIGHTED_RANDOM_PREFIX.sub(current_line.strip_edges(), "")
 	if name_so_far != "" and name_so_far[0].to_upper() == name_so_far[0]:
 		# Only show names starting with that character
@@ -176,9 +183,69 @@ func _request_code_completion(force: bool) -> void:
 		if names.size() > 0:
 			for name in names:
 				add_code_completion_option(CodeEdit.KIND_CLASS, name + ": ", name.substr(name_so_far.length()) + ": ", theme_overrides.text_color, get_theme_icon("Sprite2D", "EditorIcons"))
-			update_code_completion_options(true)
-		else:
-			cancel_code_completion()
+
+	# Match autoloads on mutation lines
+	if current_line.strip_edges().begins_with("do") and (cursor.x > current_line.find("do ")):
+		var expression: String = current_line.substr(0, cursor.x).strip_edges().substr(3)
+		# Find the last couple of tokens
+		var possible_prompt: String = expression.reverse()
+		possible_prompt = possible_prompt.substr(0, possible_prompt.find(" "))
+		possible_prompt = possible_prompt.substr(0, possible_prompt.find("("))
+		possible_prompt = possible_prompt.reverse()
+		var segments: PackedStringArray = possible_prompt.split(".").slice(-2)
+		var auto_completes: Array[Dictionary] = []
+
+		# Autoloads and state shortcuts
+		if segments.size() == 1:
+			var prompt: String = segments[0]
+			for autoload in _autoloads.keys():
+				if matches_prompt(prompt, autoload):
+					auto_completes.append({
+						prompt = prompt,
+						text = autoload,
+						type = "script"
+					})
+			for autoload in DMSettings.get_setting(DMSettings.STATE_AUTOLOAD_SHORTCUTS, []):
+				for member: Dictionary in get_members_for_autoload(autoload):
+					if matches_prompt(prompt, member.name):
+						auto_completes.append({
+							prompt = prompt,
+							text = member.name,
+							type = member.type
+						})
+
+		# Members of an autoload
+		elif segments[0] in _autoloads.keys():
+			var prompt: String = segments[1]
+			for member: Dictionary in get_members_for_autoload(segments[0]):
+				if matches_prompt(prompt, member.name):
+					auto_completes.append({
+						prompt = prompt,
+						text = member.name,
+						type = member.type
+					})
+
+		auto_completes.sort_custom(func(a, b): return a.text < b.text)
+
+		for auto_complete in auto_completes:
+			var icon: Texture2D
+			var text: String = auto_complete.text
+			match auto_complete.type:
+				"script":
+					icon = get_theme_icon("Script", "EditorIcons")
+				"property":
+					icon = get_theme_icon("MemberProperty", "EditorIcons")
+				"method":
+					icon = get_theme_icon("MemberMethod", "EditorIcons")
+					text += "()"
+				"signal":
+					icon = get_theme_icon("MemberSignal", "EditorIcons")
+			var insert: String = text.substr(auto_complete.prompt.length())
+			add_code_completion_option(CodeEdit.KIND_CLASS, text, insert, theme_overrides.text_color, icon)
+
+	update_code_completion_options(true)
+	if get_code_completion_options().size() == 0:
+		cancel_code_completion()
 
 
 func _filter_code_completion_candidates(candidates: Array) -> Array:
@@ -190,17 +257,21 @@ func _confirm_code_completion(replace: bool) -> void:
 	var completion = get_code_completion_option(get_code_completion_selected_index())
 	begin_complex_operation()
 	# Delete any part of the text that we've already typed
-	for i in range(0, completion.display_text.length() - completion.insert_text.length()):
-		backspace()
+	if completion.insert_text.length() > 0:
+		for i in range(0, completion.display_text.length() - completion.insert_text.length()):
+			backspace()
 	# Insert the whole match
 	insert_text_at_caret(completion.display_text)
 	end_complex_operation()
+
+	if completion.display_text.ends_with("()"):
+		set_cursor(get_cursor() - Vector2.RIGHT)
 
 	# Close the autocomplete menu on the next tick
 	call_deferred("cancel_code_completion")
 
 
-### Helpers
+#region Helpers
 
 
 # Get the current caret as a Vector2
@@ -217,6 +288,46 @@ func set_cursor(from_cursor: Vector2) -> void:
 # Check if a prompt is the start of a string without actually being that string
 func matches_prompt(prompt: String, matcher: String) -> bool:
 	return prompt.length() < matcher.length() and matcher.to_lower().begins_with(prompt.to_lower())
+
+
+func get_members_for_autoload(autoload_name: String) -> Array[Dictionary]:
+	# Debounce method list lookups
+	if _autoload_member_cache.has(autoload_name) and _autoload_member_cache.get(autoload_name).get("at") > Time.get_ticks_msec() - 5000:
+		return _autoload_member_cache.get(autoload_name).get("members")
+
+	var autoload = load(_autoloads.get(autoload_name))
+	var script: Script = autoload if autoload is Script else autoload.get_script()
+
+	if not is_instance_valid(script): return []
+
+	var members: Array[Dictionary] = []
+	if script.resource_path.ends_with(".gd"):
+		for m: Dictionary in script.get_script_method_list():
+			members.append({
+				name = m.name,
+				type = "method"
+			})
+		for m: Dictionary in script.get_script_property_list():
+			members.append({
+				name = m.name,
+				type = "property"
+			})
+		for m: Dictionary in script.get_script_signal_list():
+			members.append({
+				name = m.name,
+				type = "signal"
+			})
+	elif script.resource_path.ends_with(".cs"):
+		var dotnet = load(Engine.get_meta("DialogueManagerPlugin").get_plugin_path() + "/DialogueManager.cs").new()
+		for m: Dictionary in dotnet.GetMembersForAutoload(script):
+			members.append(m)
+
+	_autoload_member_cache[autoload_name] = {
+		at = Time.get_ticks_msec(),
+		members = members
+	}
+
+	return members
 
 
 ## Get a list of titles from the current text
@@ -417,7 +528,18 @@ func move_line(offset: int) -> void:
 	scroll_vertical = starting_scroll + offset
 
 
-### Signals
+#endregion
+
+#region Signals
+
+
+func _on_project_settings_changed() -> void:
+	_autoloads = {}
+	var project = ConfigFile.new()
+	project.load("res://project.godot")
+	for autoload in project.get_section_keys("autoload"):
+		if autoload != "DialogueManager":
+			_autoloads[autoload] = project.get_value("autoload", autoload).substr(1)
 
 
 func _on_code_edit_symbol_validate(symbol: String) -> void:
@@ -456,3 +578,6 @@ func _on_code_edit_gutter_clicked(line: int, gutter: int) -> void:
 	var line_errors = errors.filter(func(error): return error.line_number == line)
 	if line_errors.size() > 0:
 		error_clicked.emit(line)
+
+
+#endregion
