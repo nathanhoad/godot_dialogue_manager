@@ -14,6 +14,9 @@ var next_id: String = ""
 ## [code]true[/code] if the condition of this line was met.
 var is_allowed: bool = true
 
+## The original condition text.
+var condition_as_text: String = ""
+
 ## A character (depending on the "characters in responses" behaviour setting).
 var character: String = ""
 
@@ -45,6 +48,7 @@ func _init(data: Dictionary = {}) -> void:
 		text_replacements = data.text_replacements
 		tags = data.tags
 		translation_key = data.translation_key
+		condition_as_text = data.condition_as_text
 
 
 func _to_string() -> String:

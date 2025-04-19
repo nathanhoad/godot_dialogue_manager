@@ -614,12 +614,13 @@ func create_response(data: Dictionary, extra_game_states: Array) -> DialogueResp
 		type = DMConstants.TYPE_RESPONSE,
 		next_id = data.next_id,
 		is_allowed = data.is_allowed,
+		condition_as_text = data.get(&"condition_as_text", ""),
 		character = await get_resolved_character(data, extra_game_states),
 		character_replacements = data.get(&"character_replacements", [] as Array[Dictionary]),
 		text = resolved_data.text,
 		text_replacements = data.get(&"text_replacements", [] as Array[Dictionary]),
 		tags = data.get(&"tags", []),
-		translation_key = data.get(&"translation_key", data.text)
+		translation_key = data.get(&"translation_key", data.text),
 	})
 
 
