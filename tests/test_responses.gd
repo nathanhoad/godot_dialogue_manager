@@ -9,7 +9,7 @@ Nathan: Here are some options.
 - Nested
 	Nathan: Nested dialogue.
 - Jump => start
-- Condition [if true]
+- Condition [if 25 > 10]
 Nathan: Line after.")
 
 	assert(output.errors.is_empty(), "Should be no errors.")
@@ -22,6 +22,7 @@ Nathan: Line after.")
 	assert(responses[2].text == "Jump", "Should match text")
 	assert(responses[2].next_id == "2", "Should jump to start")
 	assert(responses[3].text == "Condition", "Should match text")
+	assert(responses[3].condition_as_text == "25 > 10", "Should give the original condition text")
 	assert("expression" in responses[3].condition, "Should match text")
 
 	output = compile("

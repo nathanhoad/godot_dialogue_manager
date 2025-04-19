@@ -22,6 +22,8 @@ var text: String = ""
 var children: Array[DMTreeLine] = []
 ## Any doc comments attached to this line.
 var notes: String = ""
+## Is this a dialogue line that is the child of another dialogue line?
+var is_nested_dialogue: bool = false
 
 
 func _init(initial_id: String) -> void:

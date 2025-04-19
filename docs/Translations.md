@@ -31,8 +31,6 @@ All `.dialogue` files are automatically added to the POT Generation list in **Pr
 
 _NOTE: If static translation keys are present in lines of dialogue that key will be used as POT context for that line, and the dialogue itself will be the actual POT key._
 
-_NOTE: If static translation keys are present in lines of dialogue that key will be used as POT context for that line, and the dialogue itself will be the actual POT key._
-
 ## Exporting lines as CSV
 
 You can export translations as CSV from the "Translations" menu in the dialogue editor.

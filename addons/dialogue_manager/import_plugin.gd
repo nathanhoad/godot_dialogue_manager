@@ -5,12 +5,15 @@ class_name DMImportPlugin extends EditorImportPlugin
 signal compiled_resource(resource: Resource)
 
 
-const COMPILER_VERSION = 14
+const COMPILER_VERSION = 15
 
 
 func _get_importer_name() -> String:
-	# NOTE: A change to this forces a re-import of all dialogue
-	return "dialogue_manager_compiler_%s" % COMPILER_VERSION
+	return "dialogue_manager"
+
+
+func _get_format_version() -> int:
+	return COMPILER_VERSION
 
 
 func _get_visible_name() -> String:
@@ -74,7 +77,7 @@ func _import(source_file: String, save_path: String, options: Dictionary, platfo
 	if result.errors.size() > 0:
 		printerr("%d errors found in %s" % [result.errors.size(), source_file])
 		cache.add_errors_to_file(source_file, result.errors)
-		return ERR_PARSE_ERROR
+		return OK
 
 	# Get the current addon version
 	var config: ConfigFile = ConfigFile.new()

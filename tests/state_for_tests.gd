@@ -8,6 +8,9 @@ var dictionary: Dictionary = {}
 
 var jump_target: String = "start"
 
+var something_null = null
+
+
 func noop() -> void:
 	pass
 

@@ -168,12 +168,13 @@ func import_content(path: String, prefix: String, imported_line_map: Dictionary,
 		for i in range(0, content.size()):
 			var line = content[i]
 			if line.strip_edges().begins_with("~ "):
+				var indent: String = "\t".repeat(get_indent(line))
 				var title = line.strip_edges().substr(2)
 				if "/" in line:
 					var bits = title.split("/")
-					content[i] = "~ %s/%s" % [_imported_titles[bits[0]], bits[1]]
+					content[i] = "%s~ %s/%s" % [indent, _imported_titles[bits[0]], bits[1]]
 				else:
-					content[i] = "~ %s/%s" % [str(path.hash()), title]
+					content[i] = "%s~ %s/%s" % [indent, str(path.hash()), title]
 
 			elif "=>< " in line:
 				var jump: String = line.substr(line.find("=>< ") + "=>< ".length()).strip_edges()
@@ -227,12 +228,12 @@ func build_line_tree(raw_lines: PackedStringArray) -> DMTreeLine:
 		tree_line.text = raw_line.strip_edges()
 
 		# Handle any "using" directives.
-		if raw_line.begins_with("using "):
+		if tree_line.type == DMConstants.TYPE_USING:
 			var using_match: RegExMatch = regex.USING_REGEX.search(raw_line)
 			if "state" in using_match.names:
 				var using_state: String = using_match.strings[using_match.names.state].strip_edges()
 				if not using_state in autoload_names:
-					add_error(i, 0, DMConstants.ERR_UNKNOWN_USING)
+					add_error(tree_line.line_number, 0, DMConstants.ERR_UNKNOWN_USING)
 				elif not using_state in using_states:
 					using_states.append(using_state)
 				continue
@@ -249,17 +250,21 @@ func build_line_tree(raw_lines: PackedStringArray) -> DMTreeLine:
 			tree_line.notes = "\n".join(doc_comments)
 			doc_comments.clear()
 
-		# Empty lines are only kept so that we can work out groupings of things (eg. responses and
-		# randomised lines). Therefore we only need to keep one empty line in a row even if there
+		# Empty lines are only kept so that we can work out groupings of things (eg. randomised
+		# lines). Therefore we only need to keep one empty line in a row even if there
 		# are multiple. The indent of an empty line is assumed to be the same as the non-empty line
 		# following it. That way, grouping calculations should work.
 		if tree_line.type in [DMConstants.TYPE_UNKNOWN, DMConstants.TYPE_COMMENT] and raw_lines.size() > i + 1:
 			var next_line = raw_lines[i + 1]
-			if previous_line and previous_line.type in [DMConstants.TYPE_UNKNOWN, DMConstants.TYPE_COMMENT] and tree_line.type in [DMConstants.TYPE_UNKNOWN, DMConstants.TYPE_COMMENT]:
+			if get_line_type(next_line) in [DMConstants.TYPE_UNKNOWN, DMConstants.TYPE_COMMENT]:
 				continue
 			else:
 				tree_line.type = DMConstants.TYPE_UNKNOWN
 				tree_line.indent = get_indent(next_line)
+
+		# Nothing should be more than a single indent past its parent.
+		if tree_line.indent > parent_chain.size():
+			add_error(tree_line.line_number, tree_line.indent, DMConstants.ERR_INVALID_INDENTATION)
 
 		# Check for indentation changes
 		if tree_line.indent > parent_chain.size() - 1:
@@ -569,11 +574,15 @@ func parse_response_line(tree_line: DMTreeLine, line: DMCompiledLine, siblings: 
 			result = add_error(tree_line.line_number, condition.index, condition.error)
 		else:
 			line.expression = condition
+			# Extract just the raw condition text
+			var found: RegExMatch = regex.WRAPPED_CONDITION_REGEX.search(tree_line.text)
+			line.expression_text = found.strings[found.names.expression]
+
 			tree_line.text = regex.WRAPPED_CONDITION_REGEX.sub(tree_line.text, "").strip_edges()
 
 	# Find the original response in this group of responses.
 	var original_response: DMTreeLine = tree_line
-	for i in range(sibling_index - 1, 0, -1):
+	for i in range(sibling_index - 1, -1, -1):
 		if siblings[i].type == DMConstants.TYPE_RESPONSE:
 			original_response = siblings[i]
 		elif siblings[i].type != DMConstants.TYPE_UNKNOWN:
@@ -690,14 +699,32 @@ func parse_dialogue_line(tree_line: DMTreeLine, line: DMCompiledLine, siblings: 
 	for i in range(0, tree_line.children.size()):
 		var child: DMTreeLine = tree_line.children[i]
 		if child.type == DMConstants.TYPE_DIALOGUE:
+			# Nested dialogue lines cannot have further nested dialogue.
+			if child.children.size() > 0:
+				add_error(child.children[0].line_number, child.children[0].indent, DMConstants.ERR_INVALID_INDENTATION)
+			# Mark this as a dialogue child of another dialogue line.
+			child.is_nested_dialogue = true
+			var child_line = DMCompiledLine.new("", DMConstants.TYPE_DIALOGUE)
+			parse_character_and_dialogue(child, child_line, [], 0, parent)
+			var child_static_line_id: String = extract_static_line_id(child.text)
+			if child_line.character != "" or child_static_line_id != "":
+				add_error(child.line_number, child.indent, DMConstants.ERR_UNEXPECTED_SYNTAX_ON_NESTED_DIALOGUE_LINE)
+			# Check that only the last child (or none) has a jump reference
+			if i < tree_line.children.size() - 1 and " =>" in child.text:
+				add_error(child.line_number, child.indent, DMConstants.ERR_NESTED_DIALOGUE_INVALID_JUMP)
+			if i == 0 and " =>" in tree_line.text:
+				add_error(tree_line.line_number, tree_line.indent, DMConstants.ERR_NESTED_DIALOGUE_INVALID_JUMP)
+
 			tree_line.text += "\n" + child.text
+		elif child.type == DMConstants.TYPE_UNKNOWN:
+			tree_line.text += "\n"
 		else:
 			result = add_error(child.line_number, child.indent, DMConstants.ERR_INVALID_INDENTATION)
 
 	# Extract the static line ID
 	var static_line_id: String = extract_static_line_id(tree_line.text)
 	if static_line_id:
-		tree_line.text = tree_line.text.replace("[ID:%s]" % [static_line_id], "")
+		tree_line.text = tree_line.text.replace(" [ID:", "[ID:").replace("[ID:%s]" % [static_line_id], "")
 		line.translation_key = static_line_id
 
 	# Check for simultaneous lines
@@ -730,7 +757,7 @@ func parse_dialogue_line(tree_line: DMTreeLine, line: DMCompiledLine, siblings: 
 			if expression.size() == 0:
 				add_error(tree_line.line_number, tree_line.indent, DMConstants.ERR_INVALID_EXPRESSION)
 			elif expression[0].type == DMConstants.TYPE_ERROR:
-				add_error(tree_line.line_number, tree_line.indent + expression[0].index, expression[0].value)
+				add_error(tree_line.line_number, tree_line.indent + expression[0].i, expression[0].value)
 
 	# If the line isn't part of a weighted random group then make it point to the next
 	# available sibling.
@@ -817,9 +844,14 @@ func parse_character_and_dialogue(tree_line: DMTreeLine, line: DMCompiledLine, s
 	# Replace any newlines.
 	text = text.replace("\\n", "\n").strip_edges()
 
-	# If there was no manual translation key then just use the text itself
-	if line.translation_key == "":
-		line.translation_key = text
+	# If there was no manual translation key then just use the text itself (unless this is a
+	# child dialogue below another dialogue line).
+	if not tree_line.is_nested_dialogue and line.translation_key == "":
+		# Show an error if missing translations is enabled
+		if DMSettings.get_setting(DMSettings.MISSING_TRANSLATIONS_ARE_ERRORS, false):
+			result = add_error(tree_line.line_number, tree_line.indent, DMConstants.ERR_MISSING_ID)
+		else:
+			line.translation_key = text
 
 	line.text = text
 
@@ -829,9 +861,6 @@ func parse_character_and_dialogue(tree_line: DMTreeLine, line: DMCompiledLine, s
 			result = add_error(tree_line.line_number, tree_line.indent, DMConstants.ERR_DUPLICATE_ID)
 		else:
 			_known_translation_keys[line.translation_key] = line.text
-	# Show an error if missing translations is enabled
-	elif DMSettings.get_setting(DMSettings.MISSING_TRANSLATIONS_ARE_ERRORS, false):
-		result = add_error(tree_line.line_number, tree_line.indent, DMConstants.ERR_MISSING_ID)
 
 	return result
 
@@ -915,6 +944,9 @@ func get_line_type(raw_line: String) -> String:
 
 	if text.begins_with("import "):
 		return DMConstants.TYPE_IMPORT
+
+	if text.begins_with("using "):
+		return DMConstants.TYPE_USING
 
 	if text.begins_with("#"):
 		return DMConstants.TYPE_COMMENT
@@ -1006,7 +1038,7 @@ func extract_condition(text: String, is_wrapped: bool, index: int) -> Dictionary
 		}
 	elif expression[0].type == DMConstants.TYPE_ERROR:
 		return {
-			index = expression[0].index,
+			index = expression[0].i,
 			error = expression[0].value
 		}
 	else:
@@ -1034,7 +1066,7 @@ func extract_mutation(text: String) -> Dictionary:
 			}
 		elif expression[0].type == DMConstants.TYPE_ERROR:
 			return {
-				index = expression[0].index,
+				index = expression[0].i,
 				error = expression[0].value
 			}
 		else:

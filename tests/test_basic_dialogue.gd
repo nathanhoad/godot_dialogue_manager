@@ -93,12 +93,30 @@ Nathan: This is the first line.
 	output = compile("
 ~ start
 Nathan: This is the first line.
+
+	This is the third line with a gap line above it.")
+
+	assert(output.errors.is_empty(), "Should have no errors.")
+	assert(output.lines["2"].text == "This is the first line.\n\nThis is the third line with a gap line above it.", "Should concatenate the lines.")
+
+	output = compile("
+~ start
+Nathan: This is the first line.
 	This is the second line.
 	do something()")
 
 	assert(output.errors.size() == 1, "Should have 1 error.")
 	assert(output.errors[0].line_number == 5, "Error on line 5.")
 	assert(output.errors[0].error == DMConstants.ERR_INVALID_INDENTATION, "Error on line 5.")
+
+	output = compile("
+~ start
+Nathan: First line [ID:FIRST]
+	Second line
+	Third line")
+
+	assert(output.errors.size() == 0, "Should have no errors.")
+	assert(output.lines["2"].text == "First line\nSecond line\nThird line", "Should concatenate text.")
 
 
 func test_can_parse_variables() -> void:
@@ -244,3 +262,15 @@ Nathan: Hello.")
 
 	var line = await resource.get_next_dialogue_line("start")
 	assert(line.text == "Hello.", "Should jump to dialogue.")
+
+
+func test_can_resolve_static_line_id() -> void:
+	var resource = create_resource("
+~ start
+Nathan: First line [ID:FIRST]
+Nathan: Second line [ID:SECOND]
+Nathan: Third line [ID:THIRD]")
+
+	var id = DialogueManager.static_id_to_line_id(resource, "SECOND")
+	var line = await resource.get_next_dialogue_line(id)
+	assert(line.text == "Second line", "Should match second line")

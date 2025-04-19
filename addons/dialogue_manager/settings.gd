@@ -203,7 +203,7 @@ static func get_user_config() -> Dictionary:
 		recent_files = [],
 		reopen_files = [],
 		most_recent_reopen_file = "",
-		carets = {},
+		file_meta = {},
 		run_title = "",
 		run_resource_path = "",
 		is_running_test_scene = false,
@@ -229,8 +229,15 @@ static func set_user_value(key: String, value) -> void:
 	save_user_config(user_config)
 
 
-static func get_user_value(key: String, default = null):
+static func get_user_value(key: String, default = null) -> Variant:
 	return get_user_config().get(key, default)
+
+
+static func forget_path(path: String) -> void:
+	remove_recent_file(path)
+	var file_meta: Dictionary = get_user_value("file_meta", {})
+	file_meta.erase(path)
+	set_user_value("file_meta", file_meta)
 
 
 static func add_recent_file(path: String) -> void:
@@ -266,21 +273,32 @@ static func clear_recent_files() -> void:
 
 
 static func set_caret(path: String, cursor: Vector2) -> void:
-	var carets: Dictionary = get_user_value("carets", {})
-	carets[path] = {
-		x = cursor.x,
-		y = cursor.y
-	}
-	set_user_value("carets", carets)
+	var file_meta: Dictionary = get_user_value("file_meta", {})
+	file_meta[path] = file_meta.get(path, {}).merged({ cursor = "%d,%d" % [cursor.x, cursor.y] }, true)
+	set_user_value("file_meta", file_meta)
 
 
 static func get_caret(path: String) -> Vector2:
-	var carets = get_user_value("carets", {})
-	if carets.has(path):
-		var caret = carets.get(path)
-		return Vector2(caret.x, caret.y)
+	var file_meta: Dictionary = get_user_value("file_meta", {})
+	if file_meta.has(path):
+		var cursor: PackedStringArray = file_meta.get(path).get("cursor", "0,0").split(",")
+		return Vector2(cursor[0].to_int(), cursor[1].to_int())
 	else:
 		return Vector2.ZERO
+
+
+static func set_scroll(path: String, scroll_vertical: int) -> void:
+	var file_meta: Dictionary = get_user_value("file_meta", {})
+	file_meta[path] = file_meta.get(path, {}).merged({ scroll_vertical = scroll_vertical }, true)
+	set_user_value("file_meta", file_meta)
+
+
+static func get_scroll(path: String) -> int:
+	var file_meta: Dictionary = get_user_value("file_meta", {})
+	if file_meta.has(path):
+		return file_meta.get(path).get("scroll_vertical", 0)
+	else:
+		return 0
 
 
 static func check_for_dotnet_solution() -> bool:

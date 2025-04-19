@@ -48,6 +48,8 @@ func apply_filter() -> void:
 func apply_theme() -> void:
 	if is_instance_valid(filter_edit):
 		filter_edit.right_icon = get_theme_icon("Search", "EditorIcons")
+	if is_instance_valid(list):
+		list.add_theme_stylebox_override("panel", get_theme_stylebox("panel", "Panel"))
 
 
 ### Signals

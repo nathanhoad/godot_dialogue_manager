@@ -1,6 +1,7 @@
 using Godot;
 using Godot.Collections;
 using System;
+using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
 
@@ -161,10 +162,65 @@ namespace DialogueManagerRuntime
         }
 
 
+        public static Array<string> StaticIdToLineIds(Resource dialogueResource, string staticId)
+        {
+            return (Array<string>)Instance.Call("static_id_to_line_ids", dialogueResource, staticId);
+        }
+
+
+        public static string StaticIdToLineId(Resource dialogueResource, string staticId)
+        {
+            return (string)Instance.Call("static_id_to_line_id", dialogueResource, staticId);
+        }
+
+
         public static async void Mutate(Dictionary mutation, Array<Variant>? extraGameStates = null, bool isInlineMutation = false)
         {
             Instance.Call("_bridge_mutate", mutation, extraGameStates ?? new Array<Variant>(), isInlineMutation);
             await Instance.ToSignal(Instance, "bridge_mutated");
+        }
+
+
+        public static Array<Dictionary> GetMembersForAutoload(Script script)
+        {
+            Array<Dictionary> members = new Array<Dictionary>();
+
+            string typeName = script.ResourcePath.GetFile().GetBaseName();
+            var matchingTypes = Assembly.GetExecutingAssembly().GetTypes().Where(t => t.Name == typeName);
+            foreach (var matchingType in matchingTypes)
+            {
+                var memberInfos = matchingType.GetMembers(BindingFlags.Instance | BindingFlags.Static | BindingFlags.Public | BindingFlags.DeclaredOnly);
+                foreach (var memberInfo in memberInfos)
+                {
+                    string type;
+                    switch (memberInfo.MemberType)
+                    {
+                        case MemberTypes.Field:
+                            if ((memberInfo as FieldInfo).FieldType.ToString().Contains("EventHandler"))
+                            {
+                                type = "signal";
+                            }
+                            else
+                            {
+                                type = "property";
+                            }
+                            break;
+                        case MemberTypes.Method:
+                            type = "method";
+                            break;
+
+                        default:
+                            continue;
+                    }
+
+                    members.Add(new Dictionary() {
+                        { "name", memberInfo.Name },
+                        { "type", type }
+                    });
+                }
+            }
+
+            return members;
         }
 
 
@@ -173,7 +229,7 @@ namespace DialogueManagerRuntime
             var methodInfos = thing.GetType().GetMethods(BindingFlags.Instance | BindingFlags.Static | BindingFlags.Public | BindingFlags.DeclaredOnly);
             foreach (var methodInfo in methodInfos)
             {
-                if (methodInfo.Name == method && args.Count == methodInfo.GetParameters().Length)
+                if (methodInfo.Name == method && args.Count >= methodInfo.GetParameters().Where(p => !p.HasDefaultValue).Count())
                 {
                     return true;
                 }
@@ -189,7 +245,7 @@ namespace DialogueManagerRuntime
             var methodInfos = thing.GetType().GetMethods(BindingFlags.Instance | BindingFlags.Static | BindingFlags.Public | BindingFlags.DeclaredOnly);
             foreach (var methodInfo in methodInfos)
             {
-                if (methodInfo.Name == method && args.Count == methodInfo.GetParameters().Length)
+                if (methodInfo.Name == method && args.Count >= methodInfo.GetParameters().Where(p => !p.HasDefaultValue).Count())
                 {
                     info = methodInfo;
                 }
@@ -236,7 +292,7 @@ namespace DialogueManagerRuntime
                     Variant value = (Variant)taskResult.GetType().GetProperty("Result").GetValue(taskResult);
                     EmitSignal(SignalName.Resolved, value);
                 }
-                catch (Exception err)
+                catch (Exception)
                 {
                     EmitSignal(SignalName.Resolved);
                 }
@@ -344,6 +400,7 @@ namespace DialogueManagerRuntime
 
         public DialogueLine(RefCounted data)
         {
+            id = (string)data.Get("id");
             type = (string)data.Get("type");
             next_id = (string)data.Get("next_id");
             character = (string)data.Get("character");
@@ -409,6 +466,13 @@ namespace DialogueManagerRuntime
         {
             get => is_allowed;
             set => is_allowed = value;
+        }
+
+        private string condition_as_text = "";
+        public string ConditionAsText
+        {
+            get => condition_as_text;
+            set => condition_as_text = value;
         }
 
         private string text = "";

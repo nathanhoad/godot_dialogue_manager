@@ -112,6 +112,17 @@ For example, if `SomeGlobal` has a signal called `some_signal` that has a single
 do SomeGlobal.some_signal.emit("some argument")
 ```
 
+### Null coalescing
+
+In some cases you might want to refer to properties of an object that may or may not be defined. This is where you can make use of null coalescing:
+
+```
+if some_node_reference?.name == "SomeNode"
+    Nathan: Notice the "?." syntax?
+```
+
+If `some_node_reference` is null then the whole left side of the comparison will be null and, therefore, not be equal to "SomeNode" and fail. If the null coalescing isn't used here and `some_node_reference` is null then the game will crash.
+
 ### State shortcuts
 
 If you want to shorten your references to state from something like `SomeGlobal.some_property` to just `some_property`, there are two ways you can do this.
