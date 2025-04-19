@@ -295,6 +295,8 @@ func get_members_for_autoload(autoload_name: String) -> Array[Dictionary]:
 	if _autoload_member_cache.has(autoload_name) and _autoload_member_cache.get(autoload_name).get("at") > Time.get_ticks_msec() - 5000:
 		return _autoload_member_cache.get(autoload_name).get("members")
 
+	if not _autoloads.has(autoload_name): return []
+
 	var autoload = load(_autoloads.get(autoload_name))
 	var script: Script = autoload if autoload is Script else autoload.get_script()
 

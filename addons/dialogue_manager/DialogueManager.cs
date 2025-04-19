@@ -229,7 +229,7 @@ namespace DialogueManagerRuntime
             var methodInfos = thing.GetType().GetMethods(BindingFlags.Instance | BindingFlags.Static | BindingFlags.Public | BindingFlags.DeclaredOnly);
             foreach (var methodInfo in methodInfos)
             {
-                if (methodInfo.Name == method && args.Count == methodInfo.GetParameters().Length)
+                if (methodInfo.Name == method && args.Count >= methodInfo.GetParameters().Where(p => !p.HasDefaultValue).Count())
                 {
                     return true;
                 }
@@ -245,7 +245,7 @@ namespace DialogueManagerRuntime
             var methodInfos = thing.GetType().GetMethods(BindingFlags.Instance | BindingFlags.Static | BindingFlags.Public | BindingFlags.DeclaredOnly);
             foreach (var methodInfo in methodInfos)
             {
-                if (methodInfo.Name == method && args.Count == methodInfo.GetParameters().Length)
+                if (methodInfo.Name == method && args.Count >= methodInfo.GetParameters().Where(p => !p.HasDefaultValue).Count())
                 {
                     info = methodInfo;
                 }
