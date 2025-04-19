@@ -468,6 +468,13 @@ namespace DialogueManagerRuntime
             set => is_allowed = value;
         }
 
+        private string condition_as_text = "";
+        public string ConditionAsText
+        {
+            get => condition_as_text;
+            set => condition_as_text = value;
+        }
+
         private string text = "";
         public string Text
         {

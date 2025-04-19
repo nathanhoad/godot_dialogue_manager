@@ -574,6 +574,10 @@ func parse_response_line(tree_line: DMTreeLine, line: DMCompiledLine, siblings: 
 			result = add_error(tree_line.line_number, condition.index, condition.error)
 		else:
 			line.expression = condition
+			# Extract just the raw condition text
+			var found: RegExMatch = regex.WRAPPED_CONDITION_REGEX.search(tree_line.text)
+			line.expression_text = found.strings[found.names.expression]
+
 			tree_line.text = regex.WRAPPED_CONDITION_REGEX.sub(tree_line.text, "").strip_edges()
 
 	# Find the original response in this group of responses.
@@ -753,7 +757,7 @@ func parse_dialogue_line(tree_line: DMTreeLine, line: DMCompiledLine, siblings: 
 			if expression.size() == 0:
 				add_error(tree_line.line_number, tree_line.indent, DMConstants.ERR_INVALID_EXPRESSION)
 			elif expression[0].type == DMConstants.TYPE_ERROR:
-				add_error(tree_line.line_number, tree_line.indent + expression[0].index, expression[0].value)
+				add_error(tree_line.line_number, tree_line.indent + expression[0].i, expression[0].value)
 
 	# If the line isn't part of a weighted random group then make it point to the next
 	# available sibling.
@@ -1034,7 +1038,7 @@ func extract_condition(text: String, is_wrapped: bool, index: int) -> Dictionary
 		}
 	elif expression[0].type == DMConstants.TYPE_ERROR:
 		return {
-			index = expression[0].index,
+			index = expression[0].i,
 			error = expression[0].value
 		}
 	else:
