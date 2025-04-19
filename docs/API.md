@@ -4,8 +4,8 @@
 
 ### Signals
 
-- `dialogue_started(resource: DialogueResource)` - emitted when a dialogue balloon is created and dialogue begins.
-- `passed_title(title)` - emitted when a title marker is passed through.
+- `dialogue_started(resource: DialogueResource)` - emitted when a dialogue balloon is created by `DialogueManager` and dialogue begins.
+- `passed_title(title: String)` - emitted when a title marker is passed through.
 - `got_dialogue(line: DialogueLine)` - emitted when a dialogue line is found.
 - `mutated(mutation: Dictionary)` - emitted when a mutation line is about to be run (not including `set` lines).
 - `dialogue_ended(resource: DialogueResource)` - emitted when the next line of dialogue is empty and provides the calling resource.
@@ -41,8 +41,9 @@ Returns a `DialogueLine` that looks something like this:
 - `responses: Array[DialogueResponse]` - the list of responses to this line (or `[]` if none are available).
   - `id: String` - the ID of the response.
   - `next_id: String` - the ID of the next line if this response is chosen.
-  - `is_allowed: bool` - whether this line passed its condition check (useful if you have "include all responses" enabled).
-  - `character: String` - the character name (if one was provided).
+  - `is_allowed: bool` - whether this line passed its condition check.
+  - `condition_as_text: String` - the original condition (as a string) used to check if this response is allowed.
+  - `character: String` - the character name (or `""`).
   - `text: String` - the text for this response.
   - `tags: PackedStringArray` - a list of tags.
   - `translation_key: String` - the key used to translate the text (or the whole text again if no ID was specified on the response).
