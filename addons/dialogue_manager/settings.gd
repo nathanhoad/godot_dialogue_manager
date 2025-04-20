@@ -26,6 +26,8 @@ const INCLUDE_NOTES_IN_TRANSLATION_EXPORTS = "editor/translations/include_notes_
 
 ## A custom test scene to use when testing dialogue.
 const CUSTOM_TEST_SCENE_PATH = "editor/advanced/custom_test_scene_path"
+## Extra script files to include in the auto-complete-able list
+const EXTRA_AUTO_COMPLETE_SCRIPT_SOURCES = "editor/advanced/extra_auto_complete_script_sources"
 
 ## The custom balloon for this game.
 const BALLOON_PATH = "runtime/balloon_path"
@@ -40,7 +42,7 @@ const IGNORE_MISSING_STATE_VALUES = "runtime/advanced/ignore_missing_state_value
 const USES_DOTNET = "runtime/advanced/uses_dotnet"
 
 
-const SETTINGS_CONFIGURATION = {
+static var SETTINGS_CONFIGURATION = {
 	WRAP_LONG_LINES: {
 		value = false,
 		type = TYPE_BOOL,
@@ -68,6 +70,8 @@ const SETTINGS_CONFIGURATION = {
 	EXTRA_CSV_LOCALES: {
 		value = [],
 		type = TYPE_PACKED_STRING_ARRAY,
+		hint = PROPERTY_HINT_TYPE_STRING,
+		hint_string = "%d:" % [TYPE_STRING],
 		is_advanced = true
 	},
 	INCLUDE_CHARACTER_IN_TRANSLATION_EXPORTS: {
@@ -87,6 +91,13 @@ const SETTINGS_CONFIGURATION = {
 		hint = PROPERTY_HINT_FILE,
 		is_advanced = true
 	},
+	EXTRA_AUTO_COMPLETE_SCRIPT_SOURCES: {
+		value = [],
+		type = TYPE_PACKED_STRING_ARRAY,
+		hint = PROPERTY_HINT_TYPE_STRING,
+		hint_string = "%d/%d:*.*" % [TYPE_STRING, PROPERTY_HINT_FILE],
+		is_advanced = true
+	},
 
 	BALLOON_PATH: {
 		value = "",
@@ -96,6 +107,8 @@ const SETTINGS_CONFIGURATION = {
 	STATE_AUTOLOAD_SHORTCUTS: {
 		value = [],
 		type = TYPE_PACKED_STRING_ARRAY,
+		hint = PROPERTY_HINT_TYPE_STRING,
+		hint_string = "%d:" % [TYPE_STRING],
 	},
 	WARN_ABOUT_METHOD_PROPERTY_OR_SIGNAL_NAME_CONFLICTS: {
 		value = false,

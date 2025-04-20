@@ -294,7 +294,6 @@ func matches_prompt(prompt: String, matcher: String) -> bool:
 	return prompt.length() < matcher.length() and matcher.to_lower().begins_with(prompt.to_lower())
 
 
-
 func get_state_shortcuts() -> PackedStringArray:
 	# Get any shortcuts defined in settings
 	var shortcuts: PackedStringArray = DMSettings.get_setting(DMSettings.STATE_AUTOLOAD_SHORTCUTS, [])
@@ -303,6 +302,9 @@ func get_state_shortcuts() -> PackedStringArray:
 		var found: RegExMatch = compiler_regex.USING_REGEX.search(line)
 		if found:
 			shortcuts.append(found.strings[found.names.state])
+	# Check for any other script sources
+	for extra_script_source in DMSettings.get_setting(DMSettings.EXTRA_AUTO_COMPLETE_SCRIPT_SOURCES, []):
+		shortcuts.append(extra_script_source)
 
 	return shortcuts
 
@@ -312,9 +314,9 @@ func get_members_for_autoload(autoload_name: String) -> Array[Dictionary]:
 	if _autoload_member_cache.has(autoload_name) and _autoload_member_cache.get(autoload_name).get("at") > Time.get_ticks_msec() - 5000:
 		return _autoload_member_cache.get(autoload_name).get("members")
 
-	if not _autoloads.has(autoload_name): return []
+	if not _autoloads.has(autoload_name) and not autoload_name.begins_with("res://") and not autoload_name.begins_with("uid://"): return []
 
-	var autoload = load(_autoloads.get(autoload_name))
+	var autoload = load(_autoloads.get(autoload_name, autoload_name))
 	var script: Script = autoload if autoload is Script else autoload.get_script()
 
 	if not is_instance_valid(script): return []
@@ -322,10 +324,11 @@ func get_members_for_autoload(autoload_name: String) -> Array[Dictionary]:
 	var members: Array[Dictionary] = []
 	if script.resource_path.ends_with(".gd"):
 		for m: Dictionary in script.get_script_method_list():
-			members.append({
-				name = m.name,
-				type = "method"
-			})
+			if not m.name.begins_with("@"):
+				members.append({
+					name = m.name,
+					type = "method"
+				})
 		for m: Dictionary in script.get_script_property_list():
 			members.append({
 				name = m.name,
