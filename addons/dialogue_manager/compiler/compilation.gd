@@ -486,6 +486,7 @@ func parse_match_line(tree_line: DMTreeLine, line: DMCompiledLine, siblings: Arr
 	# Check that all children are when or else.
 	for child in tree_line.children:
 		if child.type == DMConstants.TYPE_WHEN: continue
+		if child.type == DMConstants.TYPE_UNKNOWN: continue
 		if child.type == DMConstants.TYPE_CONDITION and child.text.begins_with("else"): continue
 
 		result = add_error(child.line_number, child.indent, DMConstants.ERR_EXPECTED_WHEN_OR_ELSE)

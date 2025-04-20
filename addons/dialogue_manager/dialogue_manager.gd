@@ -185,6 +185,7 @@ func get_line(resource: DialogueResource, key: String, extra_game_states: Array)
 				continue
 			elif await _check_case_value(value, case, extra_game_states):
 				next_id = case.next_id
+				break
 		# Nothing matched so check for else case
 		if next_id == "":
 			if not else_case.is_empty():
@@ -671,21 +672,31 @@ func _check_case_value(match_value: Variant, data: Dictionary, extra_game_states
 
 	var expression: Array[Dictionary] = data.condition.expression.duplicate(true)
 
-	# If the when is a comparison when insert the match value as the first value to compare to
-	var already_compared: bool = false
-	if expression[0].type == DMConstants.TOKEN_COMPARISON:
-		expression.insert(0, {
-			type = DMConstants.TOKEN_VALUE,
-			value = match_value
-		})
-		already_compared = true
+	# Check for multiple values
+	var expressions_to_check: Array = []
+	var previous_comma_index: int = 0
+	for i in range(0, expression.size()):
+		if expression[i].type == DMConstants.TOKEN_COMMA:
+			expressions_to_check.append(expression.slice(previous_comma_index, i))
+			previous_comma_index = i + 1
+		elif i == expression.size() - 1:
+			expressions_to_check.append(expression.slice(previous_comma_index))
 
-	var resolved_value = await _resolve(expression, extra_game_states)
+	for expression_to_check in expressions_to_check:
+		# If the when is a comparison when insert the match value as the first value to compare to
+		var already_compared: bool = false
+		if expression_to_check[0].type == DMConstants.TOKEN_COMPARISON:
+			expression_to_check.insert(0, {
+				type = DMConstants.TOKEN_VALUE,
+				value = match_value
+			})
+			already_compared = true
 
-	if already_compared:
-		return resolved_value
-	else:
-		return match_value == resolved_value
+		var resolved_value = await _resolve(expression_to_check, extra_game_states)
+		if (already_compared and resolved_value) or match_value == resolved_value:
+			return true
+
+	return false
 
 
 # Make a change to game state or run a method
