@@ -184,8 +184,8 @@ Before
 match StateForTests.some_property + 1
 	when 0
 		It's zero.
-	when 1 + 1
-		It's two.
+	when 1 + 1, 3
+		It's two or three.
 	when 42
 		It's 42.
 	else
@@ -197,7 +197,7 @@ After")
 	assert(line.text == "Before", "Should be before match.")
 
 	line = await resource.get_next_dialogue_line(line.next_id)
-	assert(line.text == "It's two.", "Should match two case.")
+	assert(line.text == "It's two or three.", "Should match two case.")
 
 	line = await resource.get_next_dialogue_line(line.next_id)
 	assert(line.text == "After", "Should be after match.")

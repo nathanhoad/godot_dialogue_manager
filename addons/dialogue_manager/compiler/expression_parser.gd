@@ -364,7 +364,6 @@ func _check_next_token(token: Dictionary, next_tokens: Array[Dictionary], line_t
 
 		DMConstants.TOKEN_COMPARISON, \
 		DMConstants.TOKEN_OPERATOR, \
-		DMConstants.TOKEN_COMMA, \
 		DMConstants.TOKEN_DOT, \
 		DMConstants.TOKEN_NULL_COALESCE, \
 		DMConstants.TOKEN_NOT, \
@@ -375,6 +374,20 @@ func _check_next_token(token: Dictionary, next_tokens: Array[Dictionary], line_t
 				DMConstants.TOKEN_COMMA,
 				DMConstants.TOKEN_COLON,
 				DMConstants.TOKEN_COMPARISON,
+				DMConstants.TOKEN_ASSIGNMENT,
+				DMConstants.TOKEN_OPERATOR,
+				DMConstants.TOKEN_AND_OR,
+				DMConstants.TOKEN_PARENS_CLOSE,
+				DMConstants.TOKEN_BRACE_CLOSE,
+				DMConstants.TOKEN_BRACKET_CLOSE,
+				DMConstants.TOKEN_DOT
+			]
+
+		DMConstants.TOKEN_COMMA:
+			unexpected_token_types = [
+				null,
+				DMConstants.TOKEN_COMMA,
+				DMConstants.TOKEN_COLON,
 				DMConstants.TOKEN_ASSIGNMENT,
 				DMConstants.TOKEN_OPERATOR,
 				DMConstants.TOKEN_AND_OR,
@@ -427,7 +440,8 @@ func _check_next_token(token: Dictionary, next_tokens: Array[Dictionary], line_t
 				DMConstants.TOKEN_BRACKET_OPEN
 			]
 
-	if (expected_token_types.size() > 0 and not next_token.type in expected_token_types or unexpected_token_types.size() > 0 and next_token.type in unexpected_token_types):
+	if (expected_token_types.size() > 0 and not next_token.type in expected_token_types) \
+	or (unexpected_token_types.size() > 0 and next_token.type in unexpected_token_types):
 		match next_token.type:
 			null:
 				return DMConstants.ERR_UNEXPECTED_END_OF_EXPRESSION
