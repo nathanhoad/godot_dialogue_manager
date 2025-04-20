@@ -196,9 +196,15 @@ namespace DialogueManagerRuntime
                     switch (memberInfo.MemberType)
                     {
                         case MemberTypes.Field:
-                            if ((memberInfo as FieldInfo).FieldType.ToString().Contains("EventHandler"))
+                            FieldInfo fieldInfo = memberInfo as FieldInfo;
+
+                            if (fieldInfo.FieldType.ToString().Contains("EventHandler"))
                             {
                                 type = "signal";
+                            }
+                            else if (fieldInfo.IsLiteral)
+                            {
+                                type = "constant";
                             }
                             else
                             {

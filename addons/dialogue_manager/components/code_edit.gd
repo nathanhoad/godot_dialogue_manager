@@ -53,6 +53,7 @@ var font_size: int:
 
 var WEIGHTED_RANDOM_PREFIX: RegEx = RegEx.create_from_string("^\\%[\\d.]+\\s")
 
+var compiler_regex: DMCompilerRegEx = DMCompilerRegEx.new()
 var _autoloads: Dictionary[String, String] = {}
 var _autoload_member_cache: Dictionary[String, Dictionary] = {}
 
@@ -185,28 +186,40 @@ func _request_code_completion(force: bool) -> void:
 				add_code_completion_option(CodeEdit.KIND_CLASS, name + ": ", name.substr(name_so_far.length()) + ": ", theme_overrides.text_color, get_theme_icon("Sprite2D", "EditorIcons"))
 
 	# Match autoloads on mutation lines
-	if current_line.strip_edges().begins_with("do") and (cursor.x > current_line.find("do ")):
-		var expression: String = current_line.substr(0, cursor.x).strip_edges().substr(3)
-		# Find the last couple of tokens
-		var possible_prompt: String = expression.reverse()
-		possible_prompt = possible_prompt.substr(0, possible_prompt.find(" "))
-		possible_prompt = possible_prompt.substr(0, possible_prompt.find("("))
-		possible_prompt = possible_prompt.reverse()
-		var segments: PackedStringArray = possible_prompt.split(".").slice(-2)
-		var auto_completes: Array[Dictionary] = []
+	for prefix in ["do ", "set ", "if ", "elif ", "else if ", "match ", "when ", "using "]:
+		if (current_line.strip_edges().begins_with(prefix) and (cursor.x > current_line.find(prefix))):
+			var expression: String = current_line.substr(0, cursor.x).strip_edges().substr(3)
+			# Find the last couple of tokens
+			var possible_prompt: String = expression.reverse()
+			possible_prompt = possible_prompt.substr(0, possible_prompt.find(" "))
+			possible_prompt = possible_prompt.substr(0, possible_prompt.find("("))
+			possible_prompt = possible_prompt.reverse()
+			var segments: PackedStringArray = possible_prompt.split(".").slice(-2)
+			var auto_completes: Array[Dictionary] = []
 
-		# Autoloads and state shortcuts
-		if segments.size() == 1:
-			var prompt: String = segments[0]
-			for autoload in _autoloads.keys():
-				if matches_prompt(prompt, autoload):
-					auto_completes.append({
-						prompt = prompt,
-						text = autoload,
-						type = "script"
-					})
-			for autoload in DMSettings.get_setting(DMSettings.STATE_AUTOLOAD_SHORTCUTS, []):
-				for member: Dictionary in get_members_for_autoload(autoload):
+			# Autoloads and state shortcuts
+			if segments.size() == 1:
+				var prompt: String = segments[0]
+				for autoload in _autoloads.keys():
+					if matches_prompt(prompt, autoload):
+						auto_completes.append({
+							prompt = prompt,
+							text = autoload,
+							type = "script"
+						})
+				for autoload in get_state_shortcuts():
+					for member: Dictionary in get_members_for_autoload(autoload):
+						if matches_prompt(prompt, member.name):
+							auto_completes.append({
+								prompt = prompt,
+								text = member.name,
+								type = member.type
+							})
+
+			# Members of an autoload
+			elif segments[0] in _autoloads.keys() and not current_line.strip_edges().begins_with("using "):
+				var prompt: String = segments[1]
+				for member: Dictionary in get_members_for_autoload(segments[0]):
 					if matches_prompt(prompt, member.name):
 						auto_completes.append({
 							prompt = prompt,
@@ -214,34 +227,25 @@ func _request_code_completion(force: bool) -> void:
 							type = member.type
 						})
 
-		# Members of an autoload
-		elif segments[0] in _autoloads.keys():
-			var prompt: String = segments[1]
-			for member: Dictionary in get_members_for_autoload(segments[0]):
-				if matches_prompt(prompt, member.name):
-					auto_completes.append({
-						prompt = prompt,
-						text = member.name,
-						type = member.type
-					})
+			auto_completes.sort_custom(func(a, b): return a.text < b.text)
 
-		auto_completes.sort_custom(func(a, b): return a.text < b.text)
-
-		for auto_complete in auto_completes:
-			var icon: Texture2D
-			var text: String = auto_complete.text
-			match auto_complete.type:
-				"script":
-					icon = get_theme_icon("Script", "EditorIcons")
-				"property":
-					icon = get_theme_icon("MemberProperty", "EditorIcons")
-				"method":
-					icon = get_theme_icon("MemberMethod", "EditorIcons")
-					text += "()"
-				"signal":
-					icon = get_theme_icon("MemberSignal", "EditorIcons")
-			var insert: String = text.substr(auto_complete.prompt.length())
-			add_code_completion_option(CodeEdit.KIND_CLASS, text, insert, theme_overrides.text_color, icon)
+			for auto_complete in auto_completes:
+				var icon: Texture2D
+				var text: String = auto_complete.text
+				match auto_complete.type:
+					"script":
+						icon = get_theme_icon("Script", "EditorIcons")
+					"property":
+						icon = get_theme_icon("MemberProperty", "EditorIcons")
+					"method":
+						icon = get_theme_icon("MemberMethod", "EditorIcons")
+						text += "()"
+					"signal":
+						icon = get_theme_icon("MemberSignal", "EditorIcons")
+					"constant":
+						icon = get_theme_icon("MemberConstant", "EditorIcons")
+				var insert: String = text.substr(auto_complete.prompt.length())
+				add_code_completion_option(CodeEdit.KIND_CLASS, text, insert, theme_overrides.text_color, icon)
 
 	update_code_completion_options(true)
 	if get_code_completion_options().size() == 0:
@@ -290,6 +294,19 @@ func matches_prompt(prompt: String, matcher: String) -> bool:
 	return prompt.length() < matcher.length() and matcher.to_lower().begins_with(prompt.to_lower())
 
 
+
+func get_state_shortcuts() -> PackedStringArray:
+	# Get any shortcuts defined in settings
+	var shortcuts: PackedStringArray = DMSettings.get_setting(DMSettings.STATE_AUTOLOAD_SHORTCUTS, [])
+	# Check for "using" clauses
+	for line: String in text.split("\n"):
+		var found: RegExMatch = compiler_regex.USING_REGEX.search(line)
+		if found:
+			shortcuts.append(found.strings[found.names.state])
+
+	return shortcuts
+
+
 func get_members_for_autoload(autoload_name: String) -> Array[Dictionary]:
 	# Debounce method list lookups
 	if _autoload_member_cache.has(autoload_name) and _autoload_member_cache.get(autoload_name).get("at") > Time.get_ticks_msec() - 5000:
@@ -318,6 +335,11 @@ func get_members_for_autoload(autoload_name: String) -> Array[Dictionary]:
 			members.append({
 				name = m.name,
 				type = "signal"
+			})
+		for c: String in script.get_script_constant_map():
+			members.append({
+				name = c,
+				type = "constant"
 			})
 	elif script.resource_path.ends_with(".cs"):
 		var dotnet = load(Engine.get_meta("DialogueManagerPlugin").get_plugin_path() + "/DialogueManager.cs").new()
