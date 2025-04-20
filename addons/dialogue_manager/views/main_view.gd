@@ -112,6 +112,9 @@ var current_file_path: String = "":
 
 			errors_panel.errors = []
 			code_edit.errors = []
+
+			if search_and_replace.visible:
+				search_and_replace.search()
 	get:
 		return current_file_path
 
