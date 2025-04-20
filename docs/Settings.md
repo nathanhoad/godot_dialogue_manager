@@ -1,3 +1,4 @@
+
 # Settings
 
 Dialogue Manager settings are found in Project Settings at the bottom of the General tab.
@@ -67,3 +68,9 @@ Dialogue Manager settings are found in Project Settings at the bottom of the Gen
 - **Custom Test Scene Path** (advanced)
 
   Use a custom test scene when running "Test" from the dialogue editor. The scene must extend `BaseDialogueTestScene`.
+
+- **Extra Auto Complete Script Sources** (advanced)
+
+  Add script files to check for top level auto-complete members.
+
+  Any scripts added in here are assumed to be available in all dialogue files (eg. your balloon inserts itself into the `extra_game_states` at runtime).
