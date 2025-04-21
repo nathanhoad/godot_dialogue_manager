@@ -22,7 +22,6 @@ DialogueManager="*res://addons/dialogue_manager/dialogue_manager.gd"
 
 [dialogue_manager]
 
-runtime/state_autoload_shortcuts=["State", "Events"]
 runtime/advanced/uses_dotnet=true
 
 [display]
