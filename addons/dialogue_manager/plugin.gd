@@ -176,6 +176,11 @@ func _apply_changes() -> void:
 		_update_localization()
 
 
+func _save_external_data() -> void:
+	if dialogue_cache != null:
+		dialogue_cache.reimport_files()
+
+
 func _build() -> bool:
 	# If this is the dotnet Godot then we need to check if the solution file exists
 	DMSettings.check_for_dotnet_solution()
