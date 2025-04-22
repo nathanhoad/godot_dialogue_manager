@@ -476,3 +476,23 @@ else:
 	StateForTests.something_null = "value is not null"
 	line = await resource.get_next_dialogue_line("start")
 	assert(line.text == "Should not be here.", "Should now pass condition.")
+
+
+func test_csharp_state() -> void:
+	var resource = create_resource("
+using CSharpState
+
+~ start
+if SomeValue < SOME_CONSTANT:
+	Here first.
+	set SomeValue = SOME_CONSTANT + 1
+	=> start
+else:
+	Then here.
+=> END")
+
+	var line = await resource.get_next_dialogue_line("start")
+	assert(line.text == "Here first.", "Should be less than constant value first.")
+
+	line = await resource.get_next_dialogue_line(line.next_id)
+	assert(line.text == "Then here.", "Should now be greater than constant value.")

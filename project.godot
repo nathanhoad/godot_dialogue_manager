@@ -11,6 +11,7 @@ config_version=5
 [application]
 
 config/name="Dialogue Manager"
+config/tags=PackedStringArray("addon")
 run/main_scene="res://tests/tests.tscn"
 config/features=PackedStringArray("4.4", "C#")
 config/icon="res://icon.svg"
@@ -19,6 +20,7 @@ config/icon="res://icon.svg"
 
 StateForTests="*res://tests/state_for_tests.gd"
 DialogueManager="*res://addons/dialogue_manager/dialogue_manager.gd"
+CSharpState="*res://tests/CSharpState.cs"
 
 [dialogue_manager]
 

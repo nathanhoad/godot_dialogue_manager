@@ -230,6 +230,50 @@ namespace DialogueManagerRuntime
         }
 
 
+        public bool ThingHasConstant(GodotObject thing, string property)
+        {
+            var fieldInfos = thing.GetType().GetFields(BindingFlags.Instance | BindingFlags.Static | BindingFlags.Public | BindingFlags.DeclaredOnly);
+            foreach (var fieldInfo in fieldInfos)
+            {
+                if (fieldInfo.Name == property && fieldInfo.IsLiteral)
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+
+        public Variant ResolveThingConstant(GodotObject thing, string property)
+        {
+            var fieldInfos = thing.GetType().GetFields(BindingFlags.Instance | BindingFlags.Static | BindingFlags.Public | BindingFlags.DeclaredOnly);
+            foreach (var fieldInfo in fieldInfos)
+            {
+                if (fieldInfo.Name == property && fieldInfo.IsLiteral)
+                {
+                    try
+                    {
+                        Variant value = fieldInfo.GetValue(thing) switch
+                        {
+                            int v => Variant.From((long)v),
+                            float v => Variant.From((double)v),
+                            System.String v => Variant.From((string)v),
+                            _ => Variant.From(fieldInfo.GetValue(thing))
+                        };
+                        return value;
+                    }
+                    catch (Exception)
+                    {
+                        throw new Exception($"Constant {property} of type ${fieldInfo.GetValue(thing).GetType()} is not supported by Variant.");
+                    }
+                }
+            }
+
+            throw new Exception($"{property} is not a public constant on {thing}");
+        }
+
+
         public bool ThingHasMethod(GodotObject thing, string method, Array<Variant> args)
         {
             var methodInfos = thing.GetType().GetMethods(BindingFlags.Instance | BindingFlags.Static | BindingFlags.Public | BindingFlags.DeclaredOnly);
