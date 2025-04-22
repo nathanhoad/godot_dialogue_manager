@@ -28,6 +28,7 @@ You can install it via the Asset Library or [downloading a copy](https://github.
 [![Example project featuring portraits & emotes/tags](docs/media/example-portraits.png)](https://nathanhoad.itch.io/godot-dialogue-example-project-portraits)
 [![Example project featuring voices & translations](docs/media/example-voices-translations.png)](https://nathanhoad.itch.io/voices-translations-godot-dialogue-example-project)
 [![Example project endless scroll & text input](docs/media/example-endless-scroll.png)](https://nathanhoad.itch.io/endless-scroll-text-input-godot-dialogue-example-project)
+[![Example project visual novel](docs/media/example-visual-novel.png)](https://nathanhoad.itch.io/godot-dialogue-example-project-visual-novel)
 
 ## Wishlist my game
 
