@@ -329,6 +329,9 @@ func update_import_paths(from_path: String, to_path: String) -> void:
 
 
 func _update_localization() -> void:
+	if not DMSettings.get_setting(DMSettings.UPDATE_POT_FILES_AUTOMATICALLY, true):
+		return
+
 	var dialogue_files = dialogue_cache.get_files()
 
 	# Add any new files to POT generation
