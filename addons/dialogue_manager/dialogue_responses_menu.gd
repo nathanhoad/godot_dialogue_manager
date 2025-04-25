@@ -100,16 +100,20 @@ func _configure_focus() -> void:
 
 		if i == 0:
 			item.focus_neighbor_top = item.get_path()
+			item.focus_neighbor_left = item.get_path()
 			item.focus_previous = item.get_path()
 		else:
 			item.focus_neighbor_top = items[i - 1].get_path()
+			item.focus_neighbor_left = items[i - 1].get_path()
 			item.focus_previous = items[i - 1].get_path()
 
 		if i == items.size() - 1:
 			item.focus_neighbor_bottom = item.get_path()
+			item.focus_neighbor_right = item.get_path()
 			item.focus_next = item.get_path()
 		else:
 			item.focus_neighbor_bottom = items[i + 1].get_path()
+			item.focus_neighbor_right = items[i + 1].get_path()
 			item.focus_next = items[i + 1].get_path()
 
 		item.mouse_entered.connect(_on_response_mouse_entered.bind(item))
