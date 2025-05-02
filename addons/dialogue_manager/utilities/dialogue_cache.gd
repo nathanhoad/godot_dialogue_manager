@@ -37,10 +37,11 @@ func reimport_files(and_files: PackedStringArray = []) -> void:
 	for file in and_files:
 		if not _files_marked_for_reimport.has(file):
 			_files_marked_for_reimport.append(file)
-	
+
 	if _files_marked_for_reimport.is_empty(): return
 
 	EditorInterface.get_resource_filesystem().reimport_files(_files_marked_for_reimport)
+	_files_marked_for_reimport.clear()
 
 
 ## Add a dialogue file to the cache.
