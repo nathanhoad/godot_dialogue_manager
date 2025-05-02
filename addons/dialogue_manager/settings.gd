@@ -23,6 +23,8 @@ const EXTRA_CSV_LOCALES = "editor/translations/extra_csv_locales"
 const INCLUDE_CHARACTER_IN_TRANSLATION_EXPORTS = "editor/translations/include_character_in_translation_exports"
 ## Includes a "_notes" column in CSV exports
 const INCLUDE_NOTES_IN_TRANSLATION_EXPORTS = "editor/translations/include_notes_in_translation_exports"
+## Automatically update the project's list of translatable files when dialogue files are added or removed
+const UPDATE_POT_FILES_AUTOMATICALLY = "editor/translations/update_pot_files_automatically"
 
 ## A custom test scene to use when testing dialogue.
 const CUSTOM_TEST_SCENE_PATH = "editor/advanced/custom_test_scene_path"
@@ -81,6 +83,11 @@ static var SETTINGS_CONFIGURATION = {
 	},
 	INCLUDE_NOTES_IN_TRANSLATION_EXPORTS: {
 		value = false,
+		type = TYPE_BOOL,
+		is_advanced = true
+	},
+	UPDATE_POT_FILES_AUTOMATICALLY: {
+		value = true,
 		type = TYPE_BOOL,
 		is_advanced = true
 	},
