@@ -496,3 +496,25 @@ else:
 
 	line = await resource.get_next_dialogue_line(line.next_id)
 	assert(line.text == "Then here.", "Should now be greater than constant value.")
+
+
+func test_csharp_mutation() -> void:
+	var resource = create_resource("
+using CSharpState
+
+~ start
+#Nathan: Hello.
+#set SomeValue = GetAsyncValue()
+#Nathan: Value is {{SomeValue}}.
+do LongMutation()
+Nathan: Done!
+=> END")
+
+	var line = await resource.get_next_dialogue_line("start")
+	#assert(line.text == "Hello.", "Should be first line.")
+#
+	#line = await resource.get_next_dialogue_line(line.next_id)
+	#assert(line.text == "Value is 100.", "Should have new value.")
+#
+	#line = await resource.get_next_dialogue_line(line.next_id)
+	assert(line.text == "Done!", "Should finish.")
