@@ -10,6 +10,8 @@ const TRANSLATIONS_GENERATE_LINE_IDS = 100
 const TRANSLATIONS_SAVE_CHARACTERS_TO_CSV = 201
 const TRANSLATIONS_SAVE_TO_CSV = 202
 const TRANSLATIONS_IMPORT_FROM_CSV = 203
+const TRANSLATIONS_SET_UUID_ONLY = 300
+const TRANSLATIONS_SET_PREFIX_LENGTH = 301
 
 const ITEM_SAVE = 100
 const ITEM_SAVE_AS = 101
@@ -126,6 +128,8 @@ var translation_source: TranslationSource = TranslationSource.Lines
 
 var plugin: EditorPlugin
 
+# Custom ID prefix text length
+var prefix_length = DMSettings.get_setting(DMSettings.AUTO_GENERATED_ID_PREFIX_LENGTH, 30)  
 
 func _ready() -> void:
 	plugin = Engine.get_meta("DialogueManagerPlugin")
@@ -157,6 +161,7 @@ func _ready() -> void:
 	# Connect menu buttons
 	insert_button.get_popup().id_pressed.connect(_on_insert_button_menu_id_pressed)
 	translations_button.get_popup().id_pressed.connect(_on_translations_button_menu_id_pressed)
+	translations_button.about_to_popup.connect(update_translations_menu)
 
 	code_edit.main_view = self
 	code_edit.wrap_mode = TextEdit.LINE_WRAPPING_BOUNDARY if DMSettings.get_setting(DMSettings.WRAP_LONG_LINES, false) else TextEdit.LINE_WRAPPING_NONE
@@ -436,6 +441,10 @@ func apply_theme() -> void:
 		popup = translations_button.get_popup()
 		popup.clear()
 		popup.add_icon_item(get_theme_icon("Translation", "EditorIcons"), DMConstants.translate(&"generate_line_ids"), TRANSLATIONS_GENERATE_LINE_IDS)
+		popup.add_check_item(DMConstants.translate(&"use_uuid_only_for_ids"), TRANSLATIONS_SET_UUID_ONLY)
+		popup.set_item_checked(popup.get_item_index(TRANSLATIONS_SET_UUID_ONLY), DMSettings.get_setting(DMSettings.USE_UUID_ONLY_FOR_IDS, false))
+		var prefix_length = DMSettings.get_setting(DMSettings.AUTO_GENERATED_ID_PREFIX_LENGTH, 30)
+		popup.add_item(DMConstants.translate(&"set_id_prefix_length") + " (" + str(prefix_length) + ")", TRANSLATIONS_SET_PREFIX_LENGTH)
 		popup.add_separator()
 		popup.add_icon_item(get_theme_icon("FileList", "EditorIcons"), DMConstants.translate(&"save_characters_to_csv"), TRANSLATIONS_SAVE_CHARACTERS_TO_CSV)
 		popup.add_icon_item(get_theme_icon("FileList", "EditorIcons"), DMConstants.translate(&"save_to_csv"), TRANSLATIONS_SAVE_TO_CSV)
@@ -550,17 +559,24 @@ func generate_translations_keys() -> void:
 			key = known_keys.find_key(text)
 		else:
 			var regex: DMCompilerRegEx = DMCompilerRegEx.new()
-			key = regex.ALPHA_NUMERIC.sub(text.strip_edges(), "_", true).substr(0, 30)
-			if key.begins_with("_"):
-				key = key.substr(1)
-			if key.ends_with("_"):
-				key = key.substr(0, key.length() - 1)
-
-			# Make sure key is unique
-			var hashed_key: String = key + "_" + str(randi() % 1000000).sha1_text().substr(0, 6)
-			while hashed_key in known_keys and text != known_keys.get(hashed_key):
-				hashed_key = key + "_" + str(randi() % 1000000).sha1_text().substr(0, 6)
-			key = hashed_key.to_upper()
+			if DMSettings.get_setting(DMSettings.USE_UUID_ONLY_FOR_IDS, false):  
+				# Generate UUID only  
+				var uuid = str(randi() % 1000000).sha1_text().substr(0, 12)  
+				key = uuid.to_upper()  
+			else:  
+				# Generate text prefix + hash  
+				var prefix_length = DMSettings.get_setting(DMSettings.AUTO_GENERATED_ID_PREFIX_LENGTH, 30)  
+				key = regex.ALPHA_NUMERIC.sub(text.strip_edges(), "_", true).substr(0, prefix_length)  
+				if key.begins_with("_"):  
+					key = key.substr(1)  
+				if key.ends_with("_"):  
+					key = key.substr(0, key.length() - 1)  
+					  
+				# Make sure key is unique  
+				var hashed_key: String = key + "_" + str(randi() % 1000000).sha1_text().substr(0, 6)  
+				while hashed_key in known_keys and text != known_keys.get(hashed_key):  
+					hashed_key = key + "_" + str(randi() % 1000000).sha1_text().substr(0, 6)  
+				key = hashed_key.to_upper()
 
 		line = line.replace("\\n", "!NEWLINE!")
 		text = text.replace("\n", "!NEWLINE!")
@@ -917,6 +933,46 @@ func _on_translations_button_menu_id_pressed(id: int) -> void:
 		TRANSLATIONS_IMPORT_FROM_CSV:
 			import_dialog.current_path = get_last_export_path("csv")
 			import_dialog.popup_centered()
+			
+		TRANSLATIONS_SET_UUID_ONLY:
+			var popup = translations_button.get_popup()
+			var is_checked = !popup.is_item_checked(popup.get_item_index(TRANSLATIONS_SET_UUID_ONLY))
+			popup.set_item_checked(popup.get_item_index(TRANSLATIONS_SET_UUID_ONLY), is_checked)
+			DMSettings.set_setting(DMSettings.USE_UUID_ONLY_FOR_IDS, is_checked)
+			
+		TRANSLATIONS_SET_PREFIX_LENGTH:
+			var current_length = DMSettings.get_setting(DMSettings.AUTO_GENERATED_ID_PREFIX_LENGTH, 30)
+			var dialog = AcceptDialog.new()
+			dialog.title = DMConstants.translate(&"set_id_prefix_length")
+			var vbox = VBoxContainer.new()
+			vbox.set_custom_minimum_size(Vector2(200, 80))
+			
+			var label = Label.new()
+			label.text = DMConstants.translate(&"id_prefix_length")
+			vbox.add_child(label)
+			
+			var spinbox = SpinBox.new()
+			spinbox.min_value = 0
+			spinbox.max_value = 100
+			spinbox.step = 1
+			spinbox.value = current_length
+			vbox.add_child(spinbox)
+			
+			dialog.add_child(vbox)
+			add_child(dialog)
+			
+			dialog.confirmed.connect(func():
+				DMSettings.set_setting(DMSettings.AUTO_GENERATED_ID_PREFIX_LENGTH, int(spinbox.value))
+				var popup = translations_button.get_popup()
+				var item_idx = popup.get_item_index(TRANSLATIONS_SET_PREFIX_LENGTH)
+				popup.set_item_text(item_idx, DMConstants.translate(&"set_id_prefix_length") + " (" + str(int(spinbox.value)) + ")")
+			)
+			
+			dialog.popup_centered()
+			
+			await dialog.confirmed
+			remove_child(dialog)
+			dialog.queue_free()
 
 
 func _on_export_dialog_file_selected(path: String) -> void:
@@ -1159,3 +1215,17 @@ func _on_find_in_files_result_selected(path: String, cursor: Vector2, length: in
 	open_file(path)
 	code_edit.select(cursor.y, cursor.x, cursor.y, cursor.x + length)
 	code_edit.set_line_as_center_visible(cursor.y)
+
+
+func update_translations_menu() -> void:
+	var popup = translations_button.get_popup()
+	# Update "Use UUID as ID only" menu item
+	var uuid_idx = popup.get_item_index(TRANSLATIONS_SET_UUID_ONLY)
+	if uuid_idx >= 0:
+		popup.set_item_checked(uuid_idx, DMSettings.get_setting(DMSettings.USE_UUID_ONLY_FOR_IDS, false))
+	
+	# Update "Set ID prefix length" menu item to display current value
+	var prefix_idx = popup.get_item_index(TRANSLATIONS_SET_PREFIX_LENGTH)
+	if prefix_idx >= 0:
+		var current_length = DMSettings.get_setting(DMSettings.AUTO_GENERATED_ID_PREFIX_LENGTH, 30)
+		popup.set_item_text(prefix_idx, DMConstants.translate(&"set_id_prefix_length") + " (" + str(current_length) + ")")

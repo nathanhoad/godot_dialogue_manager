@@ -104,6 +104,15 @@ msgstr "Кінець діалогу"
 msgid "generate_line_ids"
 msgstr "Згенерувати ідентифікатори рядків"
 
+msgid "use_uuid_only_for_ids"
+msgstr "Використовувати лише UUID як ID"
+
+msgid "set_id_prefix_length"
+msgstr "Встановити довжину префікса ID"
+
+msgid "id_prefix_length"
+msgstr "Довжина префікса ID:"
+
 msgid "save_characters_to_csv"
 msgstr "Зберегти імена персонажів в CSV..."
 
