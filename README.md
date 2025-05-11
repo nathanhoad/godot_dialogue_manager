@@ -39,8 +39,7 @@ You can install it via the Asset Library or [downloading a copy](https://github.
 
 [![Dialogue in Godot 4](docs/media/dialogue-in-godot.png)](https://youtu.be/UhPFk8FSbd8)
 [![Making cut-scenes](docs/media/cutscenes.png)](https://youtu.be/G_TN8jz4v9o)
-[![Cool balloons in Godot 4: Part 1](docs/media/make-balloons.png)](https://youtu.be/X0e-n7dbff8)
-[![Cool balloons in Godot 4: Part 2](docs/media/make-balloons-2.png)](https://youtu.be/DfdcyHwqXdo)
+[![Making dialogue balloons](docs/media/video-examples.png)](https://youtu.be/Rd4bZEX2RCg)
 
 ## Older versions of Dialogue Manager
 
