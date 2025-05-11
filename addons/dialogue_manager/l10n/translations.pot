@@ -101,6 +101,15 @@ msgstr ""
 msgid "generate_line_ids"
 msgstr ""
 
+msgid "use_uuid_only_for_ids"
+msgstr ""
+
+msgid "set_id_prefix_length"
+msgstr ""
+
+msgid "id_prefix_length"
+msgstr ""
+
 msgid "save_to_csv"
 msgstr ""
 

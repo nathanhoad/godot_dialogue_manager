@@ -92,6 +92,15 @@ msgstr "Finalizar diálogo"
 msgid "generate_line_ids"
 msgstr "Generar IDs de línea"
 
+msgid "use_uuid_only_for_ids"
+msgstr "Usar solo UUID como ID"
+
+msgid "set_id_prefix_length"
+msgstr "Establecer la longitud del prefijo de ID"
+
+msgid "id_prefix_length"
+msgstr "Longitud del prefijo de ID:"
+
 msgid "save_characters_to_csv"
 msgstr "Guardar los nombres de los personajes en un archivo CSV..."
 
