@@ -19,8 +19,8 @@ config/icon="res://icon.svg"
 [autoload]
 
 StateForTests="*res://tests/state_for_tests.gd"
-DialogueManager="*res://addons/dialogue_manager/dialogue_manager.gd"
 CSharpState="*res://tests/CSharpState.cs"
+DialogueManager="*res://addons/dialogue_manager/dialogue_manager.gd"
 
 [dialogue_manager]
 
