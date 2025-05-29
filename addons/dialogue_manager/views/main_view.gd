@@ -502,8 +502,8 @@ func show_build_error_dialog() -> void:
 
 # Generate translation line IDs for any line that doesn't already have one
 func generate_translations_keys() -> void:
-	randomize()
-	seed(Time.get_unix_time_from_system())
+	var rng: RandomNumberGenerator = RandomNumberGenerator.new()
+	rng.randomize()
 
 	var cursor: Vector2 = code_edit.get_cursor()
 	var lines: PackedStringArray = code_edit.text.split("\n")
@@ -557,9 +557,9 @@ func generate_translations_keys() -> void:
 				key = key.substr(0, key.length() - 1)
 
 			# Make sure key is unique
-			var hashed_key: String = key + "_" + str(randi() % 1000000).sha1_text().substr(0, 6)
+			var hashed_key: String = key + "_" + str(rng.randi() % 1000000).sha1_text().substr(0, 6)
 			while hashed_key in known_keys and text != known_keys.get(hashed_key):
-				hashed_key = key + "_" + str(randi() % 1000000).sha1_text().substr(0, 6)
+				hashed_key = key + "_" + str(rng.randi() % 1000000).sha1_text().substr(0, 6)
 			key = hashed_key.to_upper()
 
 		line = line.replace("\\n", "!NEWLINE!")
