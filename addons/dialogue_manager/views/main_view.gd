@@ -567,17 +567,24 @@ func generate_translations_keys() -> void:
 			key = known_keys.find_key(text)
 		else:
 			var regex: DMCompilerRegEx = DMCompilerRegEx.new()
-			key = regex.ALPHA_NUMERIC.sub(text.strip_edges(), "_", true).substr(0, 30)
-			if key.begins_with("_"):
-				key = key.substr(1)
-			if key.ends_with("_"):
-				key = key.substr(0, key.length() - 1)
+			if DMSettings.get_setting(DMSettings.USE_UUID_ONLY_FOR_IDS, false):
+				# Generate UUID only
+				var uuid = str(randi() % 1000000).sha1_text().substr(0, 12)
+				key = uuid.to_upper()
+			else:
+				# Generate text prefix + hash
+				var prefix_length = DMSettings.get_setting(DMSettings.AUTO_GENERATED_ID_PREFIX_LENGTH, 30)
+				key = regex.ALPHA_NUMERIC.sub(text.strip_edges(), "_", true).substr(0, prefix_length)
+				if key.begins_with("_"):
+					key = key.substr(1)
+				if key.ends_with("_"):
+					key = key.substr(0, key.length() - 1)
 
-			# Make sure key is unique
-			var hashed_key: String = key + "_" + str(rng.randi() % 1000000).sha1_text().substr(0, 6)
-			while hashed_key in known_keys and text != known_keys.get(hashed_key):
-				hashed_key = key + "_" + str(rng.randi() % 1000000).sha1_text().substr(0, 6)
-			key = hashed_key.to_upper()
+				# Make sure key is unique
+				var hashed_key: String = key + "_" + str(randi() % 1000000).sha1_text().substr(0, 6)
+				while hashed_key in known_keys and text != known_keys.get(hashed_key):
+					hashed_key = key + "_" + str(randi() % 1000000).sha1_text().substr(0, 6)
+				key = hashed_key.to_upper()
 
 		line = line.replace("\\n", "!NEWLINE!")
 		text = text.replace("\n", "!NEWLINE!")

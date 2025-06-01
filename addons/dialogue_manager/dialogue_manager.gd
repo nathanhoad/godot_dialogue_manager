@@ -699,6 +699,7 @@ func _check_case_value(match_value: Variant, data: Dictionary, extra_game_states
 	return false
 
 
+
 # Make a change to game state or run a method
 func _mutate(mutation: Dictionary, extra_game_states: Array, is_inline_mutation: bool = false) -> void:
 	var expression: Array[Dictionary] = mutation.expression
