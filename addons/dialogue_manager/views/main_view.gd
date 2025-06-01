@@ -157,10 +157,7 @@ func _ready() -> void:
 	# Connect menu buttons
 	insert_button.get_popup().id_pressed.connect(_on_insert_button_menu_id_pressed)
 	translations_button.get_popup().id_pressed.connect(_on_translations_button_menu_id_pressed)
-<<<<<<< Updated upstream
-=======
 	translations_button.get_popup().about_to_popup.connect(_on_translations_button_about_to_popup)
->>>>>>> Stashed changes
 
 	code_edit.main_view = self
 	code_edit.wrap_mode = TextEdit.LINE_WRAPPING_BOUNDARY if DMSettings.get_setting(DMSettings.WRAP_LONG_LINES, false) else TextEdit.LINE_WRAPPING_NONE
@@ -1163,8 +1160,6 @@ func _on_find_in_files_result_selected(path: String, cursor: Vector2, length: in
 	open_file(path)
 	code_edit.select(cursor.y, cursor.x, cursor.y, cursor.x + length)
 	code_edit.set_line_as_center_visible(cursor.y)
-<<<<<<< Updated upstream
-=======
 
 
 func _on_translations_button_about_to_popup() -> void:
@@ -1176,4 +1171,3 @@ func _on_translations_button_about_to_popup() -> void:
 	if prefix_idx >= 0:
 		var current_length = DMSettings.get_setting(DMSettings.AUTO_GENERATED_ID_PREFIX_LENGTH, 30)
 		popup.set_item_text(prefix_idx, DMConstants.translate(&"set_id_prefix_length") + " (" + str(current_length) + ")")
->>>>>>> Stashed changes
