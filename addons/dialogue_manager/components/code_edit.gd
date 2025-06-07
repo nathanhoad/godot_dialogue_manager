@@ -186,7 +186,7 @@ func _request_code_completion(force: bool) -> void:
 				add_code_completion_option(CodeEdit.KIND_CLASS, name + ": ", name.substr(name_so_far.length()) + ": ", theme_overrides.text_color, get_theme_icon("Sprite2D", "EditorIcons"))
 
 	# Match autoloads on mutation lines
-	for prefix in ["do ", "set ", "if ", "elif ", "else if ", "match ", "when ", "using "]:
+	for prefix in ["do ", "do! ", "set ", "if ", "elif ", "else if ", "match ", "when ", "using "]:
 		if (current_line.strip_edges().begins_with(prefix) and (cursor.x > current_line.find(prefix))):
 			var expression: String = current_line.substr(0, cursor.x).strip_edges().substr(3)
 			# Find the last couple of tokens
