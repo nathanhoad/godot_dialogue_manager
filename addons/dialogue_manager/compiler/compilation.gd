@@ -186,7 +186,7 @@ func import_content(path: String, prefix: String, imported_line_map: Dictionary,
 					else:
 						content[i] = "%s=>< %s/%s" % [line.split("=>< ")[0], title_hash, bits[1]]
 
-				elif not jump in ["END", "END!"]:
+				elif not jump in ["END", "END!"] and not jump.begins_with("{{"):
 					content[i] = "%s=>< %s/%s" % [line.split("=>< ")[0], str(path.hash()), jump]
 
 			elif "=> " in line:
@@ -199,7 +199,7 @@ func import_content(path: String, prefix: String, imported_line_map: Dictionary,
 					else:
 						content[i] = "%s=> %s/%s" % [line.split("=> ")[0], title_hash, bits[1]]
 
-				elif not jump in ["END", "END!"]:
+				elif not jump in ["END", "END!"] and not jump.begins_with("{{"):
 					content[i] = "%s=> %s/%s" % [line.split("=> ")[0], str(path.hash()), jump]
 
 		imported_paths.append(path)
