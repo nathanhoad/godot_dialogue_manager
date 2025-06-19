@@ -982,8 +982,8 @@ func _on_quick_open_files_list_file_double_clicked(file_path: String) -> void:
 
 
 func _on_quick_open_dialog_confirmed() -> void:
-	if quick_open_files_list.current_file_path:
-		open_file(quick_open_files_list.current_file_path)
+	if quick_open_files_list.last_selected_file_path:
+		open_file(quick_open_files_list.last_selected_file_path)
 
 
 func _on_save_all_button_pressed() -> void:
