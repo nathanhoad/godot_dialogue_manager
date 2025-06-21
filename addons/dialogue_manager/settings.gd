@@ -42,7 +42,10 @@ const WARN_ABOUT_METHOD_PROPERTY_OR_SIGNAL_NAME_CONFLICTS = "runtime/warn_about_
 const IGNORE_MISSING_STATE_VALUES = "runtime/advanced/ignore_missing_state_values"
 ## Whether or not the project is utilising dotnet.
 const USES_DOTNET = "runtime/advanced/uses_dotnet"
-
+## Maximum length of text prefix in auto-generated IDs
+const AUTO_GENERATED_ID_PREFIX_LENGTH = "editor/translations/auto_generated_id_prefix_length"
+## Use only UUID for auto-generated IDs without text prefix
+const USE_UUID_ONLY_FOR_IDS = "editor/translations/use_uuid_only_for_ids"
 
 static var SETTINGS_CONFIGURATION = {
 	WRAP_LONG_LINES: {
@@ -132,7 +135,19 @@ static var SETTINGS_CONFIGURATION = {
 		value = false,
 		type = TYPE_BOOL,
 		is_hidden = true
-	}
+	},
+	AUTO_GENERATED_ID_PREFIX_LENGTH: {
+		value = 30,
+		type = TYPE_INT,
+		hint = PROPERTY_HINT_RANGE,
+		hint_string = "0,100,1",
+		is_advanced = true
+	},
+	USE_UUID_ONLY_FOR_IDS: {
+		value = false,
+		type = TYPE_BOOL,
+		is_advanced = true
+	},
 }
 
 

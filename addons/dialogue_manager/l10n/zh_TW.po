@@ -95,6 +95,15 @@ msgstr "結束對話"
 msgid "generate_line_ids"
 msgstr "生成行 ID"
 
+msgid "use_uuid_only_for_ids"
+msgstr "僅使用 UUID 作為 ID"
+
+msgid "set_id_prefix_length"
+msgstr "設定 ID 前綴長度"
+
+msgid "id_prefix_length"
+msgstr "ID 前綴長度："
+
 msgid "save_characters_to_csv"
 msgstr "保存角色到 CSV"
 
