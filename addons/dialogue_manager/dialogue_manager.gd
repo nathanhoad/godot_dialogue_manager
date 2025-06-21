@@ -299,7 +299,8 @@ func get_resolved_line_data(data: Dictionary, extra_game_states: Array = []) -> 
 		text_replacements = _expression_parser.extract_replacements(text, 0)
 
 	for replacement in text_replacements:
-		assert(not replacement.has("error"), "%s \"%s\"" % [DMConstants.get_error_message(replacement.get("error")), text])
+		if replacement.has("error"):
+			assert(false, "%s \"%s\"" % [DMConstants.get_error_message(replacement.get("error")), text])
 
 		var value = await _resolve(replacement.expression.duplicate(true), extra_game_states)
 		var index: int = text.find(replacement.value_in_text)
