@@ -80,6 +80,7 @@ Returns the example balloon's base CanvasLayer in case you want to `queue_free()
 - `spoke(letter: String, letter_index: int, speed: float)` - emitted each step while typing out.
 - `paused_typing(duration: float)` - emitted when the label pauses typing.
 - `skipped_typing()` - emitted when the player skips the label typing out.
+- `started_typing(character:String)` - emitted when the label starts typing with the character name 
 - `finished_typing()` - emitted when the label finishes typing.
 
 ### Methods

@@ -18,6 +18,8 @@ signal skipped_typing()
 ## Emitted when typing finishes.
 signal finished_typing()
 
+## Emitted when typing starts
+signal started_typing(character:String)
 
 # The action to press to skip typing.
 @export var skip_action: StringName = &"ui_cancel"
@@ -107,6 +109,9 @@ func type_out() -> void:
 
 	# Allow typing listeners a chance to connect
 	await get_tree().process_frame
+	
+	# Emit the started_typing signal with the character name
+	started_typing.emit(dialogue_line.character)
 
 	if get_total_character_count() == 0:
 		self.is_typing = false
