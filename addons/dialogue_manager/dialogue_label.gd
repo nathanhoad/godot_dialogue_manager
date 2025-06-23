@@ -18,6 +18,8 @@ signal skipped_typing()
 ## Emitted when typing finishes.
 signal finished_typing()
 
+## Emitted when typing starts
+signal started_typing(character:String)
 
 # The action to press to skip typing.
 @export var skip_action: StringName = &"ui_cancel"
@@ -57,6 +59,8 @@ var is_typing: bool = false:
 	set(value):
 		var is_finished: bool = is_typing != value and value == false
 		is_typing = value
+		if is_typing:
+			started_typing.emit(dialogue_line.character)
 		if is_finished:
 			finished_typing.emit()
 	get:
