@@ -59,6 +59,8 @@ var is_typing: bool = false:
 	set(value):
 		var is_finished: bool = is_typing != value and value == false
 		is_typing = value
+		if is_typing:
+			started_typing.emit(dialogue_line.character)
 		if is_finished:
 			finished_typing.emit()
 	get:
@@ -109,9 +111,6 @@ func type_out() -> void:
 
 	# Allow typing listeners a chance to connect
 	await get_tree().process_frame
-	
-	# Emit the started_typing signal with the character name
-	started_typing.emit(dialogue_line.character)
 
 	if get_total_character_count() == 0:
 		self.is_typing = false
