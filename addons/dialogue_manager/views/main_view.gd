@@ -48,8 +48,6 @@ signal confirmation_closed()
 @onready var build_error_dialog: AcceptDialog = $BuildErrorDialog
 @onready var close_confirmation_dialog: ConfirmationDialog = $CloseConfirmationDialog
 @onready var updated_dialog: AcceptDialog = $UpdatedDialog
-@onready var find_in_files_dialog: AcceptDialog = $FindInFilesDialog
-@onready var find_in_files: Control = $FindInFilesDialog/FindInFiles
 
 # Toolbar
 @onready var new_button: Button = %NewButton
@@ -465,7 +463,6 @@ func apply_theme() -> void:
 		quick_open_dialog.min_size = Vector2(400, 600) * scale
 		export_dialog.min_size = Vector2(600, 500) * scale
 		import_dialog.min_size = Vector2(600, 500) * scale
-		find_in_files_dialog.min_size = Vector2(800, 600) * scale
 
 
 ### Helpers
@@ -1014,8 +1011,7 @@ func _on_save_all_button_pressed() -> void:
 
 
 func _on_find_in_files_button_pressed() -> void:
-	find_in_files_dialog.popup_centered()
-	find_in_files.prepare()
+	plugin.show_find_in_dialogue()
 
 
 func _on_code_edit_text_changed() -> void:

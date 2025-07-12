@@ -3,13 +3,15 @@ extends EditorPlugin
 
 
 const MainView = preload("./views/main_view.tscn")
+const FindInDialogueView = preload("./views/find_in_dialogue_view.tscn")
 
 
 var import_plugin: DMImportPlugin
 var export_plugin: DMExportPlugin
 var inspector_plugin: DMInspectorPlugin
 var translation_parser_plugin: DMTranslationParserPlugin
-var main_view
+var main_view: Control
+var find_in_dialogue_view: Control
 var dialogue_cache: DMCache
 
 
@@ -56,8 +58,6 @@ func _enter_tree() -> void:
 		add_tool_menu_item("Create copy of dialogue example balloon...", _copy_dialogue_balloon)
 
 
-
-
 func _exit_tree() -> void:
 	remove_import_plugin(import_plugin)
 	import_plugin = null
@@ -73,6 +73,8 @@ func _exit_tree() -> void:
 
 	if is_instance_valid(main_view):
 		main_view.queue_free()
+
+	hide_find_in_dialogue()
 
 	Engine.remove_meta("DialogueManagerPlugin")
 	Engine.remove_meta("DMCache")
@@ -148,6 +150,22 @@ func _build() -> bool:
 			return false
 
 	return true
+
+
+func show_find_in_dialogue() -> void:
+	if not is_instance_valid(find_in_dialogue_view):
+		find_in_dialogue_view = FindInDialogueView.instantiate()
+		find_in_dialogue_view.main_view = main_view
+		find_in_dialogue_view.result_selected.connect(main_view._on_find_in_files_result_selected)
+		add_control_to_bottom_panel(find_in_dialogue_view, DMConstants.translate(&"search.find_in_dialogue"))
+	make_bottom_panel_item_visible(find_in_dialogue_view)
+	find_in_dialogue_view.prepare()
+
+
+func hide_find_in_dialogue() -> void:
+	if is_instance_valid(find_in_dialogue_view):
+		remove_control_from_bottom_panel(find_in_dialogue_view)
+		find_in_dialogue_view.queue_free()
 
 
 ## Get the shortcuts used by the plugin
