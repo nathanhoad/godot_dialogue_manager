@@ -57,7 +57,7 @@ The addon provides a `DialogueLabel` node (an extension of the RichTextLabel nod
 
 This node is given a `dialogue_line` (mentioned above) and uses its properties to work out how to handle typing out the dialogue. It will automatically handle any `bb_code`, `wait`, `speed`, and `inline_mutation` references.
 
-Use `type_out()` to start typing out the text. The label will emit a `finished_typing` signal when it has finished typing.
+Use `type_out()` to start typing out the text. The label will emit a `started_typing` signal as the text begins typing, and a `finished_typing` signal when it has finished typing.
 
 The label will emit a `paused_typing` signal (along with the duration of the pause) when there is a pause in the typing and a `spoke` signal (along with the letter typed and the current speed) when a letter was just typed.
 
