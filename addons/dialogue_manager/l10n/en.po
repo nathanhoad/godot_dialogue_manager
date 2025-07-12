@@ -37,7 +37,7 @@ msgid "all"
 msgstr "All"
 
 msgid "find_in_files"
-msgstr "Find in files..."
+msgstr "Find in Dialogue..."
 
 msgid "test_dialogue"
 msgstr "Test dialogue from start of file"
@@ -158,6 +158,9 @@ msgstr "Show in FileSystem"
 
 msgid "n_of_n"
 msgstr "{index} of {total}"
+
+msgid "search.find_in_dialogue"
+msgstr "Find in Dialogue"
 
 msgid "search.find"
 msgstr "Find:"

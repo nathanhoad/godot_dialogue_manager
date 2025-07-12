@@ -149,6 +149,9 @@ msgstr ""
 msgid "n_of_n"
 msgstr ""
 
+msgid "search.find_in_dialogue"
+msgstr ""
+
 msgid "search.find"
 msgstr ""
 
