@@ -21,7 +21,8 @@ signal started_typing()
 ## Emitted when typing finishes.
 signal finished_typing()
 
-# The action to press to skip typing.
+
+## The action to press to skip typing.
 @export var skip_action: StringName = &"ui_cancel"
 
 ## The speed with which the text types out.
@@ -46,11 +47,10 @@ var _already_mutated_indices: PackedInt32Array = []
 
 ## The current line of dialogue.
 var dialogue_line:
-	set(next_dialogue_line):
-		dialogue_line = next_dialogue_line
-		custom_minimum_size = Vector2.ZERO
-		text = ""
-		text = dialogue_line.text
+	set(value):
+		if value != dialogue_line:
+			dialogue_line = value
+			_update_text()
 	get:
 		return dialogue_line
 
@@ -86,13 +86,10 @@ func _process(delta: float) -> void:
 			self.is_typing = false
 
 
-func _unhandled_input(event: InputEvent) -> void:
-	# Note: this will no longer be reached if using Dialogue Manager > 2.32.2. To make skip handling
-	# simpler (so all of mouse/keyboard/joypad are together) it is now the responsibility of the
-	# dialogue balloon.
-	if self.is_typing and visible_ratio < 1 and InputMap.has_action(skip_action) and event.is_action_pressed(skip_action):
-		get_viewport().set_input_as_handled()
-		skip_typing()
+## Sets the label's text from the current dialogue line. Override if you want
+## to do something more interesting in your subclass.
+func _update_text() -> void:
+	text = dialogue_line.text
 
 
 ## Start typing out the text
