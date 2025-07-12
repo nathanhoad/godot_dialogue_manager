@@ -15,11 +15,11 @@ signal paused_typing(duration: float)
 ## Emitted when the player skips the typing of dialogue.
 signal skipped_typing()
 
+## Emitted when typing starts
+signal started_typing()
+
 ## Emitted when typing finishes.
 signal finished_typing()
-
-## Emitted when typing starts
-signal started_typing(character:String)
 
 # The action to press to skip typing.
 @export var skip_action: StringName = &"ui_cancel"
@@ -59,8 +59,6 @@ var is_typing: bool = false:
 	set(value):
 		var is_finished: bool = is_typing != value and value == false
 		is_typing = value
-		if is_typing:
-			started_typing.emit(dialogue_line.character)
 		if is_finished:
 			finished_typing.emit()
 	get:
@@ -108,6 +106,7 @@ func type_out() -> void:
 	_already_mutated_indices.clear()
 
 	self.is_typing = true
+	started_typing.emit()
 
 	# Allow typing listeners a chance to connect
 	await get_tree().process_frame
