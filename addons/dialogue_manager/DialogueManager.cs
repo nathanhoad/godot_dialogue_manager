@@ -241,6 +241,15 @@ namespace DialogueManagerRuntime
                 }
             }
 
+			var fieldProps = thing.GetType().GetProperties(BindingFlags.Instance| BindingFlags.Static | BindingFlags.Public);
+            foreach (var fieldProp in fieldProps)
+            {
+                if (fieldProp.Name == property)
+                {
+                    return true;
+                }
+            }
+
             return false;
         }
 
@@ -266,6 +275,29 @@ namespace DialogueManagerRuntime
                     catch (Exception)
                     {
                         throw new Exception($"Constant {property} of type ${fieldInfo.GetValue(thing).GetType()} is not supported by Variant.");
+                    }
+                }
+            }
+
+			var fieldProps = thing.GetType().GetProperties(BindingFlags.Instance| BindingFlags.Static | BindingFlags.Public);
+            foreach (var fieldProp in fieldProps)
+            {
+                if (fieldProp.Name == property)
+                {
+                    try
+                    {
+                        Variant value = fieldProp.GetValue(thing) switch
+                        {
+                            int v => Variant.From((long)v),
+                            float v => Variant.From((double)v),
+                            System.String v => Variant.From((string)v),
+                            _ => Variant.From(fieldProp.GetValue(thing))
+                        };
+                        return value;
+                    }
+                    catch (Exception)
+                    {
+                        throw new Exception($"Constant {property} of type ${fieldProp.GetValue(thing).GetType()} is not supported by Variant.");
                     }
                 }
             }
