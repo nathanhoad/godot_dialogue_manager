@@ -133,6 +133,19 @@ namespace DialogueManagerRuntime
             return new DialogueLine((RefCounted)result[0]);
         }
 
+		public static async Task<DialogueLine?> GetLine(Resource dialogueResource, string key = "", Array<Variant>? extraGameStates = null)
+        {
+            var instance = (Node)Instance.Call("_bridge_get_new_instance");
+            Prepare(instance);
+            instance.Call("_bridge_get_line", dialogueResource, key, extraGameStates ?? new Array<Variant>());
+            var result = await instance.ToSignal(instance, "bridge_get_line_completed");
+            instance.QueueFree();
+
+            if ((RefCounted)result[0] == null) return null;
+
+            return new DialogueLine((RefCounted)result[0]);
+        }
+
 
         public static CanvasLayer ShowExampleDialogueBalloon(Resource dialogueResource, string key = "", Array<Variant>? extraGameStates = null)
         {
