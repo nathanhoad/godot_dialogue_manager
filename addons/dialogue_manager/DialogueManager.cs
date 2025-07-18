@@ -9,6 +9,13 @@ using System.Threading.Tasks;
 
 namespace DialogueManagerRuntime
 {
+
+	public enum MutationBehaviour {
+		Wait,
+		DoNotWait,
+		Skip
+	}
+
     public enum TranslationSource
     {
         None,
