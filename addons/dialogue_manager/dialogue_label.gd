@@ -94,7 +94,7 @@ func _update_text() -> void:
 
 ## Start typing out the text
 func type_out() -> void:
-	text = dialogue_line.text
+	_update_text()
 	visible_characters = 0
 	visible_ratio = 0
 	_waiting_seconds = 0
