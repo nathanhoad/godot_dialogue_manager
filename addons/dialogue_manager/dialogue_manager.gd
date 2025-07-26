@@ -703,8 +703,12 @@ func _check_case_value(match_value: Variant, data: Dictionary, extra_game_states
 			already_compared = true
 
 		var resolved_value = await _resolve(expression_to_check, extra_game_states)
-		if (already_compared and resolved_value) or match_value == resolved_value:
-			return true
+		if already_compared:
+			if resolved_value:
+				return true
+		else:
+			if match_value == resolved_value:
+				return true
 
 	return false
 

@@ -230,6 +230,22 @@ After")
 	resource = create_resource("
 ~ start
 Before
+match StateForTests.some_property
+	when < 2
+		Less than 2.
+	when 2
+		Exactly 2.
+After")
+
+	StateForTests.some_property = 2
+	line = await resource.get_next_dialogue_line("start")
+	assert(line.text == "Before", "Should be before match.")
+	line = await resource.get_next_dialogue_line(line.next_id)
+	assert(line.text == "Exactly 2.", "Should match comparison.")
+
+	resource = create_resource("
+~ start
+Before
 match StateForTests.some_property + 1
 	when 0
 		It's zero.
