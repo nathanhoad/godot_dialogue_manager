@@ -31,6 +31,27 @@ All `.dialogue` files are automatically added to the POT Generation list in **Pr
 
 _NOTE: If static translation keys are present in lines of dialogue that key will be used as POT context for that line, and the dialogue itself will be the actual POT key._
 
+
+## Adding notes for translators
+
+Having context is essential for future translators. As you may know, in gettext files the lines starting with `#. TRANSLATORS:` serve as notes for translators. To achieve this behaviour you can add a line starting with `##` before your dialogue line, this will end up as a special comment for translators in your `POT` and `PO` files.
+
+_NOTE: This behaviour is impemented by Godot itself_
+
+```
+## This is the first time that Nathan meets Coco
+Nathan: Hi! I'm Nathan. [ID:HI_IM_NATHAN]
+Coco: Moew. [ID:MEOW]
+```
+
+```
+#. TRANSLATORS: This is the first time that Nathan meets Coco
+#: [path to the dialogue file]nathan_meets_coco.dialogue
+msgctxt "HI_IM_NATHAN"
+msgid "Hi! I'm Nathan."
+```
+
+
 ## Exporting lines as CSV
 
 You can export translations as CSV from the "Translations" menu in the dialogue editor.
