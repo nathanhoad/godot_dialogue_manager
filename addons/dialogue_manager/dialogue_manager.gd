@@ -512,10 +512,10 @@ func _bridge_get_new_instance() -> Node:
 	return instance
 
 
-func _bridge_get_next_dialogue_line(resource: DialogueResource, key: String, extra_game_states: Array = [], mutation_behaviour: String = str(DMConstants.MutationBehaviour.Wait)) -> void:
+func _bridge_get_next_dialogue_line(resource: DialogueResource, key: String, extra_game_states: Array = [], mutation_behaviour: int = DMConstants.MutationBehaviour.Wait) -> void:
 	# dotnet needs at least one await tick of the signal gets called too quickly
 	await Engine.get_main_loop().process_frame
-	var line = await get_next_dialogue_line(resource, key, extra_game_states, DMConstants.MutationBehaviour.get(mutation_behaviour))
+	var line = await get_next_dialogue_line(resource, key, extra_game_states, mutation_behaviour)
 	bridge_get_next_dialogue_line_completed.emit(line)
 
 

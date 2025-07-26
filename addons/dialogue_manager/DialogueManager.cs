@@ -131,7 +131,7 @@ namespace DialogueManagerRuntime
         {
             var instance = (Node)Instance.Call("_bridge_get_new_instance");
             Prepare(instance);
-            instance.Call("_bridge_get_next_dialogue_line", dialogueResource, key, extraGameStates ?? new Array<Variant>(), mutation_behaviour.ToString());
+            instance.Call("_bridge_get_next_dialogue_line", dialogueResource, key, extraGameStates ?? new Array<Variant>(), (int)mutation_behaviour);
             var result = await instance.ToSignal(instance, "bridge_get_next_dialogue_line_completed");
             instance.QueueFree();
 
