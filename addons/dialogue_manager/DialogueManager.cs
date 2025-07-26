@@ -9,6 +9,13 @@ using System.Threading.Tasks;
 
 namespace DialogueManagerRuntime
 {
+
+	public enum MutationBehaviour {
+		Wait,
+		DoNotWait,
+		Skip
+	}
+
     public enum TranslationSource
     {
         None,
@@ -120,11 +127,11 @@ namespace DialogueManagerRuntime
             return (Resource)Instance.Call("create_resource_from_text", text);
         }
 
-        public static async Task<DialogueLine?> GetNextDialogueLine(Resource dialogueResource, string key = "", Array<Variant>? extraGameStates = null)
+		public static async Task<DialogueLine?> GetNextDialogueLine(Resource dialogueResource, string key = "", Array<Variant>? extraGameStates = null, MutationBehaviour mutation_behaviour = MutationBehaviour.Wait)
         {
             var instance = (Node)Instance.Call("_bridge_get_new_instance");
             Prepare(instance);
-            instance.Call("_bridge_get_next_dialogue_line", dialogueResource, key, extraGameStates ?? new Array<Variant>());
+            instance.Call("_bridge_get_next_dialogue_line", dialogueResource, key, extraGameStates ?? new Array<Variant>(), (int)mutation_behaviour);
             var result = await instance.ToSignal(instance, "bridge_get_next_dialogue_line_completed");
             instance.QueueFree();
 
