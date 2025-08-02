@@ -4,8 +4,11 @@
 class_name DialogueResponsesMenu extends Container
 
 
+## Emitted when a response is focused.
+signal response_focused(response: Control)
+
 ## Emitted when a response is selected.
-signal response_selected(response)
+signal response_selected(response: Control)
 
 
 ## Optionally specify a control to duplicate for each response
@@ -60,6 +63,9 @@ var responses: Array = []:
 
 			_configure_focus()
 
+# The previously focused item in this menu.
+var _previously_focused_item: Control = null
+
 
 func _ready() -> void:
 	visibility_changed.connect(func():
@@ -71,6 +77,8 @@ func _ready() -> void:
 
 	if is_instance_valid(response_template):
 		response_template.hide()
+
+	get_viewport().gui_focus_changed.connect(_on_focus_changed)
 
 
 ## Get the selectable items in the menu.
@@ -125,6 +133,15 @@ func _configure_focus() -> void:
 #endregion
 
 #region Signals
+
+
+func _on_focus_changed(control: Control) -> void:
+	if "Disallowed" in control.name: return
+	if not control in get_menu_items(): return
+
+	if _previously_focused_item != control:
+		_previously_focused_item = control
+		response_focused.emit(control)
 
 
 func _on_response_mouse_entered(item: Control) -> void:
