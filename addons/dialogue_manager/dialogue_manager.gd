@@ -203,6 +203,10 @@ func get_line(resource: DialogueResource, key: String, extra_game_states: Array)
 	if data.has(&"siblings"):
 		# Only count siblings that pass their condition (if they have one).
 		var successful_siblings: Array = data.siblings.filter(func(sibling): return not sibling.has("condition") or await _check_condition(sibling, extra_game_states))
+		# If there are no siblings that pass their conditions then just skip over them all.
+		if successful_siblings.size() == 0:
+			return await get_line(resource, data.next_id + id_trail, extra_game_states)
+		# Otherwise, pick a random one.
 		var target_weight: float = randf_range(0, successful_siblings.reduce(func(total, sibling): return total + sibling.weight, 0))
 		var cummulative_weight: float = 0
 		for sibling in successful_siblings:
