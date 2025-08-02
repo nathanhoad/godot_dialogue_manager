@@ -224,6 +224,20 @@ Nathan: Jump 3.")
 	assert(output.lines["5"].siblings[2].weight == 3, "Weight of 3 should be 3.")
 
 
+func test_will_skip_random_condition_lines_if_none_pass() -> void:
+	var resource = create_resource("
+~ start
+Nathan: Hello.
+% [if false] Nathan: Fail 1
+% [if false] Nathan: Fail 2
+Nathan: After.")
+
+	var line = await resource.get_next_dialogue_line("start")
+	assert(line.text == "Hello.", "Should be first line.")
+	line = await resource.get_next_dialogue_line(line.next_id)
+	assert(line.text == "After.", "Should skip failed lines.")
+
+
 class TestClass:
 	var string: String = ""
 	var number: int = -1
