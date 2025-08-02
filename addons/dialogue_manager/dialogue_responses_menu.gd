@@ -127,6 +127,7 @@ func _configure_focus() -> void:
 		item.mouse_entered.connect(_on_response_mouse_entered.bind(item))
 		item.gui_input.connect(_on_response_gui_input.bind(item, item.get_meta("response")))
 
+	_previously_focused_item = items[0]
 	items[0].grab_focus()
 
 
