@@ -31,6 +31,9 @@ signal dialogue_ended(resource: DialogueResource)
 ## Used internally.
 signal bridge_get_next_dialogue_line_completed(line: DialogueLine)
 
+## Used internally.
+signal bridge_get_line_completed(line: DialogueLine)
+
 ## Used internally
 signal bridge_dialogue_started(resource: DialogueResource)
 
@@ -200,6 +203,10 @@ func get_line(resource: DialogueResource, key: String, extra_game_states: Array)
 	if data.has(&"siblings"):
 		# Only count siblings that pass their condition (if they have one).
 		var successful_siblings: Array = data.siblings.filter(func(sibling): return not sibling.has("condition") or await _check_condition(sibling, extra_game_states))
+		# If there are no siblings that pass their conditions then just skip over them all.
+		if successful_siblings.size() == 0:
+			return await get_line(resource, data.next_id + id_trail, extra_game_states)
+		# Otherwise, pick a random one.
 		var target_weight: float = randf_range(0, successful_siblings.reduce(func(total, sibling): return total + sibling.weight, 0))
 		var cummulative_weight: float = 0
 		for sibling in successful_siblings:
@@ -512,12 +519,18 @@ func _bridge_get_new_instance() -> Node:
 	return instance
 
 
-func _bridge_get_next_dialogue_line(resource: DialogueResource, key: String, extra_game_states: Array = []) -> void:
+func _bridge_get_next_dialogue_line(resource: DialogueResource, key: String, extra_game_states: Array = [], mutation_behaviour: int = DMConstants.MutationBehaviour.Wait) -> void:
 	# dotnet needs at least one await tick of the signal gets called too quickly
 	await Engine.get_main_loop().process_frame
-
-	var line = await get_next_dialogue_line(resource, key, extra_game_states)
+	var line = await get_next_dialogue_line(resource, key, extra_game_states, mutation_behaviour)
 	bridge_get_next_dialogue_line_completed.emit(line)
+
+
+func _bridge_get_line(resource: DialogueResource, key: String, extra_game_states: Array = []) -> void:
+	# dotnet needs at least one await tick of the signal gets called too quickly
+	await Engine.get_main_loop().process_frame
+	var line = await get_line(resource, key, extra_game_states)
+	bridge_get_line_completed.emit(line)
 
 
 func _bridge_mutate(mutation: Dictionary, extra_game_states: Array, is_inline_mutation: bool = false) -> void:
