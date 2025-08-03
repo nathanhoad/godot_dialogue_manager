@@ -91,6 +91,7 @@ var current_file_path: String = "":
 			title_list.hide()
 			code_edit.hide()
 			errors_panel.hide()
+			search_and_replace.hide()
 			banner.show()
 		else:
 			test_button.disabled = false
