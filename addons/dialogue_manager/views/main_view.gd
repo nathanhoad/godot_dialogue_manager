@@ -521,6 +521,7 @@ func generate_translations_keys() -> void:
 	rng.randomize()
 
 	var cursor: Vector2 = code_edit.get_cursor()
+	var scroll_vertical = code_edit.scroll_vertical
 	var lines: PackedStringArray = code_edit.text.split("\n")
 
 	var key_regex = RegEx.new()
@@ -592,6 +593,7 @@ func generate_translations_keys() -> void:
 
 	code_edit.text = "\n".join(lines)
 	code_edit.set_cursor(cursor)
+	code_edit.scroll_vertical = scroll_vertical
 	_on_code_edit_text_changed()
 
 
