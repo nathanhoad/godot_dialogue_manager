@@ -44,6 +44,12 @@ static func extract_translatable_string(text: String) -> String:
 	return line.text
 
 
+## Extract a mutation from a string.
+static func extract_mutation(text: String) -> Dictionary:
+	var compilation: DMCompilation = DMCompilation.new()
+	return compilation.extract_mutation(text)
+
+
 ## Get the known titles in a dialogue script.
 static func get_titles_in_text(text: String, path: String) -> Dictionary:
 	var compilation: DMCompilation = DMCompilation.new()

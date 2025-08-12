@@ -432,12 +432,6 @@ namespace DialogueManagerRuntime
             get => time;
         }
 
-        private Dictionary pauses = new Dictionary();
-        public Dictionary Pauses
-        {
-            get => pauses;
-        }
-
         private Dictionary speeds = new Dictionary();
         public Dictionary Speeds
         {
@@ -476,7 +470,6 @@ namespace DialogueManagerRuntime
             character = (string)data.Get("character");
             text = (string)data.Get("text");
             translation_key = (string)data.Get("translation_key");
-            pauses = (Dictionary)data.Get("pauses");
             speeds = (Dictionary)data.Get("speeds");
             inline_mutations = (Array<Godot.Collections.Array>)data.Get("inline_mutations");
             time = (string)data.Get("time");

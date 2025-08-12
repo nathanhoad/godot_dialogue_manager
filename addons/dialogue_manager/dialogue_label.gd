@@ -9,9 +9,6 @@ class_name DialogueLabel extends RichTextLabel
 ## Emitted for each letter typed out.
 signal spoke(letter: String, letter_index: int, speed: float)
 
-## Emitted when typing paused for a `[wait]`
-signal paused_typing(duration: float)
-
 ## Emitted when the player skips the typing of dialogue.
 signal skipped_typing()
 
@@ -20,6 +17,9 @@ signal started_typing()
 
 ## Emitted when typing finishes.
 signal finished_typing()
+
+## [Deprecated] No longer emitted.
+signal paused_typing(duration: float)
 
 
 ## The action to press to skip typing.
@@ -57,12 +57,13 @@ var dialogue_line:
 ## Whether the label is currently typing itself out.
 var is_typing: bool = false:
 	set(value):
-		var is_finished: bool = is_typing != value and value == false
-		is_typing = value
+		var is_finished: bool = is_typing != value and value == false and visible_characters == get_total_character_count()
+		_is_typing = value
 		if is_finished:
 			finished_typing.emit()
 	get:
-		return is_typing
+		return _is_typing and not _is_awaiting_mutation
+var _is_typing: bool = false
 
 var _last_wait_index: int = -1
 var _last_mutation_index: int = -1
@@ -71,7 +72,7 @@ var _is_awaiting_mutation: bool = false
 
 
 func _process(delta: float) -> void:
-	if self.is_typing:
+	if _is_typing:
 		# Type out text
 		if visible_ratio < 1:
 			# See if we are waiting
@@ -83,7 +84,7 @@ func _process(delta: float) -> void:
 		else:
 			# Make sure any mutations at the end of the line get run
 			_mutate_inline_mutations(get_total_character_count())
-			self.is_typing = false
+			is_typing = false
 
 
 ## Sets the label's text from the current dialogue line. Override if you want
@@ -102,25 +103,25 @@ func type_out() -> void:
 	_last_mutation_index = -1
 	_already_mutated_indices.clear()
 
-	self.is_typing = true
+	is_typing = true
 	started_typing.emit()
 
 	# Allow typing listeners a chance to connect
 	await get_tree().process_frame
 
 	if get_total_character_count() == 0:
-		self.is_typing = false
+		is_typing = false
 	elif seconds_per_step == 0:
 		_mutate_remaining_mutations()
 		visible_characters = get_total_character_count()
-		self.is_typing = false
+		is_typing = false
 
 
 ## Stop typing out the text and jump right to the end
 func skip_typing() -> void:
 	_mutate_remaining_mutations()
 	visible_characters = get_total_character_count()
-	self.is_typing = false
+	is_typing = false
 	skipped_typing.emit()
 
 
@@ -136,17 +137,11 @@ func _type_next(delta: float, seconds_needed: float) -> void:
 		_mutate_inline_mutations(visible_characters)
 		if _is_awaiting_mutation: return
 
-	var additional_waiting_seconds: float = _get_pause(visible_characters)
-
 	# Pause on characters like "."
-	if _should_auto_pause():
-		additional_waiting_seconds += seconds_per_pause_step
-
-	# Pause at literal [wait] directives
-	if _last_wait_index != visible_characters and additional_waiting_seconds > 0:
+	var waiting_seconds: float = seconds_per_pause_step if _should_auto_pause() else 0
+	if _last_wait_index != visible_characters and waiting_seconds > 0:
 		_last_wait_index = visible_characters
-		_waiting_seconds += additional_waiting_seconds
-		paused_typing.emit(_get_pause(visible_characters))
+		_waiting_seconds += waiting_seconds
 	else:
 		visible_characters += 1
 		if visible_characters <= get_total_character_count():
@@ -157,11 +152,6 @@ func _type_next(delta: float, seconds_needed: float) -> void:
 			_waiting_seconds += seconds_needed
 		else:
 			_type_next(delta, seconds_needed)
-
-
-# Get the pause for the current typing position if there is one
-func _get_pause(at_index: int) -> float:
-	return dialogue_line.pauses.get(at_index, 0)
 
 
 # Get the speed for the current typing position
