@@ -26,9 +26,6 @@ var text_replacements: Array[Dictionary] = []
 ## The key to use for translating this line.
 var translation_key: String = ""
 
-## A map for when and for how long to pause while typing out the dialogue text.
-var pauses: Dictionary = {}
-
 ## A map for speed changes when typing out the dialogue text.
 var speeds: Dictionary = {}
 
@@ -71,7 +68,6 @@ func _init(data: Dictionary = {}) -> void:
 				text = data.text
 				text_replacements = data.get("text_replacements", [] as Array[Dictionary])
 				translation_key = data.get("translation_key", data.text)
-				pauses = data.get("pauses", {})
 				speeds = data.get("speeds", {})
 				inline_mutations = data.get("inline_mutations", [] as Array[Array])
 				time = data.get("time", "")

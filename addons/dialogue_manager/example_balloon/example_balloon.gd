@@ -51,6 +51,9 @@ var mutation_cooldown: Timer = Timer.new()
 ## The menu of responses
 @onready var responses_menu: DialogueResponsesMenu = %ResponsesMenu
 
+## Indicator to show that player can progress dialogue.
+@onready var progress: Polygon2D = %Progress
+
 
 func _ready() -> void:
 	balloon.hide()
@@ -62,6 +65,10 @@ func _ready() -> void:
 
 	mutation_cooldown.timeout.connect(_on_mutation_cooldown_timeout)
 	add_child(mutation_cooldown)
+
+
+func _process(delta: float) -> void:
+	progress.visible = not dialogue_label.is_typing and dialogue_line.responses.size() == 0
 
 
 func _unhandled_input(_event: InputEvent) -> void:
@@ -91,6 +98,7 @@ func start(dialogue_resource: DialogueResource, title: String, extra_game_states
 func apply_dialogue_line() -> void:
 	mutation_cooldown.stop()
 
+	progress.hide()
 	is_waiting_for_input = false
 	balloon.focus_mode = Control.FOCUS_ALL
 	balloon.grab_focus()
@@ -142,9 +150,10 @@ func _on_mutation_cooldown_timeout() -> void:
 
 
 func _on_mutated(_mutation: Dictionary) -> void:
-	is_waiting_for_input = false
-	will_hide_balloon = true
-	mutation_cooldown.start(0.1)
+	if not _mutation.is_inline:
+		is_waiting_for_input = false
+		will_hide_balloon = true
+		mutation_cooldown.start(0.1)
 
 
 func _on_balloon_gui_input(event: InputEvent) -> void:
