@@ -86,6 +86,15 @@ func _ready() -> void:
 
 ## Step through lines and run any mutations until we either hit some dialogue or the end of the conversation
 func get_next_dialogue_line(resource: DialogueResource, key: String = "", extra_game_states: Array = [], mutation_behaviour: DMConstants.MutationBehaviour = DMConstants.MutationBehaviour.Wait) -> DialogueLine:
+	var line = await _get_next_dialogue_line(resource, key, extra_game_states, mutation_behaviour)
+	if line == null:
+		# End the conversation
+		dialogue_ended.emit(resource)
+	return line
+
+
+# Internal line getter.
+func _get_next_dialogue_line(resource: DialogueResource, key: String = "", extra_game_states: Array = [], mutation_behaviour: DMConstants.MutationBehaviour = DMConstants.MutationBehaviour.Wait) -> DialogueLine:
 	# You have to provide a valid dialogue resource
 	if resource == null:
 		assert(false, DMConstants.translate(&"runtime.no_resource"))
@@ -108,7 +117,6 @@ func get_next_dialogue_line(resource: DialogueResource, key: String = "", extra_
 
 	# If our dialogue is nothing then we hit the end
 	if not _is_valid(dialogue):
-		dialogue_ended.emit.call_deferred(resource)
 		return null
 
 	# Run the mutation if it is one
@@ -122,8 +130,6 @@ func get_next_dialogue_line(resource: DialogueResource, key: String = "", extra_
 			DMConstants.MutationBehaviour.Skip:
 				pass
 		if actual_next_id in [DMConstants.ID_END_CONVERSATION, DMConstants.ID_NULL, null]:
-			# End the conversation
-			dialogue_ended.emit.call_deferred(resource)
 			return null
 		else:
 			return await get_next_dialogue_line(resource, dialogue.next_id, extra_game_states, mutation_behaviour)
@@ -522,8 +528,11 @@ func _bridge_get_new_instance() -> Node:
 func _bridge_get_next_dialogue_line(resource: DialogueResource, key: String, extra_game_states: Array = [], mutation_behaviour: int = DMConstants.MutationBehaviour.Wait) -> void:
 	# dotnet needs at least one await tick of the signal gets called too quickly
 	await Engine.get_main_loop().process_frame
-	var line = await get_next_dialogue_line(resource, key, extra_game_states, mutation_behaviour)
+	var line = await _get_next_dialogue_line(resource, key, extra_game_states, mutation_behaviour)
 	bridge_get_next_dialogue_line_completed.emit(line)
+	if line == null:
+		# End the conversation
+		dialogue_ended.emit(resource)
 
 
 func _bridge_get_line(resource: DialogueResource, key: String, extra_game_states: Array = []) -> void:
