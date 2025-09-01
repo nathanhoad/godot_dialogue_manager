@@ -75,7 +75,7 @@ func _init(line: String) -> void:
 
 		match code:
 			"wait":
-				var wait: Dictionary = DMCompiler.extract_mutation("do wait(%s)" % [args.get("value")])
+				var wait: Dictionary = DMCompiler.extract_mutation("do wait(%s)" % [args.get("value", "null")])
 				mutations.append([index, wait])
 			"speed":
 				speeds[index] = args.get("value").to_float()
