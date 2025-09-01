@@ -57,7 +57,7 @@ var dialogue_line:
 ## Whether the label is currently typing itself out.
 var is_typing: bool = false:
 	set(value):
-		var is_finished: bool = is_typing != value and value == false and visible_characters == get_total_character_count()
+		var is_finished: bool = _is_typing != value and value == false and visible_characters == get_total_character_count()
 		_is_typing = value
 		if is_finished:
 			finished_typing.emit()

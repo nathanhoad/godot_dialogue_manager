@@ -130,7 +130,7 @@ func _get_line_syntax_highlighting(line: int) -> Dictionary:
 						if tag.begins_with("if"):
 							colors[index + bbcode.start + 1] = { color = theme.conditions_color }
 						else:
-							colors[index + bbcode.start + 1] = { color = theme.mutations_color }
+							colors[index + bbcode.start + 1] = { color = theme.mutations_line_color }
 						var expression: Array = expression_parser.tokenise(code, DMConstants.TYPE_MUTATION, bbcode.start + bbcode.code.length())
 						if expression.size() == 0 or expression[0].type == DMConstants.TYPE_ERROR:
 							colors[index + bbcode.start + tag.length() + 1] = { color = theme.critical_color }
