@@ -753,7 +753,7 @@ func parse_dialogue_line(tree_line: DMTreeLine, line: DMCompiledLine, siblings: 
 	for bbcode: Dictionary in bbcodes:
 		var tag: String = bbcode.code
 		var code: String = bbcode.raw_args
-		if tag.begins_with("do") or tag.begins_with("set") or tag.begins_with("if"):
+		if tag.begins_with("$>") or tag.begins_with("do") or tag.begins_with("set") or tag.begins_with("if"):
 			var expression: Array = expression_parser.tokenise(code, DMConstants.TYPE_MUTATION, bbcode.start + bbcode.code.length())
 			if expression.size() == 0:
 				add_error(tree_line.line_number, tree_line.indent, DMConstants.ERR_INVALID_EXPRESSION)
@@ -967,7 +967,7 @@ func get_line_type(raw_line: String) -> String:
 	if text.begins_with("when "):
 		return DMConstants.TYPE_WHEN
 
-	if text.begins_with("do ") or text.begins_with("do! ") or text.begins_with("set "):
+	if text.begins_with("do ") or text.begins_with("do! ") or text.begins_with("set ") or text.begins_with("$> ") or text.begins_with("$>> "):
 		return DMConstants.TYPE_MUTATION
 
 	if text.begins_with("=> ") or text.begins_with("=>< "):
@@ -1073,7 +1073,7 @@ func extract_mutation(text: String) -> Dictionary:
 		else:
 			return {
 				expression = expression,
-				is_blocking = not "!" in found.strings[found.names.keyword]
+				is_blocking = not "!" in found.strings[found.names.keyword] and found.strings[found.names.keyword] != "$>>"
 			}
 
 	else:
