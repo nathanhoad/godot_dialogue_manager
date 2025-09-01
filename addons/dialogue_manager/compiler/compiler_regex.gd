@@ -9,7 +9,7 @@ var VALID_TITLE_REGEX: RegEx = RegEx.create_from_string("^[a-zA-Z_0-9\\p{Emoji_P
 var BEGINS_WITH_NUMBER_REGEX: RegEx = RegEx.create_from_string("^\\d")
 var CONDITION_REGEX: RegEx = RegEx.create_from_string("(if|elif|while|else if|match|when) (?<expression>.*)\\:?")
 var WRAPPED_CONDITION_REGEX: RegEx = RegEx.create_from_string("\\[if (?<expression>.*)\\]")
-var MUTATION_REGEX: RegEx = RegEx.create_from_string("(?<keyword>do|do!|set) (?<expression>.*)")
+var MUTATION_REGEX: RegEx = RegEx.create_from_string("(?<keyword>\\$\\>|\\$\\>\\>|do|do!|set) (?<expression>.*)")
 var STATIC_LINE_ID_REGEX: RegEx = RegEx.create_from_string("\\[ID:(?<id>.*?)\\]")
 var WEIGHTED_RANDOM_SIBLINGS_REGEX: RegEx = RegEx.create_from_string("^\\%(?<weight>[\\d.]+)?( \\[if (?<condition>.+?)\\])? ")
 var GOTO_REGEX: RegEx = RegEx.create_from_string("=><? (?<goto>.*)")

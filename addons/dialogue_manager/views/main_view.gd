@@ -379,12 +379,13 @@ func apply_theme() -> void:
 			text_color = editor_settings.get_setting("text_editor/theme/highlighting/text_color"),
 			conditions_color = editor_settings.get_setting("text_editor/theme/highlighting/keyword_color"),
 			mutations_color = editor_settings.get_setting("text_editor/theme/highlighting/function_color"),
+			mutations_line_color = Color(editor_settings.get_setting("text_editor/theme/highlighting/function_color"), 0.6),
 			members_color = editor_settings.get_setting("text_editor/theme/highlighting/member_variable_color"),
 			strings_color = editor_settings.get_setting("text_editor/theme/highlighting/string_color"),
 			numbers_color = editor_settings.get_setting("text_editor/theme/highlighting/number_color"),
 			symbols_color = editor_settings.get_setting("text_editor/theme/highlighting/symbol_color"),
 			comments_color = editor_settings.get_setting("text_editor/theme/highlighting/comment_color"),
-			jumps_color = Color(editor_settings.get_setting("text_editor/theme/highlighting/control_flow_keyword_color"), 0.7),
+			jumps_color = Color(editor_settings.get_setting("text_editor/theme/highlighting/control_flow_keyword_color"), 0.6),
 
 			font_size = editor_settings.get_setting("interface/editor/code_font_size")
 		}
