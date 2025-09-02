@@ -3,8 +3,6 @@ class_name DMResolvedLineData extends RefCounted
 
 ## The line's text
 var text: String = ""
-## A map of pauses against where they are found in the text.
-var pauses: Dictionary = {}
 ## A map of speed changes against where they are found in the text.
 var speeds: Dictionary = {}
 ## A list of any mutations to run and where they are found in the text.
@@ -15,7 +13,6 @@ var time: String = ""
 
 func _init(line: String) -> void:
 	text = line
-	pauses = {}
 	speeds = {}
 	mutations = []
 	time = ""
@@ -64,8 +61,7 @@ func _init(line: String) -> void:
 		var raw_args = bbcode.raw_args
 		var args = {}
 		if code in ["$>", "$>>", "do", "do!", "set"]:
-			var compilation: DMCompilation = DMCompilation.new()
-			args["value"] = compilation.extract_mutation("%s %s" % [code, raw_args])
+			args["value"] = DMCompiler.extract_mutation("%s %s" % [code, raw_args])
 		else:
 			# Could be something like:
 			# 	"=1.0"
@@ -79,10 +75,8 @@ func _init(line: String) -> void:
 
 		match code:
 			"wait":
-				if pauses.has(index):
-					pauses[index] += args.get("value").to_float()
-				else:
-					pauses[index] = args.get("value").to_float()
+				var wait: Dictionary = DMCompiler.extract_mutation("do wait(%s)" % [args.get("value", "null")])
+				mutations.append([index, wait])
 			"speed":
 				speeds[index] = args.get("value").to_float()
 			"/speed":

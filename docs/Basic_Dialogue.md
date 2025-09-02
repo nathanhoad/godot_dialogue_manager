@@ -23,7 +23,7 @@ Nathan: This is me talking.
 You can add some spice to your dialogue with [BBCode](https://docs.godotengine.org/en/stable/tutorials/ui/bbcode_in_richtextlabel.html#reference). Along with everything available to Godot's `RichTextLabel` you can also use a few extra ones provided by Dialogue Manager:
 
 - `[[This|Or this|Or even this]]` to pick one option at random in the middle of dialogue (note the double "[[").
-- `[wait=N]` where N is the number of seconds to pause typing of dialogue.
+- `[wait=N]` where N is the number of seconds to pause typing of dialogue. You can also wait for actions by writing something like `[wait="ui_accept"]`, where "ui_accept" is written as a string (you can *also* wait for any of a list of actions with something like `[wait=["ui_accept","ui_cancel"]]` or to just wait for any action at all, `[wait]`).
 - `[speed=N]` where N is a number to multiply the default typing speed by.
 - `[next=N]` where N is a number of seconds to wait before automatically continuing to the next line of dialogue. You can also use `[next=auto]` to have the label determine a length of time to wait based on the length of the text.
 

@@ -37,7 +37,7 @@ signal bridge_get_line_completed(line: DialogueLine)
 ## Used internally
 signal bridge_dialogue_started(resource: DialogueResource)
 
-## Used inernally
+## Used internally
 signal bridge_mutated()
 
 
@@ -363,7 +363,7 @@ func get_resolved_line_data(data: Dictionary, extra_game_states: Array = []) -> 
 			resolved_text = resolved_text.substr(0, r.start) + r.body + resolved_text.substr(r.end, 9999)
 			# Move any other markers now that the text has changed
 			var offset: int = r.end - r.start - r.body.length()
-			for key in [&"pauses", &"speeds", &"time"]:
+			for key in [&"speeds", &"time"]:
 				if markers.get(key) == null: continue
 				var marker = markers.get(key)
 				var next_marker: Dictionary = {}
@@ -610,7 +610,6 @@ func create_dialogue_line(data: Dictionary, extra_game_states: Array) -> Dialogu
 				text = resolved_data.text,
 				text_replacements = data.get(&"text_replacements", [] as Array[Dictionary]),
 				translation_key = data.get(&"translation_key", data.text),
-				pauses = resolved_data.pauses,
 				speeds = resolved_data.speeds,
 				inline_mutations = resolved_data.mutations,
 				time = resolved_data.time,
@@ -746,7 +745,11 @@ func _mutate(mutation: Dictionary, extra_game_states: Array, is_inline_mutation:
 		match expression[0].function:
 			&"wait", &"Wait":
 				mutated.emit(mutation.merged({ is_inline = is_inline_mutation }))
-				await Engine.get_main_loop().create_timer(float(args[0])).timeout
+				if [TYPE_FLOAT, TYPE_INT].has(typeof(args[0])):
+					await Engine.get_main_loop().create_timer(float(args[0])).timeout
+				else:
+					var actions: PackedStringArray = PackedStringArray(args[0] if typeof(args[0]) == TYPE_ARRAY else [args[0]])
+					await _wait_for(actions)
 				return
 
 			&"debug", &"Debug":
@@ -766,6 +769,14 @@ func _mutate(mutation: Dictionary, extra_game_states: Array, is_inline_mutation:
 
 	# Wait one frame to give the dialogue handler a chance to yield
 	await Engine.get_main_loop().process_frame
+
+
+# Wait for a given action
+func _wait_for(actions: PackedStringArray) -> void:
+	var waiter = DMWaiter.new(actions)
+	add_child(waiter)
+	await waiter.waited
+	waiter.queue_free()
 
 
 # Check if a mutation contains an assignment token.
