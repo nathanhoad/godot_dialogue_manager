@@ -176,7 +176,7 @@ func replace_results(only_selected: bool) -> void:
 		if main_view.open_buffers.has(path):
 			lines = main_view.open_buffers.get(path).text.split("\n")
 		else:
-			file = FileAccess.open(path, FileAccess.READ_WRITE)
+			file = FileAccess.open(path, FileAccess.READ)
 			lines = file.get_as_text().split("\n")
 
 		# Read the results in reverse because we're going to be modifying them as we go
@@ -189,7 +189,8 @@ func replace_results(only_selected: bool) -> void:
 
 		var replaced_text: String = "\n".join(lines)
 		if file != null and file.is_open():
-			file.seek(0)
+			file.close()
+			file = FileAccess.open(path, FileAccess.WRITE)
 			file.store_string(replaced_text)
 			file.close()
 		else:
