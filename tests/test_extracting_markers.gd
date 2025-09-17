@@ -15,11 +15,34 @@ func test_ignores_rich_text_bbcode() -> void:
 	assert(data.text == "This is some [color=blue]blue[/color] text.", "It should only contain BBCode.")
 
 
-func test_can_handle_wait_tags() -> void:
+func test_can_handle_wait_time_tags() -> void:
 	var data = _extract("Nathan: [wave]Hey![/wave] [wait=1.2]WAIT!")
 
-	assert(data.pauses.size() == 1, "Should have 1 pause.")
-	assert(data.pauses[13] == 1.2, "Should be at position 13 for 1.2s.")
+	assert(data.mutations.size() == 1, "Should have 1 mutation.")
+
+	var mutation = data.mutations[0]
+
+	assert(mutation[0] == 13, "Should be at position 13")
+
+	assert("expression" in mutation[1], "Should have an expression.")
+
+	assert(mutation[1]["expression"][0]["function"] == "wait", "Should be a wait function")
+	assert(mutation[1]["expression"][0]["value"][0][0]["value"] == 1.2, "Should last 1.2 seconds")
+
+
+func test_can_handle_wait_input_tags() -> void:
+	var data = _extract("Nathan: [wave]Hey![/wave] [wait=\"ui_accept\"]WAIT!")
+
+	assert(data.mutations.size() == 1, "Should have 1 mutation.")
+
+	var mutation = data.mutations[0]
+
+	assert(mutation[0] == 13, "Should be at position 13")
+
+	assert("expression" in mutation[1], "Should have an expression.")
+
+	assert(mutation[1]["expression"][0]["function"] == "wait", "Should be a wait function")
+	assert(mutation[1]["expression"][0]["value"][0][0]["value"] == "ui_accept", "Should convey action waited for")
 
 
 func test_can_handle_speed_tags() -> void:
