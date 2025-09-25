@@ -10,6 +10,10 @@ var mutations: Array[Array] = []
 ## A duration reference for the line. Represented as "auto" or a stringified number.
 var time: String = ""
 
+## Compat view of numeric waits derived from mutations (computed, no extra state).
+var pauses: Dictionary:
+	get:
+		return _compute_pauses()
 
 func _init(line: String) -> void:
 	text = line
@@ -114,7 +118,6 @@ func _init(line: String) -> void:
 	for index in escaped_close_brackets:
 		text = text.left(index) + "]" + text.right(text.length() - index - 1)
 
-
 func find_bbcode_positions_in_string(string: String, find_all: bool = true, include_conditions: bool = false) -> Array[Dictionary]:
 	if not "[" in string: return []
 
@@ -158,3 +161,43 @@ func find_bbcode_positions_in_string(string: String, find_all: bool = true, incl
 					return positions
 
 	return positions
+
+func _compute_pauses() -> Dictionary:
+	# Walk mutations and expose ONLY numeric wait()s as { index: seconds } for back-compat.
+	var out := {}
+	for m in mutations:
+		# m should be [index, payload]
+		if typeof(m) != TYPE_ARRAY or m.size() < 2:
+			continue
+		var pos = m[0]
+		var payload = m[1]
+		if typeof(pos) not in [TYPE_INT, TYPE_FLOAT] or typeof(payload) != TYPE_DICTIONARY:
+			continue
+
+		var expr = payload.get("expression", [])
+		if typeof(expr) != TYPE_ARRAY or expr.is_empty():
+			continue
+		var head = expr[0]
+		if typeof(head) != TYPE_DICTIONARY:
+			continue
+		if head.get("function", "") != "wait":
+			continue
+
+		# Nested DM value format → leaf value (number or string).
+		var v = _unwrap_wait_value(head.get("value", []))
+
+		# Expose numeric waits here (compat); input/action waits remain in mutations only.
+		if typeof(v) in [TYPE_INT, TYPE_FLOAT]:
+			out[int(pos)] = float(v)
+	return out
+
+func _unwrap_wait_value(value):
+	# Peel DM’s nested arrays until a dict/primitive; return dict["value"] when present.
+	var v = value
+	var guard := 0
+	while typeof(v) == TYPE_ARRAY and v.size() > 0 and guard < 8:
+		v = v[0]
+		guard += 1
+	if typeof(v) == TYPE_DICTIONARY and v.has("value"):
+		return v["value"]
+	return v
