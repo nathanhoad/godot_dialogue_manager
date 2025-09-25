@@ -22,6 +22,30 @@ func test_can_handle_wait_tags() -> void:
 	assert(data.pauses[13] == 1.2, "Should be at position 13 for 1.2s.")
 
 
+# Add: explicit contract—numeric waits MUST surface in pauses AND in mutations.
+func test_can_handle_wait_time_tags() -> void:
+	var data = _extract("Nathan: [wave]Hey![/wave] [wait=1.2]WAIT!")
+	assert(data.pauses.size() == 1)
+	assert(data.pauses[13] == 1.2)
+	assert(data.mutations.size() == 1)
+	var mutation = data.mutations[0]
+	assert(mutation[0] == 13)
+	assert("expression" in mutation[1])
+	assert(mutation[1]["expression"][0]["function"] == "wait")
+	assert(mutation[1]["expression"][0]["value"][0][0]["value"] == 1.2)
+
+# Add: input waits do NOT appear in pauses; they live in mutations with the action string.
+func test_can_handle_wait_input_tags() -> void:
+	var data = _extract("Nathan: [wave]Hey![/wave] [wait=\"ui_accept\"]WAIT!")
+	assert(data.pauses.size() == 0)
+	assert(data.mutations.size() == 1)
+	var mutation = data.mutations[0]
+	assert(mutation[0] == 13)
+	assert("expression" in mutation[1])
+	assert(mutation[1]["expression"][0]["function"] == "wait")
+	assert(mutation[1]["expression"][0]["value"][0][0]["value"] == "ui_accept")
+
+
 func test_can_handle_speed_tags() -> void:
 	var data = _extract("Nathan: [wave]Hey![/wave] [speed=0.1]WAIT!")
 
