@@ -100,6 +100,12 @@ func _gui_input(event: InputEvent) -> void:
 			"text_size_reset":
 				self.font_size = theme_overrides.font_size
 				get_viewport().set_input_as_handled()
+			"make_bold":
+				insert_bbcode("[b]", "[/b]")
+				get_viewport().set_input_as_handled()
+			"make_italic":
+				insert_bbcode("[i]", "[/i]")
+				get_viewport().set_input_as_handled()
 
 	elif event is InputEventMouse:
 		match event.as_text():
