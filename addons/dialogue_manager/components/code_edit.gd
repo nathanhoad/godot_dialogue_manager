@@ -147,7 +147,20 @@ func _drop_data(at_position: Vector2, data) -> void:
 			if cursor.x > -1 and cursor.y > -1:
 				set_cursor(cursor)
 				remove_secondary_carets()
-				insert_text("\"%s\"" % file, cursor.y, cursor.x)
+				var resource = load(file)
+				# If the dropped file is an audio stream then assume it's a voice reference
+				if is_instance_of(resource, AudioStream):
+					var current_voice_regex: RegEx = RegEx.create_from_string("\\[#voice=.+\\]")
+					var path: String = ResourceUID.path_to_uid(file)
+					var line_text: String = get_line(cursor.y)
+					var voice_text: String = "[#voice=%s]" % [path]
+					if current_voice_regex.search(line_text):
+						set_line(cursor.y, current_voice_regex.replace(get_line(cursor.y), voice_text))
+					else:
+						insert_text(" " + voice_text, cursor.y, line_text.length())
+				# Other wise it's just a file reference
+				else:
+					insert_text("\"%s\"" % file, cursor.y, cursor.x)
 	grab_focus()
 
 

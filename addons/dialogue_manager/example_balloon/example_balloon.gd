@@ -7,6 +7,9 @@ class_name DialogueManagerExampleBalloon extends CanvasLayer
 ## The action to use to skip typing the dialogue
 @export var skip_action: StringName = &"ui_cancel"
 
+## A sound player for voice lines (if they exist).
+@onready var audio_stream_player: AudioStreamPlayer = %AudioStreamPlayer
+
 ## The dialogue resource
 var resource: DialogueResource
 
@@ -68,7 +71,7 @@ func _ready() -> void:
 
 
 func _process(delta: float) -> void:
-	progress.visible = not dialogue_label.is_typing and dialogue_line.responses.size() == 0
+	progress.visible = not dialogue_label.is_typing and dialogue_line.responses.size() == 0 and not dialogue_line.has_tag("voice")
 
 
 func _unhandled_input(_event: InputEvent) -> void:
@@ -121,8 +124,13 @@ func apply_dialogue_line() -> void:
 		dialogue_label.type_out()
 		await dialogue_label.finished_typing
 
-	# Wait for input
-	if dialogue_line.responses.size() > 0:
+	# Wait for next line
+	if dialogue_line.has_tag("voice"):
+		audio_stream_player.stream = load(dialogue_line.get_tag_value("voice"))
+		audio_stream_player.play()
+		await audio_stream_player.finished
+		next(dialogue_line.next_id)
+	elif dialogue_line.responses.size() > 0:
 		balloon.focus_mode = Control.FOCUS_NONE
 		responses_menu.show()
 	elif dialogue_line.time != "":
