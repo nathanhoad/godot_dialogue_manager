@@ -496,6 +496,36 @@ else:
 	assert(line.text == "Should not be here.", "Should now pass condition.")
 
 
+func test_can_handle_classes() -> void:
+	var resource = create_resource("
+~ start
+Nathan: Is it?
+if StateForTests.is_something(StateForTests.thing, SomeClass)
+	Nathan: It is!
+else
+	Nathan: Nope!
+=> END")
+
+	var line = await resource.get_next_dialogue_line("start")
+	assert(line.text == "Is it?", "Should match start.")
+
+	line = await resource.get_next_dialogue_line(line.next_id)
+	assert(line.text == "It is!", "Should pass check.")
+
+
+func test_can_handle_class_properties() -> void:
+	var resource = create_resource("
+~ start
+Nathan: The constant is {{SomeClass.SOME_CONST}}.
+Nathan: The static property is {{SomeClass.some_static_property}}.
+=> END")
+
+	var line = await resource.get_next_dialogue_line("start")
+	assert(line.text == "The constant is constant.", "Should read constant value.")
+	line = await resource.get_next_dialogue_line(line.next_id)
+	assert(line.text == "The static property is 27.", "Should read static value.")
+
+
 func test_csharp_state() -> void:
 	var resource = create_resource("
 using CSharpState
