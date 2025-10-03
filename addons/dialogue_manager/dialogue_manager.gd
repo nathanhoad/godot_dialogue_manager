@@ -132,7 +132,7 @@ func _get_next_dialogue_line(resource: DialogueResource, key: String = "", extra
 		if actual_next_id in [DMConstants.ID_END_CONVERSATION, DMConstants.ID_NULL, null]:
 			return null
 		else:
-			return await get_next_dialogue_line(resource, dialogue.next_id, extra_game_states, mutation_behaviour)
+			return await _get_next_dialogue_line(resource, dialogue.next_id, extra_game_states, mutation_behaviour)
 	else:
 		got_dialogue.emit(dialogue)
 		return dialogue
@@ -335,7 +335,7 @@ func get_resolved_line_data(data: Dictionary, extra_game_states: Array = []) -> 
 	var markers: DMResolvedLineData = DMResolvedLineData.new(text)
 
 	# Resolve any conditionals and update marker positions as needed
-	if data.type == DMConstants.TYPE_DIALOGUE:
+	if data.type in [DMConstants.TYPE_DIALOGUE, DMConstants.TYPE_RESPONSE]:
 		var resolved_text: String = markers.text
 		var conditionals: Array[RegExMatch] = compilation.regex.INLINE_CONDITIONALS_REGEX.search_all(resolved_text)
 		var replacements: Array = []
@@ -1088,7 +1088,7 @@ func _resolve(tokens: Array, extra_game_states: Array):
 						token.value = value[index]
 					else:
 						show_error_for_missing_state_value(DMConstants.translate(&"runtime.key_not_found").format({ key = str(index), dictionary = token.variable }))
-			elif typeof(value) == TYPE_ARRAY:
+			elif typeof(value) in [TYPE_ARRAY, TYPE_PACKED_STRING_ARRAY, TYPE_PACKED_INT32_ARRAY, TYPE_PACKED_INT64_ARRAY, TYPE_PACKED_BYTE_ARRAY, TYPE_PACKED_COLOR_ARRAY, TYPE_PACKED_FLOAT32_ARRAY, TYPE_PACKED_FLOAT64_ARRAY]:
 				if tokens.size() > i + 1 and tokens[i + 1].type == DMConstants.TOKEN_ASSIGNMENT:
 					# If the next token is an assignment then we need to leave this as a reference
 					# so that it can be resolved once everything ahead of it has been resolved
