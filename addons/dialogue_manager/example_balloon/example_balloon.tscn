@@ -193,5 +193,8 @@ response_template = NodePath("ResponseExample")
 layout_mode = 2
 text = "Response example"
 
+[node name="AudioStreamPlayer" type="AudioStreamPlayer" parent="."]
+unique_name_in_owner = true
+
 [connection signal="gui_input" from="Balloon" to="." method="_on_balloon_gui_input"]
 [connection signal="response_selected" from="Balloon/ResponsesMenu" to="." method="_on_responses_menu_response_selected"]
