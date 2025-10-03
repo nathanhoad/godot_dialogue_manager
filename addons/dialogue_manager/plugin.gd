@@ -205,17 +205,25 @@ func get_editor_shortcuts() -> Dictionary:
 		],
 		text_size_reset = [
 			_create_event("Ctrl+0")
+		],
+
+		make_bold = [
+			_create_event("Ctrl+Shift+b")
+		],
+		make_italic = [
+			_create_event("Ctrl+Shift+i")
 		]
 	}
 
 	var paths = EditorInterface.get_editor_paths()
-	var settings
-	if FileAccess.file_exists(paths.get_config_dir() + "/editor_settings-4.3.tres"):
-		settings = load(paths.get_config_dir() + "/editor_settings-4.3.tres")
-	elif FileAccess.file_exists(paths.get_config_dir() + "/editor_settings-4.tres"):
-		settings = load(paths.get_config_dir() + "/editor_settings-4.tres")
-	else:
-		return shortcuts
+	var settings: Resource = null
+	for version in ["4.5", "4.4", "4.3", "4"]:
+		var path: String = paths.get_config_dir() + "/editor_settings-" + version + ".tres"
+		if FileAccess.file_exists(path):
+			settings = load(path)
+			break
+
+	if settings == null: return shortcuts
 
 	for s in settings.get("shortcuts"):
 		for key in shortcuts:
