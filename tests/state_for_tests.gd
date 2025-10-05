@@ -10,6 +10,12 @@ var jump_target: String = "start"
 
 var something_null = null
 
+var thing: SomeClass = SomeClass.new()
+
+
+func is_something(something: Variant, type: Variant) -> bool:
+	return is_instance_of(something, type)
+
 
 func noop() -> void:
 	pass
