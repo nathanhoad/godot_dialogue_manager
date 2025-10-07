@@ -151,7 +151,7 @@ func _drop_data(at_position: Vector2, data) -> void:
 				# If the dropped file is an audio stream then assume it's a voice reference
 				if is_instance_of(resource, AudioStream):
 					var current_voice_regex: RegEx = RegEx.create_from_string("\\[#voice=.+\\]")
-					var path: String = ResourceUID.path_to_uid(file)
+					var path: String = ResourceUID.call("path_to_uid", file) if ResourceUID.has_method("path_to_uid") else file
 					var line_text: String = get_line(cursor.y)
 					var voice_text: String = "[#voice=%s]" % [path]
 					if current_voice_regex.search(line_text):
