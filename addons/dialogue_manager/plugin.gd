@@ -127,6 +127,10 @@ func _apply_changes() -> void:
 
 
 func _save_external_data() -> void:
+	if is_instance_valid(main_view) and EditorInterface.get_editor_settings().get_setting("run/auto_save/save_before_running"):
+		main_view.apply_changes()
+		_update_localization()
+
 	if dialogue_cache != null:
 		dialogue_cache.reimport_files()
 
