@@ -25,6 +25,14 @@ var data: Dictionary = {}
 
 #endregion
 
+#region External processing
+
+
+var processor: DMDialogueProcessor = null
+
+
+#endregion
+
 #region Internal variables
 
 
@@ -220,7 +228,7 @@ func build_line_tree(raw_lines: PackedStringArray) -> DMTreeLine:
 	var autoload_names: PackedStringArray = get_autoload_names()
 
 	for i in range(0, raw_lines.size()):
-		var raw_line: String = raw_lines[i]
+		var raw_line: String = get_processor()._preprocess_line(raw_lines[i])
 		var tree_line: DMTreeLine = DMTreeLine.new(str(i - _imported_line_count))
 
 		tree_line.line_number = i + 1
@@ -354,6 +362,9 @@ func parse_line_tree(root: DMTreeLine, parent: DMCompiledLine = null) -> Array[D
 
 		# Main line map is keyed by ID
 		lines[line.id] = line
+
+		# Apply any post-processing.
+		get_processor()._process_line(line)
 
 		# Returned lines order is preserved so that it can be used for compiling children
 		compiled_lines.append(line)
@@ -927,6 +938,14 @@ func extract_import_path_and_name(line: String) -> Dictionary:
 		}
 	else:
 		return {}
+
+
+## Load the configured processor (or the default one is none configured).
+func get_processor() -> DMDialogueProcessor:
+	if processor == null:
+		var processor_path: String = DMSettings.get_setting(DMSettings.DIALOGUE_PROCESSOR_PATH, "")
+		processor = DMDialogueProcessor.new() if processor_path.is_empty() else load(processor_path).new()
+	return processor
 
 
 ## Get the indent of a raw line

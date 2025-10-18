@@ -26,6 +26,9 @@ const INCLUDE_NOTES_IN_TRANSLATION_EXPORTS = "editor/translations/include_notes_
 ## Automatically update the project's list of translatable files when dialogue files are added or removed
 const UPDATE_POT_FILES_AUTOMATICALLY = "editor/translations/update_pot_files_automatically"
 
+## A processor handling special case compilation.
+const DIALOGUE_PROCESSOR_PATH = "editor/advanced/dialogue_processor_path"
+
 ## A custom test scene to use when testing dialogue.
 const CUSTOM_TEST_SCENE_PATH = "editor/advanced/custom_test_scene_path"
 ## Extra script files to include in the auto-complete-able list
@@ -92,6 +95,14 @@ static var SETTINGS_CONFIGURATION = {
 	UPDATE_POT_FILES_AUTOMATICALLY: {
 		value = true,
 		type = TYPE_BOOL,
+		is_advanced = true
+	},
+
+	DIALOGUE_PROCESSOR_PATH: {
+		value = "",
+		type = TYPE_STRING,
+		hint = PROPERTY_HINT_FILE,
+		hint_string = "*.gd,*.cs",
 		is_advanced = true
 	},
 

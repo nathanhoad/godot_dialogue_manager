@@ -44,3 +44,25 @@ func test_get_line_type() -> void:
 
 	assert(compilation.get_line_type("") == DMConstants.TYPE_UNKNOWN, "Empty should be unknown.")
 	assert(compilation.get_line_type(" ") == DMConstants.TYPE_UNKNOWN, "Empty should be unknown.")
+
+
+func test_can_use_processor() -> void:
+	compilation.processor = TestProcessor.new()
+
+	compilation.compile("
+~ start
+Nathan: {macro}.
+Nathan: Or is it Coco?
+=> END")
+
+	assert(compilation.lines["2"].text == "SOMETHING.", "Should replace macro.")
+	assert(compilation.lines["2"].character == "Coco", "Should replace character.")
+	assert(compilation.lines["3"].character == "Coco", "Should replace character.")
+
+
+class TestProcessor extends DMDialogueProcessor:
+	func _preprocess_line(raw_line: String) -> String:
+		return raw_line.replace("{macro}", "SOMETHING")
+
+	func _process_line(line: DMCompiledLine) -> void:
+		line.character = "Coco"
