@@ -342,6 +342,9 @@ msgstr "Nested dialogue lines may only contain dialogue."
 msgid "errors.err_nested_dialogue_invalid_jump"
 msgstr "Only the last line of nested dialogue is allowed to include a jump."
 
+msgid "errors.missing_resource_for_autostart"
+msgstr "You need to specify a dialogue resource when using auto-start."
+
 msgid "errors.unknown"
 msgstr "Unknown syntax."
 

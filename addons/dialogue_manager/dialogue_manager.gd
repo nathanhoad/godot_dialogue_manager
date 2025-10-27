@@ -547,6 +547,10 @@ func _bridge_mutate(mutation: Dictionary, extra_game_states: Array, is_inline_mu
 	bridge_mutated.emit()
 
 
+func _bridge_get_error_message(error: int) -> String:
+	return DMConstants.get_error_message(error)
+
+
 #endregion
 
 #region Internal helpers

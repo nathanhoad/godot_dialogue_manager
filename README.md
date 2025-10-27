@@ -17,7 +17,7 @@ You can install it via the Asset Library or [downloading a copy](https://github.
 - [Conditions and Mutations](docs/Conditions_Mutations.md)
 - [Settings](docs/Settings.md)
 - [Using dialogue in your game](docs/Using_Dialogue.md)
-- [Example balloons](docs/Example_Balloons.md)
+- [Dialogue balloons](docs/Dialogue_Balloons.md)
 - [Translations](docs/Translations.md)
 - [API](docs/API.md)
 - [C# wrapper](docs/CSharp.md)
