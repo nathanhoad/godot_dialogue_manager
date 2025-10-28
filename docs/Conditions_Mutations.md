@@ -19,6 +19,13 @@ else
 
 _Note: To escape a condition line (i.e. if you wanted to start a dialogue line with "if"), you can prefix the condition keyword with a "\"._
 
+Conditions can be joined with `and`/`or` and grouped with `(`,`)`. For example:
+
+```
+if something == "a value" and (score < 0 or score > 100)
+    Nathan: That condition was true!
+```
+
 Responses can also have "if" conditions. Wrap these in "[" and "]".
 
 ```

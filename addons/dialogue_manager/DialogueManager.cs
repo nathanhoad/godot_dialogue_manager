@@ -10,11 +10,12 @@ using System.Threading.Tasks;
 namespace DialogueManagerRuntime
 {
 
-	public enum MutationBehaviour {
-		Wait,
-		DoNotWait,
-		Skip
-	}
+    public enum MutationBehaviour
+    {
+        Wait,
+        DoNotWait,
+        Skip
+    }
 
     public enum TranslationSource
     {
@@ -127,7 +128,7 @@ namespace DialogueManagerRuntime
             return (Resource)Instance.Call("create_resource_from_text", text);
         }
 
-		public static async Task<DialogueLine?> GetNextDialogueLine(Resource dialogueResource, string key = "", Array<Variant>? extraGameStates = null, MutationBehaviour mutation_behaviour = MutationBehaviour.Wait)
+        public static async Task<DialogueLine?> GetNextDialogueLine(Resource dialogueResource, string key = "", Array<Variant>? extraGameStates = null, MutationBehaviour mutation_behaviour = MutationBehaviour.Wait)
         {
             var instance = (Node)Instance.Call("_bridge_get_new_instance");
             Prepare(instance);
@@ -140,7 +141,7 @@ namespace DialogueManagerRuntime
             return new DialogueLine((RefCounted)result[0]);
         }
 
-		public static async Task<DialogueLine?> GetLine(Resource dialogueResource, string key = "", Array<Variant>? extraGameStates = null)
+        public static async Task<DialogueLine?> GetLine(Resource dialogueResource, string key = "", Array<Variant>? extraGameStates = null)
         {
             var instance = (Node)Instance.Call("_bridge_get_new_instance");
             Prepare(instance);
@@ -373,6 +374,12 @@ namespace DialogueManagerRuntime
             }
         }
 #nullable enable
+
+
+        public static string GetErrorMessage(int error)
+        {
+            return (string)Instance.Call("_bridge_get_error_message", error);
+        }
     }
 
 
@@ -484,6 +491,20 @@ namespace DialogueManagerRuntime
             {
                 responses.Add(new DialogueResponse(response));
             }
+        }
+
+
+        public bool HasTag(string tagName)
+        {
+            string wrapped = $"{tagName}=";
+            foreach (var tag in tags)
+            {
+                if (tag.StartsWith(wrapped))
+                {
+                    return true;
+                }
+            }
+            return false;
         }
 
 

@@ -5,6 +5,9 @@ namespace DialogueManagerRuntime
 {
   public partial class ExampleBalloon : CanvasLayer
   {
+    [Export] public Resource DialogueResource;
+    [Export] public string StartFromTitle = "";
+    [Export] public bool AutoStart = false;
     [Export] public string NextAction = "ui_accept";
     [Export] public string SkipAction = "ui_cancel";
 
@@ -13,8 +16,8 @@ namespace DialogueManagerRuntime
     RichTextLabel characterLabel;
     RichTextLabel dialogueLabel;
     VBoxContainer responsesMenu;
+    Polygon2D progress;
 
-    Resource resource;
     Array<Variant> temporaryGameStates = new Array<Variant>();
     bool isWaitingForInput = false;
     bool willHideBalloon = false;
@@ -25,9 +28,17 @@ namespace DialogueManagerRuntime
       get => dialogueLine;
       set
       {
+        // Dialogue has finished so close the balloon
         if (value == null)
         {
-          QueueFree();
+          if (Owner == null)
+          {
+            QueueFree();
+          }
+          else
+          {
+            Hide();
+          }
           return;
         }
 
@@ -45,6 +56,7 @@ namespace DialogueManagerRuntime
       characterLabel = GetNode<RichTextLabel>("%CharacterLabel");
       dialogueLabel = GetNode<RichTextLabel>("%DialogueLabel");
       responsesMenu = GetNode<VBoxContainer>("%ResponsesMenu");
+      progress = GetNode<Polygon2D>("%Progress");
 
       balloon.Hide();
 
@@ -99,6 +111,15 @@ namespace DialogueManagerRuntime
       AddChild(MutationCooldown);
 
       DialogueManager.Mutated += OnMutated;
+
+      if (AutoStart)
+      {
+        if (!IsInstanceValid(DialogueResource))
+        {
+          throw new System.Exception(DialogueManager.GetErrorMessage(143));
+        }
+        Start();
+      }
     }
 
 
@@ -121,7 +142,7 @@ namespace DialogueManagerRuntime
       if (what == NotificationTranslationChanged && IsInstanceValid(dialogueLabel))
       {
         float visibleRatio = dialogueLabel.VisibleRatio;
-        DialogueLine = await DialogueManager.GetNextDialogueLine(resource, DialogueLine.Id, temporaryGameStates);
+        DialogueLine = await DialogueManager.GetNextDialogueLine(DialogueResource, DialogueLine.Id, temporaryGameStates);
         if (visibleRatio < 1.0f)
         {
           dialogueLabel.Call("skip_typing");
@@ -130,19 +151,39 @@ namespace DialogueManagerRuntime
     }
 
 
-    public async void Start(Resource dialogueResource, string title, Array<Variant> extraGameStates = null)
+    public override void _Process(double delta)
+    {
+      base._Process(delta);
+
+      if (IsInstanceValid(dialogueLine))
+      {
+        progress.Visible = !(bool)dialogueLabel.Get("is_typing") && dialogueLine.Responses.Count == 0 && !dialogueLine.HasTag("voice");
+      }
+    }
+
+
+    public async void Start(Resource dialogueResource = null, string title = "", Array<Variant> extraGameStates = null)
     {
       temporaryGameStates = new Array<Variant> { this } + (extraGameStates ?? new Array<Variant>());
       isWaitingForInput = false;
-      resource = dialogueResource;
 
-      DialogueLine = await DialogueManager.GetNextDialogueLine(resource, title, temporaryGameStates);
+      if (IsInstanceValid(dialogueResource))
+      {
+        DialogueResource = dialogueResource;
+      }
+      if (title != "")
+      {
+        StartFromTitle = title;
+      }
+
+      DialogueLine = await DialogueManager.GetNextDialogueLine(DialogueResource, StartFromTitle, temporaryGameStates);
+      Show();
     }
 
 
     public async void Next(string nextId)
     {
-      DialogueLine = await DialogueManager.GetNextDialogueLine(resource, nextId, temporaryGameStates);
+      DialogueLine = await DialogueManager.GetNextDialogueLine(DialogueResource, nextId, temporaryGameStates);
     }
 
 
