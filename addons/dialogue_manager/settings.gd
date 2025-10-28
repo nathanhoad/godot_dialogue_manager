@@ -15,6 +15,8 @@ const NEW_FILE_TEMPLATE = "editor/new_file_template"
 const MISSING_TRANSLATIONS_ARE_ERRORS = "editor/translations/missing_translations_are_errors"
 ## Include character names in the list of translatable strings.
 const INCLUDE_CHARACTERS_IN_TRANSLATABLE_STRINGS_LIST = "editor/translations/include_characters_in_translatable_strings_list"
+## The default delimiter to use when exporting CSVs
+const DEFAULT_CSV_DELIMITER = "editor/translations/default_csv_delimiter"
 ## The default locale to use when exporting CSVs
 const DEFAULT_CSV_LOCALE = "editor/translations/default_csv_locale"
 ## Any extra CSV locales to append to the exported translation CSV
@@ -69,6 +71,12 @@ static var SETTINGS_CONFIGURATION = {
 	INCLUDE_CHARACTERS_IN_TRANSLATABLE_STRINGS_LIST: {
 		value = true,
 		type = TYPE_BOOL,
+	},
+	DEFAULT_CSV_DELIMITER: {
+		value = "Comma",
+		type = TYPE_STRING,
+		hint = PROPERTY_HINT_ENUM,
+		hint_string = "Comma,Semicolon,Tab"
 	},
 	DEFAULT_CSV_LOCALE: {
 		value = "en",

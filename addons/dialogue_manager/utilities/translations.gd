@@ -87,6 +87,7 @@ static func export_translations_to_csv(to_path: String, text: String, dialogue_p
 
 	# If the file exists, open it first and work out which keys are already in it
 	var existing_csv: Dictionary = {}
+	var delimiter: String = get_delimiter_for_csv(to_path)
 	var column_count: int = 2
 	var default_locale_column: int = 1
 	var character_column: int = -1
@@ -96,7 +97,7 @@ static func export_translations_to_csv(to_path: String, text: String, dialogue_p
 		var is_first_line = true
 		var line: Array
 		while !file.eof_reached():
-			line = file.get_csv_line()
+			line = file.get_csv_line(delimiter)
 			if is_first_line:
 				is_first_line = false
 				column_count = line.size()
@@ -135,7 +136,8 @@ static func export_translations_to_csv(to_path: String, text: String, dialogue_p
 		if DMSettings.get_setting(DMSettings.INCLUDE_NOTES_IN_TRANSLATION_EXPORTS, false):
 			notes_column = headings.size()
 			headings.append("_notes")
-		file.store_csv_line(headings)
+
+		file.store_csv_line(headings, delimiter)
 		column_count = headings.size()
 
 	# Write our translations to file
@@ -175,11 +177,36 @@ static func export_translations_to_csv(to_path: String, text: String, dialogue_p
 
 	# Store lines in the file, starting with anything that already exists that hasn't been touched
 	for line in existing_csv.values():
-		file.store_csv_line(line)
+		file.store_csv_line(line, delimiter)
 	for line in lines_to_save:
-		file.store_csv_line(line)
+		file.store_csv_line(line, delimiter)
 
 	file.close()
+
+
+## Get the delimier used for an existing CSV
+static func get_delimiter_for_csv(path: String) -> String:
+	if FileAccess.file_exists(path):
+		var import_path: String = "%s.%s" % [path, "import"]
+		var import_file: ConfigFile = ConfigFile.new()
+		if import_file.load(import_path) == OK:
+			match import_file.get_value("params", "delimier", 0):
+				0:
+					return ","
+				1:
+					return ";"
+				2:
+					return "\t"
+
+	match DMSettings.get_setting(DMSettings.DEFAULT_CSV_DELIMITER, "Comma"):
+		"Comma":
+			return ","
+		"Semicolon":
+			return ";"
+		"Tab":
+			return "\t"
+
+	return ","
 
 
 ## Save any character names in a file to CSV.
@@ -188,13 +215,14 @@ static func export_character_names_to_csv(to_path: String, text: String, dialogu
 
 	# If the file exists, open it first and work out which keys are already in it
 	var existing_csv = {}
+	var delimiter: String = get_delimiter_for_csv(to_path)
 	var commas = []
 	if FileAccess.file_exists(to_path):
 		file = FileAccess.open(to_path, FileAccess.READ)
 		var is_first_line = true
 		var line: Array
 		while !file.eof_reached():
-			line = file.get_csv_line()
+			line = file.get_csv_line(delimiter)
 			if is_first_line:
 				is_first_line = false
 				for i in range(2, line.size()):
@@ -207,7 +235,7 @@ static func export_character_names_to_csv(to_path: String, text: String, dialogu
 	file = FileAccess.open(to_path, FileAccess.WRITE)
 
 	if not file.file_exists(to_path):
-		file.store_csv_line(["keys", DMSettings.get_setting(DMSettings.DEFAULT_CSV_LOCALE, "en")])
+		file.store_csv_line(["keys", DMSettings.get_setting(DMSettings.DEFAULT_CSV_LOCALE, "en")], delimiter)
 
 	# Write our translations to file
 	var known_keys: PackedStringArray = []
@@ -231,9 +259,9 @@ static func export_character_names_to_csv(to_path: String, text: String, dialogu
 
 	# Store lines in the file, starting with anything that already exists that hasn't been touched
 	for line in existing_csv.values():
-		file.store_csv_line(line)
+		file.store_csv_line(line, delimiter)
 	for line in lines_to_save:
-		file.store_csv_line(line)
+		file.store_csv_line(line, delimiter)
 
 	file.close()
 
@@ -243,11 +271,12 @@ static func import_translations_from_csv(from_path: String, text: String) -> Str
 	if not FileAccess.file_exists(from_path): return text
 
 	# Open the CSV file and build a dictionary of the known keys
+	var delimiter: String = get_delimiter_for_csv(from_path)
 	var keys: Dictionary = {}
 	var file: FileAccess = FileAccess.open(from_path, FileAccess.READ)
 	var csv_line: Array
 	while !file.eof_reached():
-		csv_line = file.get_csv_line()
+		csv_line = file.get_csv_line(delimiter)
 		if csv_line.size() > 1:
 			keys[csv_line[0]] = csv_line[1]
 
