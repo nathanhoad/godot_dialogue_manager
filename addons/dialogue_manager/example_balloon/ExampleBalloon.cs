@@ -5,7 +5,7 @@ namespace DialogueManagerRuntime
 {
   public partial class ExampleBalloon : CanvasLayer
   {
-    [Export] public Resource Resource;
+    [Export] public Resource DialogueResource;
     [Export] public string StartFromTitle = "";
     [Export] public bool AutoStart = false;
     [Export] public string NextAction = "ui_accept";
@@ -114,7 +114,7 @@ namespace DialogueManagerRuntime
 
       if (AutoStart)
       {
-        if (!IsInstanceValid(Resource))
+        if (!IsInstanceValid(DialogueResource))
         {
           throw new System.Exception(DialogueManager.GetErrorMessage(143));
         }
@@ -142,7 +142,7 @@ namespace DialogueManagerRuntime
       if (what == NotificationTranslationChanged && IsInstanceValid(dialogueLabel))
       {
         float visibleRatio = dialogueLabel.VisibleRatio;
-        DialogueLine = await DialogueManager.GetNextDialogueLine(Resource, DialogueLine.Id, temporaryGameStates);
+        DialogueLine = await DialogueManager.GetNextDialogueLine(DialogueResource, DialogueLine.Id, temporaryGameStates);
         if (visibleRatio < 1.0f)
         {
           dialogueLabel.Call("skip_typing");
@@ -169,21 +169,21 @@ namespace DialogueManagerRuntime
 
       if (IsInstanceValid(dialogueResource))
       {
-        Resource = dialogueResource;
+        DialogueResource = dialogueResource;
       }
       if (title != "")
       {
         StartFromTitle = title;
       }
 
-      DialogueLine = await DialogueManager.GetNextDialogueLine(Resource, StartFromTitle, temporaryGameStates);
+      DialogueLine = await DialogueManager.GetNextDialogueLine(DialogueResource, StartFromTitle, temporaryGameStates);
       Show();
     }
 
 
     public async void Next(string nextId)
     {
-      DialogueLine = await DialogueManager.GetNextDialogueLine(Resource, nextId, temporaryGameStates);
+      DialogueLine = await DialogueManager.GetNextDialogueLine(DialogueResource, nextId, temporaryGameStates);
     }
 
 
