@@ -182,7 +182,7 @@ Local variables are useful for:
 
 - Tracking temporary dialogue state (e.g., choices made during the current conversation)
 - Counting things within a dialogue session
-- Storing intermediate values without polluting your global game state
+- Storing intermediate values without polluting your global script.
 
 #### Using local variables
 
@@ -223,6 +223,26 @@ else
 => END
 ```
 
+#### Local variables in branching conversations
+
+They can also be useful for tracking which topics have been discussed in branching conversations:
+
+```
+~ start
+Nathan: What would you like to know?
+- Tell me about yourself [if not local.asked_about_nathan]
+	set local.asked_about_nathan = true
+	Nathan: Well, I'm a game developer who loves making dialogue systems.
+	=> conversation
+- What's your favorite color? [if not local.asked_favorite_color]
+	set local.asked_favorite_color = true
+	Nathan: I'd say blue. It's calming.
+	=> conversation
+- That's all for now
+	Nathan: Alright, see you around!
+	=> END
+```
+
 #### Local variables in loops
 
 Local variables are particularly useful as loop counters in `while` loops:
@@ -240,29 +260,9 @@ Nathan: Blast off!
 => END
 ```
 
-#### Local variables vs global state
-
-Unlike global game state (autoloads, scene variables, etc.), local variables:
-
-- **Only exist during the current dialogue session** - they are created fresh each time you start a dialogue and destroyed when it ends
-- **Don't persist between conversations** - if you need data to persist, use global game state instead
-- **Are isolated per dialogue session** - different dialogue conversations can have their own separate local variables
-
-**Use local variables for:**
-- Temporary calculations within dialogue
-- Tracking choices made in the current conversation
-- Loop counters in `while` loops
-- Intermediate values that don't need to persist
-
-**Use global state for:**
-- Player stats (health, inventory, etc.)
-- Story progression flags
-- Relationship values
-- Any data that needs to persist beyond a single conversation
-
 #### Example: Number guessing game
 
-Here's a complete example showing local variables in action:
+Example showing a number guessing game, with local variables:
 
 ```
 ~ start
