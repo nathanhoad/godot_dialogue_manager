@@ -169,4 +169,128 @@ There are a couple of special built-in mutations you can use:
 - `do wait(float)` - wait for `float` seconds (this has no effect when used inline).
 - `do debug(...)` - print something to the Output window.
 
-There is also a special property `self` that you can use in dialogue to refer to the `DialogueResource` that is currently being run.
+There are also some special properties you can use in dialogue:
+
+- `self` - refers to the `DialogueResource` that is currently being run.
+- `local` - a dictionary for storing temporary variables that only exist for the current dialogue session.
+
+### Local variables
+
+The `local` property gives you access to dialogue-session-specific variables. These variables are automatically created when dialogue starts and are destroyed when the conversation ends.
+
+Local variables are useful for:
+
+- Tracking temporary dialogue state (e.g., choices made during the current conversation)
+- Counting things within a dialogue session
+- Storing intermediate values without polluting your global game state
+
+#### Using local variables
+
+To use a local variable in your dialogue, simply reference it with the `local` prefix:
+
+```
+~ start
+Nathan: Let me count to three.
+set local.counter = 1
+Nathan: {{local.counter}}
+do local.counter += 1
+Nathan: {{local.counter}}
+do local.counter += 1
+Nathan: {{local.counter}}
+Nathan: Done!
+=> END
+```
+
+In this example, `local.counter` is created when it's first assigned and persists throughout the conversation. Once the dialogue ends, all local variables are discarded.
+
+#### Local variables in conditions
+
+Local variables work just like any other state variables and can be used in conditions:
+
+```
+~ start
+set local.player_response = ""
+Nathan: Do you like programming?
+- Yes
+	set local.player_response = "yes"
+- No
+	set local.player_response = "no"
+
+if local.player_response == "yes"
+	Nathan: That's great! Me too!
+else
+	Nathan: Oh, that's okay. Not everyone does.
+=> END
+```
+
+#### Local variables in loops
+
+Local variables are particularly useful as loop counters in `while` loops:
+
+```
+~ start
+set local.countdown = 3
+Nathan: Starting countdown...
+
+while local.countdown > 0
+	Nathan: {{local.countdown}}!
+	do local.countdown -= 1
+
+Nathan: Blast off!
+=> END
+```
+
+#### Local variables vs global state
+
+Unlike global game state (autoloads, scene variables, etc.), local variables:
+
+- **Only exist during the current dialogue session** - they are created fresh each time you start a dialogue and destroyed when it ends
+- **Don't persist between conversations** - if you need data to persist, use global game state instead
+- **Are isolated per dialogue session** - different dialogue conversations can have their own separate local variables
+
+**Use local variables for:**
+- Temporary calculations within dialogue
+- Tracking choices made in the current conversation
+- Loop counters in `while` loops
+- Intermediate values that don't need to persist
+
+**Use global state for:**
+- Player stats (health, inventory, etc.)
+- Story progression flags
+- Relationship values
+- Any data that needs to persist beyond a single conversation
+
+#### Example: Number guessing game
+
+Here's a complete example showing local variables in action:
+
+```
+~ start
+set local.secret_number = 2
+set local.attempts = 0
+Nathan: I'm thinking of a number between 1 and 3.
+
+~ guess
+Nathan: What's your guess?
+- 1
+	set local.guess = 1
+	=> check_answer
+- 2
+	set local.guess = 2
+	=> check_answer
+- 3
+	set local.guess = 3
+	=> check_answer
+
+~ check_answer
+do local.attempts += 1
+if local.attempts > 2
+	Nathan: You've used all your attempts! The number was {{local.secret_number}}.
+	=> END
+elif local.guess == local.secret_number
+	Nathan: You got it in {{local.attempts}} attempt[if local.attempts > 1]s[/if]!
+	=> END
+else
+	Nathan: Nope! Try again.
+	=> guess
+```

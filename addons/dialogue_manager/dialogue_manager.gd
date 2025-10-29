@@ -109,8 +109,14 @@ func _get_next_dialogue_line(resource: DialogueResource, key: String = "", extra
 		else:
 			extra_game_states = [autoload] + extra_game_states
 
-	# Inject "self" into the extra game states.
-	extra_game_states = [{ "self": resource }] + extra_game_states
+	# Create a local variable store for this dialogue session if it doesn't exist
+	var local_vars: Dictionary = {}
+	if extra_game_states.size() > 0 and extra_game_states[0] is Dictionary and extra_game_states[0].has("local"):
+		# Reuse existing local state if this is a continuation
+		local_vars = extra_game_states[0].local
+	
+	# Inject "self" and "local" into the extra game states.
+	extra_game_states = [{ "self": resource, "local": local_vars }] + extra_game_states
 
 	# Get the line data
 	var dialogue: DialogueLine = await get_line(resource, key, extra_game_states)

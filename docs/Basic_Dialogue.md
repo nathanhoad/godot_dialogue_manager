@@ -123,6 +123,16 @@ Similarly, if the name of a character is based on a variable you can provide it 
 {{SomeGlobal.some_character_name}}: My name was provided by the player.
 ```
 
+You can also use local variables, which are temporary variables that only exist during the current dialogue session:
+
+```
+set local.counter = 0
+Nathan: I've said this {{local.counter}} times.
+do local.counter += 1
+```
+
+For more about local variables and other state management, see [Conditions & Mutations](./Conditions_Mutations.md).
+
 ## Tags
 
 If you need to annotate your lines with tags, you can wrap them in `[#` and `]`, separated by commas. So to specify "happy" and "surprised" tags for a line, you would do something like:
