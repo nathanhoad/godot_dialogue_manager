@@ -201,7 +201,7 @@ Nathan: Done!
 => END
 ```
 
-In this example, `local.counter` is created when it's first assigned and persists throughout the conversation. Once the dialogue ends, all local variables are discarded.
+In this example the `local.counter` is created when it's first assigned and persists throughout the conversation. Once the dialogue ends, this variable will be discaded.
 
 #### Local variables in conditions
 
