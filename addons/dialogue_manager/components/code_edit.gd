@@ -310,7 +310,16 @@ func set_cursor(from_cursor: Vector2) -> void:
 
 # Check if a prompt is the start of a string without actually being that string
 func matches_prompt(prompt: String, matcher: String) -> bool:
-	return prompt.length() < matcher.length() and matcher.to_lower().begins_with(prompt.to_lower())
+	if prompt.length() > matcher.length(): return false
+
+	# Fuzzy match
+	matcher = matcher.to_lower()
+	var next_index: int = 0
+	for char: String in prompt.to_lower():
+		next_index = matcher.find(char, next_index)
+		if next_index == -1:
+			return false
+	return true
 
 
 func get_state_shortcuts() -> PackedStringArray:
