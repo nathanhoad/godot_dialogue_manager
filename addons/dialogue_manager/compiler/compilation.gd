@@ -41,12 +41,6 @@ var regex: DMCompilerRegEx = DMCompilerRegEx.new()
 # For parsing condition/mutation expressions
 var expression_parser: DMExpressionParser = DMExpressionParser.new()
 
-# A map of titles that came from imported files.
-var _imported_titles: Dictionary = {}
-# Used to keep track of circular imports.
-var _imported_line_map: Dictionary = {}
-# The number of imported lines.
-var _imported_line_count: int = 0
 # A list of already encountered static line IDs.
 var _known_translation_keys: Dictionary = {}
 # A noop for retrieving the next line without conditions.
@@ -66,7 +60,10 @@ func compile(text: String, path: String = ".") -> Error:
 	titles = {}
 	character_names = []
 
-	parse_line_tree(build_line_tree(inject_imported_files(text + "\n=> END", path)))
+	text += "\n=> END"
+
+	find_imported_titles(text, path)
+	parse_line_tree(build_line_tree(text.split("\n")))
 
 	# Convert the compiles lines to a Dictionary so they can be stored.
 	for id in lines:
@@ -80,141 +77,41 @@ func compile(text: String, path: String = ".") -> Error:
 
 
 ## Inject any imported files
-func inject_imported_files(text: String, path: String) -> PackedStringArray:
+func find_imported_titles(text: String, path: String) -> void:
 	# Work out imports
 	var known_imports: Dictionary = {}
 
 	# Include the base file path so that we can get around circular dependencies
-	known_imports[path.hash()] = "."
+	known_imports[path] = "."
 
 	var raw_lines: PackedStringArray = text.split("\n")
 
 	for id in range(0, raw_lines.size()):
 		var line = raw_lines[id]
-		if is_import_line(line):
-			var import_data: Dictionary = extract_import_path_and_name(line)
 
-			if not import_data.has("path"): continue
+		if not is_import_line(line): continue
 
-			var import_hash: int = import_data.path.hash()
-			if import_data.size() > 0:
-				# Keep track of titles so we can add imported ones later
-				if str(import_hash) in _imported_titles.keys():
-					add_error(id, 0, DMConstants.ERR_FILE_ALREADY_IMPORTED)
-				if import_data.prefix in _imported_titles.values():
-					add_error(id, 0, DMConstants.ERR_DUPLICATE_IMPORT_NAME)
-				_imported_titles[str(import_hash)] = import_data.prefix
+		var import_data: Dictionary = extract_import_path_and_name(line)
 
-				# Import the file content
-				if not known_imports.has(import_hash):
-					var error: Error = import_content(import_data.path, import_data.prefix, _imported_line_map, known_imports)
-					if error != OK:
-						add_error(id, 0, error)
+		if import_data.size() == 0 or not import_data.has("path"): continue
 
-				# Make a map so we can refer compiled lines to where they were imported from
-				if not _imported_line_map.has(import_hash):
-					_imported_line_map[import_hash] = {
-						hash = import_hash,
-						imported_on_line_number = id,
-						from_line = 0,
-						to_line = 0
-					}
+		if known_imports.has(import_data.path):
+			add_error(id, 0, DMConstants.ERR_FILE_ALREADY_IMPORTED)
+		elif known_imports.values().has(import_data.prefix):
+			add_error(id, 0, DMConstants.ERR_DUPLICATE_IMPORT_NAME)
+		else:
+			# Get titles from other file and map them to the known list of titles.
+			var imported_resource: DialogueResource = load(import_data.path)
+			var uid: String = ResourceUID.path_to_uid(import_data.path).replace("uid://", "")
+			for title_key: String in imported_resource.titles:
+				# Ignore any titles that are already a reference
+				if "/" in title_key: continue
+				# Create "alias/title" to "uid@id" mappig
+				var title_reference: String = "%s/%s" % [import_data.prefix, title_key]
+				titles[title_reference] = "%s@%s" % [uid, imported_resource.titles.get(title_key)]
 
-	var imported_content: String =  ""
-	var cummulative_line_number: int = 0
-	for item in _imported_line_map.values():
-		item["from_line"] = cummulative_line_number
-		if known_imports.has(item.hash):
-			cummulative_line_number += known_imports[item.hash].split("\n").size()
-		item["to_line"] = cummulative_line_number
-		if known_imports.has(item.hash):
-			imported_content += known_imports[item.hash] + "\n"
-
-	if imported_content == "":
-		_imported_line_count = 0
-		return text.split("\n")
-	else:
-		_imported_line_count = cummulative_line_number + 1
-		# Combine imported lines with the original lines
-		return (imported_content + "\n" + text).split("\n")
-
-
-## Import content from another dialogue file or return an ERR
-func import_content(path: String, prefix: String, imported_line_map: Dictionary, known_imports: Dictionary) -> Error:
-	if FileAccess.file_exists(path):
-		var file = FileAccess.open(path, FileAccess.READ)
-		var content: PackedStringArray = file.get_as_text().strip_edges().split("\n")
-
-		for index in range(0, content.size()):
-			var line = content[index]
-			if is_import_line(line):
-				var import = extract_import_path_and_name(line)
-				if import.size() > 0:
-					if not known_imports.has(import.path.hash()):
-						# Add an empty record into the keys just so we don't end up with cyclic dependencies
-						known_imports[import.path.hash()] = ""
-						if import_content(import.path, import.prefix, imported_line_map, known_imports) != OK:
-							return ERR_LINK_FAILED
-
-					if not imported_line_map.has(import.path.hash()):
-						# Make a map so we can refer compiled lines to where they were imported from
-						imported_line_map[import.path.hash()] = {
-							hash = import.path.hash(),
-							imported_on_line_number = index,
-							from_line = 0,
-							to_line = 0
-						}
-
-					_imported_titles[import.prefix] = import.path.hash()
-
-		var origin_hash: int = -1
-		for hash_value in known_imports.keys():
-			if known_imports[hash_value] == ".":
-				origin_hash = hash_value
-
-		# Replace any titles or jump points with references to the files they point to (event if they point to their own file)
-		for i in range(0, content.size()):
-			var line = content[i]
-			if line.strip_edges().begins_with("~ "):
-				var indent: String = "\t".repeat(get_indent(line))
-				var title = line.strip_edges().substr(2)
-				if "/" in line:
-					var bits = title.split("/")
-					content[i] = "%s~ %s/%s" % [indent, _imported_titles[bits[0]], bits[1]]
-				else:
-					content[i] = "%s~ %s/%s" % [indent, str(path.hash()), title]
-
-			elif "=>< " in line:
-				var jump: String = line.substr(line.find("=>< ") + "=>< ".length()).strip_edges()
-				if "/" in jump:
-					var bits: PackedStringArray = jump.split("/")
-					var title_hash: int = _imported_titles[bits[0]]
-					if title_hash == origin_hash:
-						content[i] = "%s=>< %s" % [line.split("=>< ")[0], bits[1]]
-					else:
-						content[i] = "%s=>< %s/%s" % [line.split("=>< ")[0], title_hash, bits[1]]
-
-				elif not jump in ["END", "END!"] and not jump.begins_with("{{"):
-					content[i] = "%s=>< %s/%s" % [line.split("=>< ")[0], str(path.hash()), jump]
-
-			elif "=> " in line:
-				var jump: String = line.substr(line.find("=> ") + "=> ".length()).strip_edges()
-				if "/" in jump:
-					var bits: PackedStringArray = jump.split("/")
-					var title_hash: int = _imported_titles[bits[0]]
-					if title_hash == origin_hash:
-						content[i] = "%s=> %s" % [line.split("=> ")[0], bits[1]]
-					else:
-						content[i] = "%s=> %s/%s" % [line.split("=> ")[0], title_hash, bits[1]]
-
-				elif not jump in ["END", "END!"] and not jump.begins_with("{{"):
-					content[i] = "%s=> %s/%s" % [line.split("=> ")[0], str(path.hash()), jump]
-
-		imported_paths.append(path)
-		known_imports[path.hash()] = "\n".join(content) + "\n=> END\n"
-		return OK
-	else:
-		return ERR_FILE_NOT_FOUND
+			imported_paths.append(import_data.path)
+			known_imports[import_data.path] = import_data.prefix
 
 
 ## Build a tree of parent/child relationships
@@ -229,7 +126,7 @@ func build_line_tree(raw_lines: PackedStringArray) -> DMTreeLine:
 
 	for i in range(0, raw_lines.size()):
 		var raw_line: String = get_processor()._preprocess_line(raw_lines[i])
-		var tree_line: DMTreeLine = DMTreeLine.new(str(i - _imported_line_count))
+		var tree_line: DMTreeLine = DMTreeLine.new(str(i))
 
 		tree_line.line_number = i + 1
 		tree_line.type = get_line_type(raw_line)
@@ -289,13 +186,7 @@ func build_line_tree(raw_lines: PackedStringArray) -> DMTreeLine:
 				add_error(i, 2, DMConstants.ERR_DUPLICATE_TITLE)
 			else:
 				titles[title] = tree_line.id
-				if "/" in title:
-					# Replace the hash title with something human readable.
-					var bits: PackedStringArray = title.split("/")
-					if _imported_titles.has(bits[0]):
-						title = _imported_titles[bits[0]] + "/" + bits[1]
-						titles[title] = tree_line.id
-				elif first_title == "" and i >= _imported_line_count:
+				if first_title == "":
 					first_title = tree_line.id
 
 		# Append the current line to the current parent (note: the root is the most basic parent).
@@ -378,8 +269,8 @@ func parse_title_line(tree_line: DMTreeLine, line: DMCompiledLine, siblings: Arr
 
 	line.text = tree_line.text.substr(tree_line.text.find("~ ") + 2).strip_edges()
 
-	# Titles can't have numbers as the first letter (unless they are external titles which get replaced with hashes)
-	if tree_line.line_number >= _imported_line_count and regex.BEGINS_WITH_NUMBER_REGEX.search(line.text):
+	# Titles can't have numbers as the first letter
+	if regex.BEGINS_WITH_NUMBER_REGEX.search(line.text):
 		result = add_error(tree_line.line_number, 2, DMConstants.ERR_TITLE_BEGINS_WITH_NUMBER)
 
 	# Only import titles are allowed to have "/" in them
@@ -404,6 +295,7 @@ func parse_title_line(tree_line: DMTreeLine, line: DMCompiledLine, siblings: Arr
 func parse_goto_line(tree_line: DMTreeLine, line: DMCompiledLine, siblings: Array[DMTreeLine], sibling_index: int, parent: DMCompiledLine) -> Error:
 	# Work out where this line is jumping to.
 	var goto_data: DMResolvedGotoData = DMResolvedGotoData.new(tree_line.text, titles)
+
 	if goto_data.error:
 		return add_error(tree_line.line_number, tree_line.indent + 2, goto_data.error)
 	if goto_data.next_id or goto_data.expression:
@@ -884,25 +776,11 @@ func parse_character_and_dialogue(tree_line: DMTreeLine, line: DMCompiledLine, s
 
 ## Add a compilation error to the list. Returns the given error code.
 func add_error(line_number: int, column_number: int, error: int) -> Error:
-	# See if the error was in an imported file
-	for item in _imported_line_map.values():
-		if line_number < item.to_line:
-			errors.append({
-				line_number = item.imported_on_line_number,
-				column_number = 0,
-				error = DMConstants.ERR_ERRORS_IN_IMPORTED_FILE,
-				external_error = error,
-				external_line_number = line_number
-			})
-			return error
-
-	# Otherwise, it's in this file
 	errors.append({
-		line_number = line_number - _imported_line_count,
+		line_number = line_number,
 		column_number = column_number,
 		error = error
 	})
-
 	return error
 
 
