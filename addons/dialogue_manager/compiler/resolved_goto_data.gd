@@ -55,7 +55,9 @@ func _init(text: String, titles: Dictionary) -> void:
 	elif title.begins_with("{{"):
 		var expression_parser: DMExpressionParser = DMExpressionParser.new()
 		var title_expression: Array[Dictionary] = expression_parser.extract_replacements(title, 0)
-		if title_expression[0].has("error"):
+		if title_expression.size() == 0:
+			error = DMConstants.ERR_INCOMPLETE_EXPRESSION
+		elif title_expression[0].has("error"):
 			error = title_expression[0].error
 		else:
 			expression = title_expression[0].expression

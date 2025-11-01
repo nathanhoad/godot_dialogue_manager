@@ -176,6 +176,12 @@ func get_line(resource: DialogueResource, key: String, extra_game_states: Array)
 		key = key.substr(2)
 	if resource.titles.has(key):
 		key = resource.titles.get(key)
+		# Handle the resource reference if the title had one
+		if "@" in key:
+			var bits: PackedStringArray = key.split("@")
+			if bits[0] != _get_resource_uid(resource):
+				resource = load("uid://" + bits[0])
+			key = bits[1]
 
 	if key in resource.titles.values():
 		passed_title.emit(resource.titles.find_key(key))
