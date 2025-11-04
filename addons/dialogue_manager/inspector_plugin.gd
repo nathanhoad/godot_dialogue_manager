@@ -7,7 +7,7 @@ const DialogueEditorProperty = preload("./components/editor_property/editor_prop
 
 func _can_handle(object) -> bool:
 	if object is GDScript: return false
-	if not object is Node: return false
+	if not object is Node and not object is Resource: return false
 	if "name" in object and object.name == "Dialogue Manager": return false
 	return true
 
