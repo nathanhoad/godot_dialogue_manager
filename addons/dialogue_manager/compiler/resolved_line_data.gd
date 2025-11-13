@@ -115,46 +115,56 @@ func _init(line: String) -> void:
 		text = text.left(index) + "]" + text.right(text.length() - index - 1)
 
 
-func find_bbcode_positions_in_string(string: String, find_all: bool = true, include_conditions: bool = false) -> Array[Dictionary]:
+static func find_bbcode_positions_in_string(string: String, find_all: bool = true, include_conditions: bool = false) -> Array[Dictionary]:
 	if not "[" in string: return []
 
 	var positions: Array[Dictionary] = []
-
 	var open_brace_count: int = 0
 	var start: int = 0
 	var bbcode: String = ""
 	var code: String = ""
-	var is_finished_code: bool = false
-	for i in range(0, string.length()):
+	var is_reading_code: bool = false
+
+	var i: int = 0
+	while i < string.length():
 		if string[i] == "[":
 			if open_brace_count == 0:
 				start = i
 				bbcode = ""
 				code = ""
-				is_finished_code = false
+				is_reading_code = true
 			open_brace_count += 1
 
-		else:
-			if not is_finished_code and (string[i].to_upper() != string[i] or ["/", "!", "$", ">"].has(string[i])):
+		elif is_reading_code:
+			if string[i].to_upper() != string[i] or ["/", "!", "$", ">"].has(string[i]):
 				code += string[i]
 			else:
-				is_finished_code = true
+				is_reading_code = false
 
 		if open_brace_count > 0:
 			bbcode += string[i]
 
+		if string.substr(i, 2) == "/]":
+			bbcode += "]"
+			i += 1
+
 		if string[i] == "]":
 			open_brace_count -= 1
-			if open_brace_count == 0 and (include_conditions or not code in ["if", "else", "/if"]):
+			if open_brace_count == 0 and (include_conditions or not ["if", "else", "/if"].has(code)):
+				var raw_args = bbcode.substr(code.length() + 1, bbcode.length() - code.length() - 2).strip_edges()
+				if raw_args.ends_with("/"):
+					raw_args = raw_args.substr(0, raw_args.length() - 1)
 				positions.append({
 					bbcode = bbcode,
 					code = code,
 					start = start,
 					end = i,
-					raw_args = bbcode.substr(code.length() + 1, bbcode.length() - code.length() - 2).strip_edges()
+					raw_args = raw_args
 				})
 
 				if not find_all:
 					return positions
+
+		i += 1
 
 	return positions

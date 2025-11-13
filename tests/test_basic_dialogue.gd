@@ -196,14 +196,14 @@ Nathan: Jump 3.")
 	assert(output.lines["2"].siblings.size() == 2, "Should have two siblings")
 
 
-func test_can_parse_random_conditional_lines() -> void:
+func test_can_parse_basic_random_conditional_lines() -> void:
 	var output: DMCompilerResult = compile("
 % Nathan: Random 1.
-%2 [if false] Nathan: Random 2.
+%2 [if false /] Nathan: Random 2.
 % Nathan: Random 3.
 
-% [if false] => jump_1
-% [if true] => jump_2
+% [if false /] => jump_1
+% [if true /] => jump_2
 %3 => jump_3
 ~ jump_1
 Nathan: Jump 1.
@@ -228,8 +228,8 @@ func test_will_skip_random_condition_lines_if_none_pass() -> void:
 	var resource: DialogueResource = create_resource("
 ~ start
 Nathan: Hello.
-% [if false] Nathan: Fail 1
-% [if false] Nathan: Fail 2
+% [if false /] Nathan: Fail 1
+% [if false /] Nathan: Fail 2
 Nathan: After.")
 
 	var line: DialogueLine = await resource.get_next_dialogue_line("start")
