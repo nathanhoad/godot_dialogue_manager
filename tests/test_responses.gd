@@ -9,7 +9,7 @@ Nathan: Here are some options.
 - Nested
 	Nathan: Nested dialogue.
 - Jump => start
-- Condition [if 25 > 10]
+- Condition [if 25 > 10 /]
 Nathan: Line after.")
 
 	assert(output.errors.is_empty(), "Should be no errors.")
@@ -62,8 +62,8 @@ func test_can_parse_responses_with_static_ids() -> void:
 ~ start
 Nathan: Here are some responses. [ID:HERE]
 - First [ID:FIRST]
-- Second [if true] [ID:SECOND]
-- Third [if false] [ID:THIRD] => start
+- Second [if true /] [ID:SECOND]
+- Third [if false /] [ID:THIRD] => start
 => END")
 
 	assert(output.errors.is_empty(), "Should have no errors.")
@@ -99,17 +99,19 @@ func test_can_run_responses() -> void:
 	var resource: DialogueResource = create_resource("
 ~ start
 Nathan: Here are some options.
-- Empty one
-- Nested
+- Empty one[if true] with conditional bit[/if]
+- Nested[if false] without[/if]
 	Nathan: Nested dialogue.
 - Jump => start
-- Pass condition [if true]
-- Fail condition [if false]
+- Pass condition [if true /]
+- Fail condition [if false /]
 Nathan: Line after.")
 
 	var line: DialogueLine = await resource.get_next_dialogue_line("start")
 	assert(line.responses.size() == 5, "Failed conditions are included.")
 
+	assert(line.responses[0].text == "Empty one with conditional bit", "Conditional text is included.")
+	assert(line.responses[1].text == "Nested", "Conditional text is not included.")
 	assert(line.responses[3].is_allowed == true, "Passed condition is allowed.")
 	assert(line.responses[4].is_allowed == false, "Failed condition is not allowed.")
 

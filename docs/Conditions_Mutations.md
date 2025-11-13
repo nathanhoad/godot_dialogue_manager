@@ -26,13 +26,13 @@ if something == "a value" and (score < 0 or score > 100)
     Nathan: That condition was true!
 ```
 
-Responses can also have "if" conditions. Wrap these in "[" and "]".
+Responses can also have "if" conditions. Wrap these in `[` and `/]` (sometimes referred to as "self-closing").
 
 ```
 Nathan: What would you like?
-- This one [if SomeGlobal.some_property == 0 or SomeGlobal.some_other_property == false]
+- This one [if SomeGlobal.some_property == 0 or SomeGlobal.some_other_property == false /]
     Nathan: Ah, so you want this one?
-- Another one [if SomeGlobal.some_method()] => another_title
+- Another one [if SomeGlobal.some_method() /] => another_title
 - Nothing => END
 ```
 
