@@ -384,8 +384,9 @@ func apply_theme() -> void:
 			critical_color = editor_settings.get_setting("text_editor/theme/highlighting/comment_markers/critical_color"),
 			notice_color = editor_settings.get_setting("text_editor/theme/highlighting/comment_markers/notice_color"),
 
-			titles_color = editor_settings.get_setting("text_editor/theme/highlighting/control_flow_keyword_color"),
+			titles_color = editor_settings.get_setting("text_editor/theme/highlighting/gdscript/function_definition_color"),
 			text_color = editor_settings.get_setting("text_editor/theme/highlighting/text_color"),
+			tags_color = editor_settings.get_setting("text_editor/theme/highlighting/gdscript/node_path_color"),
 			conditions_color = editor_settings.get_setting("text_editor/theme/highlighting/keyword_color"),
 			mutations_color = editor_settings.get_setting("text_editor/theme/highlighting/function_color"),
 			mutations_line_color = Color(editor_settings.get_setting("text_editor/theme/highlighting/function_color"), 0.6),
@@ -394,7 +395,7 @@ func apply_theme() -> void:
 			numbers_color = editor_settings.get_setting("text_editor/theme/highlighting/number_color"),
 			symbols_color = editor_settings.get_setting("text_editor/theme/highlighting/symbol_color"),
 			comments_color = editor_settings.get_setting("text_editor/theme/highlighting/comment_color"),
-			jumps_color = Color(editor_settings.get_setting("text_editor/theme/highlighting/control_flow_keyword_color"), 0.6),
+			jumps_color = Color(editor_settings.get_setting("text_editor/theme/highlighting/gdscript/function_definition_color"), 0.6),
 
 			font_size = editor_settings.get_setting("interface/editor/code_font_size")
 		}
