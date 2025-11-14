@@ -31,3 +31,7 @@ func long_mutation() -> void:
 
 func typed_array_method(numbers: Array[int], strings: Array[String], dictionaries: Array) -> String:
 	return str(numbers) + str(strings) + str(dictionaries)
+
+
+static func some_static_function() -> bool:
+	return true

@@ -504,6 +504,9 @@ if StateForTests.is_something(StateForTests.thing, SomeClass)
 	Nathan: It is!
 else
 	Nathan: Nope!
+
+if StateForTests.some_static_function()
+	Nathan: Static functions work.
 => END")
 
 	var line = await resource.get_next_dialogue_line("start")
@@ -511,6 +514,9 @@ else
 
 	line = await resource.get_next_dialogue_line(line.next_id)
 	assert(line.text == "It is!", "Should pass check.")
+
+	line = await resource.get_next_dialogue_line(line.next_id)
+	assert(line.text == "Static functions work.", "Should handle static functions.")
 
 
 func test_can_handle_class_properties() -> void:
