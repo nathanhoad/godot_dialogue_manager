@@ -5,6 +5,14 @@ public partial class CSharpState : Node
 {
   public const int SOME_CONSTANT = 2;
 
+  public enum Things
+  {
+    FirstThing,
+    SecondThing
+  }
+
+  [Export] public Things ThingsProperty = Things.FirstThing;
+
   [Export] public int SomeValue = 0;
 
 

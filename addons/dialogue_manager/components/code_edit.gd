@@ -330,7 +330,7 @@ func get_state_shortcuts() -> PackedStringArray:
 
 func get_members_for_autoload(autoload_name: String) -> Array[Dictionary]:
 	# Debounce method list lookups
-	if _autoload_member_cache.has(autoload_name) and _autoload_member_cache.get(autoload_name).get("at") > Time.get_ticks_msec() - 5000:
+	if _autoload_member_cache.has(autoload_name) and _autoload_member_cache.get(autoload_name).get("at") > Time.get_ticks_msec() - 10000:
 		return _autoload_member_cache.get(autoload_name).get("members")
 
 	if not _autoloads.has(autoload_name) and not autoload_name.begins_with("res://") and not autoload_name.begins_with("uid://"): return []
