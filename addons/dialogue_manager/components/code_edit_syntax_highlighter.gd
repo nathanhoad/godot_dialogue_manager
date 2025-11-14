@@ -131,7 +131,7 @@ func _get_line_syntax_highlighting(line: int) -> Dictionary:
 					colors[index + bbcode.start] = { color = theme.tags_color }
 					colors[index + bbcode.end] = { color = theme.tags_color }
 					if bbcode.bbcode.ends_with(" /]"):
-						colors[index + bbcode.end + 1] = { color = theme.tags_color }
+						colors[index + bbcode.end - 1] = { color = theme.tags_color }
 						colors[index + bbcode.end + 1] = { color = theme.text_color }
 					else:
 						colors[index + bbcode.end + 1] = { color = theme.text_color }
