@@ -53,5 +53,6 @@ static func extract_mutation(text: String) -> Dictionary:
 ## Get the known titles in a dialogue script.
 static func get_titles_in_text(text: String, path: String) -> Dictionary:
 	var compilation: DMCompilation = DMCompilation.new()
-	compilation.build_line_tree(compilation.inject_imported_files(text, path))
+	compilation.find_imported_titles(text, path)
+	compilation.build_line_tree(text.split("\n"))
 	return compilation.titles

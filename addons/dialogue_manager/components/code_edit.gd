@@ -134,12 +134,24 @@ func _drop_data(at_position: Vector2, data) -> void:
 		if file == main_view.current_file_path: continue
 
 		if file.get_extension() == "dialogue":
+			var known_aliases: PackedStringArray = []
 			var path = file.replace("res://", "").replace(".dialogue", "")
 			# Find the first non-import line in the file to add our import
 			var lines = text.split("\n")
 			for i in range(0, lines.size()):
-				if not lines[i].begins_with("import "):
-					insert_line_at(i, "import \"%s\" as %s\n" % [file, replace_regex.sub(path, "_", true)])
+				if lines[i].begins_with("import "):
+					var found: RegExMatch = compiler_regex.IMPORT_REGEX.search(lines[i])
+					if found:
+						known_aliases.append(found.strings[found.names.prefix])
+				else:
+					var alias: String = ""
+					var bits: PackedStringArray = replace_regex.sub(path, "|", true).split("|")
+					bits.reverse()
+					for end: int in range(1, bits.size() + 1):
+						alias =  "_".join(bits.slice(0, end))
+						if not alias in known_aliases:
+							break
+					insert_line_at(i, "import \"%s\" as %s\n" % [file, alias])
 					set_caret_line(i)
 					break
 		else:
@@ -310,7 +322,16 @@ func set_cursor(from_cursor: Vector2) -> void:
 
 # Check if a prompt is the start of a string without actually being that string
 func matches_prompt(prompt: String, matcher: String) -> bool:
-	return prompt.length() < matcher.length() and matcher.to_lower().begins_with(prompt.to_lower())
+	if prompt.length() > matcher.length(): return false
+
+	# Fuzzy match
+	matcher = matcher.to_lower()
+	var next_index: int = 0
+	for char: String in prompt.to_lower():
+		next_index = matcher.find(char, next_index)
+		if next_index == -1:
+			return false
+	return true
 
 
 func get_state_shortcuts() -> PackedStringArray:
