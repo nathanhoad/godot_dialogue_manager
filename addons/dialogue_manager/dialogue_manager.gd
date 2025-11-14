@@ -234,7 +234,7 @@ func get_line(resource: DialogueResource, key: String, extra_game_states: Array)
 
 	# If the line is a random block then go to the start of the block.
 	elif data.type == DMConstants.TYPE_RANDOM:
-		data = resource.lines.get(data.next_id)
+		return await get_line(resource, data.next_id + id_trail, extra_game_states)
 
 	# Check conditions.
 	elif data.type in [DMConstants.TYPE_CONDITION, DMConstants.TYPE_WHILE]:
