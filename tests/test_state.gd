@@ -537,6 +537,8 @@ if SomeValue < SOME_CONSTANT:
 	=> start
 else:
 	Then here.
+if Things.FirstThing == ThingsProperty
+	The enum value matches.
 => END")
 
 	var line = await resource.get_next_dialogue_line("start")
@@ -544,6 +546,9 @@ else:
 
 	line = await resource.get_next_dialogue_line(line.next_id)
 	assert(line.text == "Then here.", "Should now be greater than constant value.")
+
+	line = await resource.get_next_dialogue_line(line.next_id)
+	assert(line.text == "The enum value matches.", "Should match enum value.")
 
 
 func test_csharp_mutation() -> void:

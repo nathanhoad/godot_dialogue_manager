@@ -236,6 +236,10 @@ namespace DialogueManagerRuntime
                             type = "method";
                             break;
 
+                        case MemberTypes.NestedType:
+                            type = "constant";
+                            break;
+
                         default:
                             continue;
                     }
@@ -253,45 +257,83 @@ namespace DialogueManagerRuntime
 
         public bool ThingHasConstant(GodotObject thing, string property)
         {
-            var fieldInfos = thing.GetType().GetFields(BindingFlags.Instance | BindingFlags.Static | BindingFlags.Public | BindingFlags.DeclaredOnly);
-            foreach (var fieldInfo in fieldInfos)
-            {
-                if (fieldInfo.Name == property && fieldInfo.IsLiteral)
-                {
-                    return true;
-                }
-            }
-
-            return false;
+            var memberInfos = thing.GetType().GetMember(property, BindingFlags.Instance | BindingFlags.Static | BindingFlags.Public | BindingFlags.DeclaredOnly);
+            return memberInfos.Length > 0;
         }
 
 
         public Variant ResolveThingConstant(GodotObject thing, string property)
         {
-            var fieldInfos = thing.GetType().GetFields(BindingFlags.Instance | BindingFlags.Static | BindingFlags.Public | BindingFlags.DeclaredOnly);
-            foreach (var fieldInfo in fieldInfos)
+            var memberInfos = thing.GetType().GetMember(property, BindingFlags.Instance | BindingFlags.Static | BindingFlags.Public | BindingFlags.DeclaredOnly);
+            foreach (var memberInfo in memberInfos)
             {
-                if (fieldInfo.Name == property && fieldInfo.IsLiteral)
+                if (memberInfo != null)
                 {
                     try
                     {
-                        Variant value = fieldInfo.GetValue(thing) switch
+                        switch (memberInfo.MemberType)
                         {
-                            int v => Variant.From((long)v),
-                            float v => Variant.From((double)v),
-                            System.String v => Variant.From((string)v),
-                            _ => Variant.From(fieldInfo.GetValue(thing))
-                        };
-                        return value;
+                            case MemberTypes.Field:
+                                return convertValueToVariant((memberInfo as FieldInfo).GetValue(thing));
+
+                            case MemberTypes.Property:
+                                return convertValueToVariant((memberInfo as PropertyInfo).GetValue(thing));
+
+                            case MemberTypes.NestedType:
+                                var type = thing.GetType().GetNestedType(property);
+                                if (type.IsEnum)
+                                {
+                                    return GetEnumAsDictionary(type);
+                                }
+                                break;
+
+                            default:
+                                continue;
+                        }
                     }
-                    catch (Exception)
+                    catch (Exception e)
                     {
-                        throw new Exception($"Constant {property} of type ${fieldInfo.GetValue(thing).GetType()} is not supported by Variant.");
+                        throw new Exception($"{property} is not supported by Variant.");
                     }
                 }
             }
 
             throw new Exception($"{property} is not a public constant on {thing}");
+        }
+
+
+        Dictionary GetEnumAsDictionary(Type enumType)
+        {
+            Dictionary dictionary = new Dictionary();
+            foreach (var value in enumType.GetEnumValuesAsUnderlyingType())
+            {
+                var key = enumType.GetEnumName(value);
+                if (key != null)
+                {
+                    dictionary.Add(key, convertValueToVariant(value));
+                }
+            }
+            return dictionary;
+        }
+
+
+        Variant convertValueToVariant(object value)
+        {
+            Type rawType = value.GetType();
+            if (rawType.IsEnum)
+            {
+                var values = GetEnumAsDictionary(rawType);
+                value = values[value.ToString()];
+            }
+
+            return value switch
+            {
+                Variant v => v,
+                int v => Variant.From((long)v),
+                float v => Variant.From((double)v),
+                System.String v => Variant.From((string)v),
+                _ => Variant.From(value)
+            };
         }
 
 
