@@ -1479,8 +1479,10 @@ func _get_method_info_for(thing: Variant, method: String, args: Array) -> Dictio
 	var method_key: String = "%s:%d" % [method, args.size()]
 	if methods.has(method_key):
 		return methods.get(method_key)
-	else:
+	elif methods.has(method):
 		return methods.get(method)
+	else:
+		return _get_method_info_for(thing.new(), method, args)
 
 
 func _resolve_thing_method(thing, method: String, args: Array):
