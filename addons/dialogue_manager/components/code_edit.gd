@@ -201,11 +201,8 @@ func _request_code_completion(force: bool) -> void:
 			# Ignore any imported titles that aren't resolved to human readable.
 			if title.to_int() > 0:
 				continue
-
-			elif "/" in title:
-				var bits = title.split("/")
-				if matches_prompt(prompt, bits[0]) or matches_prompt(prompt, bits[1]):
-					add_code_completion_option(CodeEdit.KIND_CLASS, title, title.substr(prompt.length()), theme_overrides.text_color, get_theme_icon("CombineLines", "EditorIcons"))
+			elif "/" in title and matches_prompt(prompt, title):
+				add_code_completion_option(CodeEdit.KIND_CLASS, title, title.substr(prompt.length()), theme_overrides.text_color, get_theme_icon("CombineLines", "EditorIcons"))
 			elif matches_prompt(prompt, title):
 				add_code_completion_option(CodeEdit.KIND_CLASS, title, title.substr(prompt.length()), theme_overrides.text_color, get_theme_icon("ArrowRight", "EditorIcons"))
 
