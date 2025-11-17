@@ -127,6 +127,10 @@ func _apply_changes() -> void:
 
 
 func _save_external_data() -> void:
+	if is_instance_valid(main_view) and EditorInterface.get_editor_settings().get_setting("run/auto_save/save_before_running"):
+		main_view.apply_changes()
+		_update_localization()
+
 	if dialogue_cache != null:
 		dialogue_cache.reimport_files()
 
@@ -205,17 +209,25 @@ func get_editor_shortcuts() -> Dictionary:
 		],
 		text_size_reset = [
 			_create_event("Ctrl+0")
+		],
+
+		make_bold = [
+			_create_event("Ctrl+Shift+b")
+		],
+		make_italic = [
+			_create_event("Ctrl+Shift+i")
 		]
 	}
 
 	var paths = EditorInterface.get_editor_paths()
-	var settings
-	if FileAccess.file_exists(paths.get_config_dir() + "/editor_settings-4.3.tres"):
-		settings = load(paths.get_config_dir() + "/editor_settings-4.3.tres")
-	elif FileAccess.file_exists(paths.get_config_dir() + "/editor_settings-4.tres"):
-		settings = load(paths.get_config_dir() + "/editor_settings-4.tres")
-	else:
-		return shortcuts
+	var settings: Resource = null
+	for version in ["4.5", "4.4", "4.3", "4"]:
+		var path: String = paths.get_config_dir() + "/editor_settings-" + version + ".tres"
+		if FileAccess.file_exists(path):
+			settings = load(path)
+			break
+
+	if settings == null: return shortcuts
 
 	for s in settings.get("shortcuts"):
 		for key in shortcuts:

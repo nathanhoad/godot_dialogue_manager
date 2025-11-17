@@ -122,6 +122,7 @@ const ERR_CONCURRENT_LINE_WITHOUT_ORIGIN = 139
 const ERR_GOTO_NOT_ALLOWED_ON_CONCURRECT_LINES = 140
 const ERR_UNEXPECTED_SYNTAX_ON_NESTED_DIALOGUE_LINE = 141
 const ERR_NESTED_DIALOGUE_INVALID_JUMP = 142
+const ERR_MISSING_RESOURCE_FOR_AUTOSTART = 143
 
 
 static var _current_locale: String = ""
@@ -215,6 +216,8 @@ static func get_error_message(error: int) -> String:
 			return translate(&"errors.unexpected_syntax_on_nested_dialogue_line")
 		ERR_NESTED_DIALOGUE_INVALID_JUMP:
 			return translate(&"errors.err_nested_dialogue_invalid_jump")
+		ERR_MISSING_RESOURCE_FOR_AUTOSTART:
+			return translate(&"errors.missing_resource_for_autostart")
 
 	return translate(&"errors.unknown")
 

@@ -10,6 +10,12 @@ var jump_target: String = "start"
 
 var something_null = null
 
+var thing: SomeClass = SomeClass.new()
+
+
+func is_something(something: Variant, type: Variant) -> bool:
+	return is_instance_of(something, type)
+
 
 func noop() -> void:
 	pass
@@ -25,3 +31,7 @@ func long_mutation() -> void:
 
 func typed_array_method(numbers: Array[int], strings: Array[String], dictionaries: Array) -> String:
 	return str(numbers) + str(strings) + str(dictionaries)
+
+
+static func some_static_function() -> bool:
+	return true

@@ -176,8 +176,11 @@ func _highlight_expression(tokens: Array, colors: Dictionary, index: int) -> int
 
 			DMConstants.TOKEN_OPERATOR, DMConstants.TOKEN_COLON, \
 			DMConstants.TOKEN_COMMA, DMConstants.TOKEN_DOT, DMConstants.TOKEN_NULL_COALESCE, \
-			DMConstants.TOKEN_ASSIGNMENT:
-				colors[index + token.i] = { color = theme.symbols_color }
+			DMConstants.TOKEN_ASSIGNMENT, DMConstants.TOKEN_COMPARISON:
+				if token.get("value", null) == "in":
+					colors[index + token.i] = { color = theme.conditions_color }
+				else:
+					colors[index + token.i] = { color = theme.symbols_color }
 
 			DMConstants.TOKEN_NUMBER:
 				colors[index + token.i] = { color = theme.numbers_color }

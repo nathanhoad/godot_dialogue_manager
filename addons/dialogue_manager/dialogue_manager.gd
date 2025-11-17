@@ -132,7 +132,7 @@ func _get_next_dialogue_line(resource: DialogueResource, key: String = "", extra
 		if actual_next_id in [DMConstants.ID_END_CONVERSATION, DMConstants.ID_NULL, null]:
 			return null
 		else:
-			return await get_next_dialogue_line(resource, dialogue.next_id, extra_game_states, mutation_behaviour)
+			return await _get_next_dialogue_line(resource, dialogue.next_id, extra_game_states, mutation_behaviour)
 	else:
 		got_dialogue.emit(dialogue)
 		return dialogue
@@ -146,6 +146,14 @@ func get_line(resource: DialogueResource, key: String, extra_game_states: Array)
 	var stack: Array = key.split("|")
 	key = stack.pop_front()
 	var id_trail: String = "" if stack.size() == 0 else "|" + "|".join(stack)
+
+	# Resolve this line reference to use the correct resource
+	var previous_resource: DialogueResource = resource
+	if "@" in key:
+		var bits: PackedStringArray = key.split("@")
+		if bits[0] != _get_resource_uid(resource):
+			resource = load("uid://" + bits[0])
+		key = bits[1]
 
 	# Key is blank so just use the first title (or start of file)
 	if key == null or key == "":
@@ -168,6 +176,12 @@ func get_line(resource: DialogueResource, key: String, extra_game_states: Array)
 		key = key.substr(2)
 	if resource.titles.has(key):
 		key = resource.titles.get(key)
+		# Handle the resource reference if the title had one
+		if "@" in key:
+			var bits: PackedStringArray = key.split("@")
+			if bits[0] != _get_resource_uid(resource):
+				resource = load("uid://" + bits[0])
+			key = bits[1]
 
 	if key in resource.titles.values():
 		passed_title.emit(resource.titles.find_key(key))
@@ -234,7 +248,7 @@ func get_line(resource: DialogueResource, key: String, extra_game_states: Array)
 
 	# If the line is a random block then go to the start of the block.
 	elif data.type == DMConstants.TYPE_RANDOM:
-		data = resource.lines.get(data.next_id)
+		return await get_line(resource, data.next_id + id_trail, extra_game_states)
 
 	# Check conditions.
 	elif data.type in [DMConstants.TYPE_CONDITION, DMConstants.TYPE_WHILE]:
@@ -248,9 +262,24 @@ func get_line(resource: DialogueResource, key: String, extra_game_states: Array)
 
 	# Evaluate jumps.
 	elif data.type == DMConstants.TYPE_GOTO:
-		if data.is_snippet and not id_trail.begins_with("|" + data.next_id_after):
-			id_trail = "|" + data.next_id_after + id_trail
-		return await get_line(resource, data.next_id + id_trail, extra_game_states)
+		if data.is_snippet:
+			# Point the return address at this resource
+			var next_id_after: String = _get_id_with_resource(resource, data.next_id_after)
+			if not id_trail.begins_with("|" + next_id_after):
+				id_trail = "|" + next_id_after + id_trail
+
+		# If next_id has a UID reference then split it to find where to actually go next
+		var next_id: String = data.next_id
+		if "@" in next_id:
+			var bits: PackedStringArray = data.next_id.split("@")
+			resource = load("uid://" + bits[0])
+			next_id = bits[1]
+
+		# If the title isn't in this resource it might be back in the original one
+		if not resource.lines.has(next_id) and not resource.titles.has(next_id):
+			resource = previous_resource
+
+		return await get_line(resource, next_id + id_trail, extra_game_states)
 
 	elif data.type == DMConstants.TYPE_DIALOGUE:
 		if not data.has(&"id"):
@@ -286,8 +315,8 @@ func get_line(resource: DialogueResource, key: String, extra_game_states: Array)
 			passed_title.emit(resource.titles.find_key(line.next_id))
 
 		# If the responses come from a snippet then we need to come back here afterwards.
-		if next_line.type == DMConstants.TYPE_GOTO and next_line.is_snippet and not id_trail.begins_with("|" + next_line.next_id_after):
-			id_trail = "|" + next_line.next_id_after + id_trail
+		if next_line.type == DMConstants.TYPE_GOTO and next_line.is_snippet and not id_trail.begins_with("|" + _get_id_with_resource(resource, next_line.next_id_after)):
+			id_trail = "|" + _get_id_with_resource(resource, next_line.next_id_after) + id_trail
 
 		# If the next line is a title then check where it points to see if that is a set of responses.
 		while [DMConstants.TYPE_TITLE, DMConstants.TYPE_GOTO].has(next_line.type) and resource.lines.has(next_line.next_id):
@@ -298,8 +327,9 @@ func get_line(resource: DialogueResource, key: String, extra_game_states: Array)
 			# so instead we use set and get here.
 			line.set(&"responses", await _get_responses(next_line.get(&"responses", []), resource, id_trail, extra_game_states))
 
-	line.next_id = "|".join(stack) if line.next_id == DMConstants.ID_NULL else line.next_id + id_trail
+	line.next_id = "|".join(stack) if line.next_id == DMConstants.ID_NULL else _get_id_with_resource(resource, line.next_id) + id_trail
 	return line
+
 
 ## Replace any variables, etc in the text.
 func get_resolved_line_data(data: Dictionary, extra_game_states: Array = []) -> DMResolvedLineData:
@@ -335,7 +365,7 @@ func get_resolved_line_data(data: Dictionary, extra_game_states: Array = []) -> 
 	var markers: DMResolvedLineData = DMResolvedLineData.new(text)
 
 	# Resolve any conditionals and update marker positions as needed
-	if data.type == DMConstants.TYPE_DIALOGUE:
+	if data.type in [DMConstants.TYPE_DIALOGUE, DMConstants.TYPE_RESPONSE]:
 		var resolved_text: String = markers.text
 		var conditionals: Array[RegExMatch] = compilation.regex.INLINE_CONDITIONALS_REGEX.search_all(resolved_text)
 		var replacements: Array = []
@@ -545,6 +575,10 @@ func _bridge_get_line(resource: DialogueResource, key: String, extra_game_states
 func _bridge_mutate(mutation: Dictionary, extra_game_states: Array, is_inline_mutation: bool = false) -> void:
 	await _mutate(mutation, extra_game_states, is_inline_mutation)
 	bridge_mutated.emit()
+
+
+func _bridge_get_error_message(error: int) -> String:
+	return DMConstants.get_error_message(error)
 
 
 #endregion
@@ -794,7 +828,7 @@ func _get_responses(ids: Array, resource: DialogueResource, id_trail: String, ex
 		var data: Dictionary = resource.lines.get(id).duplicate(true)
 		data.is_allowed = await _check_condition(data, extra_game_states)
 		var response: DialogueResponse = await create_response(data, extra_game_states)
-		response.next_id += id_trail
+		response.next_id = _get_id_with_resource(resource, response.next_id) + id_trail
 		responses.append(response)
 
 	return responses
@@ -843,7 +877,7 @@ func _get_state_value(property: String, extra_game_states: Array):
 	if include_classes:
 		for class_data in ProjectSettings.get_global_class_list():
 			if class_data.get(&"class") == property:
-				return load(class_data.path).new()
+				return load(class_data.path)
 
 	show_error_for_missing_state_value(DMConstants.translate(&"runtime.property_not_found").format({ property = property, states = _get_state_shortcut_names(extra_game_states) }))
 
@@ -1088,7 +1122,7 @@ func _resolve(tokens: Array, extra_game_states: Array):
 						token.value = value[index]
 					else:
 						show_error_for_missing_state_value(DMConstants.translate(&"runtime.key_not_found").format({ key = str(index), dictionary = token.variable }))
-			elif typeof(value) == TYPE_ARRAY:
+			elif typeof(value) in [TYPE_ARRAY, TYPE_PACKED_STRING_ARRAY, TYPE_PACKED_INT32_ARRAY, TYPE_PACKED_INT64_ARRAY, TYPE_PACKED_BYTE_ARRAY, TYPE_PACKED_COLOR_ARRAY, TYPE_PACKED_FLOAT32_ARRAY, TYPE_PACKED_FLOAT64_ARRAY]:
 				if tokens.size() > i + 1 and tokens[i + 1].type == DMConstants.TOKEN_ASSIGNMENT:
 					# If the next token is an assignment then we need to leave this as a reference
 					# so that it can be resolved once everything ahead of it has been resolved
@@ -1475,8 +1509,10 @@ func _get_method_info_for(thing: Variant, method: String, args: Array) -> Dictio
 	var method_key: String = "%s:%d" % [method, args.size()]
 	if methods.has(method_key):
 		return methods.get(method_key)
-	else:
+	elif methods.has(method):
 		return methods.get(method)
+	else:
+		return _get_method_info_for(thing.new(), method, args)
 
 
 func _resolve_thing_method(thing, method: String, args: Array):
@@ -1518,3 +1554,11 @@ func _resolve_thing_method(thing, method: String, args: Array):
 	var dotnet_dialogue_manager = _get_dotnet_dialogue_manager()
 	dotnet_dialogue_manager.ResolveThingMethod(thing, method, args)
 	return await dotnet_dialogue_manager.Resolved
+
+
+func _get_resource_uid(resource: DialogueResource) -> String:
+	return ResourceUID.path_to_uid(resource.resource_path).replace("uid://", "")
+
+
+func _get_id_with_resource(resource: DialogueResource, id: String) -> String:
+	return id if "@" in id else "%s@%s" % [_get_resource_uid(resource), id]

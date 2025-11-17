@@ -65,6 +65,10 @@ Dialogue Manager settings are found in Project Settings at the bottom of the Gen
 
   Include a _\_notes_ column in CSV exports for doc comments.
 
+- **Dialogue Processor Path** (advanced)
+  
+  A path to a class that extends [`DMDialogueProcessor`](./Processing.md). Used for pre-processing raw lines and post-processing compiled lines.
+
 - **Custom Test Scene Path** (advanced)
 
   Use a custom test scene when running "Test" from the dialogue editor. The scene must extend `BaseDialogueTestScene`.

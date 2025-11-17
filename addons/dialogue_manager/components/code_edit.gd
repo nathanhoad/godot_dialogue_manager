@@ -100,6 +100,12 @@ func _gui_input(event: InputEvent) -> void:
 			"text_size_reset":
 				self.font_size = theme_overrides.font_size
 				get_viewport().set_input_as_handled()
+			"make_bold":
+				insert_bbcode("[b]", "[/b]")
+				get_viewport().set_input_as_handled()
+			"make_italic":
+				insert_bbcode("[i]", "[/i]")
+				get_viewport().set_input_as_handled()
 
 	elif event is InputEventMouse:
 		match event.as_text():
@@ -128,12 +134,24 @@ func _drop_data(at_position: Vector2, data) -> void:
 		if file == main_view.current_file_path: continue
 
 		if file.get_extension() == "dialogue":
+			var known_aliases: PackedStringArray = []
 			var path = file.replace("res://", "").replace(".dialogue", "")
 			# Find the first non-import line in the file to add our import
 			var lines = text.split("\n")
 			for i in range(0, lines.size()):
-				if not lines[i].begins_with("import "):
-					insert_line_at(i, "import \"%s\" as %s\n" % [file, replace_regex.sub(path, "_", true)])
+				if lines[i].begins_with("import "):
+					var found: RegExMatch = compiler_regex.IMPORT_REGEX.search(lines[i])
+					if found:
+						known_aliases.append(found.strings[found.names.prefix])
+				else:
+					var alias: String = ""
+					var bits: PackedStringArray = replace_regex.sub(path, "|", true).split("|")
+					bits.reverse()
+					for end: int in range(1, bits.size() + 1):
+						alias =  "_".join(bits.slice(0, end))
+						if not alias in known_aliases:
+							break
+					insert_line_at(i, "import \"%s\" as %s\n" % [file, alias])
 					set_caret_line(i)
 					break
 		else:
@@ -141,7 +159,20 @@ func _drop_data(at_position: Vector2, data) -> void:
 			if cursor.x > -1 and cursor.y > -1:
 				set_cursor(cursor)
 				remove_secondary_carets()
-				insert_text("\"%s\"" % file, cursor.y, cursor.x)
+				var resource = load(file)
+				# If the dropped file is an audio stream then assume it's a voice reference
+				if is_instance_of(resource, AudioStream):
+					var current_voice_regex: RegEx = RegEx.create_from_string("\\[#voice=.+\\]")
+					var path: String = ResourceUID.call("path_to_uid", file) if ResourceUID.has_method("path_to_uid") else file
+					var line_text: String = get_line(cursor.y)
+					var voice_text: String = "[#voice=%s]" % [path]
+					if current_voice_regex.search(line_text):
+						set_line(cursor.y, current_voice_regex.replace(get_line(cursor.y), voice_text))
+					else:
+						insert_text(" " + voice_text, cursor.y, line_text.length())
+				# Other wise it's just a file reference
+				else:
+					insert_text("\"%s\"" % file, cursor.y, cursor.x)
 	grab_focus()
 
 
@@ -291,7 +322,16 @@ func set_cursor(from_cursor: Vector2) -> void:
 
 # Check if a prompt is the start of a string without actually being that string
 func matches_prompt(prompt: String, matcher: String) -> bool:
-	return prompt.length() < matcher.length() and matcher.to_lower().begins_with(prompt.to_lower())
+	if prompt.length() > matcher.length(): return false
+
+	# Fuzzy match
+	matcher = matcher.to_lower()
+	var next_index: int = 0
+	for char: String in prompt.to_lower():
+		next_index = matcher.find(char, next_index)
+		if next_index == -1:
+			return false
+	return true
 
 
 func get_state_shortcuts() -> PackedStringArray:
@@ -311,7 +351,7 @@ func get_state_shortcuts() -> PackedStringArray:
 
 func get_members_for_autoload(autoload_name: String) -> Array[Dictionary]:
 	# Debounce method list lookups
-	if _autoload_member_cache.has(autoload_name) and _autoload_member_cache.get(autoload_name).get("at") > Time.get_ticks_msec() - 5000:
+	if _autoload_member_cache.has(autoload_name) and _autoload_member_cache.get(autoload_name).get("at") > Time.get_ticks_msec() - 10000:
 		return _autoload_member_cache.get(autoload_name).get("members")
 
 	if not _autoloads.has(autoload_name) and not autoload_name.begins_with("res://") and not autoload_name.begins_with("uid://"): return []
