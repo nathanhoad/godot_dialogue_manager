@@ -125,16 +125,53 @@ Similarly, if the name of a character is based on a variable you can provide it 
 
 ### Local variables
 
-If you need temporary variables that only exist during a dialogue conversation, you can use locals. Locals are temporary variables that only live for the current conversation, and when the conversation ends/changes dialogue files, the variables are cleaned.
+If you need temporary variables that only exist during a dialogue conversation, you can use locals. Locals are temporary variables that only live for the current conversation. When the conversation ends or changes dialogue files, the variables are deleted.
 
-Example:
+You can create local variables in two ways:
+
+1. **Setting them within dialogue** using `set` or `do`:
 
 ```
 set locals.choice_count = 0
 Nathan: You've made {{locals.choice_count}} choices so far.
 ```
 
-For a deeper explanation of locals and how to use them, read [Local Variables](./Local_Variables.md).
+2. **Passing extra game states** when starting dialogue (see [Extra Game States](./Conditions_Mutations.md#extra-game-states) for details). Variables from extra game states can be referenced directly without the `locals.` prefix.
+
+**Example: Tracking conversation topics**
+
+```
+~start
+Nathan: What would you like to know?
+
+- Tell me about yourself [if not locals.asked_about_nathan]
+	set locals.asked_about_nathan = true
+	Nathan: Well, I'm a game developer who loves making dialogue systems.
+	=> start
+
+- What's your favorite color? [if not locals.asked_favorite_color]
+	set locals.asked_favorite_color = true
+	Nathan: I'd say blue. It's calming.
+	=> start
+
+- That's all for now
+	Nathan: Alright, see you around!
+	=> END
+```
+
+**Example: Countdown with while loop**
+
+```
+set locals.countdown = 3
+Nathan: Starting countdown...
+
+while locals.countdown > 0
+	Nathan: {{locals.countdown}}!
+	do locals.countdown -= 1
+
+Nathan: Countdown is over.
+=> END
+```
 
 ## Tags
 
