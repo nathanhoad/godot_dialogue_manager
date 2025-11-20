@@ -28,7 +28,7 @@ In your dialogue, you can reference these directly:
 ~ start
 if level >= 10:
 	Nathan: Wow, level {{level}}! You've come a long way.
-    
+
 Nathan: Your health is at {{health}}.
 ```
 
@@ -166,18 +166,15 @@ else
 	=> guess
 ```
 
-## Locals vs Globals
+## Local vs Global
 
-Here's when to use each:
-
-**Use locals when:**
+**Use local when:**
 - The data only matters during the current conversation
-- You're tracking choices or branches within a dialogue
-- You want to keep dialogue self-contained and reusable
-- You're prototyping and don't want to commit to permanent variables yet
+- You are tracking choices or branches within a dialogue
+- You are prototyping and don't want to commit to permanent variables yet
 
 **Use Global variables when:**
-- The data needs to persist between conversations or play sessions
+- The data needs to persist between conversations
 - Multiple systems in your game need to access it
 - It represents core game progression or player statistics
 - It should be saved with the game
