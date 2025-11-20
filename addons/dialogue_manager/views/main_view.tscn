@@ -38,6 +38,7 @@ image = SubResource("Image_y6rqu")
 script = ExtResource("7_necsa")
 
 [node name="MainView" type="Control"]
+clip_contents = true
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
