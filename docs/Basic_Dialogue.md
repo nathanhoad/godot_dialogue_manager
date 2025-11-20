@@ -123,6 +123,19 @@ Similarly, if the name of a character is based on a variable you can provide it 
 {{SomeGlobal.some_character_name}}: My name was provided by the player.
 ```
 
+### Local variables
+
+If you need temporary variables that only exist during a dialogue conversation, you can use locals. Locals are temporary variables that only live for the current conversation, and when the conversation ends/changes dialogue files, the variables are cleaned.
+
+Example:
+
+```
+set locals.choice_count = 0
+Nathan: You've made {{locals.choice_count}} choices so far.
+```
+
+For a deeper explanation of locals and how to use them, read [Local Variables](./Local_Variables.md).
+
 ## Tags
 
 If you need to annotate your lines with tags, you can wrap them in `[#` and `]`, separated by commas. So to specify "happy" and "surprised" tags for a line, you would do something like:
