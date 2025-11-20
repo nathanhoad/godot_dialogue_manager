@@ -132,15 +132,6 @@ You can create local variables in two ways:
 1. **Setting them within dialogue** using `set` or `do`:
 
 ```
-set locals.choice_count = 0
-Nathan: You've made {{locals.choice_count}} choices so far.
-```
-
-2. **Passing extra game states** when starting dialogue (see [Extra Game States](./Conditions_Mutations.md#extra-game-states) for details). Variables from extra game states can be referenced directly without the `locals.` prefix.
-
-**Example: Tracking conversation topics**
-
-```
 ~start
 Nathan: What would you like to know?
 
@@ -159,19 +150,7 @@ Nathan: What would you like to know?
 	=> END
 ```
 
-**Example: Countdown with while loop**
-
-```
-set locals.countdown = 3
-Nathan: Starting countdown...
-
-while locals.countdown > 0
-	Nathan: {{locals.countdown}}!
-	do locals.countdown -= 1
-
-Nathan: Countdown is over.
-=> END
-```
+2. **Passing extra game states** when starting dialogue (see [Extra Game States](./Conditions_Mutations.md#extra-game-states) for details). Variables from extra game states can be referenced directly without the `locals.` prefix.
 
 ## Tags
 
