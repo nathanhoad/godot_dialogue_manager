@@ -102,6 +102,13 @@ func find_imported_titles(text: String, path: String) -> void:
 		else:
 			# Get titles from other file and map them to the known list of titles.
 			var imported_resource: DialogueResource = load(import_data.path)
+			
+			# Guard against failed loads -- namely during reimport cascade.
+			if imported_resource == null:
+				# Might be worth investigating a better constant here.
+				add_error(id, 0, DMConstants.ERR_ERRORS_IN_IMPORTED_FILE)
+				continue
+			
 			var uid: String = ResourceUID.path_to_uid(import_data.path).replace("uid://", "")
 			for title_key: String in imported_resource.titles:
 				# Ignore any titles that are already a reference
