@@ -40,7 +40,30 @@ func reimport_files(and_files: PackedStringArray = []) -> void:
 
 	if _files_marked_for_reimport.is_empty(): return
 
+	# Guard against recursive reimport calls. Don't mark for reimport unless attempted once.
+	var efs := EditorInterface.get_resource_filesystem()
+	if efs.is_scanning() or efs.is_importing():
+		# Defer the reimport to the next idle frame.
+		_schedule_deferred_reimport.call_deferred()
+		return
+
+	# Attempt reimport immediately if not busy.
 	EditorInterface.get_resource_filesystem().reimport_files(_files_marked_for_reimport)
+	_files_marked_for_reimport.clear()
+
+
+## Helper to try and resolve recursive import crashes while importer is busy.
+func _schedule_deferred_reimport() -> void:
+	# Wait before trying again.
+	if _files_marked_for_reimport.is_empty(): return
+	
+	var efs := EditorInterface.get_resource_filesystem()
+	if efs.is_scanning() or efs.is_importing():
+		# Still working on it. Try again later.
+		get_tree().create_timer(0.1).timeout.connect(_schedule_deferred_reimport)
+		return
+		
+	efs.reimport_files(_files_marked_for_reimport)
 	_files_marked_for_reimport.clear()
 
 
