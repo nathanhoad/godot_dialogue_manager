@@ -91,7 +91,7 @@ namespace DialogueManagerRuntime
 
 
         public static void Prepare(GodotObject instance)
-        {   
+        {
             instance.Connect("bridge_dialogue_started", Callable.From((Resource dialogueResource) => DialogueStarted?.Invoke(dialogueResource)));
             instance.Connect("passed_title", Callable.From((string title) => PassedTitle?.Invoke(title)));
             instance.Connect("got_dialogue", Callable.From((RefCounted line) => GotDialogue?.Invoke(new DialogueLine(line))));
@@ -333,6 +333,7 @@ namespace DialogueManagerRuntime
                 int v => Variant.From((long)v),
                 float v => Variant.From((double)v),
                 System.String v => Variant.From((string)v),
+                GodotObject godotObj => Variant.From(godotObj),
                 _ => Variant.From(value)
             };
         }
@@ -413,7 +414,7 @@ namespace DialogueManagerRuntime
             }
             else
             {
-                EmitSignal(SignalName.Resolved, (Variant)result);
+                EmitSignal(SignalName.Resolved, convertValueToVariant(result));
             }
         }
 #nullable enable
