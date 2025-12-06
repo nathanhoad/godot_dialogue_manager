@@ -127,6 +127,8 @@ Similarly, if the name of a character is based on a variable you can provide it 
 
 If you need temporary variables that only exist during a dialogue conversation, you can use locals. Locals are temporary variables that only live for the current conversation. When the conversation ends or changes dialogue files, the variables are deleted.
 
+_Note: `locals` is a feature provided by the example balloon as a demonstration of handling temporary state, not a built-in feature of Dialogue Manager itself._
+
 You can create local variables in two ways:
 
 1. **Setting them within dialogue** using `set` or `do`:
