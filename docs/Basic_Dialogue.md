@@ -123,6 +123,37 @@ Similarly, if the name of a character is based on a variable you can provide it 
 {{SomeGlobal.some_character_name}}: My name was provided by the player.
 ```
 
+### Local variables
+
+If you need temporary variables that only exist during a dialogue conversation, you can use locals. Locals are temporary variables that only live for the current conversation. When the conversation ends or changes dialogue files, the variables are deleted.
+
+_Note: `locals` is a feature provided by the example balloon as a demonstration of handling temporary state, not a built-in feature of Dialogue Manager itself._
+
+You can create local variables in two ways:
+
+1. **Setting them within dialogue** using `set` or `do`:
+
+```
+~start
+Nathan: What would you like to know?
+
+- Tell me about yourself [if not locals.asked_about_nathan]
+	set locals.asked_about_nathan = true
+	Nathan: Well, I'm a game developer who loves making dialogue systems.
+	=> start
+
+- What's your favorite color? [if not locals.asked_favorite_color]
+	set locals.asked_favorite_color = true
+	Nathan: I'd say blue. It's calming.
+	=> start
+
+- That's all for now
+	Nathan: Alright, see you around!
+	=> END
+```
+
+2. **Passing extra game states** when starting dialogue (see [Extra Game States](./Conditions_Mutations.md#extra-game-states) for details). Variables from extra game states can be referenced directly without the `locals.` prefix.
+
 ## Tags
 
 If you need to annotate your lines with tags, you can wrap them in `[#` and `]`, separated by commas. So to specify "happy" and "surprised" tags for a line, you would do something like:
