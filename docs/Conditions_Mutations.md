@@ -135,6 +135,8 @@ do debug(game.pirate_name)
 => END
 ```
 
+Extra game states provide references to objects, nodes, or dictionaries that exist outside the dialogue system. Changes made to their properties will persist after the conversation ends. The main difference from locals is that extra game states are accessed directly by name (e.g., `level`), while variables created with `set locals.variable_name = value` must always be prefixed with `locals.` (e.g., `locals.counter`).
+
 ### Signals
 
 Signals can be emitted similarly to how they are emitted in GDScript - by calling `emit` on them.
