@@ -387,13 +387,13 @@ func get_resolved_line_data(data: Dictionary, extra_game_states: Array = []) -> 
 				string = conditional.get_string(),
 				body = body
 			})
-		
+
 		for i in range(replacements.size() - 1, -1, -1):
 			var r: Dictionary = replacements[i]
 			resolved_text = resolved_text.substr(0, r.start) + r.body + resolved_text.substr(r.end, 9999)
 			# Move any other markers now that the text has changed
 			_shift_markers(markers, r.start, r.end - r.start - r.body.length())
-		
+
 		var image_tags: Array[RegExMatch] = compilation.regex.IMAGE_TAGS_REGEX.search_all(resolved_text)
 		for image_tag: RegExMatch in image_tags:
 			# The [img] and [/img] tags have already been accounted for so now we just need to
