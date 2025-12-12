@@ -225,6 +225,15 @@ func apply_changes() -> void:
 	save_files()
 
 
+# Check if any open files have unsaved changes.
+func count_unsaved_files() -> int:
+	var count: int = 0
+	for buffer in open_buffers.values():
+		if buffer.text != buffer.pristine_text:
+			count += 1
+	return count
+
+
 # Load back to the previous buffer regardless of if it was actually saved
 func load_from_version_refresh(just_refreshed: Dictionary) -> void:
 	if just_refreshed.has("current_file_content"):
