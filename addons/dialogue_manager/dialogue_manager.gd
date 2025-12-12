@@ -387,35 +387,44 @@ func get_resolved_line_data(data: Dictionary, extra_game_states: Array = []) -> 
 				string = conditional.get_string(),
 				body = body
 			})
-
+		
 		for i in range(replacements.size() - 1, -1, -1):
 			var r: Dictionary = replacements[i]
 			resolved_text = resolved_text.substr(0, r.start) + r.body + resolved_text.substr(r.end, 9999)
 			# Move any other markers now that the text has changed
-			var offset: int = r.end - r.start - r.body.length()
-			for key in [&"speeds", &"time"]:
-				if markers.get(key) == null: continue
-				var marker = markers.get(key)
-				var next_marker: Dictionary = {}
-				for index in marker:
-					if index < r.start:
-						next_marker[index] = marker[index]
-					elif index > r.start:
-						next_marker[index - offset] = marker[index]
-				markers.set(key, next_marker)
-			var mutations: Array[Array] = markers.mutations
-			var next_mutations: Array[Array] = []
-			for mutation in mutations:
-				var index = mutation[0]
-				if index < r.start:
-					next_mutations.append(mutation)
-				elif index > r.start:
-					next_mutations.append([index - offset, mutation[1]])
-			markers.mutations = next_mutations
+			_shift_markers(markers, r.start, r.end - r.start - r.body.length())
+		
+		var image_tags: Array[RegExMatch] = compilation.regex.IMAGE_TAGS_REGEX.search_all(resolved_text)
+		for image_tag: RegExMatch in image_tags:
+			# The [img] and [/img] tags have already been accounted for so now we just need to
+			# adjust for the path length.
+			_shift_markers(markers, image_tag.get_start(), image_tag.get_string(image_tag.names.path).length())
 
 		markers.text = resolved_text
 
 	return markers
+
+
+func _shift_markers(markers: DMResolvedLineData, if_after: int, by_offset: int) -> void:
+	for key in [&"speeds", &"time"]:
+		if markers.get(key) == null: continue
+		var marker = markers.get(key)
+		var next_marker: Dictionary = {}
+		for index in marker:
+			if index < if_after:
+				next_marker[index] = marker[index]
+			elif index > if_after:
+				next_marker[index - by_offset] = marker[index]
+		markers.set(key, next_marker)
+	var mutations: Array[Array] = markers.mutations
+	var next_mutations: Array[Array] = []
+	for mutation in mutations:
+		var index = mutation[0]
+		if index < if_after:
+			next_mutations.append(mutation)
+		elif index > if_after:
+			next_mutations.append([index - by_offset, mutation[1]])
+	markers.mutations = next_mutations
 
 
 ## Replace any variables, etc in the character name
