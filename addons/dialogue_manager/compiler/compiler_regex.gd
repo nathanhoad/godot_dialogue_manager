@@ -17,6 +17,8 @@ var GOTO_REGEX: RegEx = RegEx.create_from_string("=><? (?<goto>.*)")
 var INLINE_RANDOM_REGEX: RegEx = RegEx.create_from_string("\\[\\[(?<options>.*?)\\]\\]")
 var INLINE_CONDITIONALS_REGEX: RegEx = RegEx.create_from_string("\\[if (?<condition>.+?)\\](?<body>.*?)\\[\\/if\\]")
 
+var IMAGE_TAGS_REGEX: RegEx = RegEx.create_from_string("\\[img.*?\\](?<path>.+?)\\[\\/img\\]")
+
 var TAGS_REGEX: RegEx = RegEx.create_from_string("\\[#(?<tags>.*?)\\]")
 
 var REPLACEMENTS_REGEX: RegEx = RegEx.create_from_string("{{(.*?)}}")
