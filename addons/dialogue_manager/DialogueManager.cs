@@ -275,10 +275,10 @@ namespace DialogueManagerRuntime
                         switch (memberInfo.MemberType)
                         {
                             case MemberTypes.Field:
-                                return convertValueToVariant((memberInfo as FieldInfo).GetValue(thing));
+                                return ConvertValueToVariant((memberInfo as FieldInfo).GetValue(thing));
 
                             case MemberTypes.Property:
-                                return convertValueToVariant((memberInfo as PropertyInfo).GetValue(thing));
+                                return ConvertValueToVariant((memberInfo as PropertyInfo).GetValue(thing));
 
                             case MemberTypes.NestedType:
                                 var type = thing.GetType().GetNestedType(property);
@@ -311,15 +311,17 @@ namespace DialogueManagerRuntime
                 var key = enumType.GetEnumName(value);
                 if (key != null)
                 {
-                    dictionary.Add(key, convertValueToVariant(value));
+                    dictionary.Add(key, ConvertValueToVariant(value));
                 }
             }
             return dictionary;
         }
 
 
-        Variant convertValueToVariant(object value)
+        Variant ConvertValueToVariant(object value)
         {
+            if (value == null) return false;
+
             Type rawType = value.GetType();
             if (rawType.IsEnum)
             {
@@ -414,7 +416,7 @@ namespace DialogueManagerRuntime
             }
             else
             {
-                EmitSignal(SignalName.Resolved, convertValueToVariant(result));
+                EmitSignal(SignalName.Resolved, ConvertValueToVariant(result));
             }
         }
 #nullable enable
