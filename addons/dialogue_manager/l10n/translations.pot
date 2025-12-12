@@ -125,6 +125,9 @@ msgstr ""
 msgid "confirm_close.discard"
 msgstr ""
 
+msgid "confirm_n_unsaved_files"
+msgstr ""
+
 msgid "buffer.save"
 msgstr ""
 

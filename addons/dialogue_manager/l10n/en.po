@@ -135,6 +135,9 @@ msgstr "Save changes"
 msgid "confirm_close.discard"
 msgstr "Discard"
 
+msgid "confirm_n_unsaved_files"
+msgstr "You have {count} unsaved dialogue files."
+
 msgid "buffer.save"
 msgstr "Save"
 
