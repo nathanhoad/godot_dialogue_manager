@@ -2,7 +2,7 @@ extends AbstractTest
 
 
 func test_can_parse_simultaneous_dialogue() -> void:
-	var output = compile("
+	var output: DMCompilerResult = compile("
 ~ start
 Nathan: I'm saying this.
 | Coco: While I'm saying this.
@@ -40,7 +40,7 @@ Nathan: Lastly, I say this.
 
 
 func test_can_run_simultaneous_dialogue() -> void:
-	var resource = create_resource("
+	var resource: DialogueResource = create_resource("
 ~ start
 Nathan: I'm saying this.
 | Coco: While I'm saying this.
@@ -48,7 +48,7 @@ Nathan: I'm saying this.
 Nathan: Then I say this.
 => END")
 
-	var line = await resource.get_next_dialogue_line("start")
+	var line: DialogueLine = await resource.get_next_dialogue_line("start")
 	assert(line.text == "I'm saying this.", "Should have the correct text.")
 	assert(line.concurrent_lines.size() == 2, "Should have two concurrent lines.")
 	assert(line.concurrent_lines[0].text == "While I'm saying this.", "Should have concurrent line.")

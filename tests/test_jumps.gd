@@ -2,7 +2,7 @@ extends AbstractTest
 
 
 func test_can_parse_jumps() -> void:
-	var output = compile("
+	var output: DMCompilerResult = compile("
 ~ start
 Nathan: Responses?
 - Simple => start
@@ -41,7 +41,7 @@ Nathan: After
 
 
 func test_can_run_jumps() -> void:
-	var resource = create_resource("
+	var resource: DialogueResource = create_resource("
 ~ start
 Nathan: Start.
 - Simple => start
@@ -53,7 +53,7 @@ Nathan: After 2.
 ~ snippet
 Nathan: Snippet.")
 
-	var line = await resource.get_next_dialogue_line("start")
+	var line: DialogueLine = await resource.get_next_dialogue_line("start")
 
 	line = await resource.get_next_dialogue_line(line.responses[0].next_id)
 	assert(line.text == "Start.", "Simple jump should point back to start.")
@@ -91,7 +91,7 @@ Nathan: After
 
 
 func test_can_parse_expression_jumps() -> void:
-	var output = compile("
+	var output: DMCompilerResult = compile("
 ~ start
 Nathan: Restart?
 => {{StateForTests.jump_target}}")
@@ -111,7 +111,7 @@ Nathan: Restart?
 
 
 func test_can_run_expression_jumps() -> void:
-	var resource = create_resource("
+	var resource: DialogueResource = create_resource("
 ~ start
 Nathan: Start.
 Nathan: Restart?
@@ -119,7 +119,7 @@ Nathan: Restart?
 
 	StateForTests.jump_target = "start"
 
-	var line = await resource.get_next_dialogue_line("start")
+	var line: DialogueLine = await resource.get_next_dialogue_line("start")
 	assert(line.text == "Start.", "Line should be first line.")
 
 	line = await resource.get_next_dialogue_line(line.next_id)

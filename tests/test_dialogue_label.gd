@@ -41,7 +41,7 @@ func test_inline_mutations() -> void:
 		counter = 0
 	}
 
-	var resource = create_resource("
+	var resource: DialogueResource = create_resource("
 ~ start
 Nathan: This line has[set counter += 1][set counter += 10] two mutations.
 => END")

@@ -18,8 +18,8 @@ func _ready() -> void:
 	started_at = Time.get_ticks_msec()
 
 	var tests: PackedStringArray = Array(DirAccess.get_files_at("res://tests")) \
-		.filter(func(path: String): return path.begins_with("test_") and path.ends_with(".gd"))
-	for test in tests:
+		.filter(func(path: String) -> bool: return path.begins_with("test_") and path.ends_with(".gd"))
+	for test: String in tests:
 		await _run_tests(test)
 
 	var duration: float = (Time.get_ticks_msec() - started_at) / 1000
@@ -39,7 +39,7 @@ func _run_tests(path: String) -> void:
 
 	await node._before_all()
 
-	for method in node.get_method_list():
+	for method: Dictionary in node.get_method_list():
 		if method.name.begins_with("test_"):
 			await node._before_each()
 			await node.call(method.name)
