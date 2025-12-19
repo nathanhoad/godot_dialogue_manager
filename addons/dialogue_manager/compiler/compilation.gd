@@ -254,7 +254,7 @@ func build_line_tree(raw_lines: PackedStringArray) -> DMTreeLine:
 		# Attach doc comments
 		if raw_line.strip_edges().begins_with("##"):
 			doc_comments.append(raw_line.replace("##", "").strip_edges())
-		elif tree_line.type == DMConstants.TYPE_DIALOGUE:
+		elif tree_line.type == DMConstants.TYPE_DIALOGUE or tree_line.type == DMConstants.TYPE_RESPONSE:
 			tree_line.notes = "\n".join(doc_comments)
 			doc_comments.clear()
 
@@ -572,6 +572,9 @@ func parse_response_line(tree_line: DMTreeLine, line: DMCompiledLine, siblings: 
 
 	# Remove the "- "
 	tree_line.text = tree_line.text.substr(2)
+
+	# Attach any doc comments.
+	line.notes = tree_line.notes
 
 	# Extract the static line ID
 	var static_line_id: String = extract_static_line_id(tree_line.text)
