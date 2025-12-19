@@ -2,7 +2,7 @@ extends AbstractTest
 
 
 func test_can_parse_titles() -> void:
-	var output = compile("~ some_title\nNathan: Hello.")
+	var output: DMCompilerResult = compile("~ some_title\nNathan: Hello.")
 
 	assert(output.errors.is_empty(), "Should have no errors.")
 	assert(output.titles.size() == 1, "Should have one title.")
@@ -39,7 +39,7 @@ Nathan: After.
 
 
 func test_can_parse_basic_dialogue() -> void:
-	var output = compile("Nathan: This is dialogue with a name.\nThis is dialogue without a name")
+	var output: DMCompilerResult = compile("Nathan: This is dialogue with a name.\nThis is dialogue without a name")
 
 	assert(output.errors.is_empty(), "Should have no errors.")
 	assert(output.lines.values()[0].character == "Nathan", "First line should have a character.")
@@ -47,7 +47,7 @@ func test_can_parse_basic_dialogue() -> void:
 
 
 func test_can_parse_dialogue_with_static_ids() -> void:
-	var output = compile("
+	var output: DMCompilerResult = compile("
 ~ start
 Nathan: Hello [ID:HELLO]
 Nathan: Something[if true] conditional[/if] [ID:SOMETHING]
@@ -59,13 +59,13 @@ Nathan: Something[if true] conditional[/if] [ID:SOMETHING]
 
 
 func test_can_run_basic_dialogue() -> void:
-	var resource = create_resource("
+	var resource: DialogueResource = create_resource("
 ~ start
 Nathan: This is dialogue with a name.
 Coco: Meow.
 This is dialogue without a name.")
 
-	var line = await resource.get_next_dialogue_line("start")
+	var line: DialogueLine = await resource.get_next_dialogue_line("start")
 
 	assert(line.character == "Nathan", "Nathan is talking")
 	assert(line.text == "This is dialogue with a name.", "Should match dialogue.")
@@ -82,7 +82,7 @@ This is dialogue without a name.")
 
 
 func test_can_parse_multiline_dialogue() -> void:
-	var output = compile("
+	var output: DMCompilerResult = compile("
 ~ start
 Nathan: This is the first line.
 	This is the second line.")
@@ -120,11 +120,11 @@ Nathan: First line [ID:FIRST]
 
 
 func test_can_parse_variables() -> void:
-	var output = compile("{{character_name}}: Hi! I'm {{character_name}}.")
+	var output: DMCompilerResult = compile("{{character_name}}: Hi! I'm {{character_name}}.")
 
 	assert(output.errors.is_empty(), "Should have no errors.")
 
-	var line = output.lines.values()[0]
+	var line: Dictionary = output.lines.values()[0]
 
 	assert(line.character_replacements.size() == 1, "Should be 1 character name replacement.")
 	assert("character_name" in line.character_replacements[0].value_in_text, "Should replace \"character_name\"")
@@ -132,7 +132,7 @@ func test_can_parse_variables() -> void:
 
 
 func test_can_resolve_variables() -> void:
-	var resource = create_resource("
+	var resource: DialogueResource = create_resource("
 ~ start
 {{StateForTests.character_name}}: Hi! I'm {{StateForTests.character_name}}.
 do StateForTests.character_name = \"changed\"
@@ -140,7 +140,7 @@ Nathan: Your name is {{StateForTests.character_name}}?")
 
 	StateForTests.character_name = "Coco"
 
-	var line = await resource.get_next_dialogue_line("start")
+	var line: DialogueLine = await resource.get_next_dialogue_line("start")
 	assert(line.character == "Coco", "Character should be Coco.")
 	assert(line.text == "Hi! I'm Coco.", "Character should be Coco.")
 
@@ -149,7 +149,7 @@ Nathan: Your name is {{StateForTests.character_name}}?")
 
 
 func test_can_parse_tags() -> void:
-	var output = compile("Nathan: This is some dialogue [#tag1, #tag2]")
+	var output: DMCompilerResult = compile("Nathan: This is some dialogue [#tag1, #tag2]")
 
 	assert(output.errors.is_empty(), "Should have no errors.")
 	assert(output.lines["0"].tags.size() == 2, "Should have 2 tags")
@@ -158,7 +158,7 @@ func test_can_parse_tags() -> void:
 
 
 func test_can_parse_random_lines() -> void:
-	var output = compile("
+	var output: DMCompilerResult = compile("
 % Nathan: Random 1.
 %2 Nathan: Random 2.
 % Nathan: Random 3.
@@ -197,7 +197,7 @@ Nathan: Jump 3.")
 
 
 func test_can_parse_random_conditional_lines() -> void:
-	var output = compile("
+	var output: DMCompilerResult = compile("
 % Nathan: Random 1.
 %2 [if false] Nathan: Random 2.
 % Nathan: Random 3.
@@ -225,14 +225,14 @@ Nathan: Jump 3.")
 
 
 func test_will_skip_random_condition_lines_if_none_pass() -> void:
-	var resource = create_resource("
+	var resource: DialogueResource = create_resource("
 ~ start
 Nathan: Hello.
 % [if false] Nathan: Fail 1
 % [if false] Nathan: Fail 2
 Nathan: After.")
 
-	var line = await resource.get_next_dialogue_line("start")
+	var line: DialogueLine = await resource.get_next_dialogue_line("start")
 	assert(line.text == "Hello.", "Should be first line.")
 	line = await resource.get_next_dialogue_line(line.next_id)
 	assert(line.text == "After.", "Should skip failed lines.")
@@ -242,13 +242,13 @@ class TestClass:
 	var string: String = ""
 	var number: int = -1
 
-	func set_values(s: String, i: int = 0):
+	func set_values(s: String, i: int = 0) -> void:
 		string = s
 		number = i
 
 
 func test_can_run_methods() -> void:
-	var resource = create_resource("
+	var resource: DialogueResource = create_resource("
 ~ start
 do set_values(\"foo\")
 Nathan: Without optional arguments.
@@ -256,9 +256,9 @@ do set_values(\"bar\", 1)
 Nathan: With optional arguments.
 ")
 
-	var test = TestClass.new()
+	var test: TestClass = TestClass.new()
 
-	var line = await resource.get_next_dialogue_line("start", [test])
+	var line: DialogueLine = await resource.get_next_dialogue_line("start", [test])
 	assert(test.string == "foo", "Method call should set required argument")
 	assert(test.number == 0, "Method call should set optional argument to default value")
 
@@ -268,23 +268,23 @@ Nathan: With optional arguments.
 
 
 func test_can_have_subsequent_titles() -> void:
-	var resource = create_resource("
+	var resource: DialogueResource = create_resource("
 ~ start
 ~ another_title
 ~ third_title
 Nathan: Hello.")
 
-	var line = await resource.get_next_dialogue_line("start")
+	var line: DialogueLine = await resource.get_next_dialogue_line("start")
 	assert(line.text == "Hello.", "Should jump to dialogue.")
 
 
 func test_can_resolve_static_line_id() -> void:
-	var resource = create_resource("
+	var resource: DialogueResource = create_resource("
 ~ start
 Nathan: First line [ID:FIRST]
 Nathan: Second line [ID:SECOND]
 Nathan: Third line [ID:THIRD]")
 
-	var id = DialogueManager.static_id_to_line_id(resource, "SECOND")
-	var line = await resource.get_next_dialogue_line(id)
+	var id: String = DialogueManager.static_id_to_line_id(resource, "SECOND")
+	var line: DialogueLine = await resource.get_next_dialogue_line(id)
 	assert(line.text == "Second line", "Should match second line")

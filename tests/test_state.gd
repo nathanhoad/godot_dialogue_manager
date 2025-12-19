@@ -13,7 +13,7 @@ func _after_all() -> void:
 
 
 func test_can_parse_conditions() -> void:
-	var output = compile("
+	var output: DMCompilerResult = compile("
 if StateForTests.some_property == 0:
 	Nathan: It is 0.
 elif StateForTests.some_property == 10:
@@ -25,7 +25,7 @@ Nathan: After.")
 	assert(output.errors.is_empty(), "Should have no errors.")
 
 	# if
-	var condition = output.lines["1"]
+	var condition: Dictionary = output.lines["1"]
 	assert(condition.type == DMConstants.TYPE_CONDITION, "Should be a condition.")
 	assert(condition.next_id == "2", "Should point to next line.")
 	assert(condition.next_sibling_id == "3", "Should reference elif.")
@@ -56,7 +56,7 @@ Nathan: After")
 
 
 func test_can_group_conditions() -> void:
-	var output = compile("
+	var output: DMCompilerResult = compile("
 ~ start
 if false
 	Nathan: False
@@ -73,7 +73,7 @@ else
 
 
 func test_ignore_escaped_conditions() -> void:
-	var output = compile("
+	var output: DMCompilerResult = compile("
 \\if this is dialogue.
 \\elif this too.
 \\else and this one.")
@@ -91,7 +91,7 @@ func test_ignore_escaped_conditions() -> void:
 
 
 func test_can_run_conditions() -> void:
-	var resource = create_resource("
+	var resource: DialogueResource = create_resource("
 ~ start
 if StateForTests.some_property == 0:
 	Nathan: It is 0.
@@ -101,7 +101,7 @@ else:
 	Nathan: It is something else.")
 
 	StateForTests.some_property = 0
-	var line = await resource.get_next_dialogue_line("start")
+	var line: DialogueLine = await resource.get_next_dialogue_line("start")
 	assert(line.text == "It is 0.", "Should match if condition.")
 
 	StateForTests.some_property = 11
@@ -114,7 +114,7 @@ else:
 
 
 func test_can_parse_while_loops() -> void:
-	var output = compile("
+	var output: DMCompilerResult = compile("
 Before
 while true
 	During 1
@@ -130,7 +130,7 @@ After")
 
 
 func test_can_run_while_loops() -> void:
-	var resource = create_resource("
+	var resource: DialogueResource = create_resource("
 ~ start
 Before
 while StateForTests.some_property < 2
@@ -139,7 +139,7 @@ while StateForTests.some_property < 2
 After")
 
 	StateForTests.some_property = 0
-	var line = await resource.get_next_dialogue_line("start")
+	var line: DialogueLine = await resource.get_next_dialogue_line("start")
 	assert(line.text == "Before", "Should be before while loop.")
 
 	line = await resource.get_next_dialogue_line(line.next_id)
@@ -153,7 +153,7 @@ After")
 
 
 func test_can_parse_match_statements() -> void:
-	var output = compile("
+	var output: DMCompilerResult = compile("
 Before
 match StateForTests.some_property
 	when 1
@@ -178,7 +178,7 @@ After")
 
 
 func test_can_run_match_cases() -> void:
-	var resource = create_resource("
+	var resource: DialogueResource = create_resource("
 ~ start
 Before
 match StateForTests.some_property + 1
@@ -193,7 +193,7 @@ match StateForTests.some_property + 1
 After")
 
 	StateForTests.some_property = 1
-	var line = await resource.get_next_dialogue_line("start")
+	var line: DialogueLine = await resource.get_next_dialogue_line("start")
 	assert(line.text == "Before", "Should be before match.")
 
 	line = await resource.get_next_dialogue_line(line.next_id)
@@ -264,13 +264,13 @@ After")
 
 
 func test_can_parse_mutations() -> void:
-	var output = compile("
+	var output: DMCompilerResult = compile("
 $> StateForTests.some_property = StateForTests.some_method(-10, \"something\")
 $> long_mutation()")
 
 	assert(output.errors.is_empty(), "Should have no errors.")
 
-	var mutation = output.lines["1"]
+	var mutation: Dictionary = output.lines["1"]
 	assert(mutation.type == DMConstants.TYPE_MUTATION, "Should be a mutation.")
 
 	mutation = output.lines["2"]
@@ -278,7 +278,7 @@ $> long_mutation()")
 
 
 func test_can_run_mutations() -> void:
-	var resource = create_resource("
+	var resource: DialogueResource = create_resource("
 ~ start
 $> StateForTests.some_property = StateForTests.some_method(-10, \"something\")
 $> StateForTests.some_property += 5-10
@@ -290,7 +290,7 @@ Nathan: Done.")
 
 	StateForTests.some_property = 0
 
-	var line = await resource.get_next_dialogue_line("start")
+	var line: DialogueLine = await resource.get_next_dialogue_line("start")
 	assert(StateForTests.some_property == StateForTests.some_method(-10, "something") + 5-10, "Should have updated the property.")
 
 	var started_at: float = Time.get_unix_time_from_system()
@@ -300,13 +300,13 @@ Nathan: Done.")
 
 
 func test_can_run_non_blocking_mutations() -> void:
-	var resource = create_resource("
+	var resource: DialogueResource = create_resource("
 ~ start
 Nathan: This mutation should not wait.
 $>> StateForTests.long_mutation()
 Nathan: Done.")
 
-	var line = await resource.get_next_dialogue_line("start")
+	var line: DialogueLine = await resource.get_next_dialogue_line("start")
 
 	var started_at: float = Time.get_unix_time_from_system()
 	line = await resource.get_next_dialogue_line(line.next_id)
@@ -315,12 +315,12 @@ Nathan: Done.")
 
 
 func test_can_run_non_blocking_inline_mutations() -> void:
-	var resource = create_resource("
+	var resource: DialogueResource = create_resource("
 ~ start
 Nathan: This mutation [$> StateForTests.long_mutation()]should wait.
 Nathan: This one [$>> StateForTests.long_mutation()]won't.")
 
-	var line = await resource.get_next_dialogue_line("start")
+	var line: DialogueLine = await resource.get_next_dialogue_line("start")
 	dialogue_label.dialogue_line = line
 	var started_at: float = Time.get_unix_time_from_system()
 	dialogue_label.type_out()
@@ -340,16 +340,16 @@ Nathan: This one [$>> StateForTests.long_mutation()]won't.")
 
 
 func test_can_run_mutations_with_typed_arrays() -> void:
-	var resource = create_resource("
+	var resource: DialogueResource = create_resource("
 ~ start
 Nathan: {{StateForTests.typed_array_method([-1, 27], [\"something\"], [{ \"key\": \"value\" }])}}")
 
-	var line = await resource.get_next_dialogue_line("start")
+	var line: DialogueLine = await resource.get_next_dialogue_line("start")
 	assert(line.text == "[-1, 27][\"something\"][{ \"key\": \"value\" }]", "Should match output.")
 
 
 func test_can_run_expressions() -> void:
-	var resource = create_resource("
+	var resource: DialogueResource = create_resource("
 ~ start
 $> StateForTests.some_property = 10 * 2-1.5 / 2 + (5 * 5)
 Nathan: Done.")
@@ -362,14 +362,14 @@ Nathan: Done.")
 
 
 func test_can_use_extra_state() -> void:
-	var resource = create_resource("
+	var resource: DialogueResource = create_resource("
 ~ start
 Nathan: {{extra_value}}
 $> extra_value = 10")
 
-	var extra_state = { extra_value = 5 }
+	var extra_state: Dictionary = { extra_value = 5 }
 
-	var line = await resource.get_next_dialogue_line("start", [extra_state])
+	var line: DialogueLine = await resource.get_next_dialogue_line("start", [extra_state])
 	assert(line.text == "5", "Should have initial value.")
 
 	line = await  resource.get_next_dialogue_line(line.next_id, [extra_state])
@@ -377,37 +377,37 @@ $> extra_value = 10")
 
 
 func test_can_use_using_clause() -> void:
-	var resource = create_resource("
+	var resource: DialogueResource = create_resource("
 using StateForTests
 ~ start
 Nathan: {{some_property}}")
 
 	StateForTests.some_property = 27
 
-	var line = await resource.get_next_dialogue_line("start")
+	var line: DialogueLine = await resource.get_next_dialogue_line("start")
 	assert(line.text == "27", "Should match property.")
 
 
 func test_can_use_color_constants() -> void:
-	var resource = create_resource("
+	var resource: DialogueResource = create_resource("
 ~ start
 Nathan: {{Color.BLUE}} == {{Color(0,0,1)}}")
 
-	var line = await resource.get_next_dialogue_line("start")
+	var line: DialogueLine = await resource.get_next_dialogue_line("start")
 	assert(line.text == "%s == %s" % [Color.BLUE, Color(0, 0, 1)], "Should match blue.")
 
 
 func test_can_use_vector_constants() -> void:
-	var resource = create_resource("
+	var resource: DialogueResource = create_resource("
 ~ start
 Nathan: {{Vector2.UP}} == {{Vector2(0, -1)}}")
 
-	var line = await resource.get_next_dialogue_line("start")
+	var line: DialogueLine = await resource.get_next_dialogue_line("start")
 	assert(line.text == "%s == %s" % [str(Vector2.UP), str(Vector2(0, -1))], "Should match up.")
 
 
 func test_can_use_lua_dictionary_syntax() -> void:
-	var resource = create_resource("
+	var resource: DialogueResource = create_resource("
 ~ start
 $> StateForTests.dictionary = { key = \"value\" }
 Nathan: Stop!
@@ -417,7 +417,7 @@ $> StateForTests.dictionary.key3 = \"value3\"")
 
 	assert(StateForTests.dictionary.is_empty(), "Dictionary is empty")
 
-	var line = await resource.get_next_dialogue_line("start")
+	var line: DialogueLine = await resource.get_next_dialogue_line("start")
 	assert(StateForTests.dictionary.size() == 1, "Dictionary has one entry")
 	assert(StateForTests.dictionary.has("key") and StateForTests.dictionary.get("key") == "value", "Dictionary should be updated.")
 
@@ -431,16 +431,16 @@ $> StateForTests.dictionary.key3 = \"value3\"")
 
 
 func test_can_use_callable() -> void:
-	var resource = create_resource("
+	var resource: DialogueResource = create_resource("
 ~ start
 Nathan: The number is {{Callable(StateForTests, \"some_method\").bind(\"blah\").call(10)}}.")
 
-	var line = await resource.get_next_dialogue_line("start")
+	var line: DialogueLine = await resource.get_next_dialogue_line("start")
 	assert(line.text == "The number is 40.", "Should resolve callable.")
 
 
 func test_can_warn_about_conflicts() -> void:
-	var resource = create_resource("
+	var resource: DialogueResource = create_resource("
 using StateForTests
 ~ start
 $> some_property = 1
@@ -448,18 +448,18 @@ Value is {{some_property}}")
 
 	ProjectSettings.set_setting("dialogue_manager/runtime/warn_about_method_property_or_signal_name_conflicts", true)
 
-	var line = await resource.get_next_dialogue_line("start", [{ some_property = 1000 }])
+	var line: DialogueLine = await resource.get_next_dialogue_line("start", [{ some_property = 1000 }])
 	assert(line.text == "Value is 1", "Should process first occurance of property.")
 
 
 func test_can_use_self() -> void:
-	var resource = create_resource("
+	var resource: DialogueResource = create_resource("
 ~ start
 $> what_is_self = self
 Nathan: That should not be null.
 => END")
 
-	var extra_state = {
+	var extra_state: Dictionary = {
 		what_is_self = null
 	}
 
@@ -468,7 +468,7 @@ Nathan: That should not be null.
 
 
 func test_can_parse_null_coalesce() -> void:
-	var output = compile("
+	var output: DMCompilerResult = compile("
 ~ start
 if StateForTests.something_null?.begins_with(\"value\") == true:
 	Nathan: Should not be here.
@@ -480,7 +480,7 @@ else:
 
 
 func test_can_handle_null_coalesce() -> void:
-	var resource = create_resource("
+	var resource: DialogueResource = create_resource("
 ~ start
 if StateForTests.something_null?.begins_with(\"value\") == true:
 	Nathan: Should not be here.
@@ -488,7 +488,7 @@ else:
 	Nathan: Should be here.
 => END")
 
-	var line = await resource.get_next_dialogue_line("start")
+	var line: DialogueLine = await resource.get_next_dialogue_line("start")
 	assert(line.text == "Should be here.", "Should coalesce to null and not pass condition.")
 
 	StateForTests.something_null = "value is not null"
@@ -497,7 +497,7 @@ else:
 
 
 func test_can_handle_classes() -> void:
-	var resource = create_resource("
+	var resource: DialogueResource = create_resource("
 ~ start
 Nathan: Is it?
 if StateForTests.is_something(StateForTests.thing, SomeClass)
@@ -509,7 +509,7 @@ if StateForTests.some_static_function()
 	Nathan: Static functions work.
 => END")
 
-	var line = await resource.get_next_dialogue_line("start")
+	var line: DialogueLine = await resource.get_next_dialogue_line("start")
 	assert(line.text == "Is it?", "Should match start.")
 
 	line = await resource.get_next_dialogue_line(line.next_id)
@@ -520,20 +520,20 @@ if StateForTests.some_static_function()
 
 
 func test_can_handle_class_properties() -> void:
-	var resource = create_resource("
+	var resource: DialogueResource = create_resource("
 ~ start
 Nathan: The constant is {{SomeClass.SOME_CONST}}.
 Nathan: The static property is {{SomeClass.some_static_property}}.
 => END")
 
-	var line = await resource.get_next_dialogue_line("start")
+	var line: DialogueLine = await resource.get_next_dialogue_line("start")
 	assert(line.text == "The constant is constant.", "Should read constant value.")
 	line = await resource.get_next_dialogue_line(line.next_id)
 	assert(line.text == "The static property is 27.", "Should read static value.")
 
 
 func test_csharp_state() -> void:
-	var resource = create_resource("
+	var resource: DialogueResource = create_resource("
 using CSharpState
 
 ~ start
@@ -547,7 +547,7 @@ if Things.FirstThing == ThingsProperty
 	The enum value matches.
 => END")
 
-	var line = await resource.get_next_dialogue_line("start")
+	var line: DialogueLine = await resource.get_next_dialogue_line("start")
 	assert(line.text == "Here first.", "Should be less than constant value first.")
 
 	line = await resource.get_next_dialogue_line(line.next_id)
@@ -558,7 +558,7 @@ if Things.FirstThing == ThingsProperty
 
 
 func test_csharp_mutation() -> void:
-	var resource = create_resource("
+	var resource: DialogueResource = create_resource("
 using CSharpState
 
 ~ start
@@ -569,7 +569,7 @@ $> LongMutation()
 Nathan: Done!
 => END")
 
-	var line = await resource.get_next_dialogue_line("start")
+	var line: DialogueLine = await resource.get_next_dialogue_line("start")
 	assert(line.text == "Hello.", "Should be first line.")
 
 	line = await resource.get_next_dialogue_line(line.next_id)

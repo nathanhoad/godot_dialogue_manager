@@ -22,6 +22,11 @@ StateForTests="*res://tests/state_for_tests.gd"
 CSharpState="*res://tests/CSharpState.cs"
 DialogueManager="*res://addons/dialogue_manager/dialogue_manager.gd"
 
+[debug]
+
+gdscript/warnings/untyped_declaration=2
+gdscript/warnings/inferred_declaration=2
+
 [dialogue_manager]
 
 runtime/advanced/uses_dotnet=true

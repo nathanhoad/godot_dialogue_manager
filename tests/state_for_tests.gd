@@ -8,7 +8,7 @@ var dictionary: Dictionary = {}
 
 var jump_target: String = "start"
 
-var something_null = null
+var something_null: Variant = null
 
 var thing: SomeClass = SomeClass.new()
 
