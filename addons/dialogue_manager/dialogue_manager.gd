@@ -728,7 +728,21 @@ func _get_game_states(extra_game_states: Array) -> Array:
 
 # Check if a condition is met
 func _check_condition(data: Dictionary, extra_game_states: Array) -> bool:
-	return bool(await _resolve_condition_value(data, extra_game_states))
+	var result: Variant = await _resolve_condition_value(data, extra_game_states)
+	if typeof(result) in [
+		TYPE_STRING, TYPE_STRING_NAME, \
+		TYPE_DICTIONARY, \
+		TYPE_ARRAY, TYPE_PACKED_BYTE_ARRAY, TYPE_PACKED_COLOR_ARRAY, \
+		TYPE_PACKED_FLOAT32_ARRAY, TYPE_PACKED_FLOAT64_ARRAY, \
+		TYPE_PACKED_INT32_ARRAY, TYPE_PACKED_INT64_ARRAY, \
+		TYPE_PACKED_STRING_ARRAY, \
+		TYPE_PACKED_VECTOR2_ARRAY, TYPE_PACKED_VECTOR3_ARRAY, TYPE_PACKED_VECTOR4_ARRAY]:
+			return (result as String).is_empty()
+
+	if result is Node or result is Resource:
+		return is_instance_valid(result)
+
+	return bool(result)
 
 
 # Resolve a condition's expression value
