@@ -125,8 +125,10 @@ func _can_drop_data(at_position: Vector2, data) -> bool:
 	return files.size() > 0
 
 
-func _drop_data(at_position: Vector2, data) -> void:
+func _drop_data(at_position: Vector2, data: Variant) -> void:
 	var replace_regex: RegEx = RegEx.create_from_string("[^a-zA-Z_0-9]+")
+
+	if typeof(data) == TYPE_STRING: return
 
 	var files: PackedStringArray = Array(data.files)
 	for file in files:
