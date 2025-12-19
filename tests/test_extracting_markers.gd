@@ -10,17 +10,17 @@ func _resolve(text: String) -> DMResolvedLineData:
 
 
 func test_ignores_rich_text_bbcode() -> void:
-	var data = _extract("This is [wait=1]some [color=blue]blue[/color] text.")
+	var data: DMResolvedLineData = _extract("This is [wait=1]some [color=blue]blue[/color] text.")
 
 	assert(data.text == "This is some [color=blue]blue[/color] text.", "It should only contain BBCode.")
 
 
 func test_can_handle_wait_time_tags() -> void:
-	var data = _extract("Nathan: [wave]Hey![/wave] [wait=1.2]WAIT!")
+	var data: DMResolvedLineData = _extract("Nathan: [wave]Hey![/wave] [wait=1.2]WAIT!")
 
 	assert(data.mutations.size() == 1, "Should have 1 mutation.")
 
-	var mutation = data.mutations[0]
+	var mutation: Array = data.mutations[0]
 
 	assert(mutation[0] == 13, "Should be at position 13")
 
@@ -31,11 +31,11 @@ func test_can_handle_wait_time_tags() -> void:
 
 
 func test_can_handle_wait_input_tags() -> void:
-	var data = _extract("Nathan: [wave]Hey![/wave] [wait=\"ui_accept\"]WAIT!")
+	var data: DMResolvedLineData = _extract("Nathan: [wave]Hey![/wave] [wait=\"ui_accept\"]WAIT!")
 
 	assert(data.mutations.size() == 1, "Should have 1 mutation.")
 
-	var mutation = data.mutations[0]
+	var mutation: Array = data.mutations[0]
 
 	assert(mutation[0] == 13, "Should be at position 13")
 
@@ -46,18 +46,18 @@ func test_can_handle_wait_input_tags() -> void:
 
 
 func test_can_handle_speed_tags() -> void:
-	var data = _extract("Nathan: [wave]Hey![/wave] [speed=0.1]WAIT!")
+	var data: DMResolvedLineData = _extract("Nathan: [wave]Hey![/wave] [speed=0.1]WAIT!")
 
 	assert(data.speeds.size() == 1, "Should have 1 speed change.")
 	assert(data.speeds[13] == 0.1, "Should be at position 13 for a speed of 0.1.")
 
 
 func test_can_handle_inline_mutations() -> void:
-	var data = _extract("Nathan: [wave]Hey![/wave] [do something()]DO SOMETHING!")
+	var data: DMResolvedLineData = _extract("Nathan: [wave]Hey![/wave] [do something()]DO SOMETHING!")
 
 	assert(data.mutations.size() == 1, "Should have 1 mutation.")
 
-	var mutation = data.mutations[0]
+	var mutation: Array = data.mutations[0]
 
 	assert(mutation[0] == 13, "Should be at position 13.")
 	assert("expression" in mutation[1], "Should have an expression.")
@@ -66,8 +66,8 @@ func test_can_handle_inline_mutations() -> void:
 
 	assert(data.mutations.size() == 2, "Should have 2 mutations")
 
-	var mutation_1 = data.mutations[0]
-	var mutation_2 = data.mutations[1]
+	var mutation_1: Array = data.mutations[0]
+	var mutation_2: Array = data.mutations[1]
 
 	assert(mutation_1[0] == 13, "Should be at position 13.")
 	assert("expression" in mutation_1[1], "Should have an expression.")
@@ -76,14 +76,14 @@ func test_can_handle_inline_mutations() -> void:
 
 
 func test_mutations_can_have_errors() -> void:
-	var data = _extract("Nathan: [wave]Hey![/wave] [do incomplete(]This is an error?")
+	var data: DMResolvedLineData = _extract("Nathan: [wave]Hey![/wave] [do incomplete(]This is an error?")
 
 	assert("error" in data.mutations[0][1], "Should have an error.")
 	assert(data.mutations[0][1].error == DMConstants.ERR_UNEXPECTED_END_OF_EXPRESSION, "Should have an error.")
 
 
 func test_can_resolve_inline_conditions() -> void:
-	var data = await _resolve("Nathan: [if false]I won't say this[/if][if true]I will say this[/if].")
+	var data: DMResolvedLineData = await _resolve("Nathan: [if false]I won't say this[/if][if true]I will say this[/if].")
 	assert(data.text == "I will say this.", "Should resolve condition.")
 
 	data = await _resolve("Nathan: What I'm saying is [if true]true[else]false[/if].")
@@ -91,5 +91,5 @@ func test_can_resolve_inline_conditions() -> void:
 
 
 func test_can_handle_escaped_brackets() -> void:
-	var data = await _resolve("Nathan: This[wait=1] is a \\[[color=lime]special[/color]\\] thing")
+	var data: DMResolvedLineData = await _resolve("Nathan: This[wait=1] is a \\[[color=lime]special[/color]\\] thing")
 	assert(data.text == "This is a [[color=lime]special[/color]] thing")

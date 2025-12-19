@@ -2,7 +2,7 @@ extends AbstractTest
 
 
 func test_can_parse_responses() -> void:
-	var output = compile("
+	var output: DMCompilerResult = compile("
 ~ start
 Nathan: Here are some options.
 - Simple
@@ -14,7 +14,7 @@ Nathan: Line after.")
 
 	assert(output.errors.is_empty(), "Should be no errors.")
 
-	var responses = output.lines.values().filter(func(line): return line.type == DMConstants.TYPE_RESPONSE)
+	var responses: Array = output.lines.values().filter(func(line: Dictionary) -> bool: return line.type == DMConstants.TYPE_RESPONSE)
 
 	assert(responses.size() == 4, "Should have 4 responses.")
 	assert(responses[0].text == "Simple", "Should match text")
@@ -58,7 +58,7 @@ Nathan: Responses.
 
 
 func test_can_parse_responses_with_static_ids() -> void:
-	var output = compile("
+	var output: DMCompilerResult = compile("
 ~ start
 Nathan: Here are some responses. [ID:HERE]
 - First [ID:FIRST]
@@ -70,7 +70,7 @@ Nathan: Here are some responses. [ID:HERE]
 
 
 func test_can_have_responses_without_dialogue() -> void:
-	var output = compile("
+	var output: DMCompilerResult = compile("
 Nathan: Hello.
 do StateForTests.noop()
 - First
@@ -80,7 +80,7 @@ do StateForTests.noop()
 	assert(output.errors.size() == 0, "Should have no errors.")
 	assert(output.lines["2"].next_id == "3", "Mutation should point to first response.")
 
-	var resource = create_resource("
+	var resource: DialogueResource = create_resource("
 ~ start
 Nathan: Hello.
 do StateForTests.noop()
@@ -88,7 +88,7 @@ do StateForTests.noop()
 - Second
 - Third")
 
-	var line = await resource.get_next_dialogue_line("start")
+	var line: DialogueLine = await resource.get_next_dialogue_line("start")
 	assert(line.text == "Hello.", "Should start with hello.")
 	line = await resource.get_next_dialogue_line(line.next_id)
 	assert(line.type == DMConstants.TYPE_RESPONSE, "Should point to the response")
@@ -96,7 +96,7 @@ do StateForTests.noop()
 
 
 func test_can_run_responses() -> void:
-	var resource = create_resource("
+	var resource: DialogueResource = create_resource("
 ~ start
 Nathan: Here are some options.
 - Empty one
@@ -107,13 +107,13 @@ Nathan: Here are some options.
 - Fail condition [if false]
 Nathan: Line after.")
 
-	var line = await resource.get_next_dialogue_line("start")
+	var line: DialogueLine = await resource.get_next_dialogue_line("start")
 	assert(line.responses.size() == 5, "Failed conditions are included.")
 
 	assert(line.responses[3].is_allowed == true, "Passed condition is allowed.")
 	assert(line.responses[4].is_allowed == false, "Failed condition is not allowed.")
 
-	var responses = line.responses.duplicate()
+	var responses: Array = line.responses.duplicate()
 
 	line = await resource.get_next_dialogue_line(responses[0].next_id)
 	assert(line.text == "Line after.", "First response points to the line after.")
