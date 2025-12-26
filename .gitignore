@@ -17,3 +17,6 @@ export_presets.cfg
 
 # Compiled Gettext message catalogue
 *.mo
+
+# Temp
+temp
