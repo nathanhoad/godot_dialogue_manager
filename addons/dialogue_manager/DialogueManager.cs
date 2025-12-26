@@ -132,7 +132,6 @@ namespace DialogueManagerRuntime
         public static async Task<DialogueLine?> GetNextDialogueLine(Resource dialogueResource, string key = "", Array<Variant>? extraGameStates = null, MutationBehaviour mutation_behaviour = MutationBehaviour.Wait)
         {
             var instance = (Node)Instance.Call("_bridge_get_new_instance");
-            Prepare(instance);
             instance.Call("_bridge_get_next_dialogue_line", dialogueResource, key, extraGameStates ?? new Array<Variant>(), (int)mutation_behaviour);
             var result = await instance.ToSignal(instance, "bridge_get_next_dialogue_line_completed");
             instance.QueueFree();
@@ -145,7 +144,6 @@ namespace DialogueManagerRuntime
         public static async Task<DialogueLine?> GetLine(Resource dialogueResource, string key = "", Array<Variant>? extraGameStates = null)
         {
             var instance = (Node)Instance.Call("_bridge_get_new_instance");
-            Prepare(instance);
             instance.Call("_bridge_get_line", dialogueResource, key, extraGameStates ?? new Array<Variant>());
             var result = await instance.ToSignal(instance, "bridge_get_line_completed");
             instance.QueueFree();
