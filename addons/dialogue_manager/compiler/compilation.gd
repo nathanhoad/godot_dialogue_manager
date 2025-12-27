@@ -87,7 +87,7 @@ func find_imported_titles(text: String, path: String) -> void:
 	var raw_lines: PackedStringArray = text.split("\n")
 
 	for id in range(0, raw_lines.size()):
-		var line = raw_lines[id]
+		var line: String = raw_lines[id]
 
 		if not is_import_line(line): continue
 
@@ -101,7 +101,7 @@ func find_imported_titles(text: String, path: String) -> void:
 			add_error(id, 0, DMConstants.ERR_DUPLICATE_IMPORT_NAME)
 		else:
 			# Get titles from other file and map them to the known list of titles.
-			var imported_resource: DialogueResource = load(import_data.path)
+			var imported_resource: DialogueResource = ResourceLoader.load(import_data.path, "", ResourceLoader.CACHE_MODE_REPLACE)
 
 			# Guard against failed loads -- namely during reimport cascade.
 			if imported_resource == null:
