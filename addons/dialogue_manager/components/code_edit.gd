@@ -424,12 +424,20 @@ func check_active_title() -> void:
 
 
 # Move the caret line to match a given title
-func go_to_title(title: String) -> void:
+func go_to_title(title: String, create_if_none: bool = false) -> void:
+	var found_title: bool = false
+
 	var lines = text.split("\n")
 	for i in range(0, lines.size()):
 		if lines[i].strip_edges() == "~ " + title:
+			found_title = true
 			set_caret_line(i)
 			center_viewport_to_caret()
+
+	if create_if_none and not found_title:
+		text += "\n\n\n~ %s\n\n=> END" % [title]
+		set_caret_line(text.split("\n").size() - 2)
+		center_viewport_to_caret()
 
 
 func get_character_names(beginning_with: String) -> PackedStringArray:
