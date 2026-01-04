@@ -478,7 +478,13 @@ func apply_theme() -> void:
 		import_dialog.min_size = Vector2(600, 500) * scale
 
 
-### Helpers
+#region Helpers
+
+
+# Move the cursor to a given title in the dialogue editor
+func go_to_title(title: String, create_if_none: bool = false) -> void:
+	code_edit.go_to_title(title, create_if_none)
+	code_edit.grab_focus()
 
 
 # Refresh the open menu with the latest files
@@ -596,7 +602,9 @@ func run_test_scene(from_key: String) -> void:
 	EditorInterface.play_custom_scene(test_scene_path)
 
 
-### Signals
+#endregion
+
+#region Signals
 
 
 func _on_files_moved(old_file: String, new_file: String) -> void:
@@ -799,8 +807,7 @@ func _on_code_edit_error_clicked(line_number: int) -> void:
 
 
 func _on_title_list_title_selected(title: String) -> void:
-	code_edit.go_to_title(title)
-	code_edit.grab_focus()
+	go_to_title(title)
 
 
 func _on_parse_timer_timeout() -> void:
@@ -954,3 +961,6 @@ func _on_banner_quick_open_pressed() -> void:
 
 func _on_banner_examples_pressed() -> void:
 	OS.shell_open("https://itch.io/c/5226650/godot-dialogue-manager-example-projects")
+
+
+#endregion

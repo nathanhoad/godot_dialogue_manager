@@ -167,6 +167,13 @@ func _build() -> bool:
 	return true
 
 
+## Open a [Dialogue Resource] and jump to a given title.
+func open_file_at_title(resource_or_path: Variant, title: String, create_if_none: bool = false) -> void:
+	var resource: DialogueResource = resource_or_path if resource_or_path is DialogueResource else load(resource_or_path)
+	EditorInterface.edit_resource(resource)
+	main_view.go_to_title(title, create_if_none)
+
+
 func show_find_in_dialogue() -> void:
 	if not is_instance_valid(find_in_dialogue_view):
 		find_in_dialogue_view = FindInDialogueView.instantiate()
