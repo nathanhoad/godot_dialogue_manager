@@ -171,7 +171,7 @@ static func export_translations_to_csv(to_path: String, text: String, dialogue_p
 		if character_column > -1:
 			line_to_save[character_column] = "(response)" if line.type == DMConstants.TYPE_RESPONSE else line.character
 		if notes_column > -1:
-			line_to_save[notes_column] = line.notes
+			line_to_save[notes_column] = line.get("notes", "")
 
 		lines_to_save.append(line_to_save)
 
