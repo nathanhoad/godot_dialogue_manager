@@ -308,7 +308,7 @@ func get_line(resource: DialogueResource, key: String, extra_game_states: Array)
 		var next_line: Dictionary = resource.lines.get(line.next_id)
 
 		# If the next line is an end and we have an ID trail then see if it points to responses
-		if next_line.next_id == DMConstants.ID_END and stack.front() != null:
+		if next_line.next_id == DMConstants.ID_END and stack.size() > 0:
 			var return_to_resource = resource
 			var return_to_id: String = stack.front()
 			if "@" in return_to_id:
