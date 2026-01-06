@@ -301,7 +301,7 @@ namespace DialogueManagerRuntime
 
         Variant ConvertValueToVariant(object value)
         {
-            if (value == null) return false;
+            if (value == null) return default;
 
             Type rawType = value.GetType();
             if (rawType.IsEnum)
@@ -313,11 +313,20 @@ namespace DialogueManagerRuntime
             return value switch
             {
                 Variant v => v,
+                bool v => Variant.From(v),
+                byte v => Variant.From((long)v),
+                sbyte v => Variant.From((long)v),
+                short v => Variant.From((long)v),
+                ushort v => Variant.From((long)v),
                 int v => Variant.From((long)v),
+                uint v => Variant.From((long)v),
+                long v => Variant.From(v),
+                ulong v => Variant.From((long)v),
                 float v => Variant.From((double)v),
-                System.String v => Variant.From((string)v),
+                double v => Variant.From(v),
+                string v => Variant.From(v),
                 GodotObject godotObj => Variant.From(godotObj),
-                _ => Variant.From(value)
+                _ => default
             };
         }
 
@@ -387,8 +396,8 @@ namespace DialogueManagerRuntime
                 await taskResult;
                 try
                 {
-                    Variant value = (Variant)taskResult.GetType().GetProperty("Result").GetValue(taskResult);
-                    EmitSignal(SignalName.Resolved, value);
+                    object value = taskResult.GetType().GetProperty("Result").GetValue(taskResult);
+                    EmitSignal(SignalName.Resolved, ConvertValueToVariant(value));
                 }
                 catch (Exception)
                 {
