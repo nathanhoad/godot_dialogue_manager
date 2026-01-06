@@ -310,6 +310,17 @@ func get_line(resource: DialogueResource, key: String, extra_game_states: Array)
 	if resource.lines.has(line.next_id):
 		var next_line: Dictionary = resource.lines.get(line.next_id)
 
+		# If the next line is an end and we have an ID trail then see if it points to responses
+		if next_line.next_id == DMConstants.ID_END and stack.front() != null:
+			var return_to_resource = resource
+			var return_to_id: String = stack.front()
+			if "@" in return_to_id:
+				var bits: PackedStringArray = return_to_id.split("@")
+				if bits[0] != _get_resource_uid(resource):
+					return_to_resource = load("uid://" + bits[0])
+				return_to_id = bits[1]
+			next_line = return_to_resource.lines.get(return_to_id)
+
 		# If the response line is marked as a title then make sure to emit the passed_title signal.
 		if line.next_id in resource.titles.values():
 			passed_title.emit(resource.titles.find_key(line.next_id))
