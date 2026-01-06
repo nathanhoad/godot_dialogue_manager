@@ -41,6 +41,8 @@ namespace DialogueManagerRuntime
 
         [Signal] public delegate void ResolvedEventHandler(Variant value);
 
+        private static Random random = new Random();
+
         private static GodotObject? instance;
         public static GodotObject Instance
         {
@@ -49,7 +51,11 @@ namespace DialogueManagerRuntime
                 if (instance == null)
                 {
                     instance = Engine.GetSingleton("DialogueManager");
-                    Prepare(instance);
+                    instance.Connect("dialogue_started", Callable.From((Resource dialogueResource) => DialogueStarted?.Invoke(dialogueResource)));
+                    instance.Connect("passed_title", Callable.From((string title) => PassedTitle?.Invoke(title)));
+                    instance.Connect("got_dialogue", Callable.From((RefCounted line) => GotDialogue?.Invoke(new DialogueLine(line))));
+                    instance.Connect("mutated", Callable.From((Dictionary mutation) => Mutated?.Invoke(mutation)));
+                    instance.Connect("dialogue_ended", Callable.From((Resource dialogueResource) => DialogueEnded?.Invoke(dialogueResource)));
                 }
                 return instance;
             }
@@ -89,41 +95,6 @@ namespace DialogueManagerRuntime
             set => Instance.Set("get_current_scene", Callable.From(value));
         }
 
-
-        public static void Prepare(GodotObject instance)
-        {
-            instance.Connect("bridge_dialogue_started", Callable.From((Resource dialogueResource) => DialogueStarted?.Invoke(dialogueResource)));
-            instance.Connect("passed_title", Callable.From((string title) => PassedTitle?.Invoke(title)));
-            instance.Connect("got_dialogue", Callable.From((RefCounted line) => GotDialogue?.Invoke(new DialogueLine(line))));
-            instance.Connect("mutated", Callable.From((Dictionary mutation) => Mutated?.Invoke(mutation)));
-            instance.Connect("dialogue_ended", Callable.From((Resource dialogueResource) => DialogueEnded?.Invoke(dialogueResource)));
-        }
-
-
-        public static async Task<GodotObject> GetSingleton()
-        {
-            if (instance != null) return instance;
-
-            var tree = Engine.GetMainLoop();
-            int x = 0;
-
-            // Try and find the singleton for a few seconds
-            while (!Engine.HasSingleton("DialogueManager") && x < 300)
-            {
-                await tree.ToSignal(tree, SceneTree.SignalName.ProcessFrame);
-                x++;
-            }
-
-            // If it times out something is wrong
-            if (x >= 300)
-            {
-                throw new Exception("The DialogueManager singleton is missing.");
-            }
-
-            instance = Engine.GetSingleton("DialogueManager");
-            return instance;
-        }
-
         public static Resource CreateResourceFromText(string text)
         {
             return (Resource)Instance.Call("create_resource_from_text", text);
@@ -131,26 +102,30 @@ namespace DialogueManagerRuntime
 
         public static async Task<DialogueLine?> GetNextDialogueLine(Resource dialogueResource, string key = "", Array<Variant>? extraGameStates = null, MutationBehaviour mutation_behaviour = MutationBehaviour.Wait)
         {
-            var instance = (Node)Instance.Call("_bridge_get_new_instance");
-            instance.Call("_bridge_get_next_dialogue_line", dialogueResource, key, extraGameStates ?? new Array<Variant>(), (int)mutation_behaviour);
-            var result = await instance.ToSignal(instance, "bridge_get_next_dialogue_line_completed");
-            instance.QueueFree();
-
-            if ((RefCounted)result[0] == null) return null;
-
-            return new DialogueLine((RefCounted)result[0]);
+            int id = random.Next();
+            Instance.Call("_bridge_get_next_dialogue_line", id, dialogueResource, key, extraGameStates ?? new Array<Variant>(), (int)mutation_behaviour);
+            while (true)
+            {
+                var result = await Instance.ToSignal(Instance, "bridge_get_next_dialogue_line_completed");
+                if ((int)result[0] == id)
+                {
+                    return ((RefCounted)result[1] == null) ? null : new DialogueLine((RefCounted)result[1]);
+                }
+            }
         }
 
         public static async Task<DialogueLine?> GetLine(Resource dialogueResource, string key = "", Array<Variant>? extraGameStates = null)
         {
-            var instance = (Node)Instance.Call("_bridge_get_new_instance");
-            instance.Call("_bridge_get_line", dialogueResource, key, extraGameStates ?? new Array<Variant>());
-            var result = await instance.ToSignal(instance, "bridge_get_line_completed");
-            instance.QueueFree();
-
-            if ((RefCounted)result[0] == null) return null;
-
-            return new DialogueLine((RefCounted)result[0]);
+            int id = random.Next();
+            Instance.Call("_bridge_get_line", id, dialogueResource, key, extraGameStates ?? new Array<Variant>());
+            while (true)
+            {
+                var result = await Instance.ToSignal(Instance, "bridge_get_line_completed");
+                if ((int)result[0] == id)
+                {
+                    return ((RefCounted)result[0] == null) ? null : new DialogueLine((RefCounted)result[0]);
+                }
+            }
         }
 
 
@@ -196,8 +171,16 @@ namespace DialogueManagerRuntime
 
         public static async void Mutate(Dictionary mutation, Array<Variant>? extraGameStates = null, bool isInlineMutation = false)
         {
-            Instance.Call("_bridge_mutate", mutation, extraGameStates ?? new Array<Variant>(), isInlineMutation);
-            await Instance.ToSignal(Instance, "bridge_mutated");
+            int id = random.Next();
+            Instance.Call("_bridge_mutate", id, mutation, extraGameStates ?? new Array<Variant>(), isInlineMutation);
+            while (true)
+            {
+                var result = await Instance.ToSignal(Instance, "bridge_mutated");
+                if ((int)result[0] == id)
+                {
+                    return;
+                }
+            }
         }
 
 

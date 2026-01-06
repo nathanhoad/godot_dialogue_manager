@@ -29,16 +29,13 @@ signal mutated(mutation: Dictionary)
 signal dialogue_ended(resource: DialogueResource)
 
 ## Used internally.
-signal bridge_get_next_dialogue_line_completed(line: DialogueLine)
+signal bridge_get_next_dialogue_line_completed(call_index: int, line: DialogueLine)
 
 ## Used internally.
-signal bridge_get_line_completed(line: DialogueLine)
+signal bridge_get_line_completed(call_index: int, line: DialogueLine)
 
 ## Used internally
-signal bridge_dialogue_started(resource: DialogueResource)
-
-## Used internally
-signal bridge_mutated()
+signal bridge_mutated(call_index: int)
 
 
 ## The list of globals that dialogue can query
@@ -526,7 +523,6 @@ func _start_balloon(balloon: Node, resource: DialogueResource, title: String, ex
 		assert(false, DMConstants.translate(&"runtime.dialogue_balloon_missing_start_method"))
 
 	dialogue_started.emit(resource)
-	bridge_dialogue_started.emit(resource)
 
 
 # Get the path to the example balloon
@@ -547,43 +543,26 @@ func _get_dotnet_dialogue_manager() -> RefCounted:
 	return _dotnet_dialogue_manager
 
 
-func _bridge_get_new_instance() -> Node:
-	# For some reason duplicating the node with its signals doesn't work so we have to copy them over manually
-	var instance = new()
-	for s: Dictionary in dialogue_started.get_connections():
-		instance.dialogue_started.connect(s.callable)
-	for s: Dictionary in passed_title.get_connections():
-		instance.passed_title.connect(s.callable)
-	for s: Dictionary in got_dialogue.get_connections():
-		instance.got_dialogue.connect(s.callable)
-	for s: Dictionary in mutated.get_connections():
-		instance.mutated.connect(s.callable)
-	for s: Dictionary in dialogue_ended.get_connections():
-		instance.dialogue_ended.connect(s.callable)
-	instance.get_current_scene = get_current_scene
-	return instance
-
-
-func _bridge_get_next_dialogue_line(resource: DialogueResource, key: String, extra_game_states: Array = [], mutation_behaviour: int = DMConstants.MutationBehaviour.Wait) -> void:
+func _bridge_get_next_dialogue_line(call_id: int, resource: DialogueResource, key: String, extra_game_states: Array = [], mutation_behaviour: int = DMConstants.MutationBehaviour.Wait) -> void:
 	# dotnet needs at least one await tick of the signal gets called too quickly
 	await Engine.get_main_loop().process_frame
 	var line = await _get_next_dialogue_line(resource, key, extra_game_states, mutation_behaviour)
-	bridge_get_next_dialogue_line_completed.emit(line)
+	bridge_get_next_dialogue_line_completed.emit(call_id, line)
 	if line == null:
 		# End the conversation
 		dialogue_ended.emit(resource)
 
 
-func _bridge_get_line(resource: DialogueResource, key: String, extra_game_states: Array = []) -> void:
+func _bridge_get_line(call_id: int, resource: DialogueResource, key: String, extra_game_states: Array = []) -> void:
 	# dotnet needs at least one await tick of the signal gets called too quickly
 	await Engine.get_main_loop().process_frame
 	var line = await get_line(resource, key, extra_game_states)
-	bridge_get_line_completed.emit(line)
+	bridge_get_line_completed.emit(call_id, line)
 
 
-func _bridge_mutate(mutation: Dictionary, extra_game_states: Array, is_inline_mutation: bool = false) -> void:
+func _bridge_mutate(call_id: int, mutation: Dictionary, extra_game_states: Array, is_inline_mutation: bool = false) -> void:
 	await _mutate(mutation, extra_game_states, is_inline_mutation)
-	bridge_mutated.emit()
+	bridge_mutated.emit(call_id)
 
 
 func _bridge_get_error_message(error: int) -> String:
