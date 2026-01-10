@@ -72,6 +72,7 @@ func _ready() -> void:
 func focus_line_edit() -> void:
 	input.grab_focus()
 	input.select_all()
+	search()
 
 
 func apply_theme() -> void:
@@ -168,7 +169,9 @@ func _on_input_gui_input(event: InputEvent) -> void:
 	if event is InputEventKey and event.is_pressed():
 		match event.as_text():
 			"Enter":
-				search(input.text)
+				if results.size() == 0:
+					search(input.text)
+				self.result_index = wrapi(result_index + 1, 0, results.size())
 			"Escape":
 				emit_signal("close_requested")
 
