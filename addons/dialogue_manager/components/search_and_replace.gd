@@ -72,6 +72,7 @@ func _ready() -> void:
 func focus_line_edit() -> void:
 	input.grab_focus()
 	input.select_all()
+	search()
 
 
 func apply_theme() -> void:
