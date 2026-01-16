@@ -308,7 +308,9 @@ func get_line(resource: DialogueResource, key: String, extra_game_states: Array)
 		var next_line: Dictionary = resource.lines.get(line.next_id)
 
 		# If the next line is an end and we have an ID trail then see if it points to responses
+		var peeked_at_stack: bool = false
 		if next_line.next_id == DMConstants.ID_END and stack.size() > 0:
+			peeked_at_stack = true
 			var return_to_resource = resource
 			var return_to_id: String = stack.front()
 			if "@" in return_to_id:
@@ -323,7 +325,7 @@ func get_line(resource: DialogueResource, key: String, extra_game_states: Array)
 			passed_title.emit(resource.titles.find_key(line.next_id))
 
 		# If the responses come from a snippet then we need to come back here afterwards.
-		if next_line.type == DMConstants.TYPE_GOTO and next_line.is_snippet and not id_trail.begins_with("|" + _get_id_with_resource(resource, next_line.next_id_after)):
+		if not peeked_at_stack and next_line.type == DMConstants.TYPE_GOTO and next_line.is_snippet and not id_trail.begins_with("|" + _get_id_with_resource(resource, next_line.next_id_after)):
 			id_trail = "|" + _get_id_with_resource(resource, next_line.next_id_after) + id_trail
 
 		# If the next line is a title then check where it points to see if that is a set of responses.
@@ -1224,7 +1226,7 @@ func _resolve(tokens: Array, extra_game_states: Array):
 					if Builtins.is_supported(caller.value):
 						caller.value = Builtins.resolve_property(caller.value, property)
 					else:
-						caller.value = caller.value.get(property)
+						caller.value = _resolve_thing_property(caller.value, property)
 				tokens.remove_at(i)
 				tokens.remove_at(i - 1)
 				i -= 2
@@ -1571,6 +1573,17 @@ func _resolve_thing_method(thing, method: String, args: Array):
 	var dotnet_dialogue_manager = _get_dotnet_dialogue_manager()
 	dotnet_dialogue_manager.ResolveThingMethod(thing, method, args)
 	return await dotnet_dialogue_manager.Resolved
+
+
+func _resolve_thing_property(thing: Object, property: String) -> Variant:
+	if thing == null:
+		return false
+
+	if thing.get_script() and thing.get_script().resource_path.ends_with(".cs"):
+		# If we get this far then the property might be a C# constant.
+		return _get_dotnet_dialogue_manager().ResolveThingConstant(thing, property)
+
+	return thing.get(property)
 
 
 func _get_resource_uid(resource: DialogueResource) -> String:
