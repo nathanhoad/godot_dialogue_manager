@@ -308,7 +308,9 @@ func get_line(resource: DialogueResource, key: String, extra_game_states: Array)
 		var next_line: Dictionary = resource.lines.get(line.next_id)
 
 		# If the next line is an end and we have an ID trail then see if it points to responses
+		var peeked_at_stack: bool = false
 		if next_line.next_id == DMConstants.ID_END and stack.size() > 0:
+			peeked_at_stack = true
 			var return_to_resource = resource
 			var return_to_id: String = stack.front()
 			if "@" in return_to_id:
@@ -323,7 +325,7 @@ func get_line(resource: DialogueResource, key: String, extra_game_states: Array)
 			passed_title.emit(resource.titles.find_key(line.next_id))
 
 		# If the responses come from a snippet then we need to come back here afterwards.
-		if next_line.type == DMConstants.TYPE_GOTO and next_line.is_snippet and not id_trail.begins_with("|" + _get_id_with_resource(resource, next_line.next_id_after)):
+		if not peeked_at_stack and next_line.type == DMConstants.TYPE_GOTO and next_line.is_snippet and not id_trail.begins_with("|" + _get_id_with_resource(resource, next_line.next_id_after)):
 			id_trail = "|" + _get_id_with_resource(resource, next_line.next_id_after) + id_trail
 
 		# If the next line is a title then check where it points to see if that is a set of responses.
