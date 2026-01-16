@@ -12,7 +12,7 @@ class_name DialogueManagerExampleBalloon extends CanvasLayer
 @export var auto_start: bool = false
 
 ## If all other input is blocked as long as dialogue is shown.
-@export var is_blocking_other_input: bool = true
+@export var will_block_other_input: bool = true
 
 ## The action to use for advancing the dialogue
 @export var next_action: StringName = &"ui_accept"
