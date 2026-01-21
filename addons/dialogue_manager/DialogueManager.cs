@@ -184,7 +184,7 @@ namespace DialogueManagerRuntime
         }
 
 
-        public static Array<Dictionary> GetMembersForAutoload(Script script)
+        public static Array<Dictionary> GetMembersForScript(Script script)
         {
             Array<Dictionary> members = new Array<Dictionary>();
 
