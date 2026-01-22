@@ -304,7 +304,10 @@ func _add_mutation_completions(current_line: String, cursor: Vector2) -> void:
 		auto_completes = _get_member_completions(segments)
 
 	# Sort and add completions
-	auto_completes.sort_custom(func(a, b): return a.text < b.text)
+	var prompt: String = segments[-1].to_lower()
+	auto_completes.sort_custom(func(a, b):
+		return a.text.to_lower().similarity(prompt) > b.text.to_lower().similarity(prompt)
+	)
 	for auto_complete: Dictionary in auto_completes:
 		var icon: Texture2D = _get_icon_for_type(auto_complete.type)
 		var display_text: String = auto_complete.text
@@ -391,18 +394,14 @@ func set_cursor(from_cursor: Vector2) -> void:
 	set_caret_column(from_cursor.x, false)
 
 
-# Check if a prompt fuzzy-matches the start of a string.
-func _matches_prompt(prompt: String, matcher: String) -> bool:
-	if prompt.length() > matcher.length(): return false
-
-	# Fuzzy match
-	matcher = matcher.to_lower()
-	var next_index: int = 0
-	for char: String in prompt.to_lower():
-		next_index = matcher.find(char, next_index)
-		if next_index == -1:
-			return false
-	return true
+# Check if a prompt fuzzy-matches a candidate.
+func _matches_prompt(prompt: String, candidate: String) -> bool:
+	if prompt.to_lower().similarity(candidate.to_lower()) > 0.1:
+		return true
+	elif candidate.to_lower().contains(prompt.to_lower()):
+		return true
+	else:
+		return false
 
 
 #endregion
