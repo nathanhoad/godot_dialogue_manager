@@ -22,7 +22,7 @@ var theme_overrides: Dictionary:
 
 		# General UI
 		add_theme_color_override("font_color", theme_overrides.text_color)
-		add_theme_color_override("background_color", theme_overrides.background_color)
+		(get_theme_stylebox("normal") as StyleBoxFlat).bg_color = theme_overrides.background_color
 		add_theme_color_override("current_line_color", theme_overrides.current_line_color)
 		add_theme_font_override("font", get_theme_font("source", "EditorFonts"))
 		add_theme_font_size_override("font_size", theme_overrides.font_size * theme_overrides.scale)
@@ -294,7 +294,12 @@ func _add_mutation_completions(current_line: String, cursor: Vector2) -> void:
 	if segments.size() == 1:
 		# Suggest autoloads and state shortcuts
 		auto_completes = _get_autoload_completions(segments[0])
-	elif segments[0] in _autoloads.keys() and not is_using_line:
+	elif not is_using_line:
+		if not segments[0] in _autoloads.keys():
+			# See if the first segment is a property of a shortcut
+			var shortcut: String = _find_shortcut_with_member(segments[0])
+			if not shortcut.is_empty():
+				segments.insert(0, shortcut)
 		# Suggest members of an autoload or nested property
 		auto_completes = _get_member_completions(segments)
 
@@ -309,6 +314,15 @@ func _add_mutation_completions(current_line: String, cursor: Vector2) -> void:
 		add_code_completion_option(CodeEdit.KIND_CLASS, display_text, insert, theme_overrides.text_color, icon)
 
 
+# Find the shortcut that a member name belongs to.
+func _find_shortcut_with_member(member_name: String) -> String:
+	for autoload: String in _get_state_shortcuts():
+		for member: Dictionary in _get_members_for_base_script(autoload):
+			if member.name == member_name:
+				return autoload
+	return ""
+
+
 # Get completions for autoload names and state shortcut members.
 func _get_autoload_completions(prompt: String) -> Array[Dictionary]:
 	var completions: Array[Dictionary] = []
@@ -316,7 +330,7 @@ func _get_autoload_completions(prompt: String) -> Array[Dictionary]:
 		if _matches_prompt(prompt, autoload):
 			completions.append({ prompt = prompt, text = autoload, type = "script" })
 	for autoload: String in _get_state_shortcuts():
-		for member: Dictionary in _get_members_for_autoload(autoload):
+		for member: Dictionary in _get_members_for_base_script(autoload):
 			if _matches_prompt(prompt, member.name):
 				completions.append({ prompt = prompt, text = member.name, type = member.type })
 	return completions
@@ -330,7 +344,7 @@ func _get_member_completions(segments: PackedStringArray) -> Array[Dictionary]:
 
 	if segments.size() == 2:
 		# Direct autoload property access (e.g., "SomeGlobal.property")
-		members = _get_members_for_autoload(segments[0])
+		members = _get_members_for_base_script(segments[0])
 	else:
 		# Nested property access (e.g., "SomeGlobal.a_class_property.nested")
 		var chain_segments: PackedStringArray = segments.slice(0, segments.size() - 1)
@@ -414,21 +428,29 @@ func _get_state_shortcuts() -> PackedStringArray:
 
 
 # Get all members (methods, properties, signals, constants) for an autoload.
-func _get_members_for_autoload(autoload_name: String) -> Array[Dictionary]:
+func _get_members_for_base_script(base_script_name: String) -> Array[Dictionary]:
 	# Debounce method list lookups
-	if _autoload_member_cache.has(autoload_name) and _autoload_member_cache.get(autoload_name).get("at") > Time.get_ticks_msec() - 10000:
-		return _autoload_member_cache.get(autoload_name).get("members")
+	if _autoload_member_cache.has(base_script_name) \
+	and _autoload_member_cache.get(base_script_name).get("at") > Time.get_ticks_msec() - 10000:
+		return _autoload_member_cache.get(base_script_name).get("members")
 
-	if not _autoloads.has(autoload_name) and not autoload_name.begins_with("res://") and not autoload_name.begins_with("uid://"): return []
+	if not _autoloads.has(base_script_name) \
+	and not base_script_name.begins_with("res://") \
+	and not base_script_name.begins_with("uid://"):
+		return []
 
-	var autoload: Variant = load(_autoloads.get(autoload_name, autoload_name))
+	var autoload: Variant = load(_autoloads.get(base_script_name, base_script_name))
+	if autoload is PackedScene:
+		var node: Node = autoload.instantiate()
+		autoload = node.get_script()
+		node.free()
 	var script: Script = autoload if autoload is Script else autoload.get_script()
 
 	if not is_instance_valid(script): return []
 
 	var members: Array[Dictionary] = _get_members_for_script(script)
 
-	_autoload_member_cache[autoload_name] = {
+	_autoload_member_cache[base_script_name] = {
 		at = Time.get_ticks_msec(),
 		members = members
 	}
@@ -592,19 +614,31 @@ func _resolve_mutation_symbol_at_position(line_text: String, column: int) -> Dic
 		full_chain = full_chain.substr(0, full_chain.find("("))
 
 	var segments: PackedStringArray = full_chain.split(".")
-	if segments.size() < 2:
-		return {}
 
 	# Check if it starts with an autoload
 	if not segments[0] in _autoloads.keys():
-		return {}
+		var shortcut: String = _find_shortcut_with_member(segments[0])
+		if shortcut.is_empty():
+			return {}
+		else:
+			segments.insert(0, shortcut)
 
 	# The symbol we clicked on is the last segment
 	var member_name: String = segments[-1]
 
 	# Resolve the script that contains this member
-	var object_segments: PackedStringArray = segments.slice(0, segments.size() - 1)
-	var target_script: Script = _resolve_script_for_property_chain(object_segments)
+	var target_script: Script = null
+	if segments.size() == 1 and segments[0] in _autoloads.keys():
+		member_name = "class_name"
+		var target: Variant = load(_autoloads.get(segments[0]))
+		if target is PackedScene:
+			var node: Node = target.instantiate()
+			target = node.get_script()
+			node.free()
+		target_script = target if target is Script else target.get_script()
+	else:
+		var object_segments: PackedStringArray = segments.slice(0, segments.size() - 1)
+		target_script = _resolve_script_for_property_chain(object_segments)
 
 	if target_script == null:
 		return {}
@@ -755,12 +789,22 @@ func _is_in_mutation_context(line: String, cursor_x: int) -> bool:
 func _resolve_script_for_property_chain(segments: PackedStringArray) -> Script:
 	if segments.size() == 0: return null
 
-	# Start with the autoload
-	if not _autoloads.has(segments[0]): return null
+	var autoload: Variant = null
 
-	var autoload: Variant = load(_autoloads.get(segments[0]))
-	if not autoload is Script:
+	if segments[0].begins_with("uid://") or segments[0].begins_with("res://"):
+		autoload = load(segments[0])
+	elif _autoloads.has(segments[0]):
+		autoload = load(_autoloads.get(segments[0]))
+	else:
+		return null
+
+	if autoload is PackedScene:
+		var node: Node = autoload.instantiate()
+		autoload = node.get_script()
+		node.free()
+	elif not autoload is Script:
 		autoload = autoload.get_script()
+
 	var current_script: Script = autoload
 
 	if not is_instance_valid(current_script): return null
@@ -880,7 +924,7 @@ func mark_line_as_error(line_number: int, is_error: bool) -> void:
 		set_line_background_color(line_number, theme_overrides.error_line_color)
 		set_line_gutter_icon(line_number, 0, get_theme_icon("StatusError", "EditorIcons"))
 	else:
-		set_line_background_color(line_number, Color.TRANSPARENT)
+		set_line_background_color(line_number, theme_overrides.background_color)
 		set_line_gutter_icon(line_number, 0, null)
 
 
@@ -1066,10 +1110,14 @@ func _on_code_edit_symbol_validate(symbol: String) -> void:
 	if not symbol_info.is_empty() and symbol_info.get("symbol") == symbol:
 		var script: Script = symbol_info.get("script")
 		var member_name: String = symbol_info.get("member_name")
-		var line_number: int = _find_definition_in_script(script, member_name)
-		if line_number > 0:
+		if member_name == "class_name":
 			set_symbol_lookup_word_as_valid(true)
 			return
+		else:
+			var line_number: int = _find_definition_in_script(script, member_name)
+			if line_number > 0:
+				set_symbol_lookup_word_as_valid(true)
+				return
 
 	set_symbol_lookup_word_as_valid(false)
 
@@ -1091,12 +1139,16 @@ func _on_code_edit_symbol_lookup(symbol: String, line: int, column: int) -> void
 	if not symbol_info.is_empty() and symbol_info.get("symbol") == symbol:
 		var script: Script = symbol_info.get("script")
 		var member_name: String = symbol_info.get("member_name")
-		var line_number: int = _find_definition_in_script(script, member_name)
-		if line_number > 0:
-			# Open the script in the editor
-			EditorInterface.edit_script(script, line_number, 0, true)
+		if member_name == "class_name":
+			EditorInterface.edit_script(script, 1, 0, true)
 			EditorInterface.set_main_screen_editor.call_deferred("Script")
-			return
+		else:
+			var line_number: int = _find_definition_in_script(script, member_name)
+			if line_number > 0:
+				# Open the script in the editor
+				EditorInterface.edit_script(script, line_number, 0, true)
+				EditorInterface.set_main_screen_editor.call_deferred("Script")
+				return
 
 
 func _on_code_edit_text_changed() -> void:
