@@ -379,7 +379,7 @@ func apply_theme() -> void:
 		code_edit.theme_overrides = {
 			scale = scale,
 
-			background_color = Color(editor_settings.get_setting("interface/theme/base_color").blend(editor_settings.get_setting("text_editor/theme/highlighting/background_color")), 1),
+			background_color = editor_settings.get_setting("text_editor/theme/highlighting/background_color"),
 			current_line_color = editor_settings.get_setting("text_editor/theme/highlighting/current_line_color"),
 			error_line_color = editor_settings.get_setting("text_editor/theme/highlighting/mark_color"),
 

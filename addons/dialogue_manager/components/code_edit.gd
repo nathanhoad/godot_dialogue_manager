@@ -22,7 +22,7 @@ var theme_overrides: Dictionary:
 
 		# General UI
 		add_theme_color_override("font_color", theme_overrides.text_color)
-		(get_theme_stylebox("normal") as StyleBoxFlat).bg_color = theme_overrides.background_color
+		add_theme_color_override("background_color", theme_overrides.background_color)
 		add_theme_color_override("current_line_color", theme_overrides.current_line_color)
 		add_theme_font_override("font", get_theme_font("source", "EditorFonts"))
 		add_theme_font_size_override("font_size", theme_overrides.font_size * theme_overrides.scale)
@@ -923,7 +923,7 @@ func mark_line_as_error(line_number: int, is_error: bool) -> void:
 		set_line_background_color(line_number, theme_overrides.error_line_color)
 		set_line_gutter_icon(line_number, 0, get_theme_icon("StatusError", "EditorIcons"))
 	else:
-		set_line_background_color(line_number, theme_overrides.background_color)
+		set_line_background_color(line_number, Color(0, 0, 0, 0))
 		set_line_gutter_icon(line_number, 0, null)
 
 
