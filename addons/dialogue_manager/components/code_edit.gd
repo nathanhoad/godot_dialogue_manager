@@ -253,6 +253,11 @@ func _add_jump_completions(current_line: String, cursor: Vector2) -> void:
 
 # Add completions for character names at the start of dialogue lines.
 func _add_character_name_completions(current_line: String) -> void:
+	# Ignore names on mutation lines
+	for prefix: String in MUTATION_PREFIXES:
+		if current_line.strip_edges().begins_with(prefix):
+			return
+
 	var name_so_far: String = WEIGHTED_RANDOM_PREFIX.sub(current_line.strip_edges(), "")
 	if name_so_far == "" or name_so_far[0].to_upper() != name_so_far[0]:
 		return
@@ -396,7 +401,9 @@ func set_cursor(from_cursor: Vector2) -> void:
 
 # Check if a prompt fuzzy-matches a candidate.
 func _matches_prompt(prompt: String, candidate: String) -> bool:
-	if prompt.to_lower().similarity(candidate.to_lower()) > 0.1:
+	if prompt.is_empty():
+		return true
+	elif prompt.to_lower().similarity(candidate.to_lower()) > 0.1:
 		return true
 	elif candidate.to_lower().contains(prompt.to_lower()):
 		return true
@@ -639,7 +646,7 @@ func _resolve_mutation_symbol_at_position(line_text: String, column: int) -> Dic
 		var object_segments: PackedStringArray = segments.slice(0, segments.size() - 1)
 		target_script = _resolve_script_for_property_chain(object_segments)
 
-	if target_script == null:
+	if target_script == null or target_script.resource_path.ends_with(".cs"):
 		return {}
 
 	return {
@@ -700,21 +707,24 @@ func _update_code_hint() -> void:
 
 	# Parse the method chain into segments
 	var segments: PackedStringArray = method_chain.split(".")
-	if segments.size() < 2:
+	if segments.is_empty():
 		set_code_hint("")
 		return
 
 	# The last segment is the method name
 	var method_name: String = segments[-1]
 
+	# Check if it starts with an autoload
+	if not segments[0] in _autoloads.keys():
+		var shortcut: String = _find_shortcut_with_member(segments[0])
+		if shortcut.is_empty():
+			set_code_hint("")
+			return
+		else:
+			segments.insert(0, shortcut)
+
 	# Resolve the script for the object the method is called on
 	var object_segments: PackedStringArray = segments.slice(0, segments.size() - 1)
-
-	# Check if it starts with an autoload
-	if not object_segments[0] in _autoloads.keys():
-		set_code_hint("")
-		return
-
 	var target_script: Script = _resolve_script_for_property_chain(object_segments)
 
 	if target_script == null:
