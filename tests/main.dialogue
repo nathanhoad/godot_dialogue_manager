@@ -1,0 +1,8 @@
+import "res://tests/snippets.dialogue" as snippets
+
+
+~ start
+Nathan: Testing a snippet.
+=>< snippets/snippet
+Nathan: ...and back again.
+=> END

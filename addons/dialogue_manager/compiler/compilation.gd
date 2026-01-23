@@ -109,7 +109,7 @@ func find_imported_titles(text: String, path: String) -> void:
 				add_error(id, 0, DMConstants.ERR_ERRORS_IN_IMPORTED_FILE)
 				continue
 
-			var uid: String = ResourceUID.path_to_uid(import_data.path).replace("uid://", "")
+			var uid: String = ResourceUID.id_to_text(ResourceLoader.get_resource_uid(import_data.path)).replace("uid://", "")
 			for title_key: String in imported_resource.titles:
 				# Ignore any titles that are already a reference
 				if "/" in title_key: continue
