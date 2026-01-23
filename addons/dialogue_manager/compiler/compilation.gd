@@ -736,7 +736,7 @@ func parse_character_and_dialogue(tree_line: DMTreeLine, line: DMCompiledLine, s
 	if ": " in text:
 		# If a character was given then split it out.
 		var bits = Array(text.strip_edges().split(": "))
-		line.character = bits.pop_front().strip_edges()
+		line.character = bits.pop_front().strip_edges().replace("!ESCAPED_COLON!", ":")
 		if not line.character in character_names:
 			character_names.append(line["character"])
 		# Character names can have expressions in them.
