@@ -190,7 +190,7 @@ func build_line_tree(raw_lines: PackedStringArray) -> DMTreeLine:
 			if title == "":
 				add_error(i, 2, DMConstants.ERR_EMPTY_TITLE)
 			elif titles.has(title):
-				add_error(i, 2, DMConstants.ERR_DUPLICATE_TITLE)
+				add_error(i + 1, 2, DMConstants.ERR_DUPLICATE_TITLE)
 			else:
 				titles[title] = tree_line.id
 				if first_title == "":
