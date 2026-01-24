@@ -39,4 +39,7 @@ func get_titles() -> PackedStringArray:
 
 
 func _to_string() -> String:
-	return "<DialogueResource titles=\"%s\">" % [",".join(titles.keys())]
+	if resource_path:
+		return "<DialogueResource path=\"%s\">" % [resource_path]
+	else:
+		return "<DialogueResource>"
