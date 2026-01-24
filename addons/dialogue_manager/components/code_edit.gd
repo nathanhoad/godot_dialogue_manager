@@ -384,7 +384,6 @@ func _get_icon_for_type(type: String) -> Texture2D:
 
 #endregion
 
-
 #region Cursor Helpers
 
 
@@ -1087,9 +1086,10 @@ func _on_project_settings_changed() -> void:
 	# Add any actual autoloads
 	var project = ConfigFile.new()
 	project.load("res://project.godot")
-	for autoload: String in project.get_section_keys("autoload"):
-		if autoload != "DialogueManager":
-			_autoloads[autoload] = project.get_value("autoload", autoload).substr(1)
+	if project.has_section("autoload"):
+		for autoload: String in project.get_section_keys("autoload"):
+			if autoload != "DialogueManager":
+				_autoloads[autoload] = project.get_value("autoload", autoload).substr(1)
 
 	# Add project-defined classes if they contain static properties or methods
 	if Engine.has_meta("DialogueManagerPlugin"):
