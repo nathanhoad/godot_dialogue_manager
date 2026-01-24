@@ -3,8 +3,6 @@
 [ext_resource type="Script" uid="uid://klpiq4tk3t7a" path="res://addons/dialogue_manager/components/code_edit_syntax_highlighter.gd" id="1_58cfo"]
 [ext_resource type="Script" uid="uid://djeybvlb332mp" path="res://addons/dialogue_manager/components/code_edit.gd" id="1_g324i"]
 
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_crbvo"]
-
 [sub_resource type="SyntaxHighlighter" id="SyntaxHighlighter_crbvo"]
 script = ExtResource("1_58cfo")
 
@@ -14,7 +12,6 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-theme_override_styles/normal = SubResource("StyleBoxFlat_crbvo")
 text = "~ title_thing
 
 if this = \"that\" or 'this'
