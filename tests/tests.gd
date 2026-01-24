@@ -38,7 +38,7 @@ func _run_tests(test_files: PackedStringArray) -> void:
 
 	for path: String in test_files:
 		var node: Node = load(get_script().resource_path.get_base_dir() + "/" + path).new()
-		for method in node.get_method_list():
+		for method: Dictionary in node.get_method_list():
 			if method.name.begins_with("only_"):
 				is_limited_run = true
 
@@ -51,7 +51,7 @@ func _run_tests(test_files: PackedStringArray) -> void:
 
 		await node._before_all()
 
-		for method in node.get_method_list():
+		for method: Dictionary in node.get_method_list():
 			if (is_limited_run and method.name.begins_with("only_")) or (not is_limited_run and method.name.begins_with("test_")):
 				await node._before_each()
 				await node.call(method.name)

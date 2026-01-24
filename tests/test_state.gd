@@ -114,7 +114,7 @@ else:
 
 
 func test_can_parse_random_conditional_lines() -> void:
-	var output = compile("
+	var output: DMCompilerResult = compile("
 using StateForTests
 ~ start
 Nathan: Before.
@@ -129,7 +129,7 @@ Nathan: After.")
 
 
 func test_can_run_random_conditional_lines() -> void:
-	var resource = create_resource("
+	var resource: DialogueResource = create_resource("
 using StateForTests
 ~ start
 Nathan: Before.
@@ -139,7 +139,7 @@ Nathan: After.")
 
 	StateForTests._counters = {}
 
-	var line = await resource.get_next_dialogue_line("start")
+	var line: DialogueLine = await resource.get_next_dialogue_line("start")
 	assert(line.text == "Before.", "Should match initial text.")
 
 	line = await resource.get_next_dialogue_line(line.next_id)
