@@ -356,7 +356,7 @@ func _get_member_completions(segments: PackedStringArray) -> Array[Dictionary]:
 	else:
 		# Nested property access (e.g., "SomeGlobal.a_class_property.nested")
 		var chain_segments: PackedStringArray = segments.slice(0, segments.size() - 1)
-		var resolved_script: Script = _resolve_script_for_property_chain(chain_segments)
+		var resolved_script: Variant = _resolve_script_for_property_chain(chain_segments)
 		if resolved_script != null:
 			members = _get_members_for_script(resolved_script)
 
@@ -379,6 +379,8 @@ func _get_icon_for_type(type: String) -> Texture2D:
 			return get_theme_icon("MemberSignal", "EditorIcons")
 		"constant":
 			return get_theme_icon("MemberConstant", "EditorIcons")
+		"enum":
+			return get_theme_icon("Enum", "EditorIcons")
 	return null
 
 
@@ -464,11 +466,22 @@ func _get_members_for_base_script(base_script_name: String) -> Array[Dictionary]
 
 
 # Get all members (methods, properties, signals, constants) for a Script.
-func _get_members_for_script(script: Script) -> Array[Dictionary]:
+func _get_members_for_script(script: Variant) -> Array[Dictionary]:
+	var members: Array[Dictionary] = []
+
+	# Its an enum:
+	if script is Dictionary:
+		for key: String in script.keys():
+			members.append({
+				name = key,
+				type = "enum"
+			})
+		return members
+
+	# Otherwise its a script
 	if not is_instance_valid(script): return []
 
-	var members: Array[Dictionary] = []
-	if script.resource_path.ends_with(".gd"):
+	if script.resource_path.is_empty() or script.resource_path.ends_with(".gd"):
 		for m: Dictionary in script.get_script_method_list():
 			if not m.name.begins_with("@"):
 				members.append({
@@ -476,7 +489,7 @@ func _get_members_for_script(script: Script) -> Array[Dictionary]:
 					type = "method"
 				})
 		for m: Dictionary in script.get_script_property_list():
-			if not m.name.ends_with(".gd"):
+			if not m.name.ends_with(".gd") and not m.name.contains("Built-in"):
 				members.append({
 					name = m.name,
 					type = "property",
@@ -579,10 +592,17 @@ func _find_definition_in_script(script: Script, member_name: String) -> int:
 	var property_regex: RegEx = RegEx.create_from_string("^\\s*var\\s+" + member_name + "\\s*[:\\s=]")
 	var signal_regex: RegEx = RegEx.create_from_string("^\\s*signal\\s+" + member_name + "\\s*[\\(\\s]")
 	var const_regex: RegEx = RegEx.create_from_string("^\\s*const\\s+" + member_name + "\\s*[:\\s=]")
+	var enum_regex: RegEx = RegEx.create_from_string("^\\s*enum\\s+" + member_name + "[\\s$]")
+	var inner_class_regex: RegEx = RegEx.create_from_string("^\\s*class\\s+" + member_name + ":")
 
 	for i: int in range(lines.size()):
 		var line: String = lines[i]
-		if method_regex.search(line) or property_regex.search(line) or signal_regex.search(line) or const_regex.search(line):
+		if method_regex.search(line) \
+		or property_regex.search(line) \
+		or signal_regex.search(line) \
+		or const_regex.search(line) \
+		or enum_regex.search(line) \
+		or inner_class_regex.search(line):
 			# Editor line numbers start at 1
 			return i + 1
 
@@ -632,7 +652,7 @@ func _resolve_mutation_symbol_at_position(line_text: String, column: int) -> Dic
 	var member_name: String = segments[-1]
 
 	# Resolve the script that contains this member
-	var target_script: Script = null
+	var target_script: Variant = null
 	if segments.size() == 1 and segments[0] in _autoloads.keys():
 		member_name = "class_name"
 		var target: Variant = load(_autoloads.get(segments[0]))
@@ -645,7 +665,16 @@ func _resolve_mutation_symbol_at_position(line_text: String, column: int) -> Dic
 		var object_segments: PackedStringArray = segments.slice(0, segments.size() - 1)
 		target_script = _resolve_script_for_property_chain(object_segments)
 
-	if target_script == null or target_script.resource_path.ends_with(".cs"):
+	if target_script == null:
+		return {}
+	elif target_script is Dictionary:
+		return {
+			"script": _resolve_script_for_property_chain(segments.slice(0, -2)),
+			"member_name": segments.slice(0, -1)[segments.size() - 2],
+			"symbol": symbol
+		}
+	# C# symbol lookups aren't supported
+	if target_script is Script and target_script.resource_path.ends_with(".cs"):
 		return {}
 
 	return {
@@ -724,9 +753,9 @@ func _update_code_hint() -> void:
 
 	# Resolve the script for the object the method is called on
 	var object_segments: PackedStringArray = segments.slice(0, segments.size() - 1)
-	var target_script: Script = _resolve_script_for_property_chain(object_segments)
+	var target_script: Variant = _resolve_script_for_property_chain(object_segments)
 
-	if target_script == null:
+	if target_script == null or not target_script is Script:
 		set_code_hint("")
 		return
 
@@ -794,7 +823,7 @@ func _is_in_mutation_context(line: String, cursor_x: int) -> bool:
 
 
 # Resolve the Script for a chain of property accesses (e.g., "Autoload.prop1.prop2").
-func _resolve_script_for_property_chain(segments: PackedStringArray) -> Script:
+func _resolve_script_for_property_chain(segments: PackedStringArray) -> Variant:
 	if segments.size() == 0: return null
 
 	var autoload: Variant = null
@@ -813,7 +842,7 @@ func _resolve_script_for_property_chain(segments: PackedStringArray) -> Script:
 	elif not autoload is Script:
 		autoload = autoload.get_script()
 
-	var current_script: Script = autoload
+	var current_script: Variant = autoload
 
 	if not is_instance_valid(current_script): return null
 	if (segments.size() == 1): return current_script
@@ -837,20 +866,40 @@ func _resolve_script_for_property_chain(segments: PackedStringArray) -> Script:
 					# Property doesn't have a class type, can't go deeper
 					return null
 
+		# Check for inner classes and enums
+		if not found_property:
+			for constant: String in current_script.get_script_constant_map():
+				if constant == property_name:
+					var constant_value: Variant = current_script.get_script_constant_map().get(constant)
+					# Inner class
+					if constant_value is Script:
+						current_script = constant_value
+						found_property = true
+						break
+					# Enum
+					if constant_value is Dictionary:
+						current_script = constant_value
+						found_property = true
+						break
+					else:
+						# Constant isn't an enum or an inner class
+						return null
+
 		# Static properties. NOTE: Godot doesn't programatically find static properties
 		# so we have to manually find them.
-		for line: String in current_script.source_code.split("\n"):
-			var matched: RegExMatch = STATIC_REGEX.search(line)
-			if matched and matched.strings[matched.names.property] == property_name:
-				if matched.names.has("type"):
-					var type: String = matched.strings[matched.names.type]
-					current_script = _get_script_for_class_name(type)
-					if current_script == null:
+		if not found_property and current_script is Script and current_script.source_code.contains("static var"):
+			for line: String in current_script.source_code.split("\n"):
+				var matched: RegExMatch = STATIC_REGEX.search(line)
+				if matched and matched.strings[matched.names.property] == property_name:
+					if matched.names.has("type"):
+						var type: String = matched.strings[matched.names.type]
+						current_script = _get_script_for_class_name(type)
+						if current_script == null:
+							return null
+						found_property = true
+						break
+					else:
 						return null
-					found_property = true
-					break
-				else:
-					return null
 
 		if not found_property:
 			return null
