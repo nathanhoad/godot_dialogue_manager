@@ -165,7 +165,7 @@ func _highlight_expression(tokens: Array, colors: Dictionary, index: int) -> int
 			DMConstants.TOKEN_COMMENT:
 				colors[index + token.i] = { color = theme.comments_color }
 
-			DMConstants.TOKEN_CONDITION, DMConstants.TOKEN_AND_OR:
+			DMConstants.TOKEN_CONDITION, DMConstants.TOKEN_AND_OR, DMConstants.TOKEN_NOT:
 				colors[index + token.i] = { color = theme.conditions_color }
 
 			DMConstants.TOKEN_VARIABLE:
