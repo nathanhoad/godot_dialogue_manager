@@ -308,8 +308,17 @@ func _add_mutation_completions(current_line: String, cursor: Vector2) -> void:
 		# Suggest members of an autoload or nested property
 		auto_completes = _get_member_completions(segments)
 
-	# Sort and add completions
 	var prompt: String = segments[-1].to_lower()
+
+	# Add true/false
+	if prompt.length() > 1:
+		var icon: Texture2D = _get_icon_for_type("keyword")
+		var color: Color = theme_overrides.conditions_color
+		if "true".contains(prompt):
+			add_code_completion_option(CodeEdit.KIND_CONSTANT, "true", "true".substr(prompt.length()), color, icon)
+		if "false".contains(prompt):
+			add_code_completion_option(CodeEdit.KIND_CONSTANT, "false", "false".substr(prompt.length()), color, icon)
+
 	auto_completes.sort_custom(func(a, b):
 		return a.text.to_lower().similarity(prompt) > b.text.to_lower().similarity(prompt)
 	)
@@ -369,6 +378,8 @@ func _get_member_completions(segments: PackedStringArray) -> Array[Dictionary]:
 # Get the appropriate icon for a member type.
 func _get_icon_for_type(type: String) -> Texture2D:
 	match type:
+		"keyword":
+			return get_theme_icon("CodeHighlighter", "EditorIcons")
 		"script":
 			return get_theme_icon("Script", "EditorIcons")
 		"property":
@@ -402,14 +413,17 @@ func set_cursor(from_cursor: Vector2) -> void:
 
 # Check if a prompt fuzzy-matches a candidate.
 func _matches_prompt(prompt: String, candidate: String) -> bool:
-	if prompt.is_empty():
-		return true
-	elif prompt.to_lower().similarity(candidate.to_lower()) > 0.1:
-		return true
-	elif candidate.to_lower().contains(prompt.to_lower()):
-		return true
-	else:
-		return false
+	if prompt.length() > candidate.length(): return false
+	if prompt.is_empty(): return true
+
+	# Fuzzy match characters in order
+	candidate = candidate.to_lower()
+	var next_index: int = 0
+	for char: String in prompt.to_lower():
+		next_index = candidate.find(char, next_index) + 1
+		if next_index == 0:
+			return false
+	return true
 
 
 #endregion
