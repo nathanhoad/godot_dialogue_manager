@@ -9,7 +9,7 @@ var resource: Resource:
 	set(next_resource):
 		resource = next_resource
 		if resource:
-			icon = Engine.get_meta("DialogueManagerPlugin")._get_plugin_icon()
+			icon = DMPlugin.instance._get_plugin_icon()
 			text = resource.resource_path.get_file().replace(".dialogue", "")
 		else:
 			icon = null

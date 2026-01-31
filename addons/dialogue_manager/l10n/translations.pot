@@ -101,6 +101,15 @@ msgstr ""
 msgid "generate_line_ids"
 msgstr ""
 
+msgid "generate_ids.warning_title"
+msgstr ""
+
+msgid "generate_ids.warning_text"
+msgstr ""
+
+msgid "generate_ids.ok_button"
+msgstr ""
+
 msgid "use_uuid_only_for_ids"
 msgstr ""
 

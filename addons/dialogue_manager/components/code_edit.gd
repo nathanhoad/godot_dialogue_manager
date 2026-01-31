@@ -82,7 +82,7 @@ func _ready() -> void:
 func _gui_input(event: InputEvent) -> void:
 	# Handle shortcuts that come from the editor
 	if event is InputEventKey and event.is_pressed():
-		var shortcut: String = Engine.get_meta("DialogueManagerPlugin").get_editor_shortcut(event)
+		var shortcut: String = DMPlugin.get_editor_shortcut(event)
 		match shortcut:
 			"toggle_comment":
 				toggle_comment()
@@ -529,7 +529,7 @@ func _get_members_for_script(script: Variant) -> Array[Dictionary]:
 					type = "property"
 				})
 	elif script.resource_path.ends_with(".cs"):
-		var dotnet: RefCounted = load(Engine.get_meta("DialogueManagerPlugin").get_plugin_path() + "/DialogueManager.cs").new()
+		var dotnet: RefCounted = load(DMPlugin.get_plugin_path() + "/DialogueManager.cs").new()
 		for m: Dictionary in dotnet.GetMembersForScript(script):
 			members.append(m)
 
@@ -556,7 +556,7 @@ func _get_method_info_from_script(script: Script, method_name: String) -> Dictio
 			if m.name == method_name:
 				return m
 	elif script.resource_path.ends_with(".cs"):
-		var dotnet: RefCounted = load(Engine.get_meta("DialogueManagerPlugin").get_plugin_path() + "/DialogueManager.cs").new()
+		var dotnet: RefCounted = load(DMPlugin.get_plugin_path() + "/DialogueManager.cs").new()
 		for m: Dictionary in dotnet.GetMembersForScript(script):
 			if m.get("name") == method_name and m.get("type") == "method":
 				return m
@@ -1155,8 +1155,8 @@ func _on_project_settings_changed() -> void:
 				_autoloads[autoload] = project.get_value("autoload", autoload).substr(1)
 
 	# Add project-defined classes if they contain static properties or methods
-	if Engine.has_meta("DialogueManagerPlugin"):
-		var plugin_path: String = Engine.get_meta("DialogueManagerPlugin").get_plugin_path()
+	var plugin_path: String = DMPlugin.get_plugin_path()
+	if not plugin_path.is_empty():
 		for script_info: Dictionary in ProjectSettings.get_global_class_list():
 			if not script_info.path.begins_with(plugin_path):
 				var script: Script = load(script_info.path)
