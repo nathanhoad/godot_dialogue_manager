@@ -1,4 +1,4 @@
-[gd_scene load_steps=15 format=3 uid="uid://cbuf1q3xsse3q"]
+[gd_scene format=3 uid="uid://cbuf1q3xsse3q"]
 
 [ext_resource type="Script" uid="uid://cipjcc7bkh1pc" path="res://addons/dialogue_manager/views/main_view.gd" id="1_h6qfq"]
 [ext_resource type="PackedScene" uid="uid://civ6shmka5e8u" path="res://addons/dialogue_manager/components/code_edit.tscn" id="2_f73fm"]
@@ -37,7 +37,7 @@ image = SubResource("Image_y6rqu")
 [sub_resource type="SyntaxHighlighter" id="SyntaxHighlighter_mpdoc"]
 script = ExtResource("7_necsa")
 
-[node name="MainView" type="Control"]
+[node name="MainView" type="Control" unique_id=1975859718]
 clip_contents = true
 layout_mode = 3
 anchors_preset = 15
@@ -49,9 +49,9 @@ size_flags_horizontal = 3
 size_flags_vertical = 3
 script = ExtResource("1_h6qfq")
 
-[node name="ParseTimer" type="Timer" parent="."]
+[node name="ParseTimer" type="Timer" parent="." unique_id=1210958138]
 
-[node name="Margin" type="MarginContainer" parent="."]
+[node name="Margin" type="MarginContainer" parent="." unique_id=424731994]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -64,27 +64,27 @@ theme_override_constants/margin_right = 5
 theme_override_constants/margin_bottom = 5
 metadata/_edit_layout_mode = 1
 
-[node name="Content" type="HSplitContainer" parent="Margin"]
+[node name="Content" type="HSplitContainer" parent="Margin" unique_id=267962742]
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_vertical = 3
 dragger_visibility = 1
 
-[node name="SidePanel" type="VBoxContainer" parent="Margin/Content"]
+[node name="SidePanel" type="VBoxContainer" parent="Margin/Content" unique_id=408822052]
 custom_minimum_size = Vector2(150, 0)
 layout_mode = 2
 size_flags_horizontal = 3
 
-[node name="Toolbar" type="HBoxContainer" parent="Margin/Content/SidePanel"]
+[node name="Toolbar" type="HBoxContainer" parent="Margin/Content/SidePanel" unique_id=1890446441]
 layout_mode = 2
 
-[node name="NewButton" type="Button" parent="Margin/Content/SidePanel/Toolbar"]
+[node name="NewButton" type="Button" parent="Margin/Content/SidePanel/Toolbar" unique_id=916776070]
 unique_name_in_owner = true
 layout_mode = 2
 tooltip_text = "Start a new file"
 flat = true
 
-[node name="OpenButton" type="MenuButton" parent="Margin/Content/SidePanel/Toolbar"]
+[node name="OpenButton" type="MenuButton" parent="Margin/Content/SidePanel/Toolbar" unique_id=880106178]
 unique_name_in_owner = true
 layout_mode = 2
 tooltip_text = "Open a file"
@@ -113,44 +113,44 @@ popup/item_7/separator = true
 popup/item_8/text = "Clear recent files"
 popup/item_8/id = 102
 
-[node name="SaveAllButton" type="Button" parent="Margin/Content/SidePanel/Toolbar"]
+[node name="SaveAllButton" type="Button" parent="Margin/Content/SidePanel/Toolbar" unique_id=940841574]
 unique_name_in_owner = true
 layout_mode = 2
 disabled = true
 flat = true
 
-[node name="FindInFilesButton" type="Button" parent="Margin/Content/SidePanel/Toolbar"]
+[node name="FindInFilesButton" type="Button" parent="Margin/Content/SidePanel/Toolbar" unique_id=213493052]
 unique_name_in_owner = true
 layout_mode = 2
 tooltip_text = "Find in files..."
 flat = true
 
-[node name="Bookmarks" type="VSplitContainer" parent="Margin/Content/SidePanel"]
+[node name="Bookmarks" type="VSplitContainer" parent="Margin/Content/SidePanel" unique_id=1966503844]
 layout_mode = 2
 size_flags_vertical = 3
 
-[node name="FilesList" parent="Margin/Content/SidePanel/Bookmarks" instance=ExtResource("2_npj2k")]
+[node name="FilesList" parent="Margin/Content/SidePanel/Bookmarks" unique_id=1460458494 instance=ExtResource("2_npj2k")]
 unique_name_in_owner = true
 visible = false
 layout_mode = 2
 
-[node name="FilesPopupMenu" type="PopupMenu" parent="Margin/Content/SidePanel/Bookmarks/FilesList"]
+[node name="FilesPopupMenu" type="PopupMenu" parent="Margin/Content/SidePanel/Bookmarks/FilesList" unique_id=253084069]
 unique_name_in_owner = true
 
-[node name="TitleList" parent="Margin/Content/SidePanel/Bookmarks" instance=ExtResource("2_onb4i")]
+[node name="TitleList" parent="Margin/Content/SidePanel/Bookmarks" unique_id=2063152064 instance=ExtResource("2_onb4i")]
 unique_name_in_owner = true
 visible = false
 layout_mode = 2
 
-[node name="CodePanel" type="VBoxContainer" parent="Margin/Content"]
+[node name="CodePanel" type="VBoxContainer" parent="Margin/Content" unique_id=2013417278]
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_stretch_ratio = 4.0
 
-[node name="Toolbar" type="HBoxContainer" parent="Margin/Content/CodePanel"]
+[node name="Toolbar" type="HBoxContainer" parent="Margin/Content/CodePanel" unique_id=177899511]
 layout_mode = 2
 
-[node name="InsertButton" type="MenuButton" parent="Margin/Content/CodePanel/Toolbar"]
+[node name="InsertButton" type="MenuButton" parent="Margin/Content/CodePanel/Toolbar" unique_id=1765432833]
 unique_name_in_owner = true
 layout_mode = 2
 disabled = true
@@ -201,7 +201,7 @@ popup/item_14/text = "End dialogue"
 popup/item_14/icon = SubResource("ImageTexture_57eek")
 popup/item_14/id = 12
 
-[node name="TranslationsButton" type="MenuButton" parent="Margin/Content/CodePanel/Toolbar"]
+[node name="TranslationsButton" type="MenuButton" parent="Margin/Content/CodePanel/Toolbar" unique_id=2010201295]
 unique_name_in_owner = true
 layout_mode = 2
 disabled = true
@@ -222,10 +222,10 @@ popup/item_4/text = "Import line changes from CSV..."
 popup/item_4/icon = SubResource("ImageTexture_57eek")
 popup/item_4/id = 203
 
-[node name="Separator" type="VSeparator" parent="Margin/Content/CodePanel/Toolbar"]
+[node name="Separator" type="VSeparator" parent="Margin/Content/CodePanel/Toolbar" unique_id=821562382]
 layout_mode = 2
 
-[node name="SearchButton" type="Button" parent="Margin/Content/CodePanel/Toolbar"]
+[node name="SearchButton" type="Button" parent="Margin/Content/CodePanel/Toolbar" unique_id=121689358]
 unique_name_in_owner = true
 layout_mode = 2
 tooltip_text = "Search for text"
@@ -233,60 +233,60 @@ disabled = true
 toggle_mode = true
 flat = true
 
-[node name="Separator2" type="VSeparator" parent="Margin/Content/CodePanel/Toolbar"]
+[node name="Separator2" type="VSeparator" parent="Margin/Content/CodePanel/Toolbar" unique_id=175043853]
 layout_mode = 2
 
-[node name="TestButton" type="Button" parent="Margin/Content/CodePanel/Toolbar"]
+[node name="TestButton" type="Button" parent="Margin/Content/CodePanel/Toolbar" unique_id=1610822770]
 unique_name_in_owner = true
 layout_mode = 2
 tooltip_text = "Test dialogue"
 disabled = true
 flat = true
 
-[node name="TestLineButton" type="Button" parent="Margin/Content/CodePanel/Toolbar"]
+[node name="TestLineButton" type="Button" parent="Margin/Content/CodePanel/Toolbar" unique_id=1575726308]
 unique_name_in_owner = true
 layout_mode = 2
 tooltip_text = "Test dialogue"
 disabled = true
 flat = true
 
-[node name="Spacer2" type="Control" parent="Margin/Content/CodePanel/Toolbar"]
+[node name="Spacer2" type="Control" parent="Margin/Content/CodePanel/Toolbar" unique_id=249482575]
 layout_mode = 2
 size_flags_horizontal = 3
 
-[node name="SupportButton" type="Button" parent="Margin/Content/CodePanel/Toolbar"]
+[node name="SupportButton" type="Button" parent="Margin/Content/CodePanel/Toolbar" unique_id=1042093313]
 unique_name_in_owner = true
 layout_mode = 2
 tooltip_text = "Support Dialogue Manager"
 text = "Sponsor"
 flat = true
 
-[node name="Separator4" type="VSeparator" parent="Margin/Content/CodePanel/Toolbar"]
+[node name="Separator4" type="VSeparator" parent="Margin/Content/CodePanel/Toolbar" unique_id=321395257]
 layout_mode = 2
 
-[node name="DocsButton" type="Button" parent="Margin/Content/CodePanel/Toolbar"]
+[node name="DocsButton" type="Button" parent="Margin/Content/CodePanel/Toolbar" unique_id=1404920471]
 unique_name_in_owner = true
 layout_mode = 2
 text = "Docs"
 flat = true
 
-[node name="VersionLabel" type="Label" parent="Margin/Content/CodePanel/Toolbar"]
+[node name="VersionLabel" type="Label" parent="Margin/Content/CodePanel/Toolbar" unique_id=630990714]
 unique_name_in_owner = true
 modulate = Color(1, 1, 1, 0.490196)
 layout_mode = 2
 text = "v2.42.2"
 vertical_alignment = 1
 
-[node name="UpdateButton" parent="Margin/Content/CodePanel/Toolbar" instance=ExtResource("2_ph3vs")]
+[node name="UpdateButton" parent="Margin/Content/CodePanel/Toolbar" unique_id=1595256128 instance=ExtResource("2_ph3vs")]
 unique_name_in_owner = true
 layout_mode = 2
 text = "v2.44.1 available"
 
-[node name="SearchAndReplace" parent="Margin/Content/CodePanel" instance=ExtResource("6_ylh0t")]
+[node name="SearchAndReplace" parent="Margin/Content/CodePanel" unique_id=2132004091 instance=ExtResource("6_ylh0t")]
 unique_name_in_owner = true
 layout_mode = 2
 
-[node name="CodeEdit" parent="Margin/Content/CodePanel" instance=ExtResource("2_f73fm")]
+[node name="CodeEdit" parent="Margin/Content/CodePanel" unique_id=302141693 instance=ExtResource("2_f73fm")]
 unique_name_in_owner = true
 visible = false
 layout_mode = 2
@@ -315,11 +315,11 @@ Coco: Meow.
 scroll_smooth = true
 syntax_highlighter = SubResource("SyntaxHighlighter_mpdoc")
 
-[node name="ErrorsPanel" parent="Margin/Content/CodePanel" instance=ExtResource("7_5cvl4")]
+[node name="ErrorsPanel" parent="Margin/Content/CodePanel" unique_id=1975824789 instance=ExtResource("7_5cvl4")]
 unique_name_in_owner = true
 layout_mode = 2
 
-[node name="Banner" type="CenterContainer" parent="."]
+[node name="Banner" type="CenterContainer" parent="." unique_id=1848328987]
 unique_name_in_owner = true
 layout_mode = 1
 anchors_preset = 15
@@ -330,11 +330,11 @@ grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
 
-[node name="PanelContainer" type="VBoxContainer" parent="Banner"]
+[node name="PanelContainer" type="VBoxContainer" parent="Banner" unique_id=1211498578]
 layout_mode = 2
 theme_override_constants/separation = 5
 
-[node name="BannerImage" type="TextureRect" parent="Banner/PanelContainer"]
+[node name="BannerImage" type="TextureRect" parent="Banner/PanelContainer" unique_id=899616034]
 custom_minimum_size = Vector2(600, 200)
 layout_mode = 2
 mouse_filter = 0
@@ -342,41 +342,41 @@ mouse_default_cursor_shape = 2
 texture = ExtResource("9_y6rqu")
 expand_mode = 3
 
-[node name="HBoxContainer" type="HBoxContainer" parent="Banner/PanelContainer"]
+[node name="HBoxContainer" type="HBoxContainer" parent="Banner/PanelContainer" unique_id=874356896]
 layout_mode = 2
 theme_override_constants/separation = 5
 
-[node name="BannerNewButton" type="Button" parent="Banner/PanelContainer/HBoxContainer"]
+[node name="BannerNewButton" type="Button" parent="Banner/PanelContainer/HBoxContainer" unique_id=1034773049]
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 3
 text = "New Dialogue..."
 
-[node name="BannerQuickOpen" type="Button" parent="Banner/PanelContainer/HBoxContainer"]
+[node name="BannerQuickOpen" type="Button" parent="Banner/PanelContainer/HBoxContainer" unique_id=1614953837]
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 3
 text = "Quick open..."
 
-[node name="BannerExamples" type="Button" parent="Banner/PanelContainer/HBoxContainer"]
+[node name="BannerExamples" type="Button" parent="Banner/PanelContainer/HBoxContainer" unique_id=1066745213]
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 3
 text = "Example projects..."
 
-[node name="NewDialog" type="FileDialog" parent="."]
+[node name="NewDialog" type="FileDialog" parent="." unique_id=458925087]
 size = Vector2i(900, 750)
 min_size = Vector2i(600, 500)
 dialog_hide_on_ok = true
 filters = PackedStringArray("*.dialogue ; Dialogue")
 
-[node name="SaveDialog" type="FileDialog" parent="."]
+[node name="SaveDialog" type="FileDialog" parent="." unique_id=325906832]
 size = Vector2i(900, 750)
 min_size = Vector2i(600, 500)
 dialog_hide_on_ok = true
 filters = PackedStringArray("*.dialogue ; Dialogue")
 
-[node name="OpenDialog" type="FileDialog" parent="."]
+[node name="OpenDialog" type="FileDialog" parent="." unique_id=1252768767]
 title = "Open a File"
 size = Vector2i(900, 750)
 min_size = Vector2i(600, 500)
@@ -385,19 +385,19 @@ dialog_hide_on_ok = true
 file_mode = 0
 filters = PackedStringArray("*.dialogue ; Dialogue")
 
-[node name="QuickOpenDialog" type="ConfirmationDialog" parent="."]
+[node name="QuickOpenDialog" type="ConfirmationDialog" parent="." unique_id=254740052]
 title = "Quick open"
 size = Vector2i(600, 900)
 min_size = Vector2i(400, 600)
 ok_button_text = "Open"
 
-[node name="QuickOpenFilesList" parent="QuickOpenDialog" instance=ExtResource("2_npj2k")]
+[node name="QuickOpenFilesList" parent="QuickOpenDialog" unique_id=1813408245 instance=ExtResource("2_npj2k")]
 
-[node name="ExportDialog" type="FileDialog" parent="."]
+[node name="ExportDialog" type="FileDialog" parent="." unique_id=2035775999]
 size = Vector2i(900, 750)
 min_size = Vector2i(600, 500)
 
-[node name="ImportDialog" type="FileDialog" parent="."]
+[node name="ImportDialog" type="FileDialog" parent="." unique_id=1326083376]
 title = "Open a File"
 size = Vector2i(900, 750)
 min_size = Vector2i(600, 500)
@@ -405,22 +405,24 @@ ok_button_text = "Open"
 file_mode = 0
 filters = PackedStringArray("*.csv ; Translation CSV")
 
-[node name="ErrorsDialog" type="AcceptDialog" parent="."]
+[node name="ErrorsDialog" type="AcceptDialog" parent="." unique_id=2100629189]
 title = "Error"
 dialog_text = "You have errors in your script. Fix them and then try again."
 
-[node name="BuildErrorDialog" type="AcceptDialog" parent="."]
+[node name="BuildErrorDialog" type="AcceptDialog" parent="." unique_id=1879686579]
 title = "Errors"
 dialog_text = "You need to fix dialogue errors before you can run your game."
 
-[node name="CloseConfirmationDialog" type="ConfirmationDialog" parent="."]
+[node name="CloseConfirmationDialog" type="ConfirmationDialog" parent="." unique_id=1048140490]
 title = "Unsaved changes"
 ok_button_text = "Save changes"
 
-[node name="UpdatedDialog" type="AcceptDialog" parent="."]
+[node name="UpdatedDialog" type="AcceptDialog" parent="." unique_id=955879802]
 title = "Updated"
 size = Vector2i(191, 100)
 dialog_text = "You're now up to date!"
+
+[node name="GenerateStaticIdsConfirmationDialog" type="ConfirmationDialog" parent="." unique_id=1311101975]
 
 [connection signal="theme_changed" from="." to="." method="_on_main_view_theme_changed"]
 [connection signal="visibility_changed" from="." to="." method="_on_main_view_visibility_changed"]
@@ -462,3 +464,4 @@ dialog_text = "You're now up to date!"
 [connection signal="file_selected" from="ImportDialog" to="." method="_on_import_dialog_file_selected"]
 [connection signal="confirmed" from="CloseConfirmationDialog" to="." method="_on_close_confirmation_dialog_confirmed"]
 [connection signal="custom_action" from="CloseConfirmationDialog" to="." method="_on_close_confirmation_dialog_custom_action"]
+[connection signal="confirmed" from="GenerateStaticIdsConfirmationDialog" to="." method="_on_generate_static_ids_confirmation_dialog_confirmed"]

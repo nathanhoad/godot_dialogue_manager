@@ -63,7 +63,7 @@ func check_for_update() -> void:
 func _on_http_request_request_completed(result: int, response_code: int, headers: PackedStringArray, body: PackedByteArray) -> void:
 	if result != HTTPRequest.RESULT_SUCCESS: return
 
-	var current_version: String = Engine.get_meta("DialogueManagerPlugin").get_version()
+	var current_version: String = DMPlugin.get_version()
 
 	# Work out the next version from the releases information on GitHub
 	var response = JSON.parse_string(body.get_string_from_utf8())

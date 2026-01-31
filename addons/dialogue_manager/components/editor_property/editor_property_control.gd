@@ -23,8 +23,6 @@ const ITEM_FILESYSTEM: int = 400
 @onready var new_dialog: FileDialog = $NewDialog
 @onready var open_dialog: FileDialog = $OpenDialog
 
-var editor_plugin: EditorPlugin
-
 var resource: Resource:
 	set(next_resource):
 		resource = next_resource
@@ -39,13 +37,12 @@ var quick_selected_file: String = ""
 
 func _ready() -> void:
 	menu_button.icon = get_theme_icon("GuiDropdown", "EditorIcons")
-	editor_plugin = Engine.get_meta("DialogueManagerPlugin")
 
 
 func build_menu() -> void:
 	menu.clear()
 
-	menu.add_icon_item(editor_plugin._get_plugin_icon(), "New Dialogue", ITEM_NEW)
+	menu.add_icon_item(DMPlugin.instance._get_plugin_icon(), "New Dialogue", ITEM_NEW)
 	menu.add_separator()
 	menu.add_icon_item(get_theme_icon("Load", "EditorIcons"), "Quick Load", ITEM_QUICK_LOAD)
 	menu.add_icon_item(get_theme_icon("Load", "EditorIcons"), "Load", ITEM_LOAD)
@@ -62,12 +59,12 @@ func build_menu() -> void:
 
 
 func _on_new_dialog_file_selected(path: String) -> void:
-	editor_plugin.main_view.new_file(path)
+	DMPlugin.instance.main_view.new_file(path)
 	is_waiting_for_file = false
-	if Engine.get_meta("DMCache").has_file(path):
+	if DMCache.has_file(path):
 		resource_changed.emit(load(path))
 	else:
-		var next_resource: DialogueResource = await editor_plugin.import_plugin.compiled_resource
+		var next_resource: DialogueResource = await DMPlugin.instance.import_plugin.compiled_resource
 		next_resource.resource_path = path
 		resource_changed.emit(next_resource)
 
@@ -119,7 +116,7 @@ func _on_menu_id_pressed(id: int) -> void:
 
 		ITEM_QUICK_LOAD:
 			quick_selected_file = ""
-			files_list.files = Engine.get_meta("DMCache").get_files()
+			files_list.files = DMCache.get_files()
 			if resource:
 				files_list.select_file(resource.resource_path)
 			quick_open_dialog.popup_centered()
