@@ -77,7 +77,7 @@ func _exit_tree() -> void:
 	if is_instance_valid(main_view):
 		main_view.queue_free()
 
-	hide_find_in_dialogue()
+	_hide_find_in_dialogue()
 
 	EditorInterface.get_file_system_dock().files_moved.disconnect(_on_files_moved)
 	EditorInterface.get_file_system_dock().file_removed.disconnect(_on_file_removed)
@@ -168,10 +168,10 @@ func _build() -> bool:
 
 
 ## Open a [Dialogue Resource] and jump to a given title.
-func open_file_at_title(resource_or_path: Variant, title: String, create_if_none: bool = false) -> void:
+static func open_file_at_title(resource_or_path: Variant, title: String, create_if_none: bool = false) -> void:
 	var resource: DialogueResource = resource_or_path if resource_or_path is DialogueResource else load(resource_or_path)
 	EditorInterface.edit_resource(resource)
-	main_view.go_to_title(title, create_if_none)
+	instance.main_view.go_to_title(title, create_if_none)
 
 
 static func show_find_in_dialogue() -> void:
@@ -188,7 +188,7 @@ func _show_find_in_dialogue() -> void:
 	find_in_dialogue_view.prepare()
 
 
-func hide_find_in_dialogue() -> void:
+func _hide_find_in_dialogue() -> void:
 	if is_instance_valid(find_in_dialogue_view):
 		remove_control_from_bottom_panel(find_in_dialogue_view)
 		find_in_dialogue_view.queue_free()
@@ -298,7 +298,7 @@ static func get_plugin_path() -> String:
 
 
 ## Update references to a moved file
-func update_import_paths(from_path: String, to_path: String) -> void:
+func _update_import_paths(from_path: String, to_path: String) -> void:
 	DMCache.move_file_path(from_path, to_path)
 
 	# Reopen the file if it's already open
@@ -483,12 +483,12 @@ func _housekeeping() -> void:
 
 
 func _on_files_moved(old_file: String, new_file: String) -> void:
-	update_import_paths(old_file, new_file)
+	_update_import_paths(old_file, new_file)
 	DMSettings.move_recent_file(old_file, new_file)
 
 
 func _on_file_removed(file: String) -> void:
-	update_import_paths(file, "")
+	_update_import_paths(file, "")
 	if is_instance_valid(main_view):
 		main_view.close_file(file)
 	_update_localization()
