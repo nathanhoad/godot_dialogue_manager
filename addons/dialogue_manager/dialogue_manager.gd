@@ -807,7 +807,7 @@ func _mutate(mutation: Dictionary, extra_game_states: Array, is_inline_mutation:
 
 	# Or pass through to the resolver
 	else:
-		if not _mutation_contains_assignment(mutation.expression) and not is_inline_mutation:
+		if not _mutation_contains_assignment(mutation.expression):
 			mutated.emit(mutation.merged({ is_inline = is_inline_mutation }))
 
 		if mutation.get("is_blocking", true):
