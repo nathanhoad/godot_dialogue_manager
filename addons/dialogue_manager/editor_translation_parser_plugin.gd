@@ -41,10 +41,18 @@ func _parse_file(path: String) -> Array[PackedStringArray]:
 
 		known_keys.append(translation_key)
 		translated_lines.append(line)
-		if translation_key == line.text:
-			msgs.append(PackedStringArray([line.text.replace('"', '\"'), "", "", line.get("notes", "")]))
-		else:
-			msgs.append(PackedStringArray([line.text.replace('"', '\"'), line.translation_key.replace('"', '\"'), "", line.get("notes", "")]))
+		
+		var message: String = line.text.replace('"', '\"')
+		var context: String = line.translation_key.replace('"', '\"') if translation_key != line.text else ""
+		var plural: String = ""
+		var notes: String = "\n".join(["Character name: %s" % line.character, line.get("notes", "")].filter(func(s: String) -> bool: return not s.is_empty()))
+		msgs.append(PackedStringArray([
+			message,
+			context,
+			plural,
+			notes,
+			key
+		]))
 
 	return msgs
 
