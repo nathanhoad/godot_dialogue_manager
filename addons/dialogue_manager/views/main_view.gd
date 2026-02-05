@@ -2,27 +2,17 @@
 extends Control
 
 
-const OPEN_OPEN = 100
-const OPEN_QUICK = 101
-const OPEN_CLEAR = 102
+const OPEN_OPEN: int = 100
+const OPEN_QUICK: int = 101
+const OPEN_CLEAR: int = 102
 
-const TRANSLATIONS_GENERATE_LINE_IDS = 100
-const TRANSLATIONS_SAVE_CHARACTERS_TO_CSV = 201
-const TRANSLATIONS_SAVE_TO_CSV = 202
-const TRANSLATIONS_IMPORT_FROM_CSV = 203
-
-const ITEM_SAVE = 100
-const ITEM_SAVE_AS = 101
-const ITEM_CLOSE = 102
-const ITEM_CLOSE_ALL = 103
-const ITEM_CLOSE_OTHERS = 104
-const ITEM_COPY_PATH = 200
-const ITEM_SHOW_IN_FILESYSTEM = 201
-
-enum TranslationSource {
-	CharacterNames,
-	Lines
-}
+const ITEM_SAVE: int = 100
+const ITEM_SAVE_AS: int = 101
+const ITEM_CLOSE: int = 102
+const ITEM_CLOSE_ALL: int = 103
+const ITEM_CLOSE_OTHERS: int = 104
+const ITEM_COPY_PATH: int = 200
+const ITEM_SHOW_IN_FILESYSTEM: int = 201
 
 
 signal confirmation_closed()
@@ -42,25 +32,21 @@ signal confirmation_closed()
 @onready var open_dialog: FileDialog = $OpenDialog
 @onready var quick_open_dialog: ConfirmationDialog = $QuickOpenDialog
 @onready var quick_open_files_list: VBoxContainer = $QuickOpenDialog/QuickOpenFilesList
-@onready var export_dialog: FileDialog = $ExportDialog
-@onready var import_dialog: FileDialog = $ImportDialog
 @onready var errors_dialog: AcceptDialog = $ErrorsDialog
 @onready var build_error_dialog: AcceptDialog = $BuildErrorDialog
 @onready var close_confirmation_dialog: ConfirmationDialog = $CloseConfirmationDialog
 @onready var updated_dialog: AcceptDialog = $UpdatedDialog
-@onready var generate_static_ids_confirmation_dialog: ConfirmationDialog = $GenerateStaticIdsConfirmationDialog
-
 
 # Toolbar
 @onready var new_button: Button = %NewButton
 @onready var open_button: MenuButton = %OpenButton
 @onready var save_all_button: Button = %SaveAllButton
 @onready var find_in_files_button: Button = %FindInFilesButton
+@onready var file_name_label: Label = %FilenameLabel
 @onready var test_button: Button = %TestButton
 @onready var test_line_button: Button = %TestLineButton
 @onready var search_button: Button = %SearchButton
 @onready var insert_button: MenuButton = %InsertButton
-@onready var translations_button: MenuButton = %TranslationsButton
 @onready var support_button: Button = %SupportButton
 @onready var docs_button: Button = %DocsButton
 @onready var version_label: Label = %VersionLabel
@@ -82,12 +68,12 @@ var current_file_path: String = "":
 		current_file_path = next_current_file_path
 		files_list.current_file_path = current_file_path
 		if current_file_path == "" or not open_buffers.has(current_file_path):
+			file_name_label.text = ""
 			save_all_button.disabled = true
 			test_button.disabled = true
 			test_line_button.disabled = true
 			search_button.disabled = true
 			insert_button.disabled = true
-			translations_button.disabled = true
 			content.dragger_visibility = SplitContainer.DRAGGER_HIDDEN
 			files_list.hide()
 			label_list.hide()
@@ -96,11 +82,11 @@ var current_file_path: String = "":
 			search_and_replace.hide()
 			banner.show()
 		else:
+			file_name_label.text = current_file_path.get_file()
 			test_button.disabled = false
 			test_line_button.disabled = false
 			search_button.disabled = false
 			insert_button.disabled = false
-			translations_button.disabled = false
 			content.dragger_visibility = SplitContainer.DRAGGER_VISIBLE
 			files_list.show()
 			label_list.show()
@@ -130,9 +116,6 @@ var current_file_path: String = "":
 # A reference to the currently open files and their last saved text
 var open_buffers: Dictionary = {}
 
-# Which thing are we exporting translations for?
-var translation_source: TranslationSource = TranslationSource.Lines
-
 
 func _ready() -> void:
 	apply_theme()
@@ -161,7 +144,6 @@ func _ready() -> void:
 
 	# Connect menu buttons
 	insert_button.get_popup().id_pressed.connect(_on_insert_button_menu_id_pressed)
-	translations_button.get_popup().id_pressed.connect(_on_translations_button_menu_id_pressed)
 
 	code_edit.main_view = self
 	var editor_settings: EditorSettings = EditorInterface.get_editor_settings()
@@ -386,7 +368,6 @@ func apply_theme() -> void:
 		open_button.tooltip_text = DMConstants.translate(&"open_a_file")
 
 		save_all_button.icon = get_theme_icon("Save", "EditorIcons")
-		save_all_button.text = DMConstants.translate(&"all")
 		save_all_button.tooltip_text = DMConstants.translate(&"start_all_files")
 
 		find_in_files_button.icon = get_theme_icon("ViewportZoom", "EditorIcons")
@@ -402,13 +383,9 @@ func apply_theme() -> void:
 		search_button.tooltip_text = DMConstants.translate(&"search_for_text")
 
 		insert_button.icon = get_theme_icon("RichTextEffect", "EditorIcons")
-		insert_button.text = DMConstants.translate(&"insert")
-
-		translations_button.icon = get_theme_icon("Translation", "EditorIcons")
-		translations_button.text = DMConstants.translate(&"translations")
+		insert_button.tooltip_text = DMConstants.translate(&"insert")
 
 		support_button.icon = get_theme_icon("Heart", "EditorIcons")
-		support_button.text = DMConstants.translate(&"sponsor")
 		support_button.tooltip_text = DMConstants.translate(&"show_support")
 
 		docs_button.icon = get_theme_icon("Help", "EditorIcons")
@@ -435,22 +412,11 @@ func apply_theme() -> void:
 		popup.add_icon_item(get_theme_icon("RichTextEffect", "EditorIcons"), DMConstants.translate(&"insert.jump"), 11)
 		popup.add_icon_item(get_theme_icon("RichTextEffect", "EditorIcons"), DMConstants.translate(&"insert.end_dialogue"), 12)
 
-		# Set up the translations menu
-		popup = translations_button.get_popup()
-		popup.clear()
-		popup.add_icon_item(get_theme_icon("Translation", "EditorIcons"), DMConstants.translate(&"generate_line_ids"), TRANSLATIONS_GENERATE_LINE_IDS)
-		popup.add_separator()
-		popup.add_icon_item(get_theme_icon("FileList", "EditorIcons"), DMConstants.translate(&"save_characters_to_csv"), TRANSLATIONS_SAVE_CHARACTERS_TO_CSV)
-		popup.add_icon_item(get_theme_icon("FileList", "EditorIcons"), DMConstants.translate(&"save_to_csv"), TRANSLATIONS_SAVE_TO_CSV)
-		popup.add_icon_item(get_theme_icon("AssetLib", "EditorIcons"), DMConstants.translate(&"import_from_csv"), TRANSLATIONS_IMPORT_FROM_CSV)
-
 		# Dialog sizes
 		new_dialog.min_size = Vector2(600, 500) * theme_values.scale
 		save_dialog.min_size = Vector2(600, 500) * theme_values.scale
 		open_dialog.min_size = Vector2(600, 500) * theme_values.scale
 		quick_open_dialog.min_size = Vector2(400, 600) * theme_values.scale
-		export_dialog.min_size = Vector2(600, 500) * theme_values.scale
-		import_dialog.min_size = Vector2(600, 500) * theme_values.scale
 
 
 #region Helpers
@@ -486,12 +452,6 @@ func build_open_menu() -> void:
 	menu.id_pressed.connect(_on_open_menu_id_pressed)
 
 
-# Get the last place a CSV, etc was exported
-func get_last_export_path(extension: String) -> String:
-	var filename = current_file_path.get_file().replace(".dialogue", "." + extension)
-	return DMSettings.get_user_value("last_export_path", current_file_path.get_base_dir()) + "/" + filename
-
-
 # Check the current text for errors
 func compile() -> void:
 	# Skip if nothing to parse
@@ -508,52 +468,12 @@ func show_build_error_dialog() -> void:
 	build_error_dialog.popup_centered()
 
 
-# Generate translation line IDs for any line that doesn't already have one
-func generate_translations_keys() -> void:
-	generate_static_ids_confirmation_dialog.title = DMConstants.translate("generate_ids.warning_title")
-	generate_static_ids_confirmation_dialog.dialog_text = DMConstants.translate("generate_ids.warning_text")
-	generate_static_ids_confirmation_dialog.ok_button_text = DMConstants.translate("generate_ids.ok_button")
-	generate_static_ids_confirmation_dialog.popup_centered()
-
-
 # Add a translation file to the project settings
 func add_path_to_project_translations(path: String) -> void:
 	var translations: PackedStringArray = ProjectSettings.get_setting("internationalization/locale/translations")
 	if not path in translations:
 		translations.append(path)
 		ProjectSettings.save()
-
-
-# Export dialogue and responses to CSV
-func export_translations_to_csv(path: String) -> void:
-	DMTranslationUtilities.export_translations_to_csv(path, code_edit.text, current_file_path)
-
-	EditorInterface.get_resource_filesystem().scan()
-	EditorInterface.get_file_system_dock().call_deferred("navigate_to_path", path)
-
-	# Add it to the project l10n settings if it's not already there
-	var default_locale: String = DMSettings.get_setting(DMSettings.DEFAULT_CSV_LOCALE, "en")
-	var language_code: RegExMatch = RegEx.create_from_string("^[a-z]{2,3}").search(default_locale)
-	var translation_path: String = path.replace(".csv", ".%s.translation" % language_code.get_string())
-	call_deferred("add_path_to_project_translations", translation_path)
-
-
-func export_character_names_to_csv(path: String) -> void:
-	DMTranslationUtilities.export_character_names_to_csv(path, code_edit.text, current_file_path)
-
-	EditorInterface.get_resource_filesystem().scan()
-	EditorInterface.get_file_system_dock().call_deferred("navigate_to_path", path)
-
-	# Add it to the project l10n settings if it's not already there
-	var translation_path: String = path.replace(".csv", ".en.translation")
-	call_deferred("add_path_to_project_translations", translation_path)
-
-
-# Import changes back from an exported CSV by matching translation keys
-func import_translations_from_csv(path: String) -> void:
-	var cursor: Vector2 = code_edit.get_cursor()
-	code_edit.text = DMTranslationUtilities.import_translations_from_csv(path, code_edit.text)
-	code_edit.set_cursor(cursor)
 
 
 func show_search_form(is_enabled: bool) -> void:
@@ -653,44 +573,6 @@ func _on_insert_button_menu_id_pressed(id: int) -> void:
 			code_edit.insert_text_at_cursor("=> label")
 		12:
 			code_edit.insert_text_at_cursor("=> END")
-
-
-func _on_translations_button_menu_id_pressed(id: int) -> void:
-	match id:
-		TRANSLATIONS_GENERATE_LINE_IDS:
-			generate_translations_keys()
-
-		TRANSLATIONS_SAVE_CHARACTERS_TO_CSV:
-			translation_source = TranslationSource.CharacterNames
-			export_dialog.filters = PackedStringArray(["*.csv ; Translation CSV"])
-			export_dialog.current_path = get_last_export_path("csv")
-			export_dialog.popup_centered()
-
-		TRANSLATIONS_SAVE_TO_CSV:
-			translation_source = TranslationSource.Lines
-			export_dialog.filters = PackedStringArray(["*.csv ; Translation CSV"])
-			export_dialog.current_path = get_last_export_path("csv")
-			export_dialog.popup_centered()
-
-		TRANSLATIONS_IMPORT_FROM_CSV:
-			import_dialog.current_path = get_last_export_path("csv")
-			import_dialog.popup_centered()
-
-
-func _on_export_dialog_file_selected(path: String) -> void:
-	DMSettings.set_user_value("last_export_path", path.get_base_dir())
-	match path.get_extension():
-		"csv":
-			match translation_source:
-				TranslationSource.CharacterNames:
-					export_character_names_to_csv(path)
-				TranslationSource.Lines:
-					export_translations_to_csv(path)
-
-
-func _on_import_dialog_file_selected(path: String) -> void:
-	DMSettings.set_user_value("last_export_path", path.get_base_dir())
-	import_translations_from_csv(path)
 
 
 func _on_main_view_theme_changed():

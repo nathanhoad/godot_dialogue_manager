@@ -1,14 +1,8 @@
 import "res://tests/snippets.dialogue" as snippets
 
-#region Something
 
 ~ start
 Nathan: Testing a snippet.
 =>< snippets/snippet
 Nathan: ...and back again.
 => END
-
-#endregion
-
-~ another
-=> start

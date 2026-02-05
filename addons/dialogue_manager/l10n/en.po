@@ -106,7 +106,7 @@ msgid "insert.end_dialogue"
 msgstr "End dialogue"
 
 msgid "generate_line_ids"
-msgstr "Generate line IDs"
+msgstr "Generate line IDs..."
 
 msgid "generate_ids.warning_title"
 msgstr "Generate line IDs?"
