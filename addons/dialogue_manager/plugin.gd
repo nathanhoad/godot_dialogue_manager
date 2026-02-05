@@ -58,7 +58,29 @@ func _enter_tree() -> void:
 		EditorInterface.get_file_system_dock().files_moved.connect(_on_files_moved)
 		EditorInterface.get_file_system_dock().file_removed.connect(_on_file_removed)
 
-		add_tool_menu_item("Create copy of dialogue example balloon...", _copy_dialogue_balloon)
+		var tool_menu: PopupMenu = PopupMenu.new()
+		tool_menu.add_icon_item(_get_plugin_icon(), "Create balloon...")
+		tool_menu.add_icon_item(main_view.get_theme_icon("Translation", "EditorIcons"), DMConstants.translate("generate_line_ids"))
+		tool_menu.index_pressed.connect(func(index: int) -> void:
+			match index:
+				0: # create balloon
+					_create_dialogue_balloon()
+				1: # generate IDs
+					var confirm: ConfirmationDialog = ConfirmationDialog.new()
+					confirm.title = DMConstants.translate("generate_ids.warning_title")
+					confirm.dialog_text = DMConstants.translate("generate_ids.warning_text")
+					confirm.ok_button_text = DMConstants.translate("generate_ids.ok_button")
+					confirm.confirmed.connect(func() -> void:
+						confirm.queue_free()
+						DMTranslationUtilities.generate_translation_keys()
+					)
+					confirm.canceled.connect(func() -> void:
+						confirm.queue_free()
+					)
+					add_child(confirm)
+					confirm.popup_centered()
+		)
+		add_tool_submenu_item("Dialogue", tool_menu)
 
 
 func _exit_tree() -> void:
@@ -82,7 +104,7 @@ func _exit_tree() -> void:
 	EditorInterface.get_file_system_dock().files_moved.disconnect(_on_files_moved)
 	EditorInterface.get_file_system_dock().file_removed.disconnect(_on_file_removed)
 
-	remove_tool_menu_item("Create copy of dialogue example balloon...")
+	remove_tool_menu_item("Dialogue")
 
 	instance = null
 
@@ -360,7 +382,7 @@ func _update_localization() -> void:
 ### Callbacks
 
 
-func _copy_dialogue_balloon() -> void:
+func _create_dialogue_balloon() -> void:
 	var scale: float = EditorInterface.get_editor_scale()
 	var directory_dialog: FileDialog = FileDialog.new()
 	var label: Label = Label.new()
