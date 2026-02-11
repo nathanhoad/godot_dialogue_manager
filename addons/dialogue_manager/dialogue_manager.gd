@@ -388,52 +388,73 @@ func get_resolved_line_data(data: Dictionary, extra_game_states: Array = []) -> 
 				body = bits[0]
 				body_else = bits[1]
 			var condition: Dictionary = compilation.extract_condition("if " + condition_raw, false, 0)
+			var condition_passed: bool = await _check_condition({ condition = condition }, extra_game_states)
 			# If the condition fails then use the else of ""
-			if not await _check_condition({ condition = condition }, extra_game_states):
+			if not condition_passed:
 				body = body_else
 			replacements.append({
 				start = conditional.get_start(),
 				end = conditional.get_end(),
 				string = conditional.get_string(),
-				body = body
+				body = body,
+				condition_passed = condition_passed
 			})
 
 		for i in range(replacements.size() - 1, -1, -1):
 			var r: Dictionary = replacements[i]
 			resolved_text = resolved_text.substr(0, r.start) + r.body + resolved_text.substr(r.end, 9999)
 			# Move any other markers now that the text has changed
-			_shift_markers(markers, r.start, r.end - r.start - r.body.length())
+			_shift_markers(markers, r.start, r.end, r.body.length(), r.condition_passed)
 
 		var image_tags: Array[RegExMatch] = compilation.regex.IMAGE_TAGS_REGEX.search_all(resolved_text)
 		for image_tag: RegExMatch in image_tags:
 			# The [img] and [/img] tags have already been accounted for so now we just need to
 			# adjust for the path length.
-			_shift_markers(markers, image_tag.get_start(), image_tag.get_string(image_tag.names.path).length())
+			var path_length: int = image_tag.get_string(image_tag.names.path).length()
+			_shift_markers(markers, image_tag.get_start(), image_tag.get_start() + path_length, 0)
 
 		markers.text = resolved_text
 
 	return markers
 
 
-func _shift_markers(markers: DMResolvedLineData, if_after: int, by_offset: int) -> void:
+func _shift_markers(markers: DMResolvedLineData, removed_start: int, removed_end: int, body_length: int, keep_inner: bool = true) -> void:
+	# Calculate the offset for markers after the removed range
+	var after_offset: int = removed_end - removed_start - body_length
+
 	for key in [&"speeds", &"time"]:
 		if markers.get(key) == null: continue
 		var marker = markers.get(key)
 		var next_marker: Dictionary = {}
 		for index in marker:
-			if index < if_after:
+			if index < removed_start:
 				next_marker[index] = marker[index]
-			elif index > if_after:
-				next_marker[index - by_offset] = marker[index]
+			elif index >= removed_end:
+				next_marker[index - after_offset] = marker[index]
+			elif keep_inner:
+				# Marker is inside the conditional range and should be kept
+				# Shift it to account for the [if] tag being removed
+				next_marker[removed_start] = marker[index]
+			else:
+				# marker is inside a failed conditional, remove it
+				continue
 		markers.set(key, next_marker)
+
 	var mutations: Array[Array] = markers.mutations
 	var next_mutations: Array[Array] = []
 	for mutation in mutations:
 		var index = mutation[0]
-		if index < if_after:
+		if index < removed_start:
 			next_mutations.append(mutation)
-		elif index > if_after:
-			next_mutations.append([index - by_offset, mutation[1]])
+		elif index >= removed_end:
+			next_mutations.append([index - after_offset, mutation[1]])
+		elif keep_inner:
+			# Mutation is inside the conditional range and should be kept
+			# Shift it to account for the [if] tag being removed
+			next_mutations.append([removed_start, mutation[1]])
+		else:
+			# mutation is inside a failed conditional, remove it
+			continue
 	markers.mutations = next_mutations
 
 
