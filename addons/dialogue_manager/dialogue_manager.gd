@@ -1033,7 +1033,7 @@ func _resolve(tokens: Array, extra_game_states: Array):
 				var caller: Dictionary = tokens[i - 2]
 				if Builtins.is_supported(caller.value):
 					caller.type = DMConstants.TOKEN_VALUE
-					caller.value = Builtins.resolve_method(caller.value, function_name, args)
+					caller.value = await Builtins.resolve_method(caller.value, function_name, args)
 					tokens.remove_at(i)
 					tokens.remove_at(i - 1)
 					i -= 2
@@ -1555,7 +1555,7 @@ func _get_method_info_for(thing: Variant, method: String, args: Array) -> Dictio
 
 func _resolve_thing_method(thing, method: String, args: Array):
 	if Builtins.is_supported(thing):
-		var result = Builtins.resolve_method(thing, method, args)
+		var result = await Builtins.resolve_method(thing, method, args)
 		if not Builtins.has_resolve_method_failed():
 			return result
 

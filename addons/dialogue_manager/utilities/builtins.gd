@@ -102,7 +102,7 @@ static func resolve_method(thing, method_name: String, args: Array):
 	var expression = Expression.new()
 	if expression.parse("thing.%s(%s)" % [method_name, ",".join(references.slice(1))], references) != OK:
 		assert(false, expression.get_error_text())
-	var result = expression.execute([thing] + args, null, false)
+	var result = await expression.execute([thing] + args, null, false)
 	if expression.has_execute_failed():
 		resolve_method_error = ERR_CANT_RESOLVE
 		return null
