@@ -1592,8 +1592,14 @@ func _resolve_thing_method(thing, method: String, args: Array):
 	if thing is Script:
 		thing = thing.new()
 	var dotnet_dialogue_manager = _get_dotnet_dialogue_manager()
-	dotnet_dialogue_manager.ResolveThingMethod(thing, method, args)
-	return await dotnet_dialogue_manager.Resolved
+	var id: float = randf()
+	dotnet_dialogue_manager.ResolveThingMethod(id, thing, method, args)
+	var x: int = 0
+	while x < 1000:
+		var result = await dotnet_dialogue_manager.Resolved
+		if result[0] == id:
+			return result[1]
+		x += 1
 
 
 func _resolve_thing_property(thing: Object, property: String) -> Variant:
