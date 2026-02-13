@@ -5,8 +5,8 @@ class_name DialogueManagerExampleBalloon extends CanvasLayer
 ## The dialogue resource
 @export var dialogue_resource: DialogueResource
 
-## Start from a given title when using balloon as a [Node] in a scene.
-@export var start_from_title: String = ""
+## Start from a given label when using balloon as a [Node] in a scene.
+@export var start_from_label: String = ""
 
 ## If running as a [Node] in a scene then auto start the dialogue.
 @export var auto_start: bool = false
@@ -110,14 +110,14 @@ func _notification(what: int) -> void:
 
 
 ## Start some dialogue
-func start(with_dialogue_resource: DialogueResource = null, title: String = "", extra_game_states: Array = []) -> void:
+func start(with_dialogue_resource: DialogueResource = null, label: String = "", extra_game_states: Array = []) -> void:
 	temporary_game_states = [self] + extra_game_states
 	is_waiting_for_input = false
 	if is_instance_valid(with_dialogue_resource):
 		dialogue_resource = with_dialogue_resource
-	if not title.is_empty():
-		start_from_title = title
-	dialogue_line = await dialogue_resource.get_next_dialogue_line(start_from_title, temporary_game_states)
+	if not label.is_empty():
+		start_from_label = label
+	dialogue_line = await dialogue_resource.get_next_dialogue_line(start_from_label, temporary_game_states)
 	show()
 
 

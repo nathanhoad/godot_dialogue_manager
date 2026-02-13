@@ -48,8 +48,8 @@ func _get_line_syntax_highlighting(line: int) -> Dictionary:
 		DMConstants.TYPE_COMMENT:
 			colors[index] = { color = theme.comments_color }
 
-		DMConstants.TYPE_TITLE:
-			colors[index] = { color = theme.titles_color }
+		DMConstants.TYPE_LABEL:
+			colors[index] = { color = theme.labels_color }
 
 		DMConstants.TYPE_CONDITION, DMConstants.TYPE_WHILE, DMConstants.TYPE_MATCH, DMConstants.TYPE_WHEN:
 			colors[0] = { color = theme.conditions_color }

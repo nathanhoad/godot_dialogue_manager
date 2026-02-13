@@ -68,7 +68,7 @@ msgstr "自动切行"
 msgid "insert.templates"
 msgstr "模板"
 
-msgid "insert.title"
+msgid "insert.label"
 msgstr "标题"
 
 msgid "insert.dialogue"
@@ -185,7 +185,7 @@ msgstr "全部替换"
 msgid "files_list.filter"
 msgstr "查找文件"
 
-msgid "titles_list.filter"
+msgid "labels_list.filter"
 msgstr "查找标题"
 
 msgid "errors.key_not_found"
@@ -209,25 +209,25 @@ msgstr "文件已被导入。"
 msgid "errors.duplicate_import"
 msgstr "导入名不能重复。"
 
-msgid "errors.empty_title"
+msgid "errors.empty_label"
 msgstr "标题名不能为空。"
 
-msgid "errors.duplicate_title"
+msgid "errors.duplicate_label"
 msgstr "标题名不能重复。"
 
-msgid "errors.invalid_title_string"
+msgid "errors.invalid_label_string"
 msgstr "标题名无效。"
 
-msgid "errors.invalid_title_number"
+msgid "errors.invalid_label_number"
 msgstr "标题不能以数字开始。"
 
-msgid "errors.unknown_title"
+msgid "errors.unknown_label"
 msgstr "标题未定义。"
 
-msgid "errors.jump_to_invalid_title"
+msgid "errors.jump_to_invalid_label"
 msgstr "标题名无效。"
 
-msgid "errors.title_has_no_content"
+msgid "errors.label_has_no_content"
 msgstr "目标标题为空。请替换为“=> END”。"
 
 msgid "errors.invalid_expression"

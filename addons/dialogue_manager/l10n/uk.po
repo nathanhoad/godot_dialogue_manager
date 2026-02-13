@@ -77,7 +77,7 @@ msgstr "Автоматичне просування"
 msgid "insert.templates"
 msgstr "Шаблони"
 
-msgid "insert.title"
+msgid "insert.label"
 msgstr "Заголовок"
 
 msgid "insert.dialogue"
@@ -194,7 +194,7 @@ msgstr "Замінити все"
 msgid "files_list.filter"
 msgstr "Фільтр файлів"
 
-msgid "titles_list.filter"
+msgid "labels_list.filter"
 msgstr "Фільтр заголовків"
 
 msgid "errors.key_not_found"
@@ -221,25 +221,25 @@ msgstr "Дублювання назви імпорту."
 msgid "errors.unknown_using"
 msgstr "Невідоме автозавантаження в операторі «using»."
 
-msgid "errors.empty_title"
+msgid "errors.empty_label"
 msgstr "Заголовки не можуть бути порожніми."
 
-msgid "errors.duplicate_title"
+msgid "errors.duplicate_label"
 msgstr "Заголовок з такою назвою уже є."
 
-msgid "errors.invalid_title_string"
+msgid "errors.invalid_label_string"
 msgstr "Заголовки можуть містити лише алфавітно-цифрові символи та цифри."
 
-msgid "errors.invalid_title_number"
+msgid "errors.invalid_label_number"
 msgstr "Заголовки не можуть починатися з цифри."
 
-msgid "errors.unknown_title"
+msgid "errors.unknown_label"
 msgstr "Невідомий заголовок."
 
-msgid "errors.jump_to_invalid_title"
+msgid "errors.jump_to_invalid_label"
 msgstr "Цей перехід вказує на недійсний заголовок."
 
-msgid "errors.title_has_no_content"
+msgid "errors.label_has_no_content"
 msgstr "Цей заголовок не має змісту. Можливо, варто змінити його на «=> END»."
 
 msgid "errors.invalid_expression"

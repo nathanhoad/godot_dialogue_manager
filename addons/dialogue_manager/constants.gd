@@ -58,7 +58,7 @@ const TYPE_IMPORT = &"import"
 const TYPE_USING = &"using"
 const TYPE_COMMENT = &"comment"
 const TYPE_RESPONSE = &"response"
-const TYPE_TITLE = &"title"
+const TYPE_LABEL = &"label"
 const TYPE_CONDITION = &"condition"
 const TYPE_WHILE = &"while"
 const TYPE_MATCH = &"match"
@@ -73,8 +73,6 @@ const TYPE_ERROR = &"error"
 
 const ID_NULL = &""
 const ID_ERROR = &"error"
-const ID_ERROR_INVALID_TITLE = &"invalid title"
-const ID_ERROR_TITLE_HAS_NO_BODY = &"title has no body"
 const ID_END = &"end"
 const ID_END_CONVERSATION = &"end!"
 
@@ -83,12 +81,12 @@ const ID_END_CONVERSATION = &"end!"
 const ERR_ERRORS_IN_IMPORTED_FILE = 100
 const ERR_FILE_ALREADY_IMPORTED = 101
 const ERR_DUPLICATE_IMPORT_NAME = 102
-const ERR_EMPTY_TITLE = 103
-const ERR_DUPLICATE_TITLE = 104
-const ERR_TITLE_INVALID_CHARACTERS = 106
-const ERR_UNKNOWN_TITLE = 107
-const ERR_INVALID_TITLE_REFERENCE = 108
-const ERR_TITLE_REFERENCE_HAS_NO_CONTENT = 109
+const ERR_EMPTY_LABEL = 103
+const ERR_DUPLICATE_LABEL = 104
+const ERR_LABEL_INVALID_CHARACTERS = 106
+const ERR_UNKNOWN_LABEL = 107
+const ERR_INVALID_LABEL_REFERENCE= 108
+const ERR_LABEL_REFERENCE_HAS_NO_CONTENT = 109
 const ERR_INVALID_EXPRESSION = 110
 const ERR_UNEXPECTED_CONDITION = 111
 const ERR_DUPLICATE_ID = 112
@@ -98,7 +96,7 @@ const ERR_INVALID_CONDITION_INDENTATION = 115
 const ERR_INCOMPLETE_EXPRESSION = 116
 const ERR_INVALID_EXPRESSION_FOR_VALUE = 117
 const ERR_UNKNOWN_LINE_SYNTAX = 118
-const ERR_TITLE_BEGINS_WITH_NUMBER = 119
+const ERR_LABEL_BEGINS_WITH_NUMBER = 119
 const ERR_UNEXPECTED_END_OF_EXPRESSION = 120
 const ERR_UNEXPECTED_FUNCTION = 121
 const ERR_UNEXPECTED_BRACKET = 122
@@ -138,20 +136,20 @@ static func get_error_message(error: int) -> String:
 			return translate(&"errors.already_imported")
 		ERR_DUPLICATE_IMPORT_NAME:
 			return translate(&"errors.duplicate_import")
-		ERR_EMPTY_TITLE:
-			return translate(&"errors.empty_title")
-		ERR_DUPLICATE_TITLE:
-			return translate(&"errors.duplicate_title")
-		ERR_TITLE_INVALID_CHARACTERS:
-			return translate(&"errors.invalid_title_string")
-		ERR_TITLE_BEGINS_WITH_NUMBER:
-			return translate(&"errors.invalid_title_number")
-		ERR_UNKNOWN_TITLE:
-			return translate(&"errors.unknown_title")
-		ERR_INVALID_TITLE_REFERENCE:
-			return translate(&"errors.jump_to_invalid_title")
-		ERR_TITLE_REFERENCE_HAS_NO_CONTENT:
-			return translate(&"errors.title_has_no_content")
+		ERR_EMPTY_LABEL:
+			return translate(&"errors.empty_label")
+		ERR_DUPLICATE_LABEL:
+			return translate(&"errors.duplicate_label")
+		ERR_LABEL_INVALID_CHARACTERS:
+			return translate(&"errors.invalid_label_string")
+		ERR_LABEL_BEGINS_WITH_NUMBER:
+			return translate(&"errors.invalid_label_number")
+		ERR_UNKNOWN_LABEL:
+			return translate(&"errors.unknown_label")
+		ERR_INVALID_LABEL_REFERENCE:
+			return translate(&"errors.jump_to_invalid_label")
+		ERR_LABEL_REFERENCE_HAS_NO_CONTENT:
+			return translate(&"errors.label_has_no_content")
 		ERR_INVALID_EXPRESSION:
 			return translate(&"errors.invalid_expression")
 		ERR_UNEXPECTED_CONDITION:

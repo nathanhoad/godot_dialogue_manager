@@ -1,8 +1,8 @@
-[gd_scene load_steps=2 format=3 uid="uid://ctns6ouwwd68i"]
+[gd_scene format=3 uid="uid://ctns6ouwwd68i"]
 
-[ext_resource type="Script" uid="uid://d0k2wndjj0ifm" path="res://addons/dialogue_manager/components/title_list.gd" id="1_5qqmd"]
+[ext_resource type="Script" uid="uid://d0k2wndjj0ifm" path="res://addons/dialogue_manager/components/label_list.gd" id="1_5qqmd"]
 
-[node name="TitleList" type="VBoxContainer"]
+[node name="LabelList" type="VBoxContainer"]
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -14,7 +14,7 @@ script = ExtResource("1_5qqmd")
 
 [node name="FilterEdit" type="LineEdit" parent="."]
 layout_mode = 2
-placeholder_text = "Filter titles"
+placeholder_text = "Filter labels"
 clear_button_enabled = true
 
 [node name="List" type="ItemList" parent="."]

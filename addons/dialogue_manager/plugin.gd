@@ -167,11 +167,11 @@ func _build() -> bool:
 	return true
 
 
-## Open a [Dialogue Resource] and jump to a given title.
-static func open_file_at_title(resource_or_path: Variant, title: String, create_if_none: bool = false) -> void:
+## Open a [Dialogue Resource] and jump to a given label.
+static func open_file_at_label(resource_or_path: Variant, label: String, create_if_none: bool = false) -> void:
 	var resource: DialogueResource = resource_or_path if resource_or_path is DialogueResource else load(resource_or_path)
 	EditorInterface.edit_resource(resource)
-	instance.main_view.go_to_title(title, create_if_none)
+	instance.main_view.go_to_label(label, create_if_none)
 
 
 static func show_find_in_dialogue() -> void:
