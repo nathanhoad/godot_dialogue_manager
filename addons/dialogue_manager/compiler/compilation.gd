@@ -12,10 +12,10 @@ var file_path: String
 var imported_paths: PackedStringArray = []
 ## A list of state names from "using" clauses.
 var using_states: PackedStringArray = []
-## A map of titles in this file.
-var titles: Dictionary = {}
-## The first encountered title in this file.
-var first_title: String = ""
+## A map of labels in this file.
+var labels: Dictionary = {}
+## The first encountered label in this file.
+var first_label: String = ""
 ## A list of character names in this file.
 var character_names: PackedStringArray = []
 ## A list of any compilation errors.
@@ -47,7 +47,7 @@ var expression_parser: DMExpressionParser = DMExpressionParser.new()
 # A noop for retrieving the next line without conditions.
 var _first: Callable = func(_s): return true
 
-# Title jumps are adjusted as they are parsed so any goto lines might need to be adjusted after they are first seen.
+# Label jumps are adjusted as they are parsed so any goto lines might need to be adjusted after they are first seen.
 var _goto_lines: Dictionary = {}
 
 
@@ -59,7 +59,7 @@ var _goto_lines: Dictionary = {}
 ## Compile some text.
 func compile(text: String, path: String = ".") -> Error:
 	file_path = path
-	titles = {}
+	labels = {}
 	character_names = []
 
 	text += "\n=> END"
@@ -69,7 +69,7 @@ func compile(text: String, path: String = ".") -> Error:
 		if DMCache.known_static_ids.get(key) == file_path:
 			DMCache.known_static_ids.erase(key)
 
-	find_imported_titles(text, file_path)
+	find_imported_labels(text, file_path)
 	parse_line_tree(build_line_tree(text.split("\n")))
 
 	# Convert the compiles lines to a Dictionary so they can be stored.
@@ -84,7 +84,7 @@ func compile(text: String, path: String = ".") -> Error:
 
 
 ## Inject any imported files
-func find_imported_titles(text: String, path: String) -> void:
+func find_imported_labels(text: String, path: String) -> void:
 	# Work out imports
 	var known_imports: Dictionary = {}
 
@@ -107,7 +107,7 @@ func find_imported_titles(text: String, path: String) -> void:
 		elif known_imports.values().has(import_data.prefix):
 			add_error(id, 0, DMConstants.ERR_DUPLICATE_IMPORT_NAME)
 		else:
-			# Get titles from other file and map them to the known list of titles.
+			# Get labels from other file and map them to the known list of labels.
 			var imported_resource: DialogueResource = ResourceLoader.load(import_data.path, "", ResourceLoader.CACHE_MODE_REPLACE)
 
 			# Guard against failed loads -- namely during reimport cascade.
@@ -117,12 +117,12 @@ func find_imported_titles(text: String, path: String) -> void:
 				continue
 
 			var uid: String = ResourceUID.id_to_text(ResourceLoader.get_resource_uid(import_data.path)).replace("uid://", "")
-			for title_key: String in imported_resource.titles:
-				# Ignore any titles that are already a reference
-				if "/" in title_key: continue
-				# Create "alias/title" to "uid@id" mappig
-				var title_reference: String = "%s/%s" % [import_data.prefix, title_key]
-				titles[title_reference] = "%s@%s" % [uid, imported_resource.titles.get(title_key)]
+			for label_key: String in imported_resource.labels:
+				# Ignore any labels that are already a reference
+				if "/" in label_key: continue
+				# Create "alias/label" to "uid@id" mappig
+				var label_reference: String = "%s/%s" % [import_data.prefix, label_key]
+				labels[label_reference] = "%s@%s" % [uid, imported_resource.labels.get(label_key)]
 
 			imported_paths.append(import_data.path)
 			known_imports[import_data.path] = import_data.prefix
@@ -191,17 +191,17 @@ func build_line_tree(raw_lines: PackedStringArray) -> DMTreeLine:
 		elif tree_line.indent < parent_chain.size() - 1:
 			parent_chain.resize(tree_line.indent + 1)
 
-		# Add any titles to the list of known titles
-		if tree_line.type == DMConstants.TYPE_TITLE:
-			var title: String = tree_line.text.substr(2)
-			if title == "":
-				add_error(i, 2, DMConstants.ERR_EMPTY_TITLE)
-			elif titles.has(title):
-				add_error(i + 1, 2, DMConstants.ERR_DUPLICATE_TITLE)
+		# Add any labels to the list of known labels
+		if tree_line.type == DMConstants.TYPE_LABEL:
+			var label: String = tree_line.text.substr(2)
+			if label == "":
+				add_error(i, 2, DMConstants.ERR_EMPTY_LABEL)
+			elif labels.has(label):
+				add_error(i + 1, 2, DMConstants.ERR_DUPLICATE_LABEL)
 			else:
-				titles[title] = tree_line.id
-				if first_title == "":
-					first_title = tree_line.id
+				labels[label] = tree_line.id
+				if first_label == "":
+					first_label = tree_line.id
 
 		# Append the current line to the current parent (note: the root is the most basic parent).
 		var parent: DMTreeLine = parent_chain[parent_chain.size() - 1]
@@ -229,8 +229,8 @@ func parse_line_tree(root: DMTreeLine, parent: DMCompiledLine = null) -> Array[D
 			DMConstants.TYPE_UNKNOWN:
 				line.next_id = get_next_matching_sibling_id(root.children, i, parent, _first)
 
-			DMConstants.TYPE_TITLE:
-				parse_title_line(tree_line, line, root.children, i, parent)
+			DMConstants.TYPE_LABEL:
+				parse_label_line(tree_line, line, root.children, i, parent)
 
 			DMConstants.TYPE_CONDITION:
 				parse_condition_line(tree_line, line, root.children, i, parent)
@@ -277,27 +277,27 @@ func parse_line_tree(root: DMTreeLine, parent: DMCompiledLine = null) -> Array[D
 	return compiled_lines
 
 
-## Parse a title and apply it to the given line
-func parse_title_line(tree_line: DMTreeLine, line: DMCompiledLine, siblings: Array[DMTreeLine], sibling_index: int, parent: DMCompiledLine) -> Error:
+## Parse a label and apply it to the given line
+func parse_label_line(tree_line: DMTreeLine, line: DMCompiledLine, siblings: Array[DMTreeLine], sibling_index: int, parent: DMCompiledLine) -> Error:
 	var result: Error = OK
 
 	line.text = tree_line.text.substr(tree_line.text.find("~ ") + 2).strip_edges()
 
-	# Titles can't have numbers as the first letter
+	# Labels can't have numbers as the first letter
 	if regex.BEGINS_WITH_NUMBER_REGEX.search(line.text):
-		result = add_error(tree_line.line_number, 2, DMConstants.ERR_TITLE_BEGINS_WITH_NUMBER)
+		result = add_error(tree_line.line_number, 2, DMConstants.ERR_LABEL_BEGINS_WITH_NUMBER)
 
-	# Only import titles are allowed to have "/" in them
-	var valid_title: RegExMatch = regex.VALID_TITLE_REGEX.search(line.text.replace("/", ""))
-	if not valid_title:
-		result = add_error(tree_line.line_number, 2, DMConstants.ERR_TITLE_INVALID_CHARACTERS)
+	# Only import labels are allowed to have "/" in them
+	var valid_label: RegExMatch = regex.VALID_LABEL_REGEX.search(line.text.replace("/", ""))
+	if not valid_label:
+		result = add_error(tree_line.line_number, 2, DMConstants.ERR_LABEL_INVALID_CHARACTERS)
 
 	line.next_id = get_next_matching_sibling_id(siblings, sibling_index, parent, _first)
 
-	## Update the titles reference to point to the actual first line
-	titles[line.text] = line.next_id
+	## Update the labels reference to point to the actual first line
+	labels[line.text] = line.next_id
 
-	## Update any lines that point to this title
+	## Update any lines that point to this label
 	if _goto_lines.has(line.text):
 		for goto_line: DMCompiledLine in _goto_lines[line.text]:
 			goto_line.next_id = line.next_id
@@ -308,14 +308,14 @@ func parse_title_line(tree_line: DMTreeLine, line: DMCompiledLine, siblings: Arr
 ## Parse a goto and apply it to the given line.
 func parse_goto_line(tree_line: DMTreeLine, line: DMCompiledLine, siblings: Array[DMTreeLine], sibling_index: int, parent: DMCompiledLine) -> Error:
 	# Work out where this line is jumping to.
-	var goto_data: DMResolvedGotoData = DMResolvedGotoData.new(tree_line.text, titles)
+	var goto_data: DMResolvedGotoData = DMResolvedGotoData.new(tree_line.text, labels)
 
 	if goto_data.error:
 		return add_error(tree_line.line_number, tree_line.indent + 2, goto_data.error)
 	if goto_data.next_id or goto_data.expression:
 		line.next_id = goto_data.next_id
 		line.next_id_expression = goto_data.expression
-		add_reference_to_title(goto_data.title, line)
+		add_reference_to_label(goto_data.label, line)
 
 	if goto_data.is_snippet:
 		line.is_snippet = true
@@ -717,7 +717,7 @@ func parse_character_and_dialogue(tree_line: DMTreeLine, line: DMCompiledLine, s
 	if " =><" in text:
 		# Because of when the return point needs to be known at runtime we need to split
 		# this line into two (otherwise the return point would be dependent on the balloon).
-		var goto_data: DMResolvedGotoData = DMResolvedGotoData.new(text, titles)
+		var goto_data: DMResolvedGotoData = DMResolvedGotoData.new(text, labels)
 		if goto_data.error:
 			result = add_error(tree_line.line_number, tree_line.indent + 3, goto_data.error)
 		if goto_data.next_id or goto_data.expression:
@@ -735,16 +735,16 @@ func parse_character_and_dialogue(tree_line: DMTreeLine, line: DMCompiledLine, s
 			goto_line.is_snippet = true
 			lines[goto_line.id] = goto_line
 			line.next_id = goto_line.id
-			add_reference_to_title(goto_data.title, goto_line)
+			add_reference_to_label(goto_data.label, goto_line)
 	elif " =>" in text:
-		var goto_data: DMResolvedGotoData = DMResolvedGotoData.new(text, titles)
+		var goto_data: DMResolvedGotoData = DMResolvedGotoData.new(text, labels)
 		if goto_data.error:
 			result = add_error(tree_line.line_number, tree_line.indent + 2, goto_data.error)
 		if goto_data.next_id or goto_data.expression:
 			text = goto_data.text_without_goto
 			line.next_id = goto_data.next_id
 			line.next_id_expression = goto_data.expression
-			add_reference_to_title(goto_data.title, line)
+			add_reference_to_label(goto_data.label, line)
 
 	# Handle the dialogue.
 	text = text.replace("\\:", "!ESCAPED_COLON!")
@@ -868,7 +868,7 @@ func get_line_type(raw_line: String) -> String:
 		return DMConstants.TYPE_COMMENT
 
 	if text.begins_with("~ "):
-		return DMConstants.TYPE_TITLE
+		return DMConstants.TYPE_LABEL
 
 	if text.begins_with("if ") or text.begins_with("elif") or text.begins_with("else"):
 		return DMConstants.TYPE_CONDITION
@@ -998,13 +998,13 @@ func extract_mutation(text: String) -> Dictionary:
 		}
 
 
-## Keep track of lines referencing titles because their own next_id might not have been resolved yet.
-func add_reference_to_title(title: String, line: DMCompiledLine) -> void:
-	if title in [DMConstants.ID_END, DMConstants.ID_END_CONVERSATION, DMConstants.ID_NULL]: return
+## Keep track of lines referencing labels because their own next_id might not have been resolved yet.
+func add_reference_to_label(label: String, line: DMCompiledLine) -> void:
+	if label in [DMConstants.ID_END, DMConstants.ID_END_CONVERSATION, DMConstants.ID_NULL]: return
 
-	if not _goto_lines.has(title):
-		_goto_lines[title] = []
-	_goto_lines[title].append(line)
+	if not _goto_lines.has(label):
+		_goto_lines[label] = []
+	_goto_lines[label].append(line)
 
 
 ## Parse a nested block of child lines

@@ -243,7 +243,7 @@ static func get_user_config() -> Dictionary:
 		reopen_files = [],
 		most_recent_reopen_file = "",
 		file_meta = {},
-		run_title = "",
+		run_key = "",
 		run_resource_path = "",
 		is_running_test_scene = false,
 		has_dotnet_solution = false,

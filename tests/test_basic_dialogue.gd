@@ -1,41 +1,41 @@
 extends AbstractTest
 
 
-func test_can_parse_titles() -> void:
-	var output: DMCompilerResult = compile("~ some_title\nNathan: Hello.")
+func test_can_parse_labels() -> void:
+	var output: DMCompilerResult = compile("~ some_label\nNathan: Hello.")
 
 	assert(output.errors.is_empty(), "Should have no errors.")
-	assert(output.titles.size() == 1, "Should have one title.")
-	assert(output.titles.has("some_title"), "Should have known title.")
-	assert(output.titles["some_title"] == "1", "Should point to the next line.")
+	assert(output.labels.size() == 1, "Should have one label.")
+	assert(output.labels.has("some_label"), "Should have known label.")
+	assert(output.labels["some_label"] == "1", "Should point to the next line.")
 
 	output = compile("
 ~ start
 if StateForTests.some_property
 	Nathan: Some unrelated but indented line.
-	=> title_directly_after_dedent
-~ title_directly_after_dedent")
+	=> label_directly_after_dedent
+~ label_directly_after_dedent")
 
 	assert(output.errors.is_empty(), "Should have no errors.")
-	assert(output.titles.size() == 2, "Should have two titles.")
-	assert(output.titles.keys()[1] == "title_directly_after_dedent", "Should have second title.")
+	assert(output.labels.size() == 2, "Should have two labels.")
+	assert(output.labels.keys()[1] == "label_directly_after_dedent", "Should have second label.")
 
 	output = compile("
 ~ start
 if true
-	~ indented_title
+	~ indented_label
 	Nathan: Some unrelated but indented line.
 Nathan: After.
-=> indented_title")
+=> indented_label")
 
 	assert(output.errors.is_empty(), "Should have no errors.")
-	assert(output.titles.size() == 2, "Should have two titles.")
-	assert(output.titles["indented_title"] == "4", "Should have second title.")
+	assert(output.labels.size() == 2, "Should have two labels.")
+	assert(output.labels["indented_label"] == "4", "Should have second label.")
 
 	output = compile("~ t")
 
 	assert(output.errors.is_empty(), "Should have no errors.")
-	assert("t" in output.titles.keys(), "Should include title.")
+	assert("t" in output.labels.keys(), "Should include label.")
 
 
 func test_can_parse_basic_dialogue() -> void:
@@ -191,7 +191,7 @@ Nathan: Jump 3.")
 => END")
 
 	assert(output.errors.is_empty(), "Should have no errors.")
-	assert(output.lines["1"].next_id == "2", "Title should point to first random line.")
+	assert(output.lines["1"].next_id == "2", "Label should point to first random line.")
 	assert(output.lines["2"].type == DMConstants.TYPE_DIALOGUE, "Should be a dialogue line.")
 	assert(output.lines["2"].siblings.size() == 2, "Should have two siblings")
 
@@ -267,11 +267,11 @@ Nathan: With optional arguments.
 	assert(test.number == 1, "Method call should set optional argument")
 
 
-func test_can_have_subsequent_titles() -> void:
+func test_can_have_subsequent_labels() -> void:
 	var resource: DialogueResource = create_resource("
 ~ start
-~ another_title
-~ third_title
+~ another_label
+~ third_label
 Nathan: Hello.")
 
 	var line: DialogueLine = await resource.get_next_dialogue_line("start")

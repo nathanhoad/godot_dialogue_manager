@@ -28,13 +28,13 @@ namespace DialogueManagerRuntime
     public partial class DialogueManager : RefCounted
     {
         public delegate void DialogueStartedEventHandler(Resource dialogueResource);
-        public delegate void PassedTitleEventHandler(string title);
+        public delegate void PassedLabelEventHandler(string label);
         public delegate void GotDialogueEventHandler(DialogueLine dialogueLine);
         public delegate void MutatedEventHandler(Dictionary mutation);
         public delegate void DialogueEndedEventHandler(Resource dialogueResource);
 
         public static DialogueStartedEventHandler? DialogueStarted;
-        public static PassedTitleEventHandler? PassedTitle;
+        public static PassedLabelEventHandler? PassedLabel;
         public static GotDialogueEventHandler? GotDialogue;
         public static MutatedEventHandler? Mutated;
         public static DialogueEndedEventHandler? DialogueEnded;
@@ -52,7 +52,7 @@ namespace DialogueManagerRuntime
                 {
                     instance = Engine.GetSingleton("DialogueManager");
                     instance.Connect("dialogue_started", Callable.From((Resource dialogueResource) => DialogueStarted?.Invoke(dialogueResource)));
-                    instance.Connect("passed_title", Callable.From((string title) => PassedTitle?.Invoke(title)));
+                    instance.Connect("passed_label", Callable.From((string label) => PassedLabel?.Invoke(label)));
                     instance.Connect("got_dialogue", Callable.From((RefCounted line) => GotDialogue?.Invoke(new DialogueLine(line))));
                     instance.Connect("mutated", Callable.From((Dictionary mutation) => Mutated?.Invoke(mutation)));
                     instance.Connect("dialogue_ended", Callable.From((Resource dialogueResource) => DialogueEnded?.Invoke(dialogueResource)));

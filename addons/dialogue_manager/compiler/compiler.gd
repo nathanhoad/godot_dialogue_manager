@@ -11,8 +11,8 @@ static func compile_string(text: String, path: String) -> DMCompilerResult:
 	result.imported_paths = compilation.imported_paths
 	result.using_states = compilation.using_states
 	result.character_names = compilation.character_names
-	result.titles = compilation.titles
-	result.first_title = compilation.first_title
+	result.labels = compilation.labels
+	result.first_label = compilation.first_label
 	result.errors = compilation.errors
 	result.lines = compilation.data
 	result.raw_text = text
@@ -50,9 +50,9 @@ static func extract_mutation(text: String) -> Dictionary:
 	return compilation.extract_mutation(text)
 
 
-## Get the known titles in a dialogue script.
-static func get_titles_in_text(text: String, path: String) -> Dictionary:
+## Get the known labels in a dialogue script.
+static func get_labels_in_text(text: String, path: String) -> Dictionary:
 	var compilation: DMCompilation = DMCompilation.new()
-	compilation.find_imported_titles(text, path)
+	compilation.find_imported_labels(text, path)
 	compilation.build_line_tree(text.split("\n"))
-	return compilation.titles
+	return compilation.labels

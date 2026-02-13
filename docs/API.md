@@ -5,20 +5,20 @@
 ### Signals
 
 - `dialogue_started(resource: DialogueResource)` - emitted when a dialogue balloon is created by `DialogueManager` and dialogue begins.
-- `passed_title(title: String)` - emitted when a title marker is passed through.
+- `passed_label(label: String)` - emitted when a label marker is passed through.
 - `got_dialogue(line: DialogueLine)` - emitted when a dialogue line is found.
 - `mutated(mutation: Dictionary)` - emitted when a mutation line is about to be run (not including `set` lines).
 - `dialogue_ended(resource: DialogueResource)` - emitted when the next line of dialogue is empty and provides the calling resource.
 
 ### Methods
 
-#### `func show_dialogue_balloon(resource: DialogueResource, title: String = "", extra_game_states: Array = []) -> Node`
+#### `func show_dialogue_balloon(resource: DialogueResource, label: String = "", extra_game_states: Array = []) -> Node`
 
 Opens the dialogue balloon configured in settings (or the example balloon if none has been set).
 
 Returns the balloon's base node in case you want to `queue_free()` it yourself.
 
-#### `func show_dialogue_balloon_scene(balloon_scene: Node | String, resource: DialogueResource, title: String = "", extra_game_states: Array = []) -> Node`
+#### `func show_dialogue_balloon_scene(balloon_scene: Node | String, resource: DialogueResource, label: String = "", extra_game_states: Array = []) -> Node`
 
 Opens a dialogue balloon given in `balloon_scene`.
 
@@ -28,7 +28,7 @@ Returns the balloon's base node in case you want to `queue_free()` it yourself.
 
 **Must be used with `await`.**
 
-Given a resource and title/ID, it will find the next printable line of dialogue (running mutations along the way).
+Given a resource and label/ID, it will find the next printable line of dialogue (running mutations along the way).
 
 Returns a `DialogueLine` that looks something like this:
 
@@ -55,7 +55,7 @@ Pass an array of nodes as `extra_game_states` in order to temporarily add to the
 
 You can specify `mutation_behaviour` to be one of the values provided in the `DialogueManager.MutationBehaviour` enum. `Wait` is the default and will `await` any mutation lines. `DoNoWait` will run the mutations but not wait for them before moving to the next line. `Skip` will skip mutations entirely. In most cases, you should leave this as the default. _The example balloon only supports `Wait`_.
 
-#### `func show_example_dialogue_balloon(resource: DialogueResource, title: String = "", extra_game_states: Array = []) -> CanvasLayer`
+#### `func show_example_dialogue_balloon(resource: DialogueResource, label: String = "", extra_game_states: Array = []) -> CanvasLayer`
 
 Opens the example balloon.
 

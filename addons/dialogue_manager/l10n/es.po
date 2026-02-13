@@ -65,7 +65,7 @@ msgstr "Avance automático"
 msgid "insert.templates"
 msgstr "Plantillas"
 
-msgid "insert.title"
+msgid "insert.label"
 msgstr "Título"
 
 msgid "insert.dialogue"
@@ -167,7 +167,7 @@ msgstr "Reemplazar todo"
 msgid "files_list.filter"
 msgstr "Filtrar archivos"
 
-msgid "titles_list.filter"
+msgid "labels_list.filter"
 msgstr "Filtrar títulos"
 
 msgid "errors.key_not_found"
@@ -194,28 +194,28 @@ msgstr "Nombre de importación duplicado."
 msgid "errors.unknown_using"
 msgstr "Autoload desconocida en la declaración de uso."
 
-msgid "errors.empty_title"
+msgid "errors.empty_label"
 msgstr "Los títulos no pueden estar vacíos."
 
-msgid "errors.duplicate_title"
+msgid "errors.duplicate_label"
 msgstr "Ya hay un título con ese nombre."
 
 msgid "errors.nested_title"
 msgstr "Los títulos no pueden tener sangría."
 
-msgid "errors.invalid_title_string"
+msgid "errors.invalid_label_string"
 msgstr "Los títulos solo pueden contener caracteres alfanuméricos y números."
 
-msgid "errors.invalid_title_number"
+msgid "errors.invalid_label_number"
 msgstr "Los títulos no pueden empezar con un número."
 
-msgid "errors.unknown_title"
+msgid "errors.unknown_label"
 msgstr "Título desconocido."
 
-msgid "errors.jump_to_invalid_title"
+msgid "errors.jump_to_invalid_label"
 msgstr "Este salto está apuntando a un título inválido."
 
-msgid "errors.title_has_no_content"
+msgid "errors.label_has_no_content"
 msgstr "Ese título no tiene contenido. Quizá cambiarlo a \"=> FIN\"."
 
 msgid "errors.invalid_expression"

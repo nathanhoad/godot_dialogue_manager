@@ -72,7 +72,7 @@ signal confirmation_closed()
 @onready var content: HSplitContainer = %Content
 @onready var files_list := %FilesList
 @onready var files_popup_menu: PopupMenu = %FilesPopupMenu
-@onready var title_list := %TitleList
+@onready var label_list := %LabelList
 @onready var code_edit: DMCodeEdit = %CodeEdit
 @onready var errors_panel := %ErrorsPanel
 
@@ -90,7 +90,7 @@ var current_file_path: String = "":
 			translations_button.disabled = true
 			content.dragger_visibility = SplitContainer.DRAGGER_HIDDEN
 			files_list.hide()
-			title_list.hide()
+			label_list.hide()
 			code_edit.hide()
 			errors_panel.hide()
 			search_and_replace.hide()
@@ -103,7 +103,7 @@ var current_file_path: String = "":
 			translations_button.disabled = false
 			content.dragger_visibility = SplitContainer.DRAGGER_VISIBLE
 			files_list.show()
-			title_list.show()
+			label_list.show()
 			code_edit.show()
 			banner.hide()
 
@@ -384,7 +384,7 @@ func apply_theme() -> void:
 			critical_color = editor_settings.get_setting("text_editor/theme/highlighting/comment_markers/critical_color"),
 			notice_color = editor_settings.get_setting("text_editor/theme/highlighting/comment_markers/notice_color"),
 
-			titles_color = editor_settings.get_setting("text_editor/theme/highlighting/gdscript/function_definition_color"),
+			labels_color = editor_settings.get_setting("text_editor/theme/highlighting/control_flow_keyword_color"),
 			text_color = editor_settings.get_setting("text_editor/theme/highlighting/text_color"),
 			tags_color = editor_settings.get_setting("text_editor/theme/highlighting/gdscript/node_path_color"),
 			conditions_color = editor_settings.get_setting("text_editor/theme/highlighting/keyword_color"),
@@ -450,7 +450,7 @@ func apply_theme() -> void:
 		popup.add_icon_item(get_theme_icon("ViewportSpeed", "EditorIcons"), DMConstants.translate(&"insert.typing_speed_change"), 4)
 		popup.add_icon_item(get_theme_icon("DebugNext", "EditorIcons"), DMConstants.translate(&"insert.auto_advance"), 5)
 		popup.add_separator(DMConstants.translate(&"insert.templates"))
-		popup.add_icon_item(get_theme_icon("RichTextEffect", "EditorIcons"), DMConstants.translate(&"insert.title"), 6)
+		popup.add_icon_item(get_theme_icon("RichTextEffect", "EditorIcons"), DMConstants.translate(&"insert.label"), 6)
 		popup.add_icon_item(get_theme_icon("RichTextEffect", "EditorIcons"), DMConstants.translate(&"insert.dialogue"), 7)
 		popup.add_icon_item(get_theme_icon("RichTextEffect", "EditorIcons"), DMConstants.translate(&"insert.response"), 8)
 		popup.add_icon_item(get_theme_icon("RichTextEffect", "EditorIcons"), DMConstants.translate(&"insert.random_lines"), 9)
@@ -480,9 +480,9 @@ func apply_theme() -> void:
 #region Helpers
 
 
-# Move the cursor to a given title in the dialogue editor
-func go_to_title(title: String, create_if_none: bool = false) -> void:
-	code_edit.go_to_title(title, create_if_none)
+# Move the cursor to a given label in the dialogue editor
+func go_to_label(label: String, create_if_none: bool = false) -> void:
+	code_edit.go_to_label(label, create_if_none)
 	code_edit.grab_focus()
 
 
@@ -524,7 +524,7 @@ func compile() -> void:
 	var result: DMCompilerResult = DMCompiler.compile_string(code_edit.text, current_file_path)
 	code_edit.errors = result.errors
 	errors_panel.errors = result.errors
-	title_list.titles = code_edit.get_titles()
+	label_list.labels = code_edit.get_labels()
 
 
 func show_build_error_dialog() -> void:
@@ -590,7 +590,7 @@ func show_search_form(is_enabled: bool) -> void:
 
 
 func run_test_scene(from_key: String) -> void:
-	DMSettings.set_user_value("run_title", from_key)
+	DMSettings.set_user_value("run_key", from_key)
 	DMSettings.set_user_value("is_running_test_scene", true)
 	DMSettings.set_user_value("run_resource_path", current_file_path)
 	var test_scene_path: String = DMSettings.get_setting(DMSettings.CUSTOM_TEST_SCENE_PATH, "res://addons/dialogue_manager/test_scene.tscn")
@@ -617,7 +617,7 @@ func _on_cache_file_content_changed(path: String, new_content: String) -> void:
 		if buffer.text == buffer.pristine_text and buffer.text != new_content:
 			buffer.text = new_content
 			code_edit.text = new_content
-			title_list.titles = code_edit.get_titles()
+			label_list.labels = code_edit.get_labels()
 		buffer.pristine_text = new_content
 
 
@@ -664,7 +664,7 @@ func _on_insert_button_menu_id_pressed(id: int) -> void:
 		5:
 			code_edit.insert_bbcode("[next=auto]")
 		6:
-			code_edit.insert_text_at_cursor("~ title")
+			code_edit.insert_text_at_cursor("~ label")
 		7:
 			code_edit.insert_text_at_cursor("Nathan: This is Some Dialogue")
 		8:
@@ -674,7 +674,7 @@ func _on_insert_button_menu_id_pressed(id: int) -> void:
 		10:
 			code_edit.insert_text_at_cursor("Nathan: [[Hi|Hello|Howdy]]")
 		11:
-			code_edit.insert_text_at_cursor("=> title")
+			code_edit.insert_text_at_cursor("=> label")
 		12:
 			code_edit.insert_text_at_cursor("=> END")
 
@@ -791,8 +791,8 @@ func _on_code_edit_scroll_changed(value: int) -> void:
 	DMSettings.set_scroll(current_file_path, code_edit.scroll_vertical)
 
 
-func _on_code_edit_active_title_change(title: String) -> void:
-	title_list.select_title(title)
+func _on_code_edit_active_label_changed(label: String) -> void:
+	label_list.select_label(label)
 
 
 func _on_code_edit_caret_changed() -> void:
@@ -803,8 +803,8 @@ func _on_code_edit_error_clicked(line_number: int) -> void:
 	errors_panel.show_error_for_line_number(line_number)
 
 
-func _on_title_list_title_selected(title: String) -> void:
-	go_to_title(title)
+func _on_label_list_label_selected(label: String) -> void:
+	go_to_label(label)
 
 
 func _on_parse_timer_timeout() -> void:
@@ -915,10 +915,10 @@ func _on_files_popup_menu_id_pressed(id: int) -> void:
 			show_file_in_filesystem(current_file_path)
 
 
-func _on_code_edit_external_file_requested(path: String, title: String) -> void:
+func _on_code_edit_external_file_requested(path: String, label: String) -> void:
 	open_file(path)
-	if title != "":
-		code_edit.go_to_title(title)
+	if label != "":
+		code_edit.go_to_label(label)
 	else:
 		code_edit.set_caret_line(0)
 
