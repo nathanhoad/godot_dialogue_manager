@@ -32,7 +32,7 @@ Responses can also have "if" conditions. Wrap these in `[` and `/]` (sometimes r
 Nathan: What would you like?
 - This one [if SomeGlobal.some_property == 0 or SomeGlobal.some_other_property == false /]
     Nathan: Ah, so you want this one?
-- Another one [if SomeGlobal.some_method() /] => another_title
+- Another one [if SomeGlobal.some_method() /] => another_label
 - Nothing => END
 ```
 
@@ -53,9 +53,9 @@ Nathan: You have {{num_apples}} [if num_apples == 1]apple[else]apples[/if], nice
 Randomised lines and randomised jump lines can also have conditions. Conditions for randomised lines go in square brackets after the `%` and before the line's content:
 
 ```
-% => some_title
-%2 => some_other_title
-% [if SomeGlobal.some_condition] => another_title
+% => some_label
+%2 => some_other_label
+% [if SomeGlobal.some_condition] => another_label
 ```
 
 ### Match
