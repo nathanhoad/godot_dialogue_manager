@@ -186,23 +186,23 @@ To use concurrent line, access the `concurrent_lines` property on a `DialogueLin
 
 _NOTE: In an effort to keeps things simple, the built-in example balloon does not contain an implementation for concurrent lines._
 
-## Titles and Jumps
+## Labels and Jumps
 
-Titles are markers within your dialogue that you can start from and jump to. Usually, in your game you would start some dialogue by providing a title (the default title is `start` but it could be whatever you've written in your dialogue).
+Labels are markers within your dialogue that you can start from and jump to. Usually, in your game you would start some dialogue by providing a label (the default label is `start` but it could be whatever you've written in your dialogue).
 
-Titles start with a `~ ` and are named (without any spaces):
-
-```
-~ this_is_a_title
-```
-
-To jump to a title from somewhere in dialogue you can use a jump/goto line. Jump lines are prefixed with a `=> ` and then specify the title to go to.
+Labels start with a `~ ` and are named (without any spaces):
 
 ```
-=> this_is_a_title
+~ this_is_a_label
 ```
 
-When the dialogue runtime encounters a jump it will then direct the flow to that title marker and continue from there.
+To jump to a label from somewhere in dialogue you can use a jump/goto line. Jump lines are prefixed with a `=> ` and then specify the label to go to.
+
+```
+=> this_is_a_label
+```
+
+When the dialogue runtime encounters a jump it will then direct the flow to that label marker and continue from there.
 
 If you want to end the flow from within the dialogue you can jump to `END`:
 
@@ -212,7 +212,7 @@ If you want to end the flow from within the dialogue you can jump to `END`:
 
 This will end the current flow of dialogue.
 
-You can also use a "jump and return" kind of jump that redirects the flow of dialogue and then returns to where it jumped from. Those lines are prefixed with `=>< ` and then specify the title to jump to. Once the flow encounters an `END` (or the end of the file) flow will return to where it jumped from and continue from there.
+You can also use a "jump and return" kind of jump that redirects the flow of dialogue and then returns to where it jumped from. Those lines are prefixed with `=>< ` and then specify the label to jump to. Once the flow encounters an `END` (or the end of the file) flow will return to where it jumped from and continue from there.
 
 If you want to force the end of the conversation regardless of any chained "jump and returns", you can use an `=> END!` line.
 
@@ -222,20 +222,20 @@ Jumps can also be used inline for responses:
 ~ start
 Nathan: Well?
 - First one
-- Another one => another_title
+- Another one => another_label
 - Start again => start
 => END
 
-~ another_title
+~ another_label
 Nathan: Another one?
 => END
 ```
 
 ### Expression Jumps
 
-You can use expressions as jump directives. The expression needs to resolve to a known title name or results will be unexpected.
+You can use expressions as jump directives. The expression needs to resolve to a known label name or results will be unexpected.
 
-**Use these with caution** as the dialogue compiler can't verify expression values match any titles at compile time.
+**Use these with caution** as the dialogue compiler can't verify expression values match any labels at compile time.
 
 Expression jumps look something like:
 
@@ -253,7 +253,7 @@ Nathan: Blah blah blah.
 => END
 ```
 
-Which we can then import into another dialogue file and jump to the `banter` title from the snippets file (note the `=><` syntax which denotes to return to this line after the jumped dialogue finishes):
+Which we can then import into another dialogue file and jump to the `banter` label from the snippets file (note the `=><` syntax which denotes to return to this line after the jumped dialogue finishes):
 
 ```
 import "res://snippets.dialogue" as snippets

@@ -1,6 +1,6 @@
 # Using dialogue in your game
 
-The simplest way to show dialogue in your game is to call [`DialogueManager.show_dialogue_balloon(resource, title)`](./API.md#func-show_dialogue_balloonresource-dialogueresource-title-string--0-extra_game_states-array-----node) with a dialogue resource and a title to start from. This will show the example balloon by default but you can configure it in [Settings](./Settings.md) to show your custom balloon.
+The simplest way to show dialogue in your game is to call [`DialogueManager.show_dialogue_balloon(resource, label)`](./API.md#func-show_dialogue_balloonresource-dialogueresource-label-string--0-extra_game_states-array-----node) with a dialogue resource and a label to start from. This will show the example balloon by default but you can configure it in [Settings](./Settings.md) to show your custom balloon.
 
 It's up to you to implement/customise any dialogue rendering and input control to match your game. There are a few example projects available on [my Itch.io page](https://nathanhoad.itch.io) to get you started though.
 
@@ -10,7 +10,7 @@ Once you get to the stage of building your own balloon, you'll need to know how 
 
 A global called `DialogueManager` is available to provide lines of dialogue.
 
-To request a line, call `await DialogueManager.get_next_dialogue_line(resource, title)` with a dialogue resource (\*.dialogue file) and a starting title (you can also call `get_next_dialogue_line` on the resource directly, see below). This will traverse each line (running mutations along the way) and returning the first printable line of dialogue.
+To request a line, call `await DialogueManager.get_next_dialogue_line(resource, label)` with a dialogue resource (\*.dialogue file) and a starting label (you can also call `get_next_dialogue_line` on the resource directly, see below). This will traverse each line (running mutations along the way) and returning the first printable line of dialogue.
 
 For example, if you have some dialogue like:
 
@@ -37,7 +37,7 @@ var dialogue_line = await resource.get_next_dialogue_line("start")
 
 Then `dialogue_line` would now hold a `DialogueLine` containing information for the line `Nathan: Hi! I'm Nathan`.
 
-To get the next line of dialogue, you can call `get_next_dialogue_line` again with `dialogue_line.next_id` as the title:
+To get the next line of dialogue, you can call `get_next_dialogue_line` again with `dialogue_line.next_id` as the label:
 
 ```
 dialogue_line = await DialogueManager.get_next_dialogue_line(resource, dialogue_line.next_id)
@@ -72,7 +72,7 @@ If your game has its own method of managing what the "current scene" is, you mig
 If you need to construct a dialogue resource at runtime, you can use `create_resource_from_text(string)`:
 
 ```gdscript
-var resource = DialogueManager.create_resource_from_text("~ title\nCharacter: Hello!")
+var resource = DialogueManager.create_resource_from_text("~ label\nCharacter: Hello!")
 ```
 
 This will run the given text through the dialogue compiler.
@@ -82,5 +82,5 @@ If there were syntax errors, the method will fail.
 If there were no errors, you can use this ephemeral resource like normal:
 
 ```gdscript
-var dialogue_line = await resource.get_next_dialogue_line("title")
+var dialogue_line = await resource.get_next_dialogue_line("label")
 ```
