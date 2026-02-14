@@ -448,3 +448,12 @@ msgstr ""
 
 msgid "translation_plugin.character_name"
 msgstr ""
+
+msgid "Regions & Labels"
+msgstr ""
+
+msgid "Regions"
+msgstr ""
+
+msgid "Labels"
+msgstr ""

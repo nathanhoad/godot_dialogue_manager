@@ -14,7 +14,7 @@ const INLINE_MUTATION_PREFIXES: PackedStringArray = ["$> ", "$>> ", "do ", "do! 
 var main_view: Control
 
 # Theme overrides for syntax highlighting, etc
-var theme_overrides: Dictionary:
+var theme_overrides: DMThemeValues:
 	set(value):
 		theme_overrides = value
 
@@ -945,10 +945,10 @@ func check_active_label() -> void:
 	var lines: PackedStringArray = text.split("\n")
 	# Look at each line above this one to find the next label line
 	for i: int in range(line_number, -1, -1):
-		if lines[i].begins_with("~ "):
+		if lines[i].begins_with("~ ") and "labels" in DMSettings.get_user_value("label_list_view", "regions+labels"):
 			active_label_changed.emit(lines[i].replace("~ ", ""))
 			return
-		elif lines[i].begins_with("#region "):
+		elif lines[i].begins_with("#region ") and "regions" in DMSettings.get_user_value("label_list_view", "regions+labels"):
 			active_label_changed.emit(lines[i].replace("#region ", ""))
 			return
 

@@ -215,7 +215,7 @@ static func set_setting(key: String, value) -> void:
 		ProjectSettings.save()
 
 
-static func get_setting(key: String, default):
+static func get_setting(key: String, default: Variant) -> Variant:
 	if ProjectSettings.has_setting("dialogue_manager/%s" % key):
 		return ProjectSettings.get_setting("dialogue_manager/%s" % key)
 	else:
@@ -262,13 +262,13 @@ static func save_user_config(user_config: Dictionary) -> void:
 	file.store_string(JSON.stringify(user_config))
 
 
-static func set_user_value(key: String, value) -> void:
+static func set_user_value(key: String, value: Variant) -> void:
 	var user_config: Dictionary = get_user_config()
 	user_config[key] = value
 	save_user_config(user_config)
 
 
-static func get_user_value(key: String, default = null) -> Variant:
+static func get_user_value(key: String, default: Variant = null) -> Variant:
 	return get_user_config().get(key, default)
 
 

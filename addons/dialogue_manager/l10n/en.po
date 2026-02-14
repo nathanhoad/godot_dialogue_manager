@@ -458,3 +458,12 @@ msgstr "Multiple top-level states ({states}) share method/property/signal name \
 
 msgid "translation_plugin.character_name"
 msgstr "Character name"
+
+msgid "Regions & Labels"
+msgstr "Regions & Labels"
+
+msgid "Regions"
+msgstr "Regions"
+
+msgid "Labels"
+msgstr "Labels"
