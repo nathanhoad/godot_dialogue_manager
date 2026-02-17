@@ -1592,7 +1592,7 @@ func _resolve_thing_property(thing: Object, property: String) -> Variant:
 
 
 func _get_resource_uid(resource: DialogueResource) -> String:
-	return ResourceUID.id_to_text(ResourceLoader.get_resource_uid(resource.resource_path)).replace("uid://", "")
+	return ResourceUID.path_to_uid(resource.resource_path).replace("uid://", "")
 
 
 func _get_id_with_resource(resource: DialogueResource, id: String) -> String:
