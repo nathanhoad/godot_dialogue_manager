@@ -864,7 +864,7 @@ func _on_support_button_pressed() -> void:
 
 
 func _on_docs_button_pressed() -> void:
-	OS.shell_open("https://github.com/nathanhoad/godot_dialogue_manager")
+	OS.shell_open("https://github.com/nathanhoad/godot_dialogue_manager/tree/v3.x")
 
 
 func _on_files_list_file_popup_menu_requested(at_position: Vector2) -> void:
