@@ -72,7 +72,7 @@ func _get_line_syntax_highlighting(line: int) -> Dictionary:
 
 		DMConstants.TYPE_GOTO:
 			if text.strip_edges().begins_with("%"):
-				colors[index] = { color = theme.symbols_color }
+				colors[index] = { color = theme.numbers_color }
 				index = text.find(" ")
 			_highlight_goto(text, colors, index)
 
@@ -80,8 +80,12 @@ func _get_line_syntax_highlighting(line: int) -> Dictionary:
 			colors[index] = { color = theme.symbols_color }
 
 		DMConstants.TYPE_DIALOGUE, DMConstants.TYPE_RESPONSE:
+			if text.strip_edges().begins_with("- "):
+				colors[index] = { color = theme.titles_color }
+				index = text.find(" ", text.find("- "))
+
 			if text.strip_edges().begins_with("%"):
-				colors[index] = { color = theme.symbols_color }
+				colors[index] = { color = theme.numbers_color }
 				index = text.find(" ", text.find("%"))
 			colors[index] = { color = theme.text_color.lerp(theme.symbols_color, 0.5) }
 
@@ -109,8 +113,7 @@ func _get_line_syntax_highlighting(line: int) -> Dictionary:
 				colors[expression_index + expression_text.length() + 2] = { color = theme.symbols_color }
 				colors[expression_index + expression_text.length() + 4] = { color = theme.text_color }
 			# Tags (and inline mutations)
-			var resolved_line_data: DMResolvedLineData = DMResolvedLineData.new("")
-			var bbcodes: Array[Dictionary] = resolved_line_data.find_bbcode_positions_in_string(dialogue_text, true, true)
+			var bbcodes: Array[Dictionary] = DMResolvedLineData.find_bbcode_positions_in_string(dialogue_text, true, true)
 			for bbcode: Dictionary in bbcodes:
 				var tag: String = bbcode.code
 				var code: String = bbcode.raw_args
@@ -125,12 +128,27 @@ func _get_line_syntax_highlighting(line: int) -> Dictionary:
 					colors[index + bbcode.end - 1] = { color = theme.symbols_color }
 					colors[index + bbcode.end + 1] = { color = theme.text_color }
 				else:
-					colors[index + bbcode.start] = { color = theme.symbols_color }
+					colors[index + bbcode.start] = { color = theme.tags_color }
+					colors[index + bbcode.end] = { color = theme.tags_color }
+					if bbcode.bbcode.ends_with(" /]"):
+						colors[index + bbcode.end - 1] = { color = theme.tags_color }
+						colors[index + bbcode.end + 1] = { color = theme.text_color }
+					else:
+						colors[index + bbcode.end + 1] = { color = theme.text_color }
+
 					if tag.begins_with("$>") or tag.begins_with("do") or tag.begins_with("set") or tag.begins_with("if"):
 						if tag.begins_with("if"):
-							colors[index + bbcode.start + 1] = { color = theme.conditions_color }
+							colors[index + bbcode.start] = { color = theme.conditions_color }
+							if bbcode.bbcode.ends_with(" /]"):
+								colors[index + bbcode.end - 1] = { color = theme.conditions_color }
+								colors[index + bbcode.end] = { color = theme.conditions_color }
+								colors[index + bbcode.end + 1] = { color = theme.conditions_color }
+								colors[index + bbcode.end + 1] = { color = theme.text_color }
+							else:
+								colors[index + bbcode.end] = { color = theme.conditions_color }
 						else:
-							colors[index + bbcode.start + 1] = { color = theme.mutations_line_color }
+							colors[index + bbcode.start] = { color = theme.mutations_line_color }
+							colors[index + bbcode.end] = { color = theme.mutations_line_color }
 						var expression: Array = expression_parser.tokenise(code, DMConstants.TYPE_MUTATION, bbcode.start + bbcode.code.length())
 						if expression.size() == 0 or expression[0].type == DMConstants.TYPE_ERROR:
 							colors[index + bbcode.start + tag.length() + 1] = { color = theme.critical_color }
@@ -138,9 +156,9 @@ func _get_line_syntax_highlighting(line: int) -> Dictionary:
 							_highlight_expression(expression, colors, index + 2)
 					# else and closing if have no expression
 					elif tag.begins_with("else") or tag.begins_with("/if"):
-						colors[index + bbcode.start + 1] = { color = theme.conditions_color }
-					colors[index + bbcode.end] = { color = theme.symbols_color }
-					colors[index + bbcode.end + 1] = { color = theme.text_color }
+						colors[index + bbcode.start] = { color = theme.conditions_color }
+						colors[index + bbcode.end] = { color = theme.conditions_color }
+
 			# Jumps
 			if "=> " in text or "=>< " in text:
 				_highlight_goto(text, colors, index)

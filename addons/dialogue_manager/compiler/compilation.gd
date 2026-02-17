@@ -493,7 +493,7 @@ func parse_response_line(tree_line: DMTreeLine, line: DMCompiledLine, siblings: 
 		line.translation_key = static_line_id
 
 	# Handle conditional responses and remove them from the prompt text.
-	if " [if " in tree_line.text:
+	if "[if " in tree_line.text and " /]" in tree_line.text:
 		var condition: Dictionary = extract_condition(tree_line.text, true, tree_line.indent)
 		if condition.has("error"):
 			result = add_error(tree_line.line_number, condition.index, condition.error)
@@ -554,7 +554,7 @@ func parse_random_line(tree_line: DMTreeLine, line: DMCompiledLine, siblings: Ar
 		if found.names.has("weight"):
 			weight = found.strings[found.names.weight].to_float()
 		if found.names.has("condition"):
-			condition = extract_condition(tree_line.text, true, tree_line.indent)
+			condition = extract_condition("if " + found.strings[found.names.condition], false, tree_line.indent)
 
 	# Find the original random sibling. It will be the jump off point.
 	var original_sibling: DMTreeLine = tree_line
@@ -677,8 +677,7 @@ func parse_dialogue_line(tree_line: DMTreeLine, line: DMCompiledLine, siblings: 
 	parse_character_and_dialogue(tree_line, line, siblings, sibling_index, parent)
 
 	# Check for any inline expression errors
-	var resolved_line_data: DMResolvedLineData = DMResolvedLineData.new("")
-	var bbcodes: Array[Dictionary] = resolved_line_data.find_bbcode_positions_in_string(tree_line.text, true, true)
+	var bbcodes: Array[Dictionary] = DMResolvedLineData.find_bbcode_positions_in_string(tree_line.text, true, true)
 	for bbcode: Dictionary in bbcodes:
 		var tag: String = bbcode.code
 		var code: String = bbcode.raw_args

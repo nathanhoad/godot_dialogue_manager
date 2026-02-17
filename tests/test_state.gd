@@ -113,6 +113,72 @@ else:
 	assert(line.text == "It is something else.", "Should match else.")
 
 
+func test_can_parse_random_conditional_lines() -> void:
+	var output: DMCompilerResult = compile("
+using StateForTests
+~ start
+Nathan: Before.
+% [if seen(\"first\") /] First. [$>> see(\"first\")]
+% [if seen(\"second\") /] Second. [$>> see(\"second\")]
+Nathan: After.")
+
+	assert(output.errors.size() == 0, "Should have no errors.")
+	assert(output.lines["4"].siblings.size() == 2, "Should have two random lines.")
+	assert(output.lines["4"].siblings[0].condition.expression != null, "Should have condition.")
+	assert(output.lines["4"].siblings[1].condition.expression != null, "Should have condition.")
+
+
+func test_can_run_random_conditional_lines() -> void:
+	var resource: DialogueResource = create_resource("
+using StateForTests
+~ start
+Nathan: Before.
+% [if seen(\"first\") /] First. [$>> see(\"first\")]
+% [if seen(\"second\") /] Second.[if false]conditional?[/if] [$>> see(\"second\")]
+Nathan: After.")
+
+	StateForTests._counters = {}
+
+	var line: DialogueLine = await resource.get_next_dialogue_line("start")
+	assert(line.text == "Before.", "Should match initial text.")
+
+	line = await resource.get_next_dialogue_line(line.next_id)
+
+	var label: DialogueLabel = DialogueLabel.new()
+	label.dialogue_line = line
+	label.skip_typing()
+	label.free()
+
+	assert(line.text == "First. " or line.text == "Second. ", "Should be one or the other.")
+	if line.text == "First. ":
+		assert(StateForTests._counters.get("first", 0) == 1, "Should be more than 0.")
+	elif line.text == "Second. ":
+		assert(StateForTests._counters.get("second", 0) == 1, "Should be more than 0.")
+
+	line = await resource.get_next_dialogue_line(line.next_id)
+	assert(line.text == "After.", "Should match after text.")
+
+	line = await resource.get_next_dialogue_line("start")
+	assert(line.text == "Before.", "Should match initial text.")
+
+	line = await resource.get_next_dialogue_line(line.next_id)
+
+	label = DialogueLabel.new()
+	label.dialogue_line = line
+	label.skip_typing()
+	label.free()
+
+	assert(line.text == "First. " or line.text == "Second. ", "Should be one or the other.")
+	if line.text == "First. ":
+		assert(StateForTests._counters.get("first", 0) == 1, "Should be more than 0.")
+	elif line.text == "Second. ":
+		assert(StateForTests._counters.get("second", 0) == 1, "Should be more than 0.")
+
+	line = await resource.get_next_dialogue_line("start")
+	line = await resource.get_next_dialogue_line(line.next_id)
+	assert(line.text == "After.", "Should go straight to after text.")
+
+
 func test_can_parse_while_loops() -> void:
 	var output: DMCompilerResult = compile("
 Before
@@ -317,7 +383,7 @@ Nathan: Done.")
 func test_can_run_non_blocking_inline_mutations() -> void:
 	var resource: DialogueResource = create_resource("
 ~ start
-Nathan: This mutation [$> StateForTests.long_mutation()]should wait.
+Nathan: This mutation[$> StateForTests.long_mutation()] should wait.
 Nathan: This one [$>> StateForTests.long_mutation()]won't.")
 
 	var line: DialogueLine = await resource.get_next_dialogue_line("start")

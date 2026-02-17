@@ -12,6 +12,8 @@ var something_null: Variant = null
 
 var thing: SomeClass = SomeClass.new()
 
+var _counters: Dictionary = {}
+
 
 func is_something(something: Variant, type: Variant) -> bool:
 	return is_instance_of(something, type)
@@ -31,6 +33,14 @@ func long_mutation() -> void:
 
 func typed_array_method(numbers: Array[int], strings: Array[String], dictionaries: Array) -> String:
 	return str(numbers) + str(strings) + str(dictionaries)
+
+
+func seen(key: String) -> bool:
+	return _counters.get(key, 0) == 0
+
+
+func see(key: String) -> void:
+	_counters[key] = _counters.get(key, 0) + 1
 
 
 static func some_static_function() -> bool:

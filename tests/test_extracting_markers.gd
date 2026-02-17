@@ -53,7 +53,7 @@ func test_can_handle_speed_tags() -> void:
 
 
 func test_can_handle_inline_mutations() -> void:
-	var data: DMResolvedLineData = _extract("Nathan: [wave]Hey![/wave] [do something()]DO SOMETHING!")
+	var data: DMResolvedLineData = _extract("Nathan: [wave]Hey![/wave] [$> something()]DO SOMETHING!")
 
 	assert(data.mutations.size() == 1, "Should have 1 mutation.")
 
@@ -62,16 +62,16 @@ func test_can_handle_inline_mutations() -> void:
 	assert(mutation[0] == 13, "Should be at position 13.")
 	assert("expression" in mutation[1], "Should have an expression.")
 
-	data = _extract("Nathan: [wave]Hey![/wave] [do something()][do and_this_too()]DO SOMETHING!")
+	data = _extract("Hey [blah /]there, Coco [$> something()][$> and_this_too()]DO SOMETHING!")
 
 	assert(data.mutations.size() == 2, "Should have 2 mutations")
 
 	var mutation_1: Array = data.mutations[0]
 	var mutation_2: Array = data.mutations[1]
 
-	assert(mutation_1[0] == 13, "Should be at position 13.")
+	assert(mutation_1[0] == 16, "Should be at position 13.")
 	assert("expression" in mutation_1[1], "Should have an expression.")
-	assert(mutation_2[0] == 13, "Should be at position 13.")
+	assert(mutation_2[0] == 16, "Should be at position 13.")
 	assert("expression" in mutation_2[1], "Should have an expression.")
 
 
