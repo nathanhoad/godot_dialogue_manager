@@ -11,6 +11,7 @@ var notice_color: Color = Color.WHITE
 
 var labels_color: Color = Color.WHITE
 var text_color: Color = Color.WHITE
+var tags_color: Color = Color.WHITE
 var conditions_color: Color = Color.WHITE
 var mutations_color: Color = Color.WHITE
 var mutations_line_color: Color = Color.WHITE
@@ -36,6 +37,7 @@ func _init(values: Dictionary) -> void:
 
 	labels_color = values.labels_color
 	text_color = values.text_color
+	tags_color = values.tags_color
 	conditions_color = values.conditions_color
 	mutations_color = values.mutations_color
 	mutations_line_color = values.mutations_line_color
@@ -64,6 +66,7 @@ static func get_values_from_editor() -> DMThemeValues:
 
 		labels_color = editor_settings.get_setting("text_editor/theme/highlighting/control_flow_keyword_color"),
 		text_color = editor_settings.get_setting("text_editor/theme/highlighting/text_color"),
+		tags_color = editor_settings.get_setting("text_editor/theme/highlighting/string_placeholder_color"),
 		conditions_color = editor_settings.get_setting("text_editor/theme/highlighting/keyword_color"),
 		mutations_color = editor_settings.get_setting("text_editor/theme/highlighting/function_color"),
 		mutations_line_color = Color(editor_settings.get_setting("text_editor/theme/highlighting/function_color"), 0.6),

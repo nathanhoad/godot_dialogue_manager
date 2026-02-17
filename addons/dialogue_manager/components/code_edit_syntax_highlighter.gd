@@ -118,14 +118,14 @@ func _get_line_syntax_highlighting(line: int) -> Dictionary:
 				var tag: String = bbcode.code
 				var code: String = bbcode.raw_args
 				if code.begins_with("["):
-					colors[index + bbcode.start] = { color = theme.symbols_color }
+					colors[index + bbcode.start] = { color = theme.tags_color }
 					colors[index + bbcode.start + 2] = { color = theme.text_color }
 					var pipe_cursor: int = code.find("|")
 					while pipe_cursor > -1:
-						colors[index + bbcode.start + pipe_cursor + 1] = { color = theme.symbols_color }
+						colors[index + bbcode.start + pipe_cursor + 1] = { color = theme.tags_color }
 						colors[index + bbcode.start + pipe_cursor + 2] = { color = theme.text_color }
 						pipe_cursor = code.find("|", pipe_cursor + 1)
-					colors[index + bbcode.end - 1] = { color = theme.symbols_color }
+					colors[index + bbcode.end - 1] = { color = theme.tags_color }
 					colors[index + bbcode.end + 1] = { color = theme.text_color }
 				else:
 					colors[index + bbcode.start] = { color = theme.tags_color }
