@@ -47,9 +47,6 @@ var include_singletons: bool = true
 ## Allow dialogue to call static methods/properties on classes
 var include_classes: bool = true
 
-## Manage translation behaviour
-var translation_source: DMConstants.TranslationSource = DMConstants.TranslationSource.Guess
-
 ## Used to resolve the current scene. Override if your game manages the current scene itself.
 var get_current_scene: Callable = func():
 	var current_scene: Node = Engine.get_main_loop().current_scene
@@ -622,7 +619,7 @@ func show_error_for_missing_state_value(message: String, will_show: bool = true)
 
 # Translate a string
 func translate(data: Dictionary) -> String:
-	if TranslationServer.get_loaded_locales().size() == 0 or translation_source == DMConstants.TranslationSource.None:
+	if TranslationServer.get_loaded_locales().size() == 0:
 		return data.text
 
 	var translation_key: String = data.get(&"translation_key", data.text)
@@ -630,26 +627,7 @@ func translate(data: Dictionary) -> String:
 	if translation_key == "" or translation_key == data.text:
 		return tr(data.text)
 	else:
-		# Line IDs work slightly differently depending on whether the translation came from a
-		# CSV or a PO file. CSVs use the line ID (or the line itself) as the translatable string
-		# whereas POs use the ID as context and the line itself as the translatable string.
-		match translation_source:
-			DMConstants.TranslationSource.PO:
-				return tr(data.text, StringName(translation_key))
-
-			DMConstants.TranslationSource.CSV:
-				return tr(translation_key)
-
-			DMConstants.TranslationSource.Guess:
-				var translation_files: Array = ProjectSettings.get_setting(&"internationalization/locale/translations")
-				if translation_files.filter(func(f: String): return f.get_extension() in [&"po", &"mo"]).size() > 0:
-					# Assume PO
-					return tr(data.text, StringName(translation_key))
-				else:
-					# Assume CSV
-					return tr(translation_key)
-
-	return tr(translation_key)
+		return tr(data.text, StringName(translation_key))
 
 
 # Create a line of dialogue

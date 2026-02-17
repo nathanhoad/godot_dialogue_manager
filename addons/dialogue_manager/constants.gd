@@ -11,13 +11,6 @@ enum MutationBehaviour {
 	Skip
 }
 
-enum TranslationSource {
-	None,
-	Guess,
-	CSV,
-	PO
-}
-
 # Token types
 
 const TOKEN_FUNCTION = &"function"
