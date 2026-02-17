@@ -15,16 +15,6 @@ const NEW_FILE_TEMPLATE = "editor/new_file_template"
 const MISSING_TRANSLATIONS_ARE_ERRORS = "editor/translations/missing_translations_are_errors"
 ## Include character names in the list of translatable strings.
 const INCLUDE_CHARACTERS_IN_TRANSLATABLE_STRINGS_LIST = "editor/translations/include_characters_in_translatable_strings_list"
-## The default delimiter to use when exporting CSVs
-const DEFAULT_CSV_DELIMITER = "editor/translations/default_csv_delimiter"
-## The default locale to use when exporting CSVs
-const DEFAULT_CSV_LOCALE = "editor/translations/default_csv_locale"
-## Any extra CSV locales to append to the exported translation CSV
-const EXTRA_CSV_LOCALES = "editor/translations/extra_csv_locales"
-## Includes a "_character" column in CSV exports.
-const INCLUDE_CHARACTER_IN_TRANSLATION_EXPORTS = "editor/translations/include_character_in_translation_exports"
-## Includes a "_notes" column in CSV exports
-const INCLUDE_NOTES_IN_TRANSLATION_EXPORTS = "editor/translations/include_notes_in_translation_exports"
 ## Automatically update the project's list of translatable files when dialogue files are added or removed
 const UPDATE_POT_FILES_AUTOMATICALLY = "editor/translations/update_pot_files_automatically"
 
@@ -68,34 +58,6 @@ static var SETTINGS_CONFIGURATION = {
 	INCLUDE_CHARACTERS_IN_TRANSLATABLE_STRINGS_LIST: {
 		value = true,
 		type = TYPE_BOOL,
-	},
-	DEFAULT_CSV_DELIMITER: {
-		value = "Comma",
-		type = TYPE_STRING,
-		hint = PROPERTY_HINT_ENUM,
-		hint_string = "Comma,Semicolon,Tab"
-	},
-	DEFAULT_CSV_LOCALE: {
-		value = "en",
-		type = TYPE_STRING,
-		hint = PROPERTY_HINT_LOCALE_ID,
-	},
-	EXTRA_CSV_LOCALES: {
-		value = [],
-		type = TYPE_PACKED_STRING_ARRAY,
-		hint = PROPERTY_HINT_TYPE_STRING,
-		hint_string = "%d:" % [TYPE_STRING],
-		is_advanced = true
-	},
-	INCLUDE_CHARACTER_IN_TRANSLATION_EXPORTS: {
-		value = false,
-		type = TYPE_BOOL,
-		is_advanced = true
-	},
-	INCLUDE_NOTES_IN_TRANSLATION_EXPORTS: {
-		value = false,
-		type = TYPE_BOOL,
-		is_advanced = true
 	},
 	UPDATE_POT_FILES_AUTOMATICALLY: {
 		value = true,
@@ -169,11 +131,11 @@ static func prepare() -> void:
 		include_all_responses = null,
 		ignore_missing_state_values = IGNORE_MISSING_STATE_VALUES,
 		custom_test_scene_path = CUSTOM_TEST_SCENE_PATH,
-		default_csv_locale = DEFAULT_CSV_LOCALE,
+		default_csv_locale = null,
 		balloon_path = BALLOON_PATH,
 		create_lines_for_responses_with_characters = null,
-		include_character_in_translation_exports = INCLUDE_CHARACTER_IN_TRANSLATION_EXPORTS,
-		include_notes_in_translation_exports = INCLUDE_NOTES_IN_TRANSLATION_EXPORTS,
+		include_character_in_translation_exports = null,
+		include_notes_in_translation_exports = null,
 		uses_dotnet = USES_DOTNET,
 		try_suppressing_startup_unsaved_indicator = null
 	}

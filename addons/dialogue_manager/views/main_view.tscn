@@ -154,7 +154,6 @@ layout_mode = 2
 unique_name_in_owner = true
 layout_mode = 2
 disabled = true
-text = "Insert"
 item_count = 15
 popup/item_0/text = "Wave BBCode"
 popup/item_0/icon = SubResource("ImageTexture_57eek")
@@ -201,30 +200,6 @@ popup/item_14/text = "End dialogue"
 popup/item_14/icon = SubResource("ImageTexture_57eek")
 popup/item_14/id = 12
 
-[node name="TranslationsButton" type="MenuButton" parent="Margin/Content/CodePanel/Toolbar" unique_id=2010201295]
-unique_name_in_owner = true
-layout_mode = 2
-disabled = true
-text = "Translations"
-item_count = 5
-popup/item_0/text = "Generate line IDs"
-popup/item_0/icon = SubResource("ImageTexture_57eek")
-popup/item_0/id = 100
-popup/item_1/id = -1
-popup/item_1/separator = true
-popup/item_2/text = "Save character names to CSV..."
-popup/item_2/icon = SubResource("ImageTexture_57eek")
-popup/item_2/id = 201
-popup/item_3/text = "Save lines to CSV..."
-popup/item_3/icon = SubResource("ImageTexture_57eek")
-popup/item_3/id = 202
-popup/item_4/text = "Import line changes from CSV..."
-popup/item_4/icon = SubResource("ImageTexture_57eek")
-popup/item_4/id = 203
-
-[node name="Separator" type="VSeparator" parent="Margin/Content/CodePanel/Toolbar" unique_id=821562382]
-layout_mode = 2
-
 [node name="SearchButton" type="Button" parent="Margin/Content/CodePanel/Toolbar" unique_id=121689358]
 unique_name_in_owner = true
 layout_mode = 2
@@ -232,9 +207,6 @@ tooltip_text = "Search for text"
 disabled = true
 toggle_mode = true
 flat = true
-
-[node name="Separator2" type="VSeparator" parent="Margin/Content/CodePanel/Toolbar" unique_id=175043853]
-layout_mode = 2
 
 [node name="TestButton" type="Button" parent="Margin/Content/CodePanel/Toolbar" unique_id=1610822770]
 unique_name_in_owner = true
@@ -254,15 +226,20 @@ flat = true
 layout_mode = 2
 size_flags_horizontal = 3
 
+[node name="FilenameLabel" type="Label" parent="Margin/Content/CodePanel/Toolbar" unique_id=674691435]
+unique_name_in_owner = true
+layout_mode = 2
+vertical_alignment = 1
+
+[node name="Spacer3" type="Control" parent="Margin/Content/CodePanel/Toolbar" unique_id=610372586]
+layout_mode = 2
+size_flags_horizontal = 3
+
 [node name="SupportButton" type="Button" parent="Margin/Content/CodePanel/Toolbar" unique_id=1042093313]
 unique_name_in_owner = true
 layout_mode = 2
 tooltip_text = "Support Dialogue Manager"
-text = "Sponsor"
 flat = true
-
-[node name="Separator4" type="VSeparator" parent="Margin/Content/CodePanel/Toolbar" unique_id=321395257]
-layout_mode = 2
 
 [node name="DocsButton" type="Button" parent="Margin/Content/CodePanel/Toolbar" unique_id=1404920471]
 unique_name_in_owner = true
@@ -393,18 +370,6 @@ ok_button_text = "Open"
 
 [node name="QuickOpenFilesList" parent="QuickOpenDialog" unique_id=1813408245 instance=ExtResource("2_npj2k")]
 
-[node name="ExportDialog" type="FileDialog" parent="." unique_id=2035775999]
-size = Vector2i(900, 750)
-min_size = Vector2i(600, 500)
-
-[node name="ImportDialog" type="FileDialog" parent="." unique_id=1326083376]
-title = "Open a File"
-size = Vector2i(900, 750)
-min_size = Vector2i(600, 500)
-ok_button_text = "Open"
-file_mode = 0
-filters = PackedStringArray("*.csv ; Translation CSV")
-
 [node name="ErrorsDialog" type="AcceptDialog" parent="." unique_id=2100629189]
 title = "Error"
 dialog_text = "You have errors in your script. Fix them and then try again."
@@ -460,8 +425,6 @@ dialog_text = "You're now up to date!"
 [connection signal="file_selected" from="OpenDialog" to="." method="_on_open_dialog_file_selected"]
 [connection signal="confirmed" from="QuickOpenDialog" to="." method="_on_quick_open_dialog_confirmed"]
 [connection signal="file_double_clicked" from="QuickOpenDialog/QuickOpenFilesList" to="." method="_on_quick_open_files_list_file_double_clicked"]
-[connection signal="file_selected" from="ExportDialog" to="." method="_on_export_dialog_file_selected"]
-[connection signal="file_selected" from="ImportDialog" to="." method="_on_import_dialog_file_selected"]
 [connection signal="confirmed" from="CloseConfirmationDialog" to="." method="_on_close_confirmation_dialog_confirmed"]
 [connection signal="custom_action" from="CloseConfirmationDialog" to="." method="_on_close_confirmation_dialog_custom_action"]
 [connection signal="confirmed" from="GenerateStaticIdsConfirmationDialog" to="." method="_on_generate_static_ids_confirmation_dialog_confirmed"]
