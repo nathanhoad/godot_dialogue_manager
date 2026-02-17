@@ -3,7 +3,7 @@
 [ext_resource type="Script" uid="uid://cipjcc7bkh1pc" path="res://addons/dialogue_manager/views/main_view.gd" id="1_h6qfq"]
 [ext_resource type="PackedScene" uid="uid://civ6shmka5e8u" path="res://addons/dialogue_manager/components/code_edit.tscn" id="2_f73fm"]
 [ext_resource type="PackedScene" uid="uid://dnufpcdrreva3" path="res://addons/dialogue_manager/components/files_list.tscn" id="2_npj2k"]
-[ext_resource type="PackedScene" uid="uid://ctns6ouwwd68i" path="res://addons/dialogue_manager/components/title_list.tscn" id="2_onb4i"]
+[ext_resource type="PackedScene" uid="uid://ctns6ouwwd68i" path="res://addons/dialogue_manager/components/label_list.tscn" id="2_onb4i"]
 [ext_resource type="PackedScene" uid="uid://co8yl23idiwbi" path="res://addons/dialogue_manager/components/update_button.tscn" id="2_ph3vs"]
 [ext_resource type="PackedScene" uid="uid://gr8nakpbrhby" path="res://addons/dialogue_manager/components/search_and_replace.tscn" id="6_ylh0t"]
 [ext_resource type="PackedScene" uid="uid://cs8pwrxr5vxix" path="res://addons/dialogue_manager/components/errors_panel.tscn" id="7_5cvl4"]
@@ -137,7 +137,7 @@ layout_mode = 2
 [node name="FilesPopupMenu" type="PopupMenu" parent="Margin/Content/SidePanel/Bookmarks/FilesList" unique_id=253084069]
 unique_name_in_owner = true
 
-[node name="TitleList" parent="Margin/Content/SidePanel/Bookmarks" unique_id=2063152064 instance=ExtResource("2_onb4i")]
+[node name="LabelList" parent="Margin/Content/SidePanel/Bookmarks" unique_id=2063152064 instance=ExtResource("2_onb4i")]
 unique_name_in_owner = true
 visible = false
 layout_mode = 2
@@ -436,7 +436,7 @@ dialog_text = "You're now up to date!"
 [connection signal="file_selected" from="Margin/Content/SidePanel/Bookmarks/FilesList" to="." method="_on_files_list_file_selected"]
 [connection signal="about_to_popup" from="Margin/Content/SidePanel/Bookmarks/FilesList/FilesPopupMenu" to="." method="_on_files_popup_menu_about_to_popup"]
 [connection signal="id_pressed" from="Margin/Content/SidePanel/Bookmarks/FilesList/FilesPopupMenu" to="." method="_on_files_popup_menu_id_pressed"]
-[connection signal="title_selected" from="Margin/Content/SidePanel/Bookmarks/TitleList" to="." method="_on_title_list_title_selected"]
+[connection signal="label_selected" from="Margin/Content/SidePanel/Bookmarks/LabelList" to="." method="_on_label_list_label_selected"]
 [connection signal="toggled" from="Margin/Content/CodePanel/Toolbar/SearchButton" to="." method="_on_search_button_toggled"]
 [connection signal="pressed" from="Margin/Content/CodePanel/Toolbar/TestButton" to="." method="_on_test_button_pressed"]
 [connection signal="pressed" from="Margin/Content/CodePanel/Toolbar/TestLineButton" to="." method="_on_test_line_button_pressed"]
@@ -444,7 +444,7 @@ dialog_text = "You're now up to date!"
 [connection signal="pressed" from="Margin/Content/CodePanel/Toolbar/DocsButton" to="." method="_on_docs_button_pressed"]
 [connection signal="close_requested" from="Margin/Content/CodePanel/SearchAndReplace" to="." method="_on_search_and_replace_close_requested"]
 [connection signal="open_requested" from="Margin/Content/CodePanel/SearchAndReplace" to="." method="_on_search_and_replace_open_requested"]
-[connection signal="active_title_change" from="Margin/Content/CodePanel/CodeEdit" to="." method="_on_code_edit_active_title_change"]
+[connection signal="active_label_changed" from="Margin/Content/CodePanel/CodeEdit" to="." method="_on_code_edit_active_label_changed"]
 [connection signal="caret_changed" from="Margin/Content/CodePanel/CodeEdit" to="." method="_on_code_edit_caret_changed"]
 [connection signal="error_clicked" from="Margin/Content/CodePanel/CodeEdit" to="." method="_on_code_edit_error_clicked"]
 [connection signal="external_file_requested" from="Margin/Content/CodePanel/CodeEdit" to="." method="_on_code_edit_external_file_requested"]

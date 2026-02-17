@@ -21,14 +21,14 @@ func _get_line_syntax_highlighting(line: int) -> Dictionary:
 	var text: String = text_edit.get_line(line)
 
 	# Prevent an error from popping up while developing
-	if not is_instance_valid(text_edit) or text_edit.theme_overrides.is_empty():
+	if not is_instance_valid(text_edit):
 		return colors
 
 	# Disable this, as well as the line at the bottom of this function to remove the cache.
 	if text in cache:
 		return cache[text]
 
-	var theme: Dictionary = text_edit.theme_overrides
+	var theme: DMThemeValues = text_edit.theme_overrides
 
 	var index: int = 0
 
@@ -48,8 +48,8 @@ func _get_line_syntax_highlighting(line: int) -> Dictionary:
 		DMConstants.TYPE_COMMENT:
 			colors[index] = { color = theme.comments_color }
 
-		DMConstants.TYPE_TITLE:
-			colors[index] = { color = theme.titles_color }
+		DMConstants.TYPE_LABEL:
+			colors[index] = { color = theme.labels_color }
 
 		DMConstants.TYPE_CONDITION, DMConstants.TYPE_WHILE, DMConstants.TYPE_MATCH, DMConstants.TYPE_WHEN:
 			colors[0] = { color = theme.conditions_color }
@@ -239,7 +239,7 @@ func _highlight_expression(tokens: Array, colors: Dictionary, index: int) -> int
 
 
 func _highlight_goto(text: String, colors: Dictionary, index: int) -> int:
-	var theme: Dictionary = get_text_edit().theme_overrides
+	var theme: DMThemeValues = get_text_edit().theme_overrides
 	var goto_data: DMResolvedGotoData = DMResolvedGotoData.new(text, {})
 	colors[goto_data.index] = { color = theme.jumps_color }
 	if "{{" in text:

@@ -68,7 +68,7 @@ msgstr "自動切行"
 msgid "insert.templates"
 msgstr "模板"
 
-msgid "insert.title"
+msgid "insert.label"
 msgstr "標題"
 
 msgid "insert.dialogue"
@@ -185,7 +185,7 @@ msgstr "全部替換"
 msgid "files_list.filter"
 msgstr "搜尋檔案"
 
-msgid "titles_list.filter"
+msgid "labels_list.filter"
 msgstr "搜尋標題"
 
 msgid "errors.key_not_found"
@@ -209,25 +209,25 @@ msgstr "檔案已被匯入。"
 msgid "errors.duplicate_import"
 msgstr "匯入名不能重複。"
 
-msgid "errors.empty_title"
+msgid "errors.empty_label"
 msgstr "標題名不能爲空。"
 
-msgid "errors.duplicate_title"
+msgid "errors.duplicate_label"
 msgstr "標題名不能重複。"
 
-msgid "errors.invalid_title_string"
+msgid "errors.invalid_label_string"
 msgstr "標題名無效。"
 
-msgid "errors.invalid_title_number"
+msgid "errors.invalid_label_number"
 msgstr "標題不能以數字開始。"
 
-msgid "errors.unknown_title"
+msgid "errors.unknown_label"
 msgstr "標題未定義。"
 
-msgid "errors.jump_to_invalid_title"
+msgid "errors.jump_to_invalid_label"
 msgstr "標題名無效。"
 
-msgid "errors.title_has_no_content"
+msgid "errors.label_has_no_content"
 msgstr "目標標題爲空。請替換爲“=> END”。"
 
 msgid "errors.invalid_expression"

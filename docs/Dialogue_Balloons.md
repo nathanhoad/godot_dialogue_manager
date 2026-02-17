@@ -16,7 +16,7 @@ You have a few options for using your balloon. If using the example balloon (or 
 
 - Call the balloon via code, for example: `DialogueManager.show_dialogue_balloon(load("res://some/dialogue/file.dialogue), "start")`
 - Call a balloon via code (if you have more than one): `DialogueManager.show_dialogue_balloon_scene("res://path/to/balloon.tscn", load("res://some/dialogue/file.dialogue), "start")`
-- Add the balloon to your scene and provide a dialogue resource and starting title in the inspector. Then you can either enable "auto start" or start the balloon from code by calling `start()` on a reference to the balloon.
+- Add the balloon to your scene and provide a dialogue resource and starting label in the inspector. Then you can either enable "auto start" or start the balloon from code by calling `start()` on a reference to the balloon.
 
 You can also write a totally custom method for instantiating and showing your balloon. This is the most flexible option. 
 

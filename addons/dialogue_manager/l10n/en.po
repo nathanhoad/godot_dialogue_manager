@@ -81,8 +81,8 @@ msgstr "Auto advance"
 msgid "insert.templates"
 msgstr "Templates"
 
-msgid "insert.title"
-msgstr "Title"
+msgid "insert.label"
+msgstr "Label"
 
 msgid "insert.dialogue"
 msgstr "Dialogue"
@@ -100,7 +100,7 @@ msgid "insert.actions"
 msgstr "Actions"
 
 msgid "insert.jump"
-msgstr "Jump to title"
+msgstr "Jump to label"
 
 msgid "insert.end_dialogue"
 msgstr "End dialogue"
@@ -213,8 +213,8 @@ msgstr "Replace all"
 msgid "files_list.filter"
 msgstr "Filter files"
 
-msgid "titles_list.filter"
-msgstr "Filter titles"
+msgid "labels_list.filter"
+msgstr "Filter labels"
 
 msgid "errors.key_not_found"
 msgstr "Key \"{key}\" not found."
@@ -240,26 +240,26 @@ msgstr "Duplicate import name."
 msgid "errors.unknown_using"
 msgstr "Unknown autoload in using statement."
 
-msgid "errors.empty_title"
-msgstr "Titles cannot be empty."
+msgid "errors.empty_label"
+msgstr "Labels cannot be empty."
 
-msgid "errors.duplicate_title"
-msgstr "There is already a title with that name."
+msgid "errors.duplicate_label"
+msgstr "There is already a label with that name."
 
-msgid "errors.invalid_title_string"
-msgstr "Titles can only contain alphanumeric characters and numbers."
+msgid "errors.invalid_label_string"
+msgstr "Labels can only contain alphanumeric characters and numbers."
 
-msgid "errors.invalid_title_number"
-msgstr "Titles cannot begin with a number."
+msgid "errors.invalid_label_number"
+msgstr "Labels cannot begin with a number."
 
-msgid "errors.unknown_title"
-msgstr "Unknown title."
+msgid "errors.unknown_label"
+msgstr "Unknown label."
 
-msgid "errors.jump_to_invalid_title"
-msgstr "This jump is pointing to an invalid title."
+msgid "errors.jump_to_invalid_label"
+msgstr "This jump is pointing to an invalid label."
 
-msgid "errors.title_has_no_content"
-msgstr "That title has no content. Maybe change this to a \"=> END\"."
+msgid "errors.label_has_no_content"
+msgstr "That label has no content. Maybe change this to a \"=> END\"."
 
 msgid "errors.invalid_expression"
 msgstr "Expression is invalid."
@@ -458,3 +458,12 @@ msgstr "Multiple top-level states ({states}) share method/property/signal name \
 
 msgid "translation_plugin.character_name"
 msgstr "Character name"
+
+msgid "Regions & Labels"
+msgstr "Regions & Labels"
+
+msgid "Regions"
+msgstr "Regions"
+
+msgid "Labels"
+msgstr "Labels"

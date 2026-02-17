@@ -2,9 +2,9 @@
 class_name DMCodeEdit extends CodeEdit
 
 
-signal active_title_change(title: String)
+signal active_label_changed(label: String)
 signal error_clicked(line_number: int)
-signal external_file_requested(path: String, title: String)
+signal external_file_requested(path: String, label: String)
 
 
 const MUTATION_PREFIXES: PackedStringArray = ["$>", "$>>", "do ", "do! ", "set ", "if ", "elif ", "else if ", "match ", "when "]
@@ -14,7 +14,7 @@ const INLINE_MUTATION_PREFIXES: PackedStringArray = ["$> ", "$>> ", "do ", "do! 
 var main_view: Control
 
 # Theme overrides for syntax highlighting, etc
-var theme_overrides: Dictionary:
+var theme_overrides: DMThemeValues:
 	set(value):
 		theme_overrides = value
 
@@ -238,17 +238,17 @@ func _add_jump_completions(current_line: String, cursor: Vector2) -> void:
 		if _matches_prompt(prompt, "end!"):
 			add_code_completion_option(CodeEdit.KIND_CLASS, "END!", "END!".substr(prompt.length()), theme_overrides.text_color, get_theme_icon("Stop", "EditorIcons"))
 
-	# Get all titles, including those in imports
-	for title: String in DMCompiler.get_titles_in_text(text, main_view.current_file_path):
-		# Ignore any imported titles that aren't resolved to human readable.
-		if title.to_int() > 0:
+	# Get all labels, including those in imports
+	for label: String in DMCompiler.get_labels_in_text(text, main_view.current_file_path):
+		# Ignore any imported labels that aren't resolved to human readable.
+		if label.to_int() > 0:
 			continue
-		elif "/" in title:
-			var bits: PackedStringArray = title.split("/")
+		elif "/" in label:
+			var bits: PackedStringArray = label.split("/")
 			if _matches_prompt(prompt, bits[0]) or _matches_prompt(prompt, bits[1]):
-				add_code_completion_option(CodeEdit.KIND_CLASS, title, title.substr(prompt.length()), theme_overrides.text_color, get_theme_icon("CombineLines", "EditorIcons"))
-		elif _matches_prompt(prompt, title):
-			add_code_completion_option(CodeEdit.KIND_CLASS, title, title.substr(prompt.length()), theme_overrides.text_color, get_theme_icon("ArrowRight", "EditorIcons"))
+				add_code_completion_option(CodeEdit.KIND_CLASS, label, label.substr(prompt.length()), theme_overrides.text_color, get_theme_icon("CombineLines", "EditorIcons"))
+		elif _matches_prompt(prompt, label):
+			add_code_completion_option(CodeEdit.KIND_CLASS, label, label.substr(prompt.length()), theme_overrides.text_color, get_theme_icon("ArrowRight", "EditorIcons"))
 
 
 # Add completions for character names at the start of dialogue lines.
@@ -923,46 +923,52 @@ func _resolve_script_for_property_chain(segments: PackedStringArray) -> Variant:
 
 #endregion
 
-#region Title and Character Helpers
+#region Label and Character Helpers
 
 
-## Get a list of titles from the current text.
-func get_titles() -> PackedStringArray:
-	var titles: PackedStringArray = PackedStringArray([])
+## Get a list of labels from the current text.
+func get_labels(include_regions: bool = false) -> PackedStringArray:
+	var labels: PackedStringArray = PackedStringArray([])
 	var lines: PackedStringArray = text.split("\n")
 	for line: String in lines:
 		if line.strip_edges().begins_with("~ "):
-			titles.append(line.strip_edges().substr(2))
+			labels.append(line.strip_edges().substr(2))
+		elif line.strip_edges().begins_with("#region "):
+			labels.append("#" + line.strip_edges().replace("#region ", ""))
 
-	return titles
+	return labels
 
 
-## Work out what the next title above the current line is
-func check_active_title() -> void:
+## Work out what the next label above the current line is
+func check_active_label() -> void:
 	var line_number: int = get_caret_line()
 	var lines: PackedStringArray = text.split("\n")
-	# Look at each line above this one to find the next title line
+	# Look at each line above this one to find the next label line
 	for i: int in range(line_number, -1, -1):
-		if lines[i].begins_with("~ "):
-			active_title_change.emit(lines[i].replace("~ ", ""))
+		if lines[i].begins_with("~ ") and "labels" in DMSettings.get_user_value("label_list_view", "regions+labels"):
+			active_label_changed.emit(lines[i].replace("~ ", ""))
+			return
+		elif lines[i].begins_with("#region ") and "regions" in DMSettings.get_user_value("label_list_view", "regions+labels"):
+			active_label_changed.emit(lines[i].replace("#region ", ""))
 			return
 
-	active_title_change.emit("")
+	active_label_changed.emit("")
 
 
-## Move the caret line to match a given title.
-func go_to_title(title: String, create_if_none: bool = false) -> void:
-	var found_title: bool = false
+## Move the caret line to match a given label.
+func go_to_label(label: String, create_if_none: bool = false) -> void:
+	var found_label: bool = false
 
 	var lines = text.split("\n")
 	for i: int in range(0, lines.size()):
-		if lines[i].strip_edges() == "~ " + title:
-			found_title = true
+		if lines[i].strip_edges() == "~ " + label or lines[i].strip_edges() == "#region " + label:
+			found_label = true
 			set_caret_line(i)
+			set_caret_column(0)
 			center_viewport_to_caret()
 
-	if create_if_none and not found_title:
-		text += "\n\n\n~ %s\n\n=> END" % [title]
+	if create_if_none and not found_label:
+		text += "\n\n\n~ %s\n\n=> END" % [label]
 		set_caret_line(text.split("\n").size() - 2)
 		center_viewport_to_caret()
 
@@ -1170,8 +1176,8 @@ func _on_code_edit_symbol_validate(symbol: String) -> void:
 		set_symbol_lookup_word_as_valid(true)
 		return
 
-	for title: String in get_titles():
-		if symbol == title:
+	for label: String in get_labels():
+		if symbol == label:
 			set_symbol_lookup_word_as_valid(true)
 			return
 
@@ -1199,10 +1205,10 @@ func _on_code_edit_symbol_lookup(symbol: String, line: int, column: int) -> void
 		external_file_requested.emit(symbol, "")
 		return
 
-	# Check if it's a title
-	for title: String in get_titles():
-		if symbol == title:
-			go_to_title(symbol)
+	# Check if it's a label
+	for label: String in get_labels():
+		if symbol == label:
+			go_to_label(symbol)
 			return
 
 	# Check if it's a mutation line symbol
@@ -1233,7 +1239,7 @@ func _on_code_edit_text_set() -> void:
 
 
 func _on_code_edit_caret_changed() -> void:
-	check_active_title()
+	check_active_label()
 	last_selected_text = get_selected_text()
 	_update_code_hint()
 

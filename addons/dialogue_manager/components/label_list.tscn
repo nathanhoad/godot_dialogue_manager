@@ -1,0 +1,38 @@
+[gd_scene format=3 uid="uid://ctns6ouwwd68i"]
+
+[ext_resource type="Script" uid="uid://d0k2wndjj0ifm" path="res://addons/dialogue_manager/components/label_list.gd" id="1_5qqmd"]
+
+[node name="LabelList" type="VBoxContainer" unique_id=1743153913]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+script = ExtResource("1_5qqmd")
+
+[node name="Toolbar" type="HBoxContainer" parent="." unique_id=1431748116]
+layout_mode = 2
+
+[node name="FilterEdit" type="LineEdit" parent="Toolbar" unique_id=1569476716]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+placeholder_text = "Filter labels"
+clear_button_enabled = true
+
+[node name="MenuButton" type="MenuButton" parent="Toolbar" unique_id=118120877]
+unique_name_in_owner = true
+layout_mode = 2
+
+[node name="List" type="ItemList" parent="." unique_id=647368384]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_vertical = 3
+allow_reselect = true
+
+[connection signal="theme_changed" from="." to="." method="_on_theme_changed"]
+[connection signal="text_changed" from="Toolbar/FilterEdit" to="." method="_on_filter_edit_text_changed"]
+[connection signal="about_to_popup" from="Toolbar/MenuButton" to="." method="_on_menu_button_about_to_popup"]
+[connection signal="item_clicked" from="List" to="." method="_on_list_item_clicked"]

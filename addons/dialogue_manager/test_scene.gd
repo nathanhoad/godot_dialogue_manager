@@ -5,7 +5,7 @@ const DialogueSettings = preload("./settings.gd")
 const DialogueResource = preload("./dialogue_resource.gd")
 
 
-@onready var title: String = DialogueSettings.get_user_value("run_title")
+@onready var key: String = DialogueSettings.get_user_value("run_key")
 @onready var resource: DialogueResource = load(DialogueSettings.get_user_value("run_resource_path"))
 
 
@@ -20,7 +20,7 @@ func _ready():
 	# enabled in settings will throw a compiler error here so I'm using `get_singleton` instead.
 	var dialogue_manager = Engine.get_singleton("DialogueManager")
 	dialogue_manager.dialogue_ended.connect(_on_dialogue_ended)
-	dialogue_manager.show_dialogue_balloon(resource, title if not title.is_empty() else resource.first_title)
+	dialogue_manager.show_dialogue_balloon(resource, key if not key.is_empty() else resource.first_label)
 
 
 func _enter_tree() -> void:

@@ -8,11 +8,11 @@ var imported_paths: PackedStringArray = []
 ## Any "using" directives.
 var using_states: PackedStringArray = []
 
-## All titles in the file and the line they point to.
-var titles: Dictionary = {}
+## All labels in the file and the line they point to.
+var labels: Dictionary = {}
 
-## The first title in the file.
-var first_title: String = ""
+## The first label in the file.
+var first_label: String = ""
 
 ## All character names.
 var character_names: PackedStringArray = []
