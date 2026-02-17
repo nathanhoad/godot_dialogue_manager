@@ -81,7 +81,7 @@ func _get_line_syntax_highlighting(line: int) -> Dictionary:
 
 		DMConstants.TYPE_DIALOGUE, DMConstants.TYPE_RESPONSE:
 			if text.strip_edges().begins_with("- "):
-				colors[index] = { color = theme.titles_color }
+				colors[index] = { color = theme.labels_color }
 				index = text.find(" ", text.find("- "))
 
 			if text.strip_edges().begins_with("%"):
@@ -175,7 +175,7 @@ func _get_line_syntax_highlighting(line: int) -> Dictionary:
 
 
 func _highlight_expression(tokens: Array, colors: Dictionary, index: int) -> int:
-	var theme: Dictionary = get_text_edit().theme_overrides
+	var theme: DMThemeValues = get_text_edit().theme_overrides
 	var last_index: int = index
 	for token: Dictionary in tokens:
 		last_index = token.i
