@@ -116,7 +116,7 @@ func find_imported_labels(text: String, path: String) -> void:
 				add_error(id, 0, DMConstants.ERR_ERRORS_IN_IMPORTED_FILE)
 				continue
 
-			var uid: String = ResourceUID.id_to_text(ResourceLoader.get_resource_uid(import_data.path)).replace("uid://", "")
+			var uid: String = var uid: String = ResourceUID.path_to_uid(import_data.path).replace("uid://", "")
 			for label_key: String in imported_resource.labels:
 				# Ignore any labels that are already a reference
 				if "/" in label_key: continue

@@ -490,8 +490,6 @@ func run_test_scene(from_key: String) -> void:
 	DMSettings.set_user_value("is_running_test_scene", true)
 	DMSettings.set_user_value("run_resource_path", current_file_path)
 	var test_scene_path: String = DMSettings.get_setting(DMSettings.CUSTOM_TEST_SCENE_PATH, "res://addons/dialogue_manager/test_scene.tscn")
-	if ResourceUID.has_id(ResourceUID.text_to_id(test_scene_path)):
-		test_scene_path = ResourceUID.get_id_path(ResourceUID.text_to_id(test_scene_path))
 	EditorInterface.play_custom_scene(test_scene_path)
 
 
