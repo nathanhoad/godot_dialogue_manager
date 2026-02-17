@@ -64,7 +64,7 @@ static func get_values_from_editor() -> DMThemeValues:
 		critical_color = editor_settings.get_setting("text_editor/theme/highlighting/comment_markers/critical_color"),
 		notice_color = editor_settings.get_setting("text_editor/theme/highlighting/comment_markers/notice_color"),
 
-		labels_color = editor_settings.get_setting("text_editor/theme/highlighting/control_flow_keyword_color"),
+		labels_color = editor_settings.get_setting("text_editor/theme/highlighting/gdscript/node_reference_color"),
 		text_color = editor_settings.get_setting("text_editor/theme/highlighting/text_color"),
 		tags_color = editor_settings.get_setting("text_editor/theme/highlighting/string_placeholder_color"),
 		conditions_color = editor_settings.get_setting("text_editor/theme/highlighting/keyword_color"),
@@ -75,7 +75,7 @@ static func get_values_from_editor() -> DMThemeValues:
 		numbers_color = editor_settings.get_setting("text_editor/theme/highlighting/number_color"),
 		symbols_color = editor_settings.get_setting("text_editor/theme/highlighting/symbol_color"),
 		comments_color = editor_settings.get_setting("text_editor/theme/highlighting/comment_color"),
-		jumps_color = Color(editor_settings.get_setting("text_editor/theme/highlighting/control_flow_keyword_color"), 0.6),
+		jumps_color = Color(editor_settings.get_setting("text_editor/theme/highlighting/gdscript/node_reference_color"), 0.6),
 
 		font_size = editor_settings.get_setting("interface/editor/code_font_size")
 	})
