@@ -974,7 +974,31 @@ func _resolve_each(array: Array, extra_game_states: Array) -> Array:
 
 
 # Collapse any expressions
-func _resolve(tokens: Array, extra_game_states: Array):
+func _resolve(tokens: Array, extra_game_states: Array) -> Variant:
+	# Short-circuit evaluation for and/or
+	var has_assignment: bool = false
+	var last_and_or_index: int = -1
+	for j: int in range(0, tokens.size()):
+		if tokens[j].type == DMConstants.TOKEN_ASSIGNMENT:
+			has_assignment = true
+			break
+		if tokens[j].type == DMConstants.TOKEN_AND_OR:
+			last_and_or_index = j
+	if not has_assignment and last_and_or_index > 0 and last_and_or_index < tokens.size() - 1:
+		var left_tokens: Array = tokens.slice(0, last_and_or_index)
+		var operator: String = tokens[last_and_or_index].value
+		var right_tokens: Array = tokens.slice(last_and_or_index + 1)
+
+		var left_value: Variant = await _resolve(left_tokens, extra_game_states)
+
+		if operator == "and" and not left_value:
+			return false
+		if operator == "or" and left_value:
+			return true
+
+		var right_value: Variant = await _resolve(right_tokens, extra_game_states)
+		return _apply_operation(operator, left_value, right_value)
+
 	var i: int = 0
 	var limit: int = 0
 
@@ -1430,7 +1454,7 @@ func _compare(operator: String, first_value, second_value) -> bool:
 
 
 # Apply an operation from one value to another.
-func _apply_operation(operator: String, first_value, second_value):
+func _apply_operation(operator: String, first_value, second_value) -> Variant:
 	match operator:
 		&"=":
 			return second_value
@@ -1450,6 +1474,7 @@ func _apply_operation(operator: String, first_value, second_value):
 			return first_value or second_value
 
 	assert(false, DMConstants.translate(&"runtime.unknown_operator"))
+	return null
 
 
 # Check if a dialogue line contains meaningful information.
