@@ -5,7 +5,7 @@ class_name DMImportPlugin extends EditorImportPlugin
 signal compiled_resource(resource: Resource)
 
 
-const COMPILER_VERSION = 16
+const COMPILER_VERSION: int = 16
 
 
 func _get_importer_name() -> String:
@@ -28,7 +28,7 @@ func _get_priority() -> float:
 	return 1000.0
 
 
-func _get_resource_type():
+func _get_resource_type() -> String:
 	return "Resource"
 
 
@@ -36,7 +36,7 @@ func _get_recognized_extensions() -> PackedStringArray:
 	return PackedStringArray(["dialogue"])
 
 
-func _get_save_extension():
+func _get_save_extension() -> String:
 	return "tres"
 
 
@@ -44,11 +44,11 @@ func _get_preset_count() -> int:
 	return 0
 
 
-func _get_preset_name(preset_index: int) -> String:
+func _get_preset_name(_preset_index: int) -> String:
 	return "Unknown"
 
 
-func _get_import_options(path: String, preset_index: int) -> Array:
+func _get_import_options(_path: String, _preset_index: int) -> Array:
 	# When the options array is empty there is a misleading error on export
 	# that actually means nothing so let's just have an invisible option.
 	return [{
@@ -57,11 +57,11 @@ func _get_import_options(path: String, preset_index: int) -> Array:
 	}]
 
 
-func _get_option_visibility(path: String, option_name: StringName, options: Dictionary) -> bool:
+func _get_option_visibility(_path: String, _option_name: StringName, _options: Dictionary) -> bool:
 	return false
 
 
-func _import(source_file: String, save_path: String, options: Dictionary, platform_variants: Array[String], gen_files: Array[String]) -> Error:
+func _import(source_file: String, save_path: String, _options: Dictionary, _platform_variants: Array[String], _gen_files: Array[String]) -> Error:
 	# Get the raw file contents
 	if not FileAccess.file_exists(source_file): return ERR_FILE_NOT_FOUND
 
@@ -102,7 +102,7 @@ func _import(source_file: String, save_path: String, options: Dictionary, platfo
 
 	# Recompile any dependencies
 	var dependent_paths: PackedStringArray = DMCache.get_dependent_paths_for_reimport(source_file)
-	for path in dependent_paths:
+	for path: String in dependent_paths:
 		append_import_external_resource(path)
 
 	return err

@@ -21,7 +21,7 @@ var resource: Resource:
 func _notification(what: int) -> void:
 	match what:
 		NOTIFICATION_DRAG_BEGIN:
-			var data = get_viewport().gui_get_drag_data()
+			var data: Variant = get_viewport().gui_get_drag_data()
 			if typeof(data) == TYPE_DICTIONARY and data.type == "files" and data.files.size() > 0 and data.files[0].ends_with(".dialogue"):
 				add_theme_stylebox_override("normal", get_theme_stylebox("focus", "LineEdit"))
 				add_theme_stylebox_override("hover", get_theme_stylebox("focus", "LineEdit"))
@@ -32,16 +32,16 @@ func _notification(what: int) -> void:
 			remove_theme_stylebox_override("hover")
 
 
-func _can_drop_data(at_position: Vector2, data) -> bool:
+func _can_drop_data(_at_position: Vector2, data: Variant) -> bool:
 	if typeof(data) != TYPE_DICTIONARY: return false
 	if data.type != "files": return false
 
-	var files: PackedStringArray = Array(data.files).filter(func(f): return f.get_extension() == "dialogue")
+	var files: PackedStringArray = Array(data.files).filter(func(f: String) -> bool: return f.get_extension() == "dialogue")
 	return files.size() > 0
 
 
-func _drop_data(at_position: Vector2, data) -> void:
-	var files: PackedStringArray = Array(data.files).filter(func(f): return f.get_extension() == "dialogue")
+func _drop_data(_at_position: Vector2, data: Variant) -> void:
+	var files: PackedStringArray = Array(data.files).filter(func(f: String) -> bool: return f.get_extension() == "dialogue")
 
 	if files.size() == 0: return
 

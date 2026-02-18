@@ -56,8 +56,8 @@ func _to_string() -> String:
 
 
 func get_tag_value(tag_name: String) -> String:
-	var wrapped := "%s=" % tag_name
-	for t in tags:
+	var wrapped: String = "%s=" % tag_name
+	for t: String in tags:
 		if t.begins_with(wrapped):
 			return t.replace(wrapped, "").strip_edges()
 	return ""

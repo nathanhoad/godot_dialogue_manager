@@ -14,10 +14,10 @@ var regex: DMCompilerRegEx = DMCompilerRegEx.new()
 func _init(text: String) -> void:
 	var resolved_tags: PackedStringArray = []
 	var tag_matches: Array[RegExMatch] = regex.TAGS_REGEX.search_all(text)
-	for tag_match in tag_matches:
+	for tag_match: RegExMatch in tag_matches:
 		text = text.replace(tag_match.get_string(), "")
-		var tags = tag_match.get_string().replace("[#", "").replace("]", "").replace(", ", ",").split(",")
-		for tag in tags:
+		var possible_tags: PackedStringArray = tag_match.get_string().replace("[#", "").replace("]", "").replace(", ", ",").split(",")
+		for tag: String in possible_tags:
 			tag = tag.replace("#", "")
 			if not tag in resolved_tags:
 				resolved_tags.append(tag)

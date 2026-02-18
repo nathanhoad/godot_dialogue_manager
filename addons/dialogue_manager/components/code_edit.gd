@@ -25,7 +25,7 @@ var theme_overrides: DMThemeValues:
 		add_theme_color_override("background_color", theme_overrides.background_color)
 		add_theme_color_override("current_line_color", theme_overrides.current_line_color)
 		add_theme_font_override("font", get_theme_font("source", "EditorFonts"))
-		add_theme_font_size_override("font_size", theme_overrides.font_size * theme_overrides.scale)
+		add_theme_font_size_override("font_size", int(theme_overrides.font_size * theme_overrides.scale))
 		font_size = round(theme_overrides.font_size)
 	get:
 		return theme_overrides
@@ -34,9 +34,9 @@ var theme_overrides: DMThemeValues:
 var errors: Array:
 	set(next_errors):
 		errors = next_errors
-		for i in range(0, get_line_count()):
+		for i: int in range(0, get_line_count()):
 			var is_error: bool = false
-			for error in errors:
+			for error: Dictionary in errors:
 				if error.line_number == i:
 					is_error = true
 			mark_line_as_error(i, is_error)
@@ -50,7 +50,7 @@ var last_selected_text: String
 var font_size: int:
 	set(value):
 		font_size = value
-		add_theme_font_size_override("font_size", font_size * theme_overrides.scale)
+		add_theme_font_size_override("font_size", int(font_size * theme_overrides.scale))
 	get:
 		return font_size
 
@@ -122,7 +122,7 @@ func _gui_input(event: InputEvent) -> void:
 				get_viewport().set_input_as_handled()
 
 
-func _can_drop_data(at_position: Vector2, data) -> bool:
+func _can_drop_data(_at_position: Vector2, data: Variant) -> bool:
 	if typeof(data) != TYPE_DICTIONARY: return false
 	if data.type != "files": return false
 
@@ -162,7 +162,7 @@ func _drop_data(at_position: Vector2, data: Variant) -> void:
 					set_caret_line(i)
 					break
 		else:
-			var cursor: Vector2 = get_line_column_at_pos(at_position)
+			var cursor: Vector2i = get_line_column_at_pos(at_position)
 			if cursor.x > -1 and cursor.y > -1:
 				set_cursor(cursor)
 				remove_secondary_carets()
@@ -183,8 +183,8 @@ func _drop_data(at_position: Vector2, data: Variant) -> void:
 	grab_focus()
 
 
-func _request_code_completion(force: bool) -> void:
-	var cursor: Vector2 = get_cursor()
+func _request_code_completion(_force: bool) -> void:
+	var cursor: Vector2i = get_cursor()
 	var current_line: String = get_line(cursor.y)
 
 	_add_jump_completions(current_line, cursor)
@@ -201,7 +201,7 @@ func _filter_code_completion_candidates(candidates: Array) -> Array:
 	return candidates
 
 
-func _confirm_code_completion(replace: bool) -> void:
+func _confirm_code_completion(_replace: bool) -> void:
 	var completion: Dictionary = get_code_completion_option(get_code_completion_selected_index())
 	begin_complex_operation()
 	# Delete any part of the text that we've already typed
@@ -212,7 +212,7 @@ func _confirm_code_completion(replace: bool) -> void:
 	end_complex_operation()
 
 	if completion.display_text.ends_with("()"):
-		set_cursor(get_cursor() - Vector2.RIGHT)
+		set_cursor(get_cursor() - Vector2i.RIGHT)
 
 	# Close the autocomplete menu on the next tick
 	call_deferred("cancel_code_completion")
@@ -268,7 +268,7 @@ func _add_character_name_completions(current_line: String) -> void:
 
 
 # Add state/mutation completions.
-func _add_mutation_completions(current_line: String, cursor: Vector2) -> void:
+func _add_mutation_completions(current_line: String, cursor: Vector2i) -> void:
 	# Check for inline mutation context first (e.g., "Nathan: Hello [$> SomeGlobal.")
 	var inline_context: Dictionary = _get_inline_mutation_context(current_line, cursor.x)
 	var mutation_expression: String = ""
@@ -279,7 +279,7 @@ func _add_mutation_completions(current_line: String, cursor: Vector2) -> void:
 		mutation_expression = inline_context.get("expression", "")
 	else:
 		# Match autoloads on full mutation lines (MUTATION_PREFIXES + "using ")
-		for prefix in MUTATION_PREFIXES + PackedStringArray(["using "]):
+		for prefix: String in MUTATION_PREFIXES + PackedStringArray(["using "]):
 			if current_line.strip_edges().begins_with(prefix) and cursor.x > current_line.find(prefix):
 				mutation_expression = current_line.substr(0, cursor.x).strip_edges().substr(3)
 				is_using_line = current_line.strip_edges().begins_with("using ")
@@ -319,7 +319,7 @@ func _add_mutation_completions(current_line: String, cursor: Vector2) -> void:
 		if "false".contains(prompt):
 			add_code_completion_option(CodeEdit.KIND_CONSTANT, "false", "false".substr(prompt.length()), color, icon)
 
-	auto_completes.sort_custom(func(a, b):
+	auto_completes.sort_custom(func(a: Dictionary, b: Dictionary) -> bool:
 		return a.text.to_lower().similarity(prompt) > b.text.to_lower().similarity(prompt)
 	)
 	for auto_complete: Dictionary in auto_completes:
@@ -401,12 +401,12 @@ func _get_icon_for_type(type: String) -> Texture2D:
 
 
 ## Get the current caret position as a Vector2 (x=column, y=line).
-func get_cursor() -> Vector2:
-	return Vector2(get_caret_column(), get_caret_line())
+func get_cursor() -> Vector2i:
+	return Vector2i(get_caret_column(), get_caret_line())
 
 
 ## Set the caret position from a Vector2 (x=column, y=line).
-func set_cursor(from_cursor: Vector2) -> void:
+func set_cursor(from_cursor: Vector2i) -> void:
 	set_caret_line(from_cursor.y, false)
 	set_caret_column(from_cursor.x, false)
 
@@ -419,8 +419,8 @@ func _matches_prompt(prompt: String, candidate: String) -> bool:
 	# Fuzzy match characters in order
 	candidate = candidate.to_lower()
 	var next_index: int = 0
-	for char: String in prompt.to_lower():
-		next_index = candidate.find(char, next_index) + 1
+	for c: String in prompt.to_lower():
+		next_index = candidate.find(c, next_index) + 1
 		if next_index == 0:
 			return false
 	return true
@@ -700,7 +700,7 @@ func _resolve_mutation_symbol_at_position(line_text: String, column: int) -> Dic
 
 # Update the code hint to show method parameter information.
 func _update_code_hint() -> void:
-	var cursor: Vector2 = get_cursor()
+	var cursor: Vector2i = get_cursor()
 	var current_line: String = get_line(cursor.y)
 	var text_before_cursor: String = current_line.substr(0, cursor.x)
 
@@ -933,7 +933,7 @@ func get_labels(include_regions: bool = false) -> PackedStringArray:
 	for line: String in lines:
 		if line.strip_edges().begins_with("~ "):
 			labels.append(line.strip_edges().substr(2))
-		elif line.strip_edges().begins_with("#region "):
+		elif include_regions and line.strip_edges().begins_with("#region "):
 			labels.append("#" + line.strip_edges().replace("#region ", ""))
 
 	return labels
@@ -959,7 +959,7 @@ func check_active_label() -> void:
 func go_to_label(label: String, create_if_none: bool = false) -> void:
 	var found_label: bool = false
 
-	var lines = text.split("\n")
+	var lines: PackedStringArray = text.split("\n")
 	for i: int in range(0, lines.size()):
 		if lines[i].strip_edges() == "~ " + label or lines[i].strip_edges() == "#region " + label:
 			found_label = true
@@ -976,7 +976,7 @@ func go_to_label(label: String, create_if_none: bool = false) -> void:
 ## Get all character names from the dialogue that match the given prefix.
 func get_character_names(beginning_with: String) -> PackedStringArray:
 	var names: PackedStringArray = []
-	var lines = text.split("\n")
+	var lines: PackedStringArray = text.split("\n")
 	for line: String in lines:
 		if ": " in line:
 			var character_name: String = WEIGHTED_RANDOM_PREFIX.sub(line.split(": ")[0].strip_edges(), "")
@@ -1037,7 +1037,7 @@ func toggle_comment() -> void:
 	var selections: Array = []
 	var line_offsets: Dictionary = {}
 
-	for caret_index in range(0, get_caret_count()):
+	for caret_index: int in range(0, get_caret_count()):
 		var from_line: int = get_caret_line(caret_index)
 		var from_column: int = get_caret_column(caret_index)
 		var to_line: int = get_caret_line(caret_index)
@@ -1076,7 +1076,7 @@ func toggle_comment() -> void:
 			else:
 				line_offsets[line_number] = 0
 
-	for caret_index in range(0, get_caret_count()):
+	for caret_index: int in range(0, get_caret_count()):
 		var selection: Dictionary = selections[caret_index]
 		select(
 			selection.from_line,
@@ -1095,7 +1095,7 @@ func toggle_comment() -> void:
 
 ## Remove the current line.
 func delete_current_line() -> void:
-	var cursor: Vector2 = get_cursor()
+	var cursor: Vector2i = get_cursor()
 	if get_line_count() == 1:
 		select_all()
 	elif cursor.y == 0:
@@ -1111,7 +1111,7 @@ func move_line(offset: int) -> void:
 	offset = clamp(offset, -1, 1)
 
 	var starting_scroll: float = scroll_vertical
-	var cursor: Vector2 = get_cursor()
+	var cursor: Vector2i = get_cursor()
 	var reselect: bool = false
 	var from: int = cursor.y
 	var to: int = cursor.y
@@ -1153,7 +1153,7 @@ func _on_project_settings_changed() -> void:
 	_autoloads = {}
 
 	# Add any actual autoloads
-	var project = ConfigFile.new()
+	var project: ConfigFile = ConfigFile.new()
 	project.load("res://project.godot")
 	if project.has_section("autoload"):
 		for autoload: String in project.get_section_keys("autoload"):
@@ -1182,7 +1182,7 @@ func _on_code_edit_symbol_validate(symbol: String) -> void:
 			return
 
 	# Check if it's a mutation line symbol
-	var cursor: Vector2 = get_line_column_at_pos(get_local_mouse_pos())
+	var cursor: Vector2i = get_line_column_at_pos(get_local_mouse_pos())
 	var line_text: String = get_line(cursor.y)
 	var symbol_info: Dictionary = _resolve_mutation_symbol_at_position(line_text, cursor.x)
 	if not symbol_info.is_empty() and symbol_info.get("symbol") == symbol:
@@ -1244,8 +1244,8 @@ func _on_code_edit_caret_changed() -> void:
 	_update_code_hint()
 
 
-func _on_code_edit_gutter_clicked(line: int, gutter: int) -> void:
-	var line_errors = errors.filter(func(error): return error.line_number == line)
+func _on_code_edit_gutter_clicked(line: int, _gutter: int) -> void:
+	var line_errors: Array = errors.filter(func(error: Dictionary) -> bool: return error.line_number == line)
 	if line_errors.size() > 0:
 		error_clicked.emit(line)
 

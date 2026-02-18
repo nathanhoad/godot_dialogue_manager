@@ -6,7 +6,7 @@ class_name DMDialogueEditorProperty extends EditorProperty
 const DialoguePropertyEditorControl: PackedScene = preload("./editor_property_control.tscn")
 
 
-var control = DialoguePropertyEditorControl.instantiate()
+var control: Control = DialoguePropertyEditorControl.instantiate()
 var current_value: DialogueResource
 var is_updating: bool = false
 

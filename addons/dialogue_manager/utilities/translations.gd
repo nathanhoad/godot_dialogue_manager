@@ -14,9 +14,9 @@ static func generate_translation_keys() -> void:
 		var compiled_lines: Dictionary = DMCompiler.compile_string(text, "").lines
 
 		# Add in any that are missing
-		for i in lines.size():
-			var line = lines[i]
-			var l = line.strip_edges()
+		for i: int in lines.size():
+			var line: String = lines[i]
+			var l: String = line.strip_edges()
 
 			if not [DMConstants.TYPE_DIALOGUE, DMConstants.TYPE_RESPONSE].has(DMCompiler.get_line_type(l)): continue
 			if not compiled_lines.has(str(i)): continue

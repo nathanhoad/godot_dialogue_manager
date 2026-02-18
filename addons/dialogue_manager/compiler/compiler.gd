@@ -36,7 +36,7 @@ static func get_static_line_id(text: String) -> String:
 static func extract_translatable_string(text: String) -> String:
 	var compilation: DMCompilation = DMCompilation.new()
 
-	var tree_line = DMTreeLine.new("")
+	var tree_line: DMTreeLine = DMTreeLine.new("")
 	tree_line.text = text
 	var line: DMCompiledLine = DMCompiledLine.new("", compilation.get_line_type(text))
 	compilation.parse_character_and_dialogue(tree_line, line, [tree_line], 0, null)

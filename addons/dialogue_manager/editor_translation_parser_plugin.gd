@@ -41,7 +41,7 @@ func _parse_file(path: String) -> Array[PackedStringArray]:
 
 		known_keys.append(translation_key)
 		translated_lines.append(line)
-		
+
 		var message: String = line.text.replace('"', '\"')
 		var context: String = line.translation_key.replace('"', '\"') if translation_key != line.text else ""
 		var plural: String = ""

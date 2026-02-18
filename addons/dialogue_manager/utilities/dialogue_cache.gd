@@ -41,8 +41,8 @@ static func prepare() -> void:
 		var text: String = FileAccess.get_file_as_string(file_path)
 		var lines: PackedStringArray = text.split("\n")
 		for i: int in range(0, lines.size()):
-			var line = lines[i]
-			var found = key_regex.search(line)
+			var line: String = lines[i]
+			var found: RegExMatch = key_regex.search(line)
 			if found:
 				known_static_ids[found.strings[found.names.get("key")]] = file_path
 
@@ -97,7 +97,7 @@ static func add_file(path: String, compile_result: DMCompilerResult = null) -> v
 	}
 
 	if compile_result != null:
-		_cache[path].dependencies = Array(compile_result.imported_paths).filter(func(d): return d != path)
+		_cache[path].dependencies = Array(compile_result.imported_paths).filter(func(d: String) -> bool: return d != path)
 		_cache[path].compiled_at = Time.get_ticks_msec()
 
 	queue_updating_dependencies(path)
@@ -129,7 +129,7 @@ static func add_errors_to_file(path: String, errors: Array[Dictionary]) -> void:
 ## Get a list of files that have errors
 static func get_files_with_errors() -> Array[Dictionary]:
 	var files_with_errors: Array[Dictionary] = []
-	for dialogue_file in _cache.values():
+	for dialogue_file: Dictionary in _cache.values():
 		if dialogue_file and dialogue_file.errors.size() > 0:
 			files_with_errors.append(dialogue_file)
 	return files_with_errors
@@ -156,14 +156,14 @@ static func move_file_path(from_path: String, to_path: String) -> void:
 
 ## Get every dialogue file that imports on a file of a given path
 static func get_files_with_dependency(imported_path: String) -> Array:
-	return _cache.values().filter(func(d): return d.dependencies.has(imported_path))
+	return _cache.values().filter(func(d: Dictionary) -> bool: return d.dependencies.has(imported_path))
 
 
 ## Get any paths that are dependent on a given path
 static func get_dependent_paths_for_reimport(on_path: String) -> PackedStringArray:
 	return get_files_with_dependency(on_path) \
-		.filter(func(d): return Time.get_ticks_msec() - d.get("compiled_at", 0) > 3000) \
-		.map(func(d): return d.path)
+		.filter(func(d: Dictionary) -> bool: return Time.get_ticks_msec() - d.get("compiled_at", 0) > 3000) \
+		.map(func(d: Dictionary) -> String: return d.path)
 
 
 # Recursively find any dialogue files in a directory
@@ -194,12 +194,12 @@ static func _on_dependency_timer_timeout() -> void:
 	var import_regex: RegEx = RegEx.create_from_string("import \"(?<path>.*?)\"")
 	var file: FileAccess
 	var found_imports: Array[RegExMatch]
-	for path in _update_dependency_paths:
+	for path: String in _update_dependency_paths:
 		# Open the file and check for any "import" lines
 		file = FileAccess.open(path, FileAccess.READ)
 		found_imports = import_regex.search_all(file.get_as_text())
 		var dependencies: PackedStringArray = []
-		for found in found_imports:
+		for found: RegExMatch in found_imports:
 			dependencies.append(found.strings[found.names.path])
 		_cache[path].dependencies = dependencies
 	_update_dependency_paths.clear()
