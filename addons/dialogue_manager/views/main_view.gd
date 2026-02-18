@@ -52,15 +52,15 @@ signal confirmation_closed()
 @onready var version_label: Label = %VersionLabel
 @onready var update_button: Button = %UpdateButton
 
-@onready var search_and_replace := %SearchAndReplace
+@onready var search_and_replace: Control = %SearchAndReplace
 
 # Code editor
 @onready var content: HSplitContainer = %Content
-@onready var files_list := %FilesList
+@onready var files_list: Control = %FilesList
 @onready var files_popup_menu: PopupMenu = %FilesPopupMenu
-@onready var label_list := %LabelList
+@onready var label_list: Control = %LabelList
 @onready var code_edit: DMCodeEdit = %CodeEdit
-@onready var errors_panel := %ErrorsPanel
+@onready var errors_panel: Control = %ErrorsPanel
 
 # The currently open file
 var current_file_path: String = "":
@@ -94,7 +94,7 @@ var current_file_path: String = "":
 			banner.hide()
 
 			var cursor: Vector2 = DMSettings.get_caret(current_file_path)
-			var scroll_vertical: int = DMSettings.get_scroll(current_file_path)
+			var scroll_vertical: float = DMSettings.get_scroll(current_file_path)
 
 			code_edit.text = open_buffers[current_file_path].text
 			code_edit.errors = []
@@ -125,7 +125,7 @@ func _ready() -> void:
 
 	# Set up the update checker
 	version_label.text = "v%s" % DMPlugin.get_version()
-	update_button.on_before_refresh = func on_before_refresh():
+	update_button.on_before_refresh = func on_before_refresh() -> bool:
 		# Save everything
 		DMSettings.set_user_value("just_refreshed", {
 			current_file_path = current_file_path,
@@ -134,7 +134,7 @@ func _ready() -> void:
 		return true
 
 	# Did we just load from an addon version refresh?
-	var just_refreshed = DMSettings.get_user_value("just_refreshed", null)
+	var just_refreshed: Variant = DMSettings.get_user_value("just_refreshed", null)
 	if just_refreshed != null:
 		DMSettings.set_user_value("just_refreshed", null)
 		call_deferred("load_from_version_refresh", just_refreshed)
@@ -156,7 +156,7 @@ func _ready() -> void:
 	# Reopen any files that were open when Godot was closed
 	if editor_settings.get_setting("text_editor/behavior/files/restore_scripts_on_load"):
 		var reopen_files: Array = DMSettings.get_user_value("reopen_files", [])
-		for reopen_file in reopen_files:
+		for reopen_file: String in reopen_files:
 			open_file(reopen_file)
 
 		self.current_file_path = DMSettings.get_user_value("most_recent_reopen_file", "")
@@ -208,7 +208,7 @@ func apply_changes() -> void:
 # Check if any open files have unsaved changes.
 func count_unsaved_files() -> int:
 	var count: int = 0
-	for buffer in open_buffers.values():
+	for buffer: Dictionary in open_buffers.values():
 		if buffer.text != buffer.pristine_text:
 			count += 1
 	return count
@@ -236,15 +236,15 @@ func load_from_version_refresh(just_refreshed: Dictionary) -> void:
 	updated_dialog.popup_centered()
 
 
-func new_file(path: String, content: String = "") -> void:
+func new_file(path: String, initial_content: String = "") -> void:
 	if open_buffers.has(path):
 		remove_file_from_open_buffers(path)
 
 	var file: FileAccess = FileAccess.open(path, FileAccess.WRITE)
-	if content == "":
+	if initial_content == "":
 		file.store_string(DMSettings.get_setting(DMSettings.NEW_FILE_TEMPLATE, ""))
 	else:
-		file.store_string(content)
+		file.store_string(initial_content)
 
 	EditorInterface.get_resource_filesystem().scan()
 
@@ -259,7 +259,7 @@ func open_file(path: String) -> void:
 
 	if not open_buffers.has(path):
 		var file: FileAccess = FileAccess.open(path, FileAccess.READ)
-		var text = file.get_as_text()
+		var text: String = file.get_as_text()
 
 		open_buffers[path] = {
 			cursor = Vector2.ZERO,
@@ -291,7 +291,7 @@ func save_files() -> void:
 	save_all_button.disabled = true
 
 	var saved_files: PackedStringArray = []
-	for path in open_buffers:
+	for path: String in open_buffers:
 		if open_buffers[path].text != open_buffers[path].pristine_text:
 			saved_files.append(path)
 		save_file(path, false)
@@ -302,7 +302,7 @@ func save_files() -> void:
 
 # Save a file
 func save_file(path: String, rescan_file_system: bool = true) -> void:
-	var buffer = open_buffers[path]
+	var buffer: Dictionary = open_buffers[path]
 
 	files_list.mark_file_as_unsaved(path, false)
 	save_all_button.disabled = files_list.unsaved_files.size() == 0
@@ -325,7 +325,7 @@ func save_file(path: String, rescan_file_system: bool = true) -> void:
 func close_file(path: String) -> void:
 	if not path in open_buffers.keys(): return
 
-	var buffer = open_buffers[path]
+	var buffer: Dictionary = open_buffers[path]
 
 	if buffer.text == buffer.pristine_text:
 		remove_file_from_open_buffers(path)
@@ -339,7 +339,7 @@ func close_file(path: String) -> void:
 func remove_file_from_open_buffers(path: String) -> void:
 	if not path in open_buffers.keys(): return
 
-	var current_index = open_buffers.keys().find(current_file_path)
+	var current_index: int = open_buffers.keys().find(current_file_path)
 
 	open_buffers.erase(path)
 	if open_buffers.size() == 0:
@@ -430,18 +430,18 @@ func go_to_label(label: String, create_if_none: bool = false) -> void:
 
 # Refresh the open menu with the latest files
 func build_open_menu() -> void:
-	var menu = open_button.get_popup()
+	var menu: PopupMenu = open_button.get_popup()
 	menu.clear()
 	menu.add_icon_item(get_theme_icon("Load", "EditorIcons"), DMConstants.translate(&"open.open"), OPEN_OPEN)
 	menu.add_icon_item(get_theme_icon("Load", "EditorIcons"), DMConstants.translate(&"open.quick_open"), OPEN_QUICK)
 	menu.add_separator()
 
-	var recent_files = DMSettings.get_recent_files()
+	var recent_files: Array = DMSettings.get_recent_files()
 	if recent_files.size() == 0:
 		menu.add_item(DMConstants.translate(&"open.no_recent_files"))
 		menu.set_item_disabled(2, true)
 	else:
-		for path in recent_files:
+		for path: String in recent_files:
 			if FileAccess.file_exists(path):
 				menu.add_icon_item(get_theme_icon("File", "EditorIcons"), path)
 
@@ -498,16 +498,15 @@ func run_test_scene(from_key: String) -> void:
 #region Signals
 
 
-func _on_files_moved(old_file: String, new_file: String) -> void:
+func _on_files_moved(old_file: String, new_file_path: String) -> void:
 	if open_buffers.has(old_file):
-		open_buffers[new_file] = open_buffers[old_file]
+		open_buffers[new_file_path] = open_buffers[old_file]
 		open_buffers.erase(old_file)
-		open_buffers[new_file]
 
 
 func _on_cache_file_content_changed(path: String, new_content: String) -> void:
 	if open_buffers.has(path):
-		var buffer = open_buffers[path]
+		var buffer: Dictionary = open_buffers[path]
 		if buffer.text == buffer.pristine_text and buffer.text != new_content:
 			buffer.text = new_content
 			code_edit.text = new_content
@@ -536,8 +535,8 @@ func _on_open_menu_id_pressed(id: int) -> void:
 			DMSettings.clear_recent_files()
 			build_open_menu()
 		_:
-			var menu = open_button.get_popup()
-			var item = menu.get_item_text(menu.get_item_index(id))
+			var menu: PopupMenu = open_button.get_popup()
+			var item: String = menu.get_item_text(menu.get_item_index(id))
 			open_file(item)
 
 
@@ -573,7 +572,7 @@ func _on_insert_button_menu_id_pressed(id: int) -> void:
 			code_edit.insert_text_at_cursor("=> END")
 
 
-func _on_main_view_theme_changed():
+func _on_main_view_theme_changed() -> void:
 	apply_theme()
 
 
@@ -634,16 +633,16 @@ func _on_find_in_files_button_pressed() -> void:
 
 
 func _on_code_edit_text_changed() -> void:
-	var buffer = open_buffers[current_file_path]
+	var buffer: Dictionary = open_buffers[current_file_path]
 	buffer.text = code_edit.text
 
 	files_list.mark_file_as_unsaved(current_file_path, buffer.text != buffer.pristine_text)
-	save_all_button.disabled = open_buffers.values().filter(func(d): return d.text != d.pristine_text).size() == 0
+	save_all_button.disabled = open_buffers.values().filter(func(d: Dictionary) -> bool: return d.text != d.pristine_text).size() == 0
 
 	parse_timer.start(1)
 
 
-func _on_code_edit_scroll_changed(value: int) -> void:
+func _on_code_edit_scroll_changed(_value: int) -> void:
 	DMSettings.set_scroll(current_file_path, code_edit.scroll_vertical)
 
 
@@ -708,7 +707,7 @@ func _on_test_line_button_pressed() -> void:
 
 	# Find next non-empty line
 	var line_to_run: int = 0
-	for i in range(code_edit.get_cursor().y, code_edit.get_line_count()):
+	for i: int in range(code_edit.get_cursor().y, code_edit.get_line_count()):
 		if not code_edit.get_line(i).is_empty():
 			line_to_run = i
 			break
@@ -729,7 +728,7 @@ func _on_files_list_file_popup_menu_requested(at_position: Vector2) -> void:
 	files_popup_menu.popup()
 
 
-func _on_files_list_file_middle_clicked(path: String):
+func _on_files_list_file_middle_clicked(path: String) -> void:
 	close_file(path)
 
 
@@ -757,11 +756,11 @@ func _on_files_popup_menu_id_pressed(id: int) -> void:
 		ITEM_CLOSE:
 			close_file(current_file_path)
 		ITEM_CLOSE_ALL:
-			for path in open_buffers.keys():
+			for path: String in open_buffers.keys():
 				close_file(path)
 		ITEM_CLOSE_OTHERS:
 			var current_current_file_path: String = current_file_path
-			for path in open_buffers.keys():
+			for path: String in open_buffers.keys():
 				if path != current_current_file_path:
 					await close_file(path)
 
@@ -792,7 +791,7 @@ func _on_close_confirmation_dialog_custom_action(action: StringName) -> void:
 	confirmation_closed.emit()
 
 
-func _on_find_in_files_result_selected(path: String, cursor: Vector2, length: int) -> void:
+func _on_find_in_files_result_selected(path: String, cursor: Vector2i, length: int) -> void:
 	open_file(path)
 	code_edit.select(cursor.y, cursor.x, cursor.y, cursor.x + length)
 	code_edit.set_line_as_center_visible(cursor.y)
@@ -814,24 +813,6 @@ func _on_banner_quick_open_pressed() -> void:
 
 func _on_banner_examples_pressed() -> void:
 	OS.shell_open("https://itch.io/c/5226650/godot-dialogue-manager-example-projects")
-
-
-func _on_generate_static_ids_confirmation_dialog_confirmed() -> void:
-	save_files()
-
-	var cursor: Vector2 = code_edit.get_cursor()
-	var scroll_vertical = code_edit.scroll_vertical
-	DMTranslationUtilities.generate_translation_keys()
-	for file_path: String in open_buffers:
-		var buffer: Dictionary = open_buffers.get(file_path)
-		buffer.text = FileAccess.get_file_as_string(file_path)
-		buffer.pristine_text = buffer.text
-
-		if file_path == current_file_path:
-			code_edit.text = buffer.text
-	code_edit.set_cursor(cursor)
-	code_edit.scroll_vertical = scroll_vertical
-	_on_code_edit_text_changed()
 
 
 #endregion

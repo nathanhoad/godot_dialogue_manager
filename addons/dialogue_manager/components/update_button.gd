@@ -1,15 +1,13 @@
 @tool
 extends Button
 
-const DialogueConstants = preload("../constants.gd")
-const DialogueSettings = preload("../settings.gd")
 
-const REMOTE_RELEASES_URL = "https://api.github.com/repos/nathanhoad/godot_dialogue_manager/releases"
+const REMOTE_RELEASES_URL: String = "https://api.github.com/repos/nathanhoad/godot_dialogue_manager/releases"
 
 
 @onready var http_request: HTTPRequest = $HTTPRequest
 @onready var download_dialog: AcceptDialog = $DownloadDialog
-@onready var download_update_panel = $DownloadDialog/DownloadUpdatePanel
+@onready var download_update_panel: Control = $DownloadDialog/DownloadUpdatePanel
 @onready var needs_reload_dialog: AcceptDialog = $NeedsReloadDialog
 @onready var update_failed_dialog: AcceptDialog = $UpdateFailedDialog
 @onready var timer: Timer = $Timer
@@ -17,7 +15,7 @@ const REMOTE_RELEASES_URL = "https://api.github.com/repos/nathanhoad/godot_dialo
 var needs_reload: bool = false
 
 # A lambda that gets called just before refreshing the plugin. Return false to stop the reload.
-var on_before_refresh: Callable = func(): return true
+var on_before_refresh: Callable = func() -> bool: return true
 
 
 func _ready() -> void:
@@ -33,7 +31,7 @@ func _ready() -> void:
 
 # Convert a version number to an actually comparable number
 func version_to_number(version: String) -> int:
-	var bits = version.split(".")
+	var bits: PackedStringArray = version.split(".")
 	return bits[0].to_int() * 1000000 + bits[1].to_int() * 1000 + bits[2].to_int()
 
 
@@ -53,24 +51,24 @@ func apply_theme() -> void:
 
 
 func check_for_update() -> void:
-	if DialogueSettings.get_user_value("check_for_updates", true):
+	if DMSettings.get_user_value("check_for_updates", true):
 		http_request.request(REMOTE_RELEASES_URL)
 
 
-### Signals
+#region Signals
 
 
-func _on_http_request_request_completed(result: int, response_code: int, headers: PackedStringArray, body: PackedByteArray) -> void:
+func _on_http_request_request_completed(result: int, _response_code: int, _headers: PackedStringArray, body: PackedByteArray) -> void:
 	if result != HTTPRequest.RESULT_SUCCESS: return
 
 	var current_version: String = DMPlugin.get_version()
 
 	# Work out the next version from the releases information on GitHub
-	var response = JSON.parse_string(body.get_string_from_utf8())
+	var response: Variant = JSON.parse_string(body.get_string_from_utf8())
 	if typeof(response) != TYPE_ARRAY: return
 
 	# GitHub releases are in order of creation, not order of version
-	var versions = (response as Array).filter(func(release):
+	var versions: Array = (response as Array).filter(func(release: Dictionary) -> bool:
 		var version: String = release.tag_name.substr(1)
 		var major_version: int = version.split(".")[0].to_int()
 		var current_major_version: int = current_version.split(".")[0].to_int()
@@ -78,18 +76,18 @@ func _on_http_request_request_completed(result: int, response_code: int, headers
 	)
 	if versions.size() > 0:
 		download_update_panel.next_version_release = versions[0]
-		text = DialogueConstants.translate(&"update.available").format({ version = versions[0].tag_name.substr(1) })
+		text = DMConstants.translate(&"update.available").format({ version = versions[0].tag_name.substr(1) })
 		show()
 
 
 func _on_update_button_pressed() -> void:
 	if needs_reload:
-		var will_refresh = on_before_refresh.call()
+		var will_refresh: bool = on_before_refresh.call()
 		if will_refresh:
 			EditorInterface.restart_editor(true)
 	else:
-		var scale: float = EditorInterface.get_editor_scale()
-		download_dialog.min_size = Vector2(300, 250) * scale
+		var dialog_scale: float = EditorInterface.get_editor_scale()
+		download_dialog.min_size = Vector2(300, 250) * dialog_scale
 		download_dialog.popup_centered()
 
 
@@ -97,22 +95,22 @@ func _on_download_dialog_close_requested() -> void:
 	download_dialog.hide()
 
 
-func _on_download_update_panel_updated(updated_to_version: String) -> void:
+func _on_download_update_panel_updated(_updated_to_version: String) -> void:
 	download_dialog.hide()
 
-	needs_reload_dialog.dialog_text = DialogueConstants.translate(&"update.needs_reload")
-	needs_reload_dialog.ok_button_text = DialogueConstants.translate(&"update.reload_ok_button")
-	needs_reload_dialog.cancel_button_text = DialogueConstants.translate(&"update.reload_cancel_button")
+	needs_reload_dialog.dialog_text = DMConstants.translate(&"update.needs_reload")
+	needs_reload_dialog.ok_button_text = DMConstants.translate(&"update.reload_ok_button")
+	needs_reload_dialog.cancel_button_text = DMConstants.translate(&"update.reload_cancel_button")
 	needs_reload_dialog.popup_centered()
 
 	needs_reload = true
-	text = DialogueConstants.translate(&"update.reload_project")
+	text = DMConstants.translate(&"update.reload_project")
 	apply_theme()
 
 
 func _on_download_update_panel_failed() -> void:
 	download_dialog.hide()
-	update_failed_dialog.dialog_text = DialogueConstants.translate(&"update.failed")
+	update_failed_dialog.dialog_text = DMConstants.translate(&"update.failed")
 	update_failed_dialog.popup_centered()
 
 
@@ -123,3 +121,6 @@ func _on_needs_reload_dialog_confirmed() -> void:
 func _on_timer_timeout() -> void:
 	if not needs_reload:
 		check_for_update()
+
+
+#endregion

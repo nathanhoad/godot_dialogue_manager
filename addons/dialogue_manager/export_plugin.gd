@@ -1,6 +1,6 @@
 class_name DMExportPlugin extends EditorExportPlugin
 
-const IGNORED_PATHS = [
+const IGNORED_PATHS: PackedStringArray = [
 	"/assets",
 	"/components",
 	"/views",
@@ -13,7 +13,7 @@ func _get_name() -> String:
 	return "Dialogue Manager Export Plugin"
 
 
-func _export_file(path: String, type: String, features: PackedStringArray) -> void:
+func _export_file(path: String, _type: String, _features: PackedStringArray) -> void:
 	var plugin_path: String = DMPlugin.get_plugin_path()
 
 	# Ignore any editor stuff

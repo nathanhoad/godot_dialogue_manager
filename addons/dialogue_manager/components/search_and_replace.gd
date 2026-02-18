@@ -6,9 +6,6 @@ signal open_requested()
 signal close_requested()
 
 
-const DialogueConstants = preload("../constants.gd")
-
-
 @onready var input: LineEdit = $Search/Input
 @onready var result_label: Label = $Search/ResultLabel
 @onready var previous_button: Button = $Search/PreviousButton
@@ -34,7 +31,7 @@ var result_index: int = -1:
 	set(next_result_index):
 		result_index = next_result_index
 		if results.size() > 0:
-			var r = results[result_index]
+			var r: Array = results[result_index]
 			code_edit.set_caret_line(r[0])
 			code_edit.select(r[0], r[1], r[0], r[1] + r[2])
 			code_edit.center_viewport_to_caret()
@@ -43,7 +40,7 @@ var result_index: int = -1:
 			if is_instance_valid(code_edit):
 				code_edit.deselect()
 
-		result_label.text = DialogueConstants.translate(&"n_of_n").format({ index = result_index + 1, total = results.size() })
+		result_label.text = DMConstants.translate(&"n_of_n").format({ index = result_index + 1, total = results.size() })
 	get:
 		return result_index
 
@@ -51,14 +48,14 @@ var result_index: int = -1:
 func _ready() -> void:
 	apply_theme()
 
-	input.placeholder_text = DialogueConstants.translate(&"search.placeholder")
-	previous_button.tooltip_text = DialogueConstants.translate(&"search.previous")
-	next_button.tooltip_text = DialogueConstants.translate(&"search.next")
-	match_case_button.text = DialogueConstants.translate(&"search.match_case")
-	$Search/ReplaceCheckButton.text = DialogueConstants.translate(&"search.toggle_replace")
-	replace_button.text = DialogueConstants.translate(&"search.replace")
-	replace_all_button.text = DialogueConstants.translate(&"search.replace_all")
-	$Replace/ReplaceLabel.text = DialogueConstants.translate(&"search.replace_with")
+	input.placeholder_text = DMConstants.translate(&"search.placeholder")
+	previous_button.tooltip_text = DMConstants.translate(&"search.previous")
+	next_button.tooltip_text = DMConstants.translate(&"search.next")
+	match_case_button.text = DMConstants.translate(&"search.match_case")
+	$Search/ReplaceCheckButton.text = DMConstants.translate(&"search.toggle_replace")
+	replace_button.text = DMConstants.translate(&"search.replace")
+	replace_all_button.text = DMConstants.translate(&"search.replace_all")
+	$Replace/ReplaceLabel.text = DMConstants.translate(&"search.replace_with")
 
 	self.result_index = -1
 
@@ -89,11 +86,11 @@ func search(text: String = "", default_result_index: int = 0) -> void:
 	if text == "":
 		text = input.text
 
-	var lines = code_edit.text.split("\n")
-	for line_number in range(0, lines.size()):
-		var line = lines[line_number]
+	var lines: PackedStringArray = code_edit.text.split("\n")
+	for line_number: int in range(0, lines.size()):
+		var line: String = lines[line_number]
 
-		var column = find_in_line(line, text, 0)
+		var column: int = find_in_line(line, text, 0)
 		while column > -1:
 			results.append([line_number, column, text.length()])
 			column = find_in_line(line, text, column + 1)
@@ -155,7 +152,7 @@ func _on_search_and_replace_visibility_changed() -> void:
 	if is_instance_valid(input):
 		if visible:
 			input.grab_focus()
-			var selection = code_edit.get_selected_text()
+			var selection: String = code_edit.get_selected_text()
 			if input.text == "" and selection != "":
 				input.text = selection
 				search(selection)

@@ -22,7 +22,7 @@ var symbols_color: Color = Color.WHITE
 var comments_color: Color = Color.WHITE
 var jumps_color: Color = Color.WHITE
 
-var font_size: float = 16
+var font_size: int = 16
 
 
 func _init(values: Dictionary) -> void:

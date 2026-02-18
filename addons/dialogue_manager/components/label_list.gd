@@ -40,14 +40,14 @@ func _ready() -> void:
 
 func select_label(label: String) -> void:
 	list.deselect_all()
-	for i in range(0, list.get_item_count()):
+	for i: int in range(0, list.get_item_count()):
 		if list.get_item_text(i) == label.strip_edges():
 			list.select(i)
 
 
 func apply_filter() -> void:
 	list.clear()
-	for label in labels:
+	for label: String in labels:
 		if filter == "" or filter.to_lower() in label.to_lower():
 			if label.begins_with("#"):
 				if "regions" in DMSettings.get_user_value("label_list_view", "regions+labels"):

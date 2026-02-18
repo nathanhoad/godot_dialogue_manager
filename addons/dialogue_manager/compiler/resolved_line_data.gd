@@ -22,7 +22,7 @@ func _init(line: String) -> void:
 	# Remove any escaped brackets (ie. "\[")
 	var escaped_open_brackets: PackedInt32Array = []
 	var escaped_close_brackets: PackedInt32Array = []
-	for i in range(0, text.length() - 1):
+	for i: int in range(0, text.length() - 1):
 		if text.substr(i, 2) == "\\[":
 			text = text.substr(0, i) + "!" + text.substr(i + 2)
 			escaped_open_brackets.append(i)
@@ -32,9 +32,9 @@ func _init(line: String) -> void:
 
 	# Extract all of the BB codes so that we know the actual text (we could do this easier with
 	# a RichTextLabel but then we'd need to await idle_frame which is annoying)
-	var bbcode_positions = find_bbcode_positions_in_string(text)
-	var accumulaive_length_offset = 0
-	for position in bbcode_positions:
+	var bbcode_positions: Array[Dictionary] = find_bbcode_positions_in_string(text)
+	var accumulaive_length_offset: int = 0
+	for position: Dictionary in bbcode_positions:
 		# Ignore our own markers
 		if position.code in ["wait", "speed", "/speed", "$>", "$>>", "do", "do!", "set", "next", "if", "else", "/if"]:
 			continue
@@ -46,20 +46,20 @@ func _init(line: String) -> void:
 		})
 		accumulaive_length_offset += position.bbcode.length()
 
-	for bb in bbcodes:
+	for bb: Dictionary in bbcodes:
 		text = text.substr(0, bb.offset_start) + text.substr(bb.offset_start + bb.bbcode.length())
 
 	# Now find any dialogue markers
-	var next_bbcode_position = find_bbcode_positions_in_string(text, false)
-	var limit = 0
+	var next_bbcode_position: Array[Dictionary] = find_bbcode_positions_in_string(text, false)
+	var limit: int = 0
 	while next_bbcode_position.size() > 0 and limit < 1000:
 		limit += 1
 
-		var bbcode = next_bbcode_position[0]
-		var index = bbcode.start
-		var code = bbcode.code
-		var raw_args = bbcode.raw_args
-		var args = {}
+		var bbcode: Dictionary = next_bbcode_position[0]
+		var index: int = bbcode.start
+		var code: String = bbcode.code
+		var raw_args: String = bbcode.raw_args
+		var args: Dictionary = {}
 		if code in ["$>", "$>>", "do", "do!", "set"]:
 			args["value"] = DMCompiler.extract_mutation("%s %s" % [code, raw_args])
 		else:
@@ -68,9 +68,9 @@ func _init(line: String) -> void:
 			# 	" rate=20 level=10"
 			if raw_args and raw_args[0] == "=":
 				raw_args = "value" + raw_args
-			for pair in raw_args.strip_edges().split(" "):
+			for pair: String in raw_args.strip_edges().split(" "):
 				if "=" in pair:
-					var bits = pair.split("=")
+					var bits: PackedStringArray = pair.split("=")
 					args[bits[0]] = bits[1]
 
 		match code:
@@ -87,17 +87,17 @@ func _init(line: String) -> void:
 				time = args.get("value") if args.has("value") else "0"
 
 		# Find any BB codes that are after this index and remove the length from their start
-		var length = bbcode.bbcode.length()
-		for bb in bbcodes:
+		var length: int = bbcode.bbcode.length()
+		for bb: Dictionary in bbcodes:
 			if bb.offset_start > bbcode.start:
 				bb.offset_start -= length
 				bb.start -= length
 
 		# Find any escaped brackets after this that need moving
-		for i in range(0, escaped_open_brackets.size()):
+		for i: int in range(0, escaped_open_brackets.size()):
 			if escaped_open_brackets[i] > bbcode.start:
 				escaped_open_brackets[i] -= length
-		for i in range(0, escaped_close_brackets.size()):
+		for i: int in range(0, escaped_close_brackets.size()):
 			if escaped_close_brackets[i] > bbcode.start:
 				escaped_close_brackets[i] -= length
 
@@ -105,13 +105,13 @@ func _init(line: String) -> void:
 		next_bbcode_position = find_bbcode_positions_in_string(text, false)
 
 	# Put the BB Codes back in
-	for bb in bbcodes:
+	for bb: Dictionary in bbcodes:
 		text = text.insert(bb.start, bb.bbcode)
 
 	# Put the escaped brackets back in
-	for index in escaped_open_brackets:
+	for index: int in escaped_open_brackets:
 		text = text.left(index) + "[" + text.right(text.length() - index - 1)
-	for index in escaped_close_brackets:
+	for index: int in escaped_close_brackets:
 		text = text.left(index) + "]" + text.right(text.length() - index - 1)
 
 
@@ -151,7 +151,7 @@ static func find_bbcode_positions_in_string(string: String, find_all: bool = tru
 		if string[i] == "]":
 			open_brace_count -= 1
 			if open_brace_count == 0 and (include_conditions or not ["if", "else", "/if"].has(code)):
-				var raw_args = bbcode.substr(code.length() + 1, bbcode.length() - code.length() - 2).strip_edges()
+				var raw_args: String = bbcode.substr(code.length() + 1, bbcode.length() - code.length() - 2).strip_edges()
 				if raw_args.ends_with("/"):
 					raw_args = raw_args.substr(0, raw_args.length() - 1)
 				positions.append({

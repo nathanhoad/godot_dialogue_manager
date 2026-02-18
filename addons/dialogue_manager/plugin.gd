@@ -2,6 +2,7 @@
 class_name DMPlugin extends EditorPlugin
 
 
+@warning_ignore("unused_signal")
 signal cache_file_content_changed(path: String, new_content: String)
 
 
@@ -126,7 +127,7 @@ func _get_plugin_icon() -> Texture2D:
 	return load(get_plugin_path() + "/assets/icon.svg")
 
 
-func _handles(object) -> bool:
+func _handles(object: Object) -> bool:
 	var editor_settings: EditorSettings = EditorInterface.get_editor_settings()
 	var external_editor: String = editor_settings.get_setting("text_editor/external/exec_path")
 	var use_external_editor: bool = editor_settings.get_setting("text_editor/external/use_external_editor") and external_editor != ""
@@ -139,7 +140,7 @@ func _handles(object) -> bool:
 	return object is DialogueResource
 
 
-func _edit(object) -> void:
+func _edit(object: Object) -> void:
 	if is_instance_valid(main_view) and is_instance_valid(object):
 		main_view.open_resource(object)
 
@@ -263,7 +264,7 @@ static func get_editor_shortcuts() -> Dictionary:
 		]
 	}
 
-	var paths = EditorInterface.get_editor_paths()
+	var paths: EditorPaths = EditorInterface.get_editor_paths()
 	var settings: Resource = null
 	for version: String in ["4.5", "4.4", "4.3", "4"]:
 		var path: String = paths.get_config_dir() + "/editor_settings-" + version + ".tres"
@@ -286,7 +287,7 @@ static func get_editor_shortcuts() -> Dictionary:
 
 static func _create_event(string: String) -> InputEventKey:
 	var event: InputEventKey = InputEventKey.new()
-	var bits = string.split("+")
+	var bits: PackedStringArray = string.split("+")
 	event.keycode = OS.find_keycode_from_string(bits[bits.size() - 1])
 	event.shift_pressed = bits.has("Shift")
 	event.alt_pressed = bits.has("Alt")
@@ -379,7 +380,7 @@ func _update_localization() -> void:
 		ProjectSettings.save()
 
 
-### Callbacks
+#region Callbacks
 
 
 func _create_dialogue_balloon() -> void:
@@ -390,7 +391,7 @@ func _create_dialogue_balloon() -> void:
 	directory_dialog.get_vbox().add_child(label)
 	directory_dialog.file_mode = FileDialog.FILE_MODE_OPEN_DIR
 	directory_dialog.min_size = Vector2(600, 500) * scale
-	directory_dialog.dir_selected.connect(func(path):
+	directory_dialog.dir_selected.connect(func(path: String) -> void:
 		var plugin_path: String = get_plugin_path()
 		var is_dotnet: bool = DMSettings.check_for_dotnet_solution()
 
@@ -449,15 +450,15 @@ func _housekeeping() -> void:
 		var plugin_path: String = get_plugin_path()
 		var balloon_file_names: PackedStringArray = ["example_balloon.tscn", "small_example_balloon.tscn"]
 		for balloon_file_name: String in balloon_file_names:
-			var balloon_path: String = plugin_path + "/example_balloon/" + balloon_file_name
-			var balloon_content: String = FileAccess.get_file_as_string(balloon_path)
+			var target_balloon_path: String = plugin_path + "/example_balloon/" + balloon_file_name
+			var balloon_content: String = FileAccess.get_file_as_string(target_balloon_path)
 			if "example_balloon.gd" in balloon_content and DMSettings.check_for_dotnet_solution():
 				balloon_content = balloon_content \
 					# Replace script path with the C# one
 					.replace("example_balloon.gd", "ExampleBalloon.cs") \
 					# Replace script UID with the C# one
 					.replace(ResourceUID.id_to_text(ResourceLoader.get_resource_uid(plugin_path + "/example_balloon/example_balloon.gd")), ResourceUID.id_to_text(ResourceLoader.get_resource_uid(plugin_path + "/example_balloon/ExampleBalloon.cs")))
-				var balloon_file: FileAccess = FileAccess.open(balloon_path, FileAccess.WRITE)
+				var balloon_file: FileAccess = FileAccess.open(target_balloon_path, FileAccess.WRITE)
 				balloon_file.store_string(balloon_content)
 				balloon_file.close()
 			elif "ExampleBalloon.cs" in balloon_content and not DMSettings.check_for_dotnet_solution():
@@ -466,7 +467,7 @@ func _housekeeping() -> void:
 					.replace("ExampleBalloon.cs", "example_balloon.gd") \
 					# Replace script UID with the GDScript one
 					.replace(ResourceUID.id_to_text(ResourceLoader.get_resource_uid(plugin_path + "/example_balloon/ExampleBalloon.cs")), ResourceUID.id_to_text(ResourceLoader.get_resource_uid(plugin_path + "/example_balloon/example_balloon.gd")))
-				var balloon_file: FileAccess = FileAccess.open(balloon_path, FileAccess.WRITE)
+				var balloon_file: FileAccess = FileAccess.open(target_balloon_path, FileAccess.WRITE)
 				balloon_file.store_string(balloon_content)
 				balloon_file.close()
 
@@ -500,8 +501,9 @@ func _housekeeping() -> void:
 			balloon_file.close()
 
 
+#endregion
 
-### Signals
+#region Signals
 
 
 func _on_files_moved(old_file: String, new_file: String) -> void:
@@ -514,3 +516,6 @@ func _on_file_removed(file: String) -> void:
 	if is_instance_valid(main_view):
 		main_view.close_file(file)
 	_update_localization()
+
+
+#endregion

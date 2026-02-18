@@ -53,16 +53,16 @@ func _init(initial_id: String, initial_type: String) -> void:
 func _to_string() -> String:
 	var s: Array = [
 		"[%s]" % [type],
-		"%s:" % [character] if character != "" else null,
-		text if text != "" else null,
-		expression if expression.size() > 0 else null,
-		"[%s]" % [",".join(tags)] if tags.size() > 0 else null,
-		str(siblings) if siblings.size() > 0 else null,
-		str(responses) if responses.size() > 0 else null,
+		"%s:" % [character] if character != "" else "",
+		text if text != "" else "",
+		str(expression) if expression.size() > 0 else "",
+		"[%s]" % [",".join(tags)] if tags.size() > 0 else "",
+		str(siblings) if siblings.size() > 0 else "",
+		str(responses) if responses.size() > 0 else "",
 		"=> END" if "end" in next_id else "=> %s" % [next_id],
-		"(~> %s)" % [next_sibling_id] if next_sibling_id != "" else null,
-		"(==> %s)" % [next_id_after] if next_id_after != "" else null,
-	].filter(func(item): return item != null)
+		"(~> %s)" % [next_sibling_id] if next_sibling_id != "" else "",
+		"(==> %s)" % [next_id_after] if next_id_after != "" else "",
+	].filter(func(item: String) -> bool: return item != "")
 
 	return " ".join(s)
 

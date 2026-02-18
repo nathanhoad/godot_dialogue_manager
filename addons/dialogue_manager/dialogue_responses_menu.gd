@@ -39,7 +39,7 @@ var _previously_focused_item: Control = null
 
 
 func _ready() -> void:
-	visibility_changed.connect(func():
+	visibility_changed.connect(func() -> void:
 		if auto_focus_first_item and visible and get_menu_items().size() > 0:
 			var first_item: Control = get_menu_items()[0]
 			if first_item.is_inside_tree():
@@ -55,7 +55,7 @@ func _ready() -> void:
 ## Get the selectable items in the menu.
 func get_menu_items() -> Array:
 	var items: Array = []
-	for child in get_children():
+	for child: Node in get_children():
 		if not child.visible: continue
 		if "Disallowed" in child.name: continue
 		items.append(child)
@@ -65,8 +65,8 @@ func get_menu_items() -> Array:
 
 ## Prepare the menu for keyboard and mouse navigation.
 func configure_focus() -> void:
-	var items = get_menu_items()
-	for i in items.size():
+	var items: Array = get_menu_items()
+	for i: int in items.size():
 		var item: Control = items[i]
 
 		item.focus_mode = Control.FOCUS_ALL
@@ -107,7 +107,7 @@ func configure_focus() -> void:
 # Set up the visual side of things.
 func _apply_responses() -> void:
 	# Remove any current items
-	for item in get_children():
+	for item: Node in get_children():
 		if item == response_template: continue
 
 		remove_child(item)
@@ -115,7 +115,7 @@ func _apply_responses() -> void:
 
 	# Add new items
 	if responses.size() > 0:
-		for response in responses:
+		for response: DialogueResponse in responses:
 			if hide_failed_responses and not response.is_allowed: continue
 
 			var item: Control
@@ -164,7 +164,7 @@ func _on_response_mouse_entered(item: Control) -> void:
 	item.grab_focus()
 
 
-func _on_response_gui_input(event: InputEvent, item: Control, response) -> void:
+func _on_response_gui_input(event: InputEvent, item: Control, response: Control) -> void:
 	if "Disallowed" in item.name: return
 
 	if event is InputEventMouseButton and event.is_pressed() and event.button_index == MOUSE_BUTTON_LEFT:

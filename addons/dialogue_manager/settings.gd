@@ -7,39 +7,39 @@ class_name DMSettings extends Node
 
 
 ## Wrap lines in the dialogue editor.
-const WRAP_LONG_LINES = "editor/wrap_long_lines"
+const WRAP_LONG_LINES: StringName = &"editor/wrap_long_lines"
 ## The template to start new dialogue files with.
-const NEW_FILE_TEMPLATE = "editor/new_file_template"
+const NEW_FILE_TEMPLATE: StringName = &"editor/new_file_template"
 
 ## Show lines without statis IDs as errors.
-const MISSING_TRANSLATIONS_ARE_ERRORS = "editor/translations/missing_translations_are_errors"
+const MISSING_TRANSLATIONS_ARE_ERRORS: StringName = &"editor/translations/missing_translations_are_errors"
 ## Include character names in the list of translatable strings.
-const INCLUDE_CHARACTERS_IN_TRANSLATABLE_STRINGS_LIST = "editor/translations/include_characters_in_translatable_strings_list"
+const INCLUDE_CHARACTERS_IN_TRANSLATABLE_STRINGS_LIST: StringName = &"editor/translations/include_characters_in_translatable_strings_list"
 ## Automatically update the project's list of translatable files when dialogue files are added or removed
-const UPDATE_POT_FILES_AUTOMATICALLY = "editor/translations/update_pot_files_automatically"
+const UPDATE_POT_FILES_AUTOMATICALLY: StringName = &"editor/translations/update_pot_files_automatically"
 
 ## A processor handling special case compilation.
-const DIALOGUE_PROCESSOR_PATH = "editor/advanced/dialogue_processor_path"
+const DIALOGUE_PROCESSOR_PATH: StringName = &"editor/advanced/dialogue_processor_path"
 
 ## A custom test scene to use when testing dialogue.
-const CUSTOM_TEST_SCENE_PATH = "editor/advanced/custom_test_scene_path"
+const CUSTOM_TEST_SCENE_PATH: StringName = &"editor/advanced/custom_test_scene_path"
 ## Extra script files to include in the auto-complete-able list
-const EXTRA_AUTO_COMPLETE_SCRIPT_SOURCES = "editor/advanced/extra_auto_complete_script_sources"
+const EXTRA_AUTO_COMPLETE_SCRIPT_SOURCES: StringName = &"editor/advanced/extra_auto_complete_script_sources"
 
 ## The custom balloon for this game.
-const BALLOON_PATH = "runtime/balloon_path"
+const BALLOON_PATH: StringName = &"runtime/balloon_path"
 ## The names of any autoloads to shortcut into all dialogue files (so you don't have to write `using SomeGlobal` in each file).
-const STATE_AUTOLOAD_SHORTCUTS = "runtime/state_autoload_shortcuts"
+const STATE_AUTOLOAD_SHORTCUTS: StringName = &"runtime/state_autoload_shortcuts"
 ## Check for possible naming conflicts in state shortcuts.
-const WARN_ABOUT_METHOD_PROPERTY_OR_SIGNAL_NAME_CONFLICTS = "runtime/warn_about_method_property_or_signal_name_conflicts"
+const WARN_ABOUT_METHOD_PROPERTY_OR_SIGNAL_NAME_CONFLICTS: StringName = &"runtime/warn_about_method_property_or_signal_name_conflicts"
 
 ## Bypass any missing state when running dialogue.
-const IGNORE_MISSING_STATE_VALUES = "runtime/advanced/ignore_missing_state_values"
+const IGNORE_MISSING_STATE_VALUES: StringName = &"runtime/advanced/ignore_missing_state_values"
 ## Whether or not the project is utilising dotnet.
-const USES_DOTNET = "runtime/advanced/uses_dotnet"
+const USES_DOTNET: StringName = &"runtime/advanced/uses_dotnet"
 
 
-static var SETTINGS_CONFIGURATION = {
+static var SETTINGS_CONFIGURATION: Dictionary = {
 	WRAP_LONG_LINES: {
 		value = false,
 		type = TYPE_BOOL,
@@ -118,38 +118,6 @@ static var SETTINGS_CONFIGURATION = {
 
 
 static func prepare() -> void:
-	var should_save_settings: bool = false
-
-	# Remap any old settings into their new keys
-	var legacy_map: Dictionary = {
-		states = STATE_AUTOLOAD_SHORTCUTS,
-		missing_translations_are_errors = MISSING_TRANSLATIONS_ARE_ERRORS,
-		export_characters_in_translation = INCLUDE_CHARACTERS_IN_TRANSLATABLE_STRINGS_LIST,
-		wrap_lines = WRAP_LONG_LINES,
-		new_with_template = null,
-		new_template = NEW_FILE_TEMPLATE,
-		include_all_responses = null,
-		ignore_missing_state_values = IGNORE_MISSING_STATE_VALUES,
-		custom_test_scene_path = CUSTOM_TEST_SCENE_PATH,
-		default_csv_locale = null,
-		balloon_path = BALLOON_PATH,
-		create_lines_for_responses_with_characters = null,
-		include_character_in_translation_exports = null,
-		include_notes_in_translation_exports = null,
-		uses_dotnet = USES_DOTNET,
-		try_suppressing_startup_unsaved_indicator = null
-	}
-
-	for legacy_key: String in legacy_map:
-		if ProjectSettings.has_setting("dialogue_manager/general/%s" % legacy_key):
-			should_save_settings = true
-			# Remove the old setting
-			var value = ProjectSettings.get_setting("dialogue_manager/general/%s" % legacy_key)
-			ProjectSettings.set_setting("dialogue_manager/general/%s" % legacy_key, null)
-			if legacy_map.get(legacy_key) != null:
-				prints("Migrating Dialogue Manager setting %s to %s with value %s" % [legacy_key, legacy_map.get(legacy_key), str(value)])
-				ProjectSettings.set_setting("dialogue_manager/%s" % [legacy_map.get(legacy_key)], value)
-
 	# Set up initial settings
 	for key: String in SETTINGS_CONFIGURATION:
 		var setting_config: Dictionary = SETTINGS_CONFIGURATION[key]
@@ -166,11 +134,8 @@ static func prepare() -> void:
 		ProjectSettings.set_as_basic(setting_name, not setting_config.has("is_advanced"))
 		ProjectSettings.set_as_internal(setting_name, setting_config.has("is_hidden"))
 
-	if should_save_settings:
-		ProjectSettings.save()
 
-
-static func set_setting(key: String, value) -> void:
+static func set_setting(key: String, value: Variant) -> void:
 	if get_setting(key, value) != value:
 		ProjectSettings.set_setting("dialogue_manager/%s" % key, value)
 		ProjectSettings.set_initial_value("dialogue_manager/%s" % key, SETTINGS_CONFIGURATION[key].value)
@@ -186,7 +151,7 @@ static func get_setting(key: String, default: Variant) -> Variant:
 
 static func get_settings(only_keys: PackedStringArray = []) -> Dictionary:
 	var settings: Dictionary = {}
-	for key in SETTINGS_CONFIGURATION.keys():
+	for key: String in SETTINGS_CONFIGURATION.keys():
 		if only_keys.is_empty() or key in only_keys:
 			settings[key] = get_setting(key, SETTINGS_CONFIGURATION[key].value)
 	return settings
@@ -251,7 +216,7 @@ static func add_recent_file(path: String) -> void:
 
 static func move_recent_file(from_path: String, to_path: String) -> void:
 	var recent_files: Array = get_user_value("recent_files", [])
-	for i in range(0, recent_files.size()):
+	for i: int in range(0, recent_files.size()):
 		if recent_files[i] == from_path:
 			recent_files[i] = to_path
 	set_user_value("recent_files", recent_files)
@@ -288,13 +253,13 @@ static func get_caret(path: String) -> Vector2:
 		return Vector2.ZERO
 
 
-static func set_scroll(path: String, scroll_vertical: int) -> void:
+static func set_scroll(path: String, scroll_vertical: float) -> void:
 	var file_meta: Dictionary = get_user_value("file_meta", {})
 	file_meta[path] = file_meta.get(path, {}).merged({ scroll_vertical = scroll_vertical }, true)
 	set_user_value("file_meta", file_meta)
 
 
-static func get_scroll(path: String) -> int:
+static func get_scroll(path: String) -> float:
 	var file_meta: Dictionary = get_user_value("file_meta", {})
 	if file_meta.has(path):
 		return file_meta.get(path).get("scroll_vertical", 0)

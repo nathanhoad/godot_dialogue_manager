@@ -3,7 +3,6 @@
 extends HBoxContainer
 
 
-signal pressed()
 signal resource_changed(next_resource: DialogueResource)
 
 
@@ -19,7 +18,7 @@ const ITEM_FILESYSTEM: int = 400
 @onready var menu_button: Button = $MenuButton
 @onready var menu: PopupMenu = $Menu
 @onready var quick_open_dialog: ConfirmationDialog = $QuickOpenDialog
-@onready var files_list = $QuickOpenDialog/FilesList
+@onready var files_list: Control = $QuickOpenDialog/FilesList
 @onready var new_dialog: FileDialog = $NewDialog
 @onready var open_dialog: FileDialog = $OpenDialog
 
@@ -85,6 +84,7 @@ func _on_resource_button_pressed() -> void:
 		menu.hide()
 	else:
 		build_menu()
+		@warning_ignore("narrowing_conversion")
 		menu.position = get_viewport().position + Vector2i(
 			button.global_position.x + button.size.x - menu.size.x,
 			2 + menu_button.global_position.y + button.size.y
@@ -101,6 +101,7 @@ func _on_menu_button_pressed() -> void:
 		menu.hide()
 	else:
 		build_menu()
+		@warning_ignore("narrowing_conversion")
 		menu.position = get_viewport().position + Vector2i(
 			menu_button.global_position.x + menu_button.size.x - menu.size.x,
 			2 + menu_button.global_position.y + menu_button.size.y

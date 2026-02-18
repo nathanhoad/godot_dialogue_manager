@@ -4,9 +4,6 @@ extends Control
 signal result_selected(path: String, cursor: Vector2, length: int)
 
 
-const DialogueConstants = preload("../constants.gd")
-
-
 var main_view: Control
 
 @onready var input: LineEdit = %Input
@@ -50,24 +47,24 @@ func prepare() -> void:
 
 	input.grab_focus()
 
-	var template_label = result_template.get_node("Label")
+	var template_label: Label = result_template.get_node("Label")
 	template_label.get_theme_stylebox(&"focus").bg_color = main_view.code_edit.theme_overrides.current_line_color
 	template_label.add_theme_font_override(&"normal_font", main_view.code_edit.get_theme_font(&"font"))
 
 	replace_toggle.set_pressed_no_signal(false)
 	replace_container.hide()
 
-	$VBoxContainer/HBoxContainer/FindContainer/Label.text = DialogueConstants.translate(&"search.find")
-	input.placeholder_text = DialogueConstants.translate(&"search.placeholder")
+	$VBoxContainer/HBoxContainer/FindContainer/Label.text = DMConstants.translate(&"search.find")
+	input.placeholder_text = DMConstants.translate(&"search.placeholder")
 	input.text = ""
-	search_button.text = DialogueConstants.translate(&"search.find_all")
-	match_case_button.text = DialogueConstants.translate(&"search.match_case")
-	replace_toggle.text = DialogueConstants.translate(&"search.toggle_replace")
-	$VBoxContainer/HBoxContainer/ReplaceContainer/ReplaceLabel.text = DialogueConstants.translate(&"search.replace_with")
-	replace_input.placeholder_text = DialogueConstants.translate(&"search.replace_placeholder")
+	search_button.text = DMConstants.translate(&"search.find_all")
+	match_case_button.text = DMConstants.translate(&"search.match_case")
+	replace_toggle.text = DMConstants.translate(&"search.toggle_replace")
+	$VBoxContainer/HBoxContainer/ReplaceContainer/ReplaceLabel.text = DMConstants.translate(&"search.replace_with")
+	replace_input.placeholder_text = DMConstants.translate(&"search.replace_placeholder")
 	replace_input.text = ""
-	replace_all_button.text = DialogueConstants.translate(&"search.replace_all")
-	replace_selected_button.text = DialogueConstants.translate(&"search.replace_selected")
+	replace_all_button.text = DMConstants.translate(&"search.replace_all")
+	replace_selected_button.text = DMConstants.translate(&"search.replace_selected")
 
 	selections.clear()
 	current_results = {}
@@ -77,22 +74,22 @@ func prepare() -> void:
 
 
 func update_results_view() -> void:
-	for child in results_container.get_children():
+	for child: Node in results_container.get_children():
 		child.queue_free()
 
-	for path in current_results.keys():
+	for path: String in current_results.keys():
 		var path_label: Label = Label.new()
 		path_label.text = path
 		# Show open files
 		if main_view.open_buffers.has(path):
 			path_label.text += "(*)"
 		results_container.add_child(path_label)
-		for path_result in current_results.get(path):
+		for path_result: Dictionary in current_results.get(path):
 			var result_item: HBoxContainer = result_template.duplicate()
 
 			var checkbox: CheckBox = result_item.get_node("CheckBox") as CheckBox
 			var key: String = get_selection_key(path, path_result)
-			checkbox.toggled.connect(func(is_pressed):
+			checkbox.toggled.connect(func(is_pressed: bool) -> void:
 				if is_pressed:
 					if not selections.has(key):
 						selections.append(key)
@@ -113,7 +110,7 @@ func update_results_view() -> void:
 				highlight = "[bgcolor=" + colors.notice_color.to_html() + "][color=" + colors.text_color.to_html() + "]" + path_result.matched_text + "[/color][/bgcolor]"
 			var text: String = path_result.text.substr(0, path_result.index) + highlight + path_result.text.substr(path_result.index + path_result.query.length())
 			result_label.text = "%s: %s" % [str(path_result.line + 1).lpad(4), text]
-			result_label.gui_input.connect(func(event):
+			result_label.gui_input.connect(func(event: InputEvent) -> void:
 				if event is InputEventMouseButton and (event as InputEventMouseButton).button_index == MOUSE_BUTTON_LEFT and (event as InputEventMouseButton).double_click:
 					result_selected.emit(path, Vector2(path_result.index, path_result.line), path_result.query.length())
 			)
@@ -126,7 +123,7 @@ func find_in_files() -> Dictionary:
 
 	var q: String = input.text
 	var file: FileAccess
-	for path in DMCache.get_files():
+	for path: String in DMCache.get_files():
 		var path_results: Array = []
 		var lines: PackedStringArray = []
 
@@ -136,7 +133,7 @@ func find_in_files() -> Dictionary:
 			file = FileAccess.open(path, FileAccess.READ)
 			lines = file.get_as_text().split("\n")
 
-		for i in range(0, lines.size()):
+		for i: int in range(0, lines.size()):
 			var index: int = find_in_line(lines[i], q)
 			while index > -1:
 				path_results.append({
@@ -171,7 +168,7 @@ func find_in_line(line: String, query: String, from_index: int = 0) -> int:
 func replace_results(only_selected: bool) -> void:
 	var file: FileAccess
 	var lines: PackedStringArray = []
-	for path in current_results:
+	for path: String in current_results:
 		if main_view.open_buffers.has(path):
 			lines = main_view.open_buffers.get(path).text.split("\n")
 		else:
@@ -181,7 +178,7 @@ func replace_results(only_selected: bool) -> void:
 		# Read the results in reverse because we're going to be modifying them as we go
 		var path_results: Array = current_results.get(path).duplicate()
 		path_results.reverse()
-		for path_result in path_results:
+		for path_result: Dictionary in path_results:
 			var key: String = get_selection_key(path, path_result)
 			if not only_selected or (only_selected and selections.has(key)):
 				lines[path_result.line] = lines[path_result.line].substr(0, path_result.index) + replace_input.text + lines[path_result.line].substr(path_result.index + path_result.matched_text.length())
