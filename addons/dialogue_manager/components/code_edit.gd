@@ -1271,9 +1271,19 @@ func _on_code_edit_symbol_validate(symbol: String) -> void:
 			set_symbol_lookup_word_as_valid(true)
 			return
 
-	# Check if it's a mutation line symbol
 	var cursor: Vector2i = get_line_column_at_pos(get_local_mouse_pos())
 	var line_text: String = get_line(cursor.y)
+
+	# Check if it's an imported label (eg. "alias/label")
+	if "/" in line_text and "=>" in line_text:
+		var goto_marker: String = "=>< " if "=><" in line_text else "=> "
+		var actual_symbol: String = line_text.substr(line_text.find(goto_marker) + goto_marker.length())
+		for label: String in DMCompiler.get_labels_in_text(text, main_view.current_file_path):
+			if label == actual_symbol:
+				set_symbol_lookup_word_as_valid(true)
+				return
+
+	# Check if it's a mutation line symbol
 	var symbol_info: Dictionary = _resolve_mutation_symbol_at_position(line_text, cursor.x)
 	if not symbol_info.is_empty() and symbol_info.get("symbol") == symbol:
 		var script: Script = symbol_info.get("script")
@@ -1301,8 +1311,23 @@ func _on_code_edit_symbol_lookup(symbol: String, line: int, column: int) -> void
 			go_to_label(symbol)
 			return
 
-	# Check if it's a mutation line symbol
 	var line_text: String = get_line(line)
+
+	# Check if it's an imported label (eg. "alias/label")
+	if "/" in line_text and "=>" in line_text:
+		var goto_marker: String = "=>< " if "=><" in line_text else "=> "
+		var actual_symbol: String = line_text.substr(line_text.find(goto_marker) + goto_marker.length())
+		var prefix: String = actual_symbol.split("/")[0]
+		var label_name: String = actual_symbol.split("/")[1]
+		var lines: PackedStringArray = text.split("\n")
+		for l: String in lines:
+			if not l.begins_with("import "): continue
+			var found: RegExMatch = compiler_regex.IMPORT_REGEX.search(l)
+			if found and found.strings[found.names.prefix] == prefix:
+				external_file_requested.emit(found.strings[found.names.path], label_name)
+				return
+
+	# Check if it's a mutation line symbol
 	var symbol_info: Dictionary = _resolve_mutation_symbol_at_position(line_text, column)
 	if not symbol_info.is_empty() and symbol_info.get("symbol") == symbol:
 		var script: Script = symbol_info.get("script")
