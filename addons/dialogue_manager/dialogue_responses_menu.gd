@@ -5,10 +5,10 @@ class_name DialogueResponsesMenu extends Container
 
 
 ## Emitted when a response is focused.
-signal response_focused(response: Control)
+signal response_focused(response: Variant)
 
 ## Emitted when a response is selected.
-signal response_selected(response: Control)
+signal response_selected(response: Variant)
 
 
 ## Optionally specify a control to duplicate for each response
@@ -115,7 +115,7 @@ func _apply_responses() -> void:
 
 	# Add new items
 	if responses.size() > 0:
-		for response: DialogueResponse in responses:
+		for response: Variant in responses:
 			if hide_failed_responses and not response.is_allowed: continue
 
 			var item: Control
@@ -164,7 +164,7 @@ func _on_response_mouse_entered(item: Control) -> void:
 	item.grab_focus()
 
 
-func _on_response_gui_input(event: InputEvent, item: Control, response: Control) -> void:
+func _on_response_gui_input(event: InputEvent, item: Control, response: Variant) -> void:
 	if "Disallowed" in item.name: return
 
 	if event is InputEventMouseButton and event.is_pressed() and event.button_index == MOUSE_BUTTON_LEFT:

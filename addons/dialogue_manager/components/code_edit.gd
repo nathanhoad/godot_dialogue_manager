@@ -271,12 +271,16 @@ func _add_character_name_completions(current_line: String) -> void:
 func _add_mutation_completions(current_line: String, cursor: Vector2i) -> void:
 	# Check for inline mutation context first (e.g., "Nathan: Hello [$> SomeGlobal.")
 	var inline_context: Dictionary = _get_inline_mutation_context(current_line, cursor.x)
+	var replacement_context: Dictionary = {} if not inline_context.is_empty() else _get_replacement_context(current_line, cursor.x)
 	var mutation_expression: String = ""
 	var is_inline_mutation: bool = not inline_context.is_empty()
+	var is_replacement: bool = not replacement_context.is_empty()
 	var is_using_line: bool = false
 
 	if is_inline_mutation:
 		mutation_expression = inline_context.get("expression", "")
+	elif is_replacement:
+		mutation_expression = replacement_context.get("expression", "")
 	else:
 		# Match autoloads on full mutation lines (MUTATION_PREFIXES + "using ")
 		for prefix: String in MUTATION_PREFIXES + PackedStringArray(["using "]):
@@ -285,7 +289,7 @@ func _add_mutation_completions(current_line: String, cursor: Vector2i) -> void:
 				is_using_line = current_line.strip_edges().begins_with("using ")
 				break
 
-	if mutation_expression == "" and not is_inline_mutation:
+	if mutation_expression == "" and not is_inline_mutation and not is_replacement:
 		return
 
 	# Find the last token (the part being typed)
@@ -368,6 +372,9 @@ func _get_member_completions(segments: PackedStringArray) -> Array[Dictionary]:
 		var resolved_script: Variant = _resolve_script_for_property_chain(chain_segments)
 		if resolved_script != null:
 			members = _get_members_for_script(resolved_script)
+		else:
+			# GDScript chain resolution failed, try C# fallback
+			members = _get_cs_chain_members(chain_segments)
 
 	for member: Dictionary in members:
 		if _matches_prompt(prompt, member.name):
@@ -591,6 +598,56 @@ func _format_method_hint(method_info: Dictionary) -> String:
 	return ", ".join(hint_parts)
 
 
+# Resolve the C# script for an autoload name.
+func _resolve_cs_script_for_autoload(base_name: String) -> Script:
+	if not _autoloads.has(base_name): return null
+
+	var autoload: Variant = load(_autoloads[base_name])
+	if autoload is PackedScene:
+		var node: Node = autoload.instantiate()
+		autoload = node.get_script()
+		node.free()
+	var script: Script = autoload if autoload is Script else autoload.get_script()
+
+	if not is_instance_valid(script): return null
+	if not script.resource_path.ends_with(".cs"): return null
+
+	return script
+
+
+# Resolve members for a C# property chain via reflection fallback.
+func _get_cs_chain_members(chain_segments: PackedStringArray) -> Array[Dictionary]:
+	if chain_segments.size() < 2: return []
+
+	var script: Script = _resolve_cs_script_for_autoload(chain_segments[0])
+	if script == null: return []
+
+	var remaining: Array[String] = []
+	for i: int in range(1, chain_segments.size()):
+		remaining.append(chain_segments[i])
+
+	var dotnet: RefCounted = load(DMPlugin.get_plugin_path() + "/DialogueManager.cs").new()
+	var result: Array[Dictionary] = []
+	for m: Dictionary in dotnet.GetMembersForPropertyChain(script, remaining):
+		result.append(m)
+	return result
+
+
+# Get method info for a C# property chain via reflection fallback.
+func _get_cs_chain_method_info(chain_segments: PackedStringArray, method_name: String) -> Dictionary:
+	if chain_segments.size() < 2: return {}
+
+	var script: Script = _resolve_cs_script_for_autoload(chain_segments[0])
+	if script == null: return {}
+
+	var remaining: Array[String] = []
+	for i: int in range(1, chain_segments.size()):
+		remaining.append(chain_segments[i])
+
+	var dotnet: RefCounted = load(DMPlugin.get_plugin_path() + "/DialogueManager.cs").new()
+	return dotnet.GetMethodInfoForPropertyChain(script, remaining, method_name)
+
+
 #endregion
 
 #region Symbol Resolution Helpers
@@ -704,17 +761,21 @@ func _update_code_hint() -> void:
 	var current_line: String = get_line(cursor.y)
 	var text_before_cursor: String = current_line.substr(0, cursor.x)
 
-	# Check if we're in a mutation context (inline or full line)
+	# Check if we're in a mutation context (inline, replacement, or full line)
 	var inline_context: Dictionary = _get_inline_mutation_context(current_line, cursor.x)
+	var replacement_context: Dictionary = {} if not inline_context.is_empty() else _get_replacement_context(current_line, cursor.x)
 	if not _is_in_mutation_context(current_line, cursor.x):
 		set_code_hint("")
 		return
 
-	# For inline mutations, scope to the bracket content
+	# For inline mutations or replacements, scope to the bracket content
 	var expression_text: String = text_before_cursor
 	if not inline_context.is_empty():
 		var bracket_start: int = inline_context.get("bracket_start", 0)
 		expression_text = current_line.substr(bracket_start + 1, cursor.x - bracket_start - 1)
+	elif not replacement_context.is_empty():
+		var bracket_start: int = replacement_context.get("bracket_start", 0)
+		expression_text = current_line.substr(bracket_start + 2, cursor.x - bracket_start - 2)
 
 	# Check if cursor is inside parentheses by counting unmatched opening parens
 	var paren_depth: int = 0
@@ -769,12 +830,18 @@ func _update_code_hint() -> void:
 	var object_segments: PackedStringArray = segments.slice(0, segments.size() - 1)
 	var target_script: Variant = _resolve_script_for_property_chain(object_segments)
 
-	if target_script == null or not target_script is Script:
+	var method_info: Dictionary = {}
+	if target_script != null and target_script is Script:
+		method_info = _get_method_info_from_script(target_script, method_name)
+	else:
+		# GDScript chain resolution failed, try C# fallback
+		method_info = _get_cs_chain_method_info(object_segments, method_name)
+
+	if method_info.is_empty():
 		set_code_hint("")
 		return
 
 	# Get the method info and format the hint
-	var method_info: Dictionary = _get_method_info_from_script(target_script, method_name)
 	var hint: String = _format_method_hint(method_info)
 
 	set_code_hint(hint)
@@ -826,9 +893,28 @@ func _get_inline_mutation_context(line: String, cursor_x: int) -> Dictionary:
 	return {}
 
 
-# Check if the cursor is in a mutation context (either inline or full mutation line).
+# Get the replacement context if the cursor is inside a {{ }} replacement.
+# Returns a dictionary with "expression" key containing the text to autocomplete,
+# or an empty dictionary if not in a replacement context.
+func _get_replacement_context(line: String, cursor_x: int) -> Dictionary:
+	var search_text: String = line.substr(0, cursor_x)
+	var last_open: int = search_text.rfind("{{")
+	if last_open == -1:
+		return {}
+
+	# Check if there's a "}}" between the "{{" and the cursor
+	var between: String = search_text.substr(last_open + 2)
+	if "}}" in between:
+		return {}
+
+	return { "expression": between, "bracket_start": last_open }
+
+
+# Check if the cursor is in a mutation context (either inline, replacement, or full mutation line).
 func _is_in_mutation_context(line: String, cursor_x: int) -> bool:
 	if not _get_inline_mutation_context(line, cursor_x).is_empty():
+		return true
+	if not _get_replacement_context(line, cursor_x).is_empty():
 		return true
 	for prefix: String in MUTATION_PREFIXES:
 		if line.strip_edges().begins_with(prefix):
@@ -1166,9 +1252,13 @@ func _on_project_settings_changed() -> void:
 		for script_info: Dictionary in ProjectSettings.get_global_class_list():
 			if not script_info.path.begins_with(plugin_path):
 				var script: Script = load(script_info.path)
-				var static_match: RegExMatch = STATIC_CONTENT_REGEX.search(script.source_code)
-				if static_match:
-					_autoloads[script_info.class] = script_info.path
+				if script_info.path.ends_with(".cs"):
+					if "public static" in script.source_code:
+						_autoloads[script_info.class] = script_info.path
+				else:
+					var static_match: RegExMatch = STATIC_CONTENT_REGEX.search(script.source_code)
+					if static_match:
+						_autoloads[script_info.class] = script_info.path
 
 
 func _on_code_edit_symbol_validate(symbol: String) -> void:

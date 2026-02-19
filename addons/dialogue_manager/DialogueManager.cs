@@ -186,54 +186,173 @@ namespace DialogueManagerRuntime
 
         public static Array<Dictionary> GetMembersForScript(Script script)
         {
+            string typeName = script.ResourcePath.GetFile().GetBaseName();
+            var matchingType = Assembly.GetExecutingAssembly().GetTypes().FirstOrDefault(t => t.Name == typeName);
+            if (matchingType == null) return new Array<Dictionary>();
+            return GetMembersForType(matchingType);
+        }
+
+
+        public static Array<Dictionary> GetMembersForPropertyChain(Script script, Array<string> chain)
+        {
+            string typeName = script.ResourcePath.GetFile().GetBaseName();
+            var currentType = Assembly.GetExecutingAssembly().GetTypes().FirstOrDefault(t => t.Name == typeName);
+            if (currentType == null) return new Array<Dictionary>();
+
+            foreach (var segment in chain)
+            {
+                currentType = ResolvePropertyType(currentType, segment);
+                if (currentType == null) return new Array<Dictionary>();
+            }
+
+            return GetMembersForType(currentType);
+        }
+
+
+        public static Dictionary GetMethodInfoForPropertyChain(Script script, Array<string> chain, string methodName)
+        {
+            string typeName = script.ResourcePath.GetFile().GetBaseName();
+            var currentType = Assembly.GetExecutingAssembly().GetTypes().FirstOrDefault(t => t.Name == typeName);
+
+            if (currentType == null) return new Dictionary();
+
+            foreach (var segment in chain)
+            {
+                currentType = ResolvePropertyType(currentType, segment);
+                if (currentType == null) return new Dictionary();
+            }
+
+            var methodInfo = currentType
+                .GetMethods(BindingFlags.Instance | BindingFlags.Static | BindingFlags.Public | BindingFlags.DeclaredOnly)
+                .FirstOrDefault(m => m.Name == methodName && !m.IsSpecialName);
+            if (methodInfo == null) return new Dictionary();
+
+            return BuildMethodDictionary(methodInfo);
+        }
+
+
+        private static Array<Dictionary> GetMembersForType(Type type)
+        {
             Array<Dictionary> members = new Array<Dictionary>();
 
-            string typeName = script.ResourcePath.GetFile().GetBaseName();
-            var matchingTypes = Assembly.GetExecutingAssembly().GetTypes().Where(t => t.Name == typeName);
-            foreach (var matchingType in matchingTypes)
+            if (type.IsEnum)
             {
-                var memberInfos = matchingType.GetMembers(BindingFlags.Instance | BindingFlags.Static | BindingFlags.Public | BindingFlags.DeclaredOnly);
-                foreach (var memberInfo in memberInfos)
+                foreach (var name in type.GetEnumNames())
                 {
-                    string type;
-                    switch (memberInfo.MemberType)
-                    {
-                        case MemberTypes.Field:
-                            FieldInfo fieldInfo = memberInfo as FieldInfo;
-
-                            if (fieldInfo.FieldType.ToString().Contains("EventHandler"))
-                            {
-                                type = "signal";
-                            }
-                            else if (fieldInfo.IsLiteral)
-                            {
-                                type = "constant";
-                            }
-                            else
-                            {
-                                type = "property";
-                            }
-                            break;
-                        case MemberTypes.Method:
-                            type = "method";
-                            break;
-
-                        case MemberTypes.NestedType:
-                            type = "constant";
-                            break;
-
-                        default:
-                            continue;
-                    }
-
                     members.Add(new Dictionary() {
-                        { "name", memberInfo.Name },
-                        { "type", type }
+                        { "name", name },
+                        { "type", "enum" }
                     });
+                }
+                return members;
+            }
+
+            var memberInfos = type.GetMembers(BindingFlags.Instance | BindingFlags.Static | BindingFlags.Public | BindingFlags.DeclaredOnly);
+            foreach (var memberInfo in memberInfos)
+            {
+                switch (memberInfo.MemberType)
+                {
+                    case MemberTypes.Field:
+                        FieldInfo fieldInfo = (FieldInfo)memberInfo;
+                        string fieldType;
+                        if (fieldInfo.FieldType.ToString().Contains("EventHandler"))
+                        {
+                            fieldType = "signal";
+                        }
+                        else if (fieldInfo.IsLiteral)
+                        {
+                            fieldType = "constant";
+                        }
+                        else
+                        {
+                            fieldType = "property";
+                        }
+                        members.Add(new Dictionary() {
+                            { "name", memberInfo.Name },
+                            { "type", fieldType },
+                            { "class_name", GetFriendlyTypeName(fieldInfo.FieldType) }
+                        });
+                        break;
+
+                    case MemberTypes.Property:
+                        PropertyInfo propInfo = (PropertyInfo)memberInfo;
+                        members.Add(new Dictionary() {
+                            { "name", memberInfo.Name },
+                            { "type", "property" },
+                            { "class_name", GetFriendlyTypeName(propInfo.PropertyType) }
+                        });
+                        break;
+
+                    case MemberTypes.Method:
+                        MethodInfo methodInfo = (MethodInfo)memberInfo;
+                        if (methodInfo.IsSpecialName) continue;
+                        members.Add(BuildMethodDictionary(methodInfo));
+                        break;
+
+                    case MemberTypes.NestedType:
+                        members.Add(new Dictionary() {
+                            { "name", memberInfo.Name },
+                            { "type", "constant" }
+                        });
+                        break;
+
+                    default:
+                        continue;
                 }
             }
 
             return members;
+        }
+
+
+        private static Dictionary BuildMethodDictionary(MethodInfo methodInfo)
+        {
+            var args = new Array<Dictionary>();
+            foreach (var param in methodInfo.GetParameters())
+            {
+                args.Add(new Dictionary() {
+                    { "name", param.Name },
+                    { "type", (int)Variant.Type.Nil },
+                    { "class_name", GetFriendlyTypeName(param.ParameterType) }
+                });
+            }
+            return new Dictionary() {
+                { "name", methodInfo.Name },
+                { "type", "method" },
+                { "args", args }
+            };
+        }
+
+
+        private static Type? ResolvePropertyType(Type type, string memberName)
+        {
+            var field = type.GetField(memberName, BindingFlags.Instance | BindingFlags.Static | BindingFlags.Public | BindingFlags.DeclaredOnly);
+            if (field != null) return field.FieldType;
+
+            var prop = type.GetProperty(memberName, BindingFlags.Instance | BindingFlags.Static | BindingFlags.Public | BindingFlags.DeclaredOnly);
+            if (prop != null) return prop.PropertyType;
+
+            var nested = type.GetNestedType(memberName, BindingFlags.Public);
+            if (nested != null) return nested;
+
+            return null;
+        }
+
+
+        private static string GetFriendlyTypeName(Type type)
+        {
+            if (type == typeof(int)) return "int";
+            if (type == typeof(long)) return "long";
+            if (type == typeof(float)) return "float";
+            if (type == typeof(double)) return "double";
+            if (type == typeof(bool)) return "bool";
+            if (type == typeof(string)) return "string";
+            if (type == typeof(void)) return "void";
+            if (type == typeof(byte)) return "byte";
+            if (type == typeof(short)) return "short";
+            if (type == typeof(char)) return "char";
+            if (type == typeof(decimal)) return "decimal";
+            return type.Name;
         }
 
 
@@ -358,7 +477,8 @@ namespace DialogueManagerRuntime
                 }
             }
 
-            if (info == null) {
+            if (info == null)
+            {
                 EmitSignal(SignalName.Resolved, id);
                 return;
             }
