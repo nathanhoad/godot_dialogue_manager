@@ -750,12 +750,12 @@ func _check_condition(data: Dictionary, extra_game_states: Array) -> bool:
 		TYPE_PACKED_INT32_ARRAY, TYPE_PACKED_INT64_ARRAY, \
 		TYPE_PACKED_STRING_ARRAY, \
 		TYPE_PACKED_VECTOR2_ARRAY, TYPE_PACKED_VECTOR3_ARRAY, TYPE_PACKED_VECTOR4_ARRAY]:
-			return (result as String).is_empty()
+			return not (result as String).is_empty()
 
 	if result is Node or result is Resource:
 		return is_instance_valid(result)
 
-	return bool(result)
+	return true if result else false
 
 
 # Resolve a condition's expression value
