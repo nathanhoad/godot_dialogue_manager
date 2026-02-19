@@ -43,7 +43,7 @@ var _already_mutated_indices: PackedInt32Array = []
 
 
 ## The current line of dialogue.
-var dialogue_line: DialogueLine:
+var dialogue_line: Variant:
 	set(value):
 		if value != dialogue_line:
 			dialogue_line = value
