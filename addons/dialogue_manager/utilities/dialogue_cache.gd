@@ -138,11 +138,14 @@ static func get_files_with_errors() -> Array[Dictionary]:
 ## Queue a file to have its dependencies checked
 static func queue_updating_dependencies(of_path: String) -> void:
 	if _update_dependency_paths.has(of_path): return
+	if is_instance_valid(_update_dependency_timer):
+		_update_dependency_timer.stop()
 
-	_update_dependency_timer.stop()
 	if not _update_dependency_paths.has(of_path):
 		_update_dependency_paths.append(of_path)
-	_update_dependency_timer.start(0.5)
+
+	if is_instance_valid(_update_dependency_timer):
+		_update_dependency_timer.start(0.5)
 
 
 ## Update any references to a file path that has moved

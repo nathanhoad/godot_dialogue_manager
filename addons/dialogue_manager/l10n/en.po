@@ -467,3 +467,6 @@ msgstr "Regions"
 
 msgid "Labels"
 msgstr "Labels"
+
+msgid "Auto"
+msgstr "Auto"

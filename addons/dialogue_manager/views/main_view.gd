@@ -460,7 +460,7 @@ func compile() -> void:
 	var result: DMCompilerResult = DMCompiler.compile_string(code_edit.text, current_file_path)
 	code_edit.errors = result.errors
 	errors_panel.errors = result.errors
-	label_list.labels = code_edit.get_labels()
+	label_list.labels = code_edit.get_labels(true)
 
 
 func show_build_error_dialog() -> void:
@@ -510,7 +510,7 @@ func _on_cache_file_content_changed(path: String, new_content: String) -> void:
 		if buffer.text == buffer.pristine_text and buffer.text != new_content:
 			buffer.text = new_content
 			code_edit.text = new_content
-			label_list.labels = code_edit.get_labels()
+			label_list.labels = code_edit.get_labels(true)
 		buffer.pristine_text = new_content
 
 

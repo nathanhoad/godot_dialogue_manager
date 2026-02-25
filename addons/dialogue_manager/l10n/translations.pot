@@ -457,3 +457,6 @@ msgstr ""
 
 msgid "Labels"
 msgstr ""
+
+msgid "Auto"
+msgstr ""
