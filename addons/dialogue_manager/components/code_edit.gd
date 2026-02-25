@@ -972,6 +972,7 @@ func get_character_names(beginning_with: String) -> PackedStringArray:
 	var names: PackedStringArray = []
 	var lines = text.split("\n")
 	for line: String in lines:
+		if line.strip_edges().begins_with("#"): continue # skip comments
 		if ": " in line:
 			var character_name: String = WEIGHTED_RANDOM_PREFIX.sub(line.split(": ")[0].strip_edges(), "")
 			if not character_name in names and _matches_prompt(beginning_with, character_name):
