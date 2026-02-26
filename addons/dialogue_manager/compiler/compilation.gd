@@ -141,14 +141,15 @@ func build_line_tree(raw_lines: PackedStringArray) -> DMTreeLine:
 	for i: int in range(0, raw_lines.size()):
 		var raw_line: String = get_processor()._preprocess_line(raw_lines[i])
 		var tree_line: DMTreeLine = DMTreeLine.new(str(i))
+		var line_without_indent: String = strip_indent(raw_line)
 
 		tree_line.line_number = i + 1
 		tree_line.type = get_line_type(raw_line)
-		tree_line.text = raw_line.strip_edges()
+		tree_line.text = line_without_indent.strip_edges()
 
 		# Handle any "using" directives.
 		if tree_line.type == DMConstants.TYPE_USING:
-			var using_match: RegExMatch = regex.USING_REGEX.search(raw_line)
+			var using_match: RegExMatch = regex.USING_REGEX.search(line_without_indent)
 			if "state" in using_match.names:
 				var using_state: String = using_match.strings[using_match.names.state].strip_edges()
 				if not using_state in autoload_names:
@@ -157,14 +158,14 @@ func build_line_tree(raw_lines: PackedStringArray) -> DMTreeLine:
 					using_states.append(using_state)
 				continue
 		# Ignore import lines because they've already been processed.
-		elif is_import_line(raw_line):
+		elif is_import_line(line_without_indent):
 			continue
 
 		tree_line.indent = get_indent(raw_line)
 
 		# Attach doc comments
-		if raw_line.strip_edges().begins_with("##"):
-			doc_comments.append(raw_line.replace("##", "").strip_edges())
+		if tree_line.text.begins_with("##"):
+			doc_comments.append(tree_line.text.replace("##", "").strip_edges())
 		elif tree_line.type == DMConstants.TYPE_DIALOGUE or tree_line.type == DMConstants.TYPE_RESPONSE:
 			tree_line.notes = "\n".join(doc_comments)
 			doc_comments.clear()
@@ -847,16 +848,42 @@ func get_processor() -> DMDialogueProcessor:
 
 ## Get the indent of a raw line
 func get_indent(raw_line: String) -> int:
-	var tabs: RegExMatch = regex.INDENT_REGEX.search(raw_line)
-	if tabs:
-		return tabs.get_string().length()
-	else:
-		return 0
+	var indent_token: String = get_line_indent_token(raw_line)
+
+	if indent_token.is_empty(): return 0
+
+	var indent: int = 0
+	var remaining: String = raw_line
+	while remaining.begins_with(indent_token):
+		indent += 1
+		remaining = remaining.substr(indent_token.length())
+
+	return indent
+
+
+## Remove any leading indentation token from a raw line.
+func strip_indent(raw_line: String) -> String:
+	var indent_token: String = get_line_indent_token(raw_line)
+
+	if indent_token.is_empty(): return raw_line
+
+	while raw_line.begins_with(indent_token):
+		raw_line = raw_line.substr(indent_token.length())
+
+	return raw_line
+
+
+## Get the indentation token used by a line.
+func get_line_indent_token(raw_line: String) -> String:
+	for prefix: String in ["\t", "\\t", "    ", "  "]:
+		if raw_line.begins_with(prefix):
+			return prefix
+	return ""
 
 
 ## Get the type of a raw line
 func get_line_type(raw_line: String) -> String:
-	raw_line = raw_line.strip_edges()
+	raw_line = strip_indent(raw_line).strip_edges()
 	var text: String = regex.WEIGHTED_RANDOM_SIBLINGS_REGEX.sub(raw_line + " ", "").strip_edges()
 
 	if text.begins_with("import "):
