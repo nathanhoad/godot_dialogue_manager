@@ -52,7 +52,6 @@ filters = PackedStringArray("*.dialogue ; Dialogue")
 [connection signal="confirmed" from="QuickOpenDialog" to="." method="_on_quick_open_dialog_confirmed"]
 [connection signal="file_double_clicked" from="QuickOpenDialog/FilesList" to="." method="_on_files_list_file_double_clicked"]
 [connection signal="file_selected" from="QuickOpenDialog/FilesList" to="." method="_on_files_list_file_selected"]
-[connection signal="canceled" from="NewDialog" to="." method="_on_file_dialog_canceled"]
 [connection signal="file_selected" from="NewDialog" to="." method="_on_new_dialog_file_selected"]
 [connection signal="canceled" from="OpenDialog" to="." method="_on_file_dialog_canceled"]
 [connection signal="file_selected" from="OpenDialog" to="." method="_on_open_dialog_file_selected"]

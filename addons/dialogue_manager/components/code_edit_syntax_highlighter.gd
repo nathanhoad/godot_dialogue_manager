@@ -3,7 +3,6 @@ class_name DMSyntaxHighlighter extends SyntaxHighlighter
 
 
 var regex: DMCompilerRegEx = DMCompilerRegEx.new()
-var compilation: DMCompilation = DMCompilation.new()
 var expression_parser: DMExpressionParser = DMExpressionParser.new()
 
 var cache: Dictionary = {}

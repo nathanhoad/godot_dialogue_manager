@@ -50,9 +50,6 @@ var tags: PackedStringArray = []
 ## The mutation details if this is a mutation line (where [code]type == TYPE_MUTATION[/code]).
 var mutation: Dictionary = {}
 
-## The conditions to check before including this line in the flow of dialogue. If failed the line will be skipped over.
-var conditions: Dictionary = {}
-
 
 func _init(data: Dictionary = {}) -> void:
 	if data.size() > 0:

@@ -14,14 +14,6 @@ const ITEM_CLEAR: int = 301
 const ITEM_FILESYSTEM: int = 400
 
 
-@onready var button: Button = $ResourceButton
-@onready var menu_button: Button = $MenuButton
-@onready var menu: PopupMenu = $Menu
-@onready var quick_open_dialog: ConfirmationDialog = $QuickOpenDialog
-@onready var files_list: Control = $QuickOpenDialog/FilesList
-@onready var new_dialog: FileDialog = $NewDialog
-@onready var open_dialog: FileDialog = $OpenDialog
-
 var resource: Resource:
 	set(next_resource):
 		resource = next_resource
@@ -30,8 +22,15 @@ var resource: Resource:
 	get:
 		return resource
 
-var is_waiting_for_file: bool = false
 var quick_selected_file: String = ""
+
+@onready var button: Button = $ResourceButton
+@onready var menu_button: Button = $MenuButton
+@onready var menu: PopupMenu = $Menu
+@onready var quick_open_dialog: ConfirmationDialog = $QuickOpenDialog
+@onready var files_list: Control = $QuickOpenDialog/FilesList
+@onready var new_dialog: FileDialog = $NewDialog
+@onready var open_dialog: FileDialog = $OpenDialog
 
 
 func _ready() -> void:
@@ -59,7 +58,6 @@ func build_menu() -> void:
 
 func _on_new_dialog_file_selected(path: String) -> void:
 	DMPlugin.instance.main_view.new_file(path)
-	is_waiting_for_file = false
 	if DMCache.has_file(path):
 		resource_changed.emit(load(path))
 	else:
@@ -70,10 +68,6 @@ func _on_new_dialog_file_selected(path: String) -> void:
 
 func _on_open_dialog_file_selected(file: String) -> void:
 	resource_changed.emit(load(file))
-
-
-func _on_file_dialog_canceled() -> void:
-	is_waiting_for_file = false
 
 
 func _on_resource_button_pressed() -> void:
@@ -112,7 +106,6 @@ func _on_menu_button_pressed() -> void:
 func _on_menu_id_pressed(id: int) -> void:
 	match id:
 		ITEM_NEW:
-			is_waiting_for_file = true
 			new_dialog.popup_centered()
 
 		ITEM_QUICK_LOAD:
@@ -124,7 +117,6 @@ func _on_menu_id_pressed(id: int) -> void:
 			files_list.focus_filter()
 
 		ITEM_LOAD:
-			is_waiting_for_file = true
 			open_dialog.popup_centered()
 
 		ITEM_EDIT:

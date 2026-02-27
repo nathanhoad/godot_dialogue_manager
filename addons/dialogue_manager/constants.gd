@@ -2,7 +2,6 @@ class_name DMConstants extends RefCounted
 
 
 const USER_CONFIG_PATH: String = "user://dialogue_manager_user_config.json"
-const CACHE_PATH: String = "user://dialogue_manager_cache.json"
 
 
 enum MutationBehaviour {
