@@ -149,14 +149,6 @@ static func get_setting(key: String, default: Variant) -> Variant:
 		return default
 
 
-static func get_settings(only_keys: PackedStringArray = []) -> Dictionary:
-	var settings: Dictionary = {}
-	for key: String in SETTINGS_CONFIGURATION.keys():
-		if only_keys.is_empty() or key in only_keys:
-			settings[key] = get_setting(key, SETTINGS_CONFIGURATION[key].value)
-	return settings
-
-
 #endregion
 
 #region User
