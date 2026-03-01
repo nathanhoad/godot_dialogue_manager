@@ -472,6 +472,9 @@ func _get_members_for_base_script(base_script_name: String) -> Array[Dictionary]
 		var node: Node = autoload.instantiate()
 		autoload = node.get_script()
 		node.free()
+
+	if autoload == null: return []
+
 	var script: Script = autoload if autoload is Script else autoload.get_script()
 
 	if not is_instance_valid(script): return []
@@ -607,6 +610,9 @@ func _resolve_cs_script_for_autoload(base_name: String) -> Script:
 		var node: Node = autoload.instantiate()
 		autoload = node.get_script()
 		node.free()
+
+	if autoload == null: return null
+
 	var script: Script = autoload if autoload is Script else autoload.get_script()
 
 	if not is_instance_valid(script): return null
@@ -939,6 +945,8 @@ func _resolve_script_for_property_chain(segments: PackedStringArray) -> Variant:
 		var node: Node = autoload.instantiate()
 		autoload = node.get_script()
 		node.free()
+	elif autoload == null:
+		return null
 	elif not autoload is Script:
 		autoload = autoload.get_script()
 
