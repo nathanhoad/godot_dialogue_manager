@@ -181,8 +181,8 @@ func _on_mutation_cooldown_timeout() -> void:
 		balloon.hide()
 
 
-func _on_mutated(_mutation: Dictionary) -> void:
-	if not _mutation.is_inline:
+func _on_mutated(mutation: Dictionary) -> void:
+	if not mutation.is_inline:
 		is_waiting_for_input = false
 		will_hide_balloon = true
 		mutation_cooldown.start(0.1)
