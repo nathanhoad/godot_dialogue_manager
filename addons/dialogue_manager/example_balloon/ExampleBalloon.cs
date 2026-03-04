@@ -251,11 +251,14 @@ namespace DialogueManagerRuntime
     #region signals
 
 
-    private void OnMutated(Dictionary _mutation)
+    private void OnMutated(Dictionary mutation)
     {
-      isWaitingForInput = false;
-      willHideBalloon = true;
-      MutationCooldown.Start(0.1f);
+      if (!(bool)mutation["is_inline"])
+      {
+        isWaitingForInput = false;
+        willHideBalloon = true;
+        MutationCooldown.Start(0.1f);
+      }
     }
 
 
