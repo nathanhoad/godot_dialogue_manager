@@ -97,7 +97,6 @@ var current_file_path: String = "":
 			var scroll_vertical: float = DMSettings.get_scroll(current_file_path)
 
 			code_edit.text = open_buffers[current_file_path].text
-			code_edit.errors = []
 			code_edit.clear_undo_history()
 			code_edit.set_cursor(cursor)
 			code_edit.scroll_vertical = scroll_vertical
@@ -107,6 +106,7 @@ var current_file_path: String = "":
 
 			errors_panel.errors = []
 			code_edit.errors = []
+			code_edit.runtime_error = null
 
 			if search_and_replace.visible:
 				search_and_replace.search()
@@ -430,6 +430,12 @@ func go_to_label(label: String, create_if_none: bool = false) -> void:
 	code_edit.grab_focus()
 
 
+# Move the cursor to a given line number.
+func go_to_line_number(line_number: int) -> void:
+	code_edit.go_to_line_number(line_number)
+	code_edit.grab_focus()
+
+
 # Refresh the open menu with the latest files
 func build_open_menu() -> void:
 	var menu: PopupMenu = open_button.get_popup()
@@ -445,7 +451,7 @@ func build_open_menu() -> void:
 	else:
 		for path: String in recent_files:
 			if FileAccess.file_exists(path):
-				menu.add_icon_item(get_theme_icon("File", "EditorIcons"), path)
+				menu.add_item(path)
 
 	menu.add_separator()
 	menu.add_item(DMConstants.translate(&"open.clear_recent_files"), OPEN_CLEAR)

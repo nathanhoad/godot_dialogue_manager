@@ -114,7 +114,7 @@ static func has_file(path: String) -> bool:
 
 
 ## Remember any errors in a dialogue file
-static func add_errors_to_file(path: String, errors: Array[Dictionary]) -> void:
+static func add_errors_to_file(path: String, errors: Array[DMError]) -> void:
 	if _cache.has(path):
 		_cache[path].errors = errors
 	else:

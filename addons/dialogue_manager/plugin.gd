@@ -16,6 +16,7 @@ var import_plugin: DMImportPlugin
 var export_plugin: DMExportPlugin
 var inspector_plugin: DMInspectorPlugin
 var translation_parser_plugin: DMTranslationParserPlugin
+var debugger_plugin: DMDebuggerPlugin
 var main_view: Control
 var find_in_dialogue_view: Control
 
@@ -49,6 +50,9 @@ func _enter_tree() -> void:
 
 		translation_parser_plugin = DMTranslationParserPlugin.new()
 		add_translation_parser_plugin(translation_parser_plugin)
+		
+		debugger_plugin = DMDebuggerPlugin.new()
+		add_debugger_plugin(debugger_plugin)
 
 		main_view = MainView.instantiate()
 		EditorInterface.get_editor_main_screen().add_child(main_view)
@@ -74,6 +78,9 @@ func _exit_tree() -> void:
 
 	remove_translation_parser_plugin(translation_parser_plugin)
 	translation_parser_plugin = null
+	
+	remove_debugger_plugin(debugger_plugin)
+	debugger_plugin = null
 
 	if is_instance_valid(main_view):
 		main_view.queue_free()
@@ -168,11 +175,18 @@ func _build() -> bool:
 	return true
 
 
-## Open a [Dialogue Resource] and jump to a given label.
+## Open a [DialogueResource] and jump to a given label.
 static func open_file_at_label(resource_or_path: Variant, label: String, create_if_none: bool = false) -> void:
 	var resource: DialogueResource = resource_or_path if resource_or_path is DialogueResource else load(resource_or_path)
 	EditorInterface.edit_resource(resource)
 	instance.main_view.go_to_label(label, create_if_none)
+
+
+## Open a [DialogueResource] and jump to a given line number.
+static func open_file_at_line(resource_or_path: Variant, line_number: int) -> void:
+	var resource: DialogueResource = resource_or_path if resource_or_path is DialogueResource else load(resource_or_path)
+	EditorInterface.edit_resource(resource)
+	instance.main_view.go_to_line_number(line_number)
 
 
 static func show_find_in_dialogue() -> void:
