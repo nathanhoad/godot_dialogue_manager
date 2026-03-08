@@ -98,7 +98,10 @@ msgstr ""
 msgid "insert.end_dialogue"
 msgstr ""
 
-msgid "generate_line_ids"
+msgid "generate_line_ids_for_project"
+msgstr ""
+
+msgid "generate_line_ids_for_file"
 msgstr ""
 
 msgid "generate_ids.warning_title"

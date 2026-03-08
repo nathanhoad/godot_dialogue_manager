@@ -105,8 +105,11 @@ msgstr "Jump to title"
 msgid "insert.end_dialogue"
 msgstr "End dialogue"
 
-msgid "generate_line_ids"
-msgstr "Generate line IDs"
+msgid "generate_line_ids_for_project"
+msgstr "Generate line IDs for project"
+
+msgid "generate_line_ids_for_file"
+msgstr "Generate line IDs for file"
 
 msgid "generate_ids.warning_title"
 msgstr "Generate line IDs?"

@@ -6,7 +6,8 @@ const OPEN_OPEN = 100
 const OPEN_QUICK = 101
 const OPEN_CLEAR = 102
 
-const TRANSLATIONS_GENERATE_LINE_IDS = 100
+const TRANSLATIONS_GENERATE_LINE_IDS_FOR_PROJECT = 100
+const TRANSLATIONS_GENERATE_LINE_IDS_FOR_FILE = 101
 const TRANSLATIONS_SAVE_CHARACTERS_TO_CSV = 201
 const TRANSLATIONS_SAVE_TO_CSV = 202
 const TRANSLATIONS_IMPORT_FROM_CSV = 203
@@ -461,7 +462,8 @@ func apply_theme() -> void:
 		# Set up the translations menu
 		popup = translations_button.get_popup()
 		popup.clear()
-		popup.add_icon_item(get_theme_icon("Translation", "EditorIcons"), DMConstants.translate(&"generate_line_ids"), TRANSLATIONS_GENERATE_LINE_IDS)
+		popup.add_icon_item(get_theme_icon("Translation", "EditorIcons"), DMConstants.translate(&"generate_line_ids_for_file"), TRANSLATIONS_GENERATE_LINE_IDS_FOR_FILE)
+		popup.add_icon_item(get_theme_icon("Translation", "EditorIcons"), DMConstants.translate(&"generate_line_ids_for_project"), TRANSLATIONS_GENERATE_LINE_IDS_FOR_PROJECT)
 		popup.add_separator()
 		popup.add_icon_item(get_theme_icon("FileList", "EditorIcons"), DMConstants.translate(&"save_characters_to_csv"), TRANSLATIONS_SAVE_CHARACTERS_TO_CSV)
 		popup.add_icon_item(get_theme_icon("FileList", "EditorIcons"), DMConstants.translate(&"save_to_csv"), TRANSLATIONS_SAVE_TO_CSV)
@@ -680,7 +682,10 @@ func _on_insert_button_menu_id_pressed(id: int) -> void:
 
 func _on_translations_button_menu_id_pressed(id: int) -> void:
 	match id:
-		TRANSLATIONS_GENERATE_LINE_IDS:
+		TRANSLATIONS_GENERATE_LINE_IDS_FOR_FILE:
+			code_edit.text = DMTranslationUtilities.generate_static_line_ids_for_text(code_edit.text, current_file_path)
+			
+		TRANSLATIONS_GENERATE_LINE_IDS_FOR_PROJECT:
 			generate_translations_keys()
 
 		TRANSLATIONS_SAVE_CHARACTERS_TO_CSV:
@@ -964,7 +969,7 @@ func _on_generate_static_ids_confirmation_dialog_confirmed() -> void:
 
 	var cursor: Vector2 = code_edit.get_cursor()
 	var scroll_vertical = code_edit.scroll_vertical
-	DMTranslationUtilities.generate_translation_keys()
+	DMTranslationUtilities.generate_static_line_ids_for_project()
 	for file_path: String in open_buffers:
 		var buffer: Dictionary = open_buffers.get(file_path)
 		buffer.text = FileAccess.get_file_as_string(file_path)
