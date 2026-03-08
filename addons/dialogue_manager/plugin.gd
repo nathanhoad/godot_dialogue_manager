@@ -373,7 +373,7 @@ func _create_translations_tool_menu_item() -> PopupMenu:
 				confirm.ok_button_text = DMConstants.translate("generate_ids.ok_button")
 				confirm.confirmed.connect(func() -> void:
 					confirm.queue_free()
-					DMTranslationUtilities.generate_translation_keys()
+					DMTranslationUtilities.generate_static_line_ids_for_project()
 				)
 				confirm.canceled.connect(func() -> void:
 					confirm.queue_free()

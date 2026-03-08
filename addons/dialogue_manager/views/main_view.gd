@@ -402,15 +402,17 @@ func apply_theme() -> void:
 		popup.add_icon_item(get_theme_icon("Time", "EditorIcons"), DMConstants.translate(&"insert.typing_pause"), 3)
 		popup.add_icon_item(get_theme_icon("ViewportSpeed", "EditorIcons"), DMConstants.translate(&"insert.typing_speed_change"), 4)
 		popup.add_icon_item(get_theme_icon("DebugNext", "EditorIcons"), DMConstants.translate(&"insert.auto_advance"), 5)
-		popup.add_separator(DMConstants.translate(&"insert.templates"))
+		popup.add_separator()
 		popup.add_icon_item(get_theme_icon("RichTextEffect", "EditorIcons"), DMConstants.translate(&"insert.label"), 6)
 		popup.add_icon_item(get_theme_icon("RichTextEffect", "EditorIcons"), DMConstants.translate(&"insert.dialogue"), 7)
 		popup.add_icon_item(get_theme_icon("RichTextEffect", "EditorIcons"), DMConstants.translate(&"insert.response"), 8)
 		popup.add_icon_item(get_theme_icon("RichTextEffect", "EditorIcons"), DMConstants.translate(&"insert.random_lines"), 9)
 		popup.add_icon_item(get_theme_icon("RichTextEffect", "EditorIcons"), DMConstants.translate(&"insert.random_text"), 10)
-		popup.add_separator(DMConstants.translate(&"insert.actions"))
+		popup.add_separator()
 		popup.add_icon_item(get_theme_icon("RichTextEffect", "EditorIcons"), DMConstants.translate(&"insert.jump"), 11)
 		popup.add_icon_item(get_theme_icon("RichTextEffect", "EditorIcons"), DMConstants.translate(&"insert.end_dialogue"), 12)
+		popup.add_separator()
+		popup.add_icon_item(get_theme_icon("Translation", "EditorIcons"), DMConstants.translate(&"generate_line_ids"), 13)
 
 		# Dialog sizes
 		new_dialog.min_size = Vector2(600, 500) * theme_values.scale
@@ -570,6 +572,10 @@ func _on_insert_button_menu_id_pressed(id: int) -> void:
 			code_edit.insert_text_at_cursor("=> label")
 		12:
 			code_edit.insert_text_at_cursor("=> END")
+		13:
+			var cursor: Vector2i = code_edit.get_cursor()
+			code_edit.text = DMTranslationUtilities.generate_static_line_ids_for_text(code_edit.text, current_file_path)
+			code_edit.set_cursor(cursor)
 
 
 func _on_main_view_theme_changed() -> void:
