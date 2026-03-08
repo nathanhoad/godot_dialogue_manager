@@ -19,7 +19,7 @@ var first_label: String = ""
 ## A list of character names in this file.
 var character_names: PackedStringArray = []
 ## A list of any compilation errors.
-var errors: Array[Dictionary] = []
+var errors: Array[DMError] = []
 ## A map of all compiled lines.
 var lines: Dictionary = {}
 ## A flattened and simplified map of compiled lines for storage in a resource.
@@ -796,11 +796,11 @@ func parse_character_and_dialogue(tree_line: DMTreeLine, line: DMCompiledLine, s
 
 ## Add a compilation error to the list. Returns the given error code.
 func add_error(line_number: int, column_number: int, error: int) -> int:
-	errors.append({
+	errors.append(DMError.new({
 		line_number = line_number,
 		column_number = column_number,
 		error = error
-	})
+	}))
 	return error
 
 

@@ -55,10 +55,8 @@ func show_error() -> void:
 	else:
 		show()
 		count_label.text = DMConstants.translate(&"n_of_n").format({ index = error_index + 1, total = errors.size() })
-		var error: Dictionary = errors[error_index]
+		var error: DMError = errors[error_index]
 		error_button.text = DMConstants.translate(&"errors.line_and_message").format({ line = error.line_number, column = error.column_number, message = DMConstants.get_error_message(error.error) })
-		if error.has("external_error"):
-			error_button.text += " " + DMConstants.get_error_message(error.external_error)
 
 
 #region Signals

@@ -174,6 +174,14 @@ func get_line(resource: DialogueResource, key: String, extra_game_states: Array)
 		assert(false, DMConstants.translate(&"errors.key_not_found").format({ key = key }))
 
 	var data: Dictionary = resource.lines.get(key)
+	
+	# Inject some debugger information into the game states.
+	extra_game_states = [{ "debugger": {
+		resource_path = resource.resource_path,
+		line_number = int(key)
+	} }] + extra_game_states.filter(func(state: Variant) -> bool:
+		return not (typeof(state) == TYPE_DICTIONARY and state.has("debugger"))
+	)
 
 	# If next_id is an expression we need to resolve it.
 	if data.has(&"next_id_expression"):
@@ -471,7 +479,7 @@ func create_resource_from_text(text: String) -> Resource:
 
 	if result.errors.size() > 0:
 		printerr(DMConstants.translate(&"runtime.errors").format({ count = result.errors.size() }))
-		for error: Dictionary in result.errors:
+		for error: DMError in result.errors:
 			printerr(DMConstants.translate(&"runtime.error_detail").format({
 				line = error.line_number + 1,
 				message = DMConstants.get_error_message(error.error)
@@ -885,6 +893,11 @@ func _get_state_value(property: String, extra_game_states: Array) -> Variant:
 		for class_data: Dictionary in ProjectSettings.get_global_class_list():
 			if class_data.get(&"class") == property:
 				return load(class_data.path)
+
+	# Let the debugger know before we break
+	for state: Variant in extra_game_states:
+		if typeof(state) == TYPE_DICTIONARY and state.has("debugger"):
+			EngineDebugger.send_message("dm:debug", [state.get("debugger")])
 
 	show_error_for_missing_state_value(DMConstants.translate(&"runtime.property_not_found").format({ property = property, states = _get_state_shortcut_names(extra_game_states) }))
 	return null

@@ -18,7 +18,7 @@ var first_label: String = ""
 var character_names: PackedStringArray = []
 
 ## Any compilation errors.
-var errors: Array[Dictionary] = []
+var errors: Array[DMError] = []
 
 ## A map of all compiled lines.
 var lines: Dictionary = {}

@@ -32,17 +32,18 @@ var theme_overrides: DMThemeValues:
 
 # Any parse errors
 var errors: Array:
-	set(next_errors):
-		errors = next_errors
-		for i: int in range(0, get_line_count()):
-			var is_error: bool = false
-			for error: Dictionary in errors:
-				if error.line_number == i:
-					is_error = true
-			mark_line_as_error(i, is_error)
-		_on_code_edit_caret_changed()
+	set(value):
+		errors = value
+		_update_errors()
 	get:
 		return errors
+
+var runtime_error: DMError = null:
+	set(value):
+		runtime_error = value
+		_update_errors()
+	get:
+		return runtime_error
 
 # The last selection (if there was one) so we can remember it for refocusing
 var last_selected_text: String
@@ -216,6 +217,18 @@ func _confirm_code_completion(_replace: bool) -> void:
 
 	# Close the autocomplete menu on the next tick
 	call_deferred("cancel_code_completion")
+
+
+func _update_errors() -> void:
+	for i: int in range(0, get_line_count()):
+		var is_error: bool = false
+		for error: DMError in errors:
+			if error.line_number == i:
+				is_error = true
+		if runtime_error != null and runtime_error.line_number == i:
+			is_error = true
+		mark_line_as_error(i, is_error)
+	_on_code_edit_caret_changed()
 
 
 #region Completion Helpers
@@ -1065,6 +1078,12 @@ func go_to_label(label: String, create_if_none: bool = false) -> void:
 		text += "\n\n\n~ %s\n\n=> END" % [label]
 		set_caret_line(text.split("\n").size() - 2)
 		center_viewport_to_caret()
+
+
+## Go to a given line number.
+func go_to_line_number(line_number: int) -> void:
+	set_caret_line(line_number)
+	center_viewport_to_caret()
 
 
 ## Get all character names from the dialogue that match the given prefix.
