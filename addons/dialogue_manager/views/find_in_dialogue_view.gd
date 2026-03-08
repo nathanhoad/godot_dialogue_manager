@@ -1,5 +1,5 @@
 @tool
-extends Control
+extends PanelContainer
 
 signal result_selected(path: String, cursor: Vector2, length: int)
 
@@ -107,10 +107,10 @@ func update_results_view() -> void:
 			var colors: Dictionary = main_view.code_edit.theme_overrides
 			var highlight: String = ""
 			if replace_toggle.button_pressed:
-				var matched_word: String = "[bgcolor=" + colors.critical_color.to_html() + "][color=" + colors.text_color.to_html() + "]" + path_result.matched_text + "[/color][/bgcolor]"
-				highlight = "[s]" + matched_word + "[/s][bgcolor=" + colors.notice_color.to_html() + "][color=" + colors.text_color.to_html() + "]" + replace_input.text + "[/color][/bgcolor]"
+				var matched_word: String = "[bgcolor=" + Color(colors.critical_color, 0.5).to_html() + "][color=" + colors.text_color.to_html() + "]" + path_result.matched_text + "[/color][/bgcolor]"
+				highlight = "[s]" + matched_word + "[/s][bgcolor=" + Color(colors.notice_color, 0.5).to_html() + "][color=" + colors.text_color.to_html() + "]" + replace_input.text + "[/color][/bgcolor]"
 			else:
-				highlight = "[bgcolor=" + colors.notice_color.to_html() + "][color=" + colors.text_color.to_html() + "]" + path_result.matched_text + "[/color][/bgcolor]"
+				highlight = "[bgcolor=" + Color(colors.notice_color, 0.5).to_html() + "][color=" + colors.text_color.to_html() + "]" + path_result.matched_text + "[/color][/bgcolor]"
 			var text: String = path_result.text.substr(0, path_result.index) + highlight + path_result.text.substr(path_result.index + path_result.query.length())
 			result_label.text = "%s: %s" % [str(path_result.line + 1).lpad(4), text]
 			result_label.gui_input.connect(func(event):

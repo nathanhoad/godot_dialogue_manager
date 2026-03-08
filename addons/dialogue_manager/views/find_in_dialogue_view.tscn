@@ -1,4 +1,4 @@
-[gd_scene load_steps=3 format=3 uid="uid://0n7hwviyyly4"]
+[gd_scene format=3 uid="uid://0n7hwviyyly4"]
 
 [ext_resource type="Script" uid="uid://q368fmxxa8sd" path="res://addons/dialogue_manager/views/find_in_dialogue_view.gd" id="1_3xicy"]
 
@@ -6,8 +6,7 @@
 bg_color = Color(0.266667, 0.278431, 0.352941, 0.243137)
 corner_detail = 1
 
-[node name="FindInFiles" type="Control"]
-layout_mode = 3
+[node name="FindInFiles" type="PanelContainer" unique_id=705304810]
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -17,110 +16,101 @@ size_flags_horizontal = 3
 size_flags_vertical = 3
 script = ExtResource("1_3xicy")
 
-[node name="VBoxContainer" type="VBoxContainer" parent="."]
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-
-[node name="HBoxContainer" type="HBoxContainer" parent="VBoxContainer"]
+[node name="VBoxContainer" type="VBoxContainer" parent="." unique_id=588637275]
 layout_mode = 2
 
-[node name="FindContainer" type="VBoxContainer" parent="VBoxContainer/HBoxContainer"]
+[node name="HBoxContainer" type="HBoxContainer" parent="VBoxContainer" unique_id=789222873]
+layout_mode = 2
+
+[node name="FindContainer" type="VBoxContainer" parent="VBoxContainer/HBoxContainer" unique_id=1106456190]
 layout_mode = 2
 size_flags_horizontal = 3
 
-[node name="Label" type="Label" parent="VBoxContainer/HBoxContainer/FindContainer"]
+[node name="Label" type="Label" parent="VBoxContainer/HBoxContainer/FindContainer" unique_id=644125253]
 layout_mode = 2
 text = "Find:"
 
-[node name="Input" type="LineEdit" parent="VBoxContainer/HBoxContainer/FindContainer"]
+[node name="Input" type="LineEdit" parent="VBoxContainer/HBoxContainer/FindContainer" unique_id=1946262801]
 unique_name_in_owner = true
 layout_mode = 2
 clear_button_enabled = true
 
-[node name="FindToolbar" type="HBoxContainer" parent="VBoxContainer/HBoxContainer/FindContainer"]
+[node name="FindToolbar" type="HBoxContainer" parent="VBoxContainer/HBoxContainer/FindContainer" unique_id=872227533]
 layout_mode = 2
 
-[node name="SearchButton" type="Button" parent="VBoxContainer/HBoxContainer/FindContainer/FindToolbar"]
+[node name="SearchButton" type="Button" parent="VBoxContainer/HBoxContainer/FindContainer/FindToolbar" unique_id=667930226]
 unique_name_in_owner = true
 layout_mode = 2
 text = "Find all..."
 
-[node name="MatchCaseButton" type="CheckBox" parent="VBoxContainer/HBoxContainer/FindContainer/FindToolbar"]
+[node name="MatchCaseButton" type="CheckBox" parent="VBoxContainer/HBoxContainer/FindContainer/FindToolbar" unique_id=152832269]
 unique_name_in_owner = true
 layout_mode = 2
 text = "Match case"
 
-[node name="Control" type="Control" parent="VBoxContainer/HBoxContainer/FindContainer/FindToolbar"]
+[node name="Control" type="Control" parent="VBoxContainer/HBoxContainer/FindContainer/FindToolbar" unique_id=1072708585]
 layout_mode = 2
 size_flags_horizontal = 3
 
-[node name="ReplaceToggle" type="CheckButton" parent="VBoxContainer/HBoxContainer/FindContainer/FindToolbar"]
+[node name="ReplaceToggle" type="CheckButton" parent="VBoxContainer/HBoxContainer/FindContainer/FindToolbar" unique_id=1636801863]
 unique_name_in_owner = true
 layout_mode = 2
 text = "Replace"
 
-[node name="ReplaceContainer" type="VBoxContainer" parent="VBoxContainer/HBoxContainer"]
+[node name="ReplaceContainer" type="VBoxContainer" parent="VBoxContainer/HBoxContainer" unique_id=960698141]
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 3
 
-[node name="ReplaceLabel" type="Label" parent="VBoxContainer/HBoxContainer/ReplaceContainer"]
+[node name="ReplaceLabel" type="Label" parent="VBoxContainer/HBoxContainer/ReplaceContainer" unique_id=1808438777]
 layout_mode = 2
 text = "Replace with:"
 
-[node name="ReplaceInput" type="LineEdit" parent="VBoxContainer/HBoxContainer/ReplaceContainer"]
+[node name="ReplaceInput" type="LineEdit" parent="VBoxContainer/HBoxContainer/ReplaceContainer" unique_id=621715286]
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 3
 clear_button_enabled = true
 
-[node name="ReplaceToolbar" type="HBoxContainer" parent="VBoxContainer/HBoxContainer/ReplaceContainer"]
+[node name="ReplaceToolbar" type="HBoxContainer" parent="VBoxContainer/HBoxContainer/ReplaceContainer" unique_id=1014505700]
 layout_mode = 2
 
-[node name="ReplaceSelectedButton" type="Button" parent="VBoxContainer/HBoxContainer/ReplaceContainer/ReplaceToolbar"]
+[node name="ReplaceSelectedButton" type="Button" parent="VBoxContainer/HBoxContainer/ReplaceContainer/ReplaceToolbar" unique_id=1137093995]
 unique_name_in_owner = true
 layout_mode = 2
 text = "Replace selected"
 
-[node name="ReplaceAllButton" type="Button" parent="VBoxContainer/HBoxContainer/ReplaceContainer/ReplaceToolbar"]
+[node name="ReplaceAllButton" type="Button" parent="VBoxContainer/HBoxContainer/ReplaceContainer/ReplaceToolbar" unique_id=1540770339]
 unique_name_in_owner = true
 layout_mode = 2
 text = "Replace all"
 
-[node name="VBoxContainer" type="VBoxContainer" parent="VBoxContainer"]
+[node name="VBoxContainer" type="VBoxContainer" parent="VBoxContainer" unique_id=605451224]
 layout_mode = 2
 
-[node name="ReplaceToolbar" type="HBoxContainer" parent="VBoxContainer/VBoxContainer"]
+[node name="ReplaceToolbar" type="HBoxContainer" parent="VBoxContainer/VBoxContainer" unique_id=387078090]
 layout_mode = 2
 
-[node name="ScrollContainer" type="ScrollContainer" parent="VBoxContainer"]
+[node name="ScrollContainer" type="ScrollContainer" parent="VBoxContainer" unique_id=1407099062]
 layout_mode = 2
 size_flags_vertical = 3
 follow_focus = true
 
-[node name="ResultsContainer" type="VBoxContainer" parent="VBoxContainer/ScrollContainer"]
+[node name="ResultsContainer" type="VBoxContainer" parent="VBoxContainer/ScrollContainer" unique_id=323245871]
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
 theme_override_constants/separation = 0
 
-[node name="ResultTemplate" type="HBoxContainer" parent="."]
+[node name="ResultTemplate" type="HBoxContainer" parent="." unique_id=1576110409]
 unique_name_in_owner = true
-layout_mode = 0
-offset_left = 155.0
-offset_top = -74.0
-offset_right = 838.0
-offset_bottom = -51.0
-
-[node name="CheckBox" type="CheckBox" parent="ResultTemplate"]
 layout_mode = 2
 
-[node name="Label" type="RichTextLabel" parent="ResultTemplate"]
+[node name="CheckBox" type="CheckBox" parent="ResultTemplate" unique_id=2062125934]
+layout_mode = 2
+
+[node name="Label" type="RichTextLabel" parent="ResultTemplate" unique_id=81253408]
 layout_mode = 2
 size_flags_horizontal = 3
 focus_mode = 2
