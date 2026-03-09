@@ -53,6 +53,10 @@ static func mark_files_for_reimport(files: PackedStringArray) -> void:
 			_files_marked_for_reimport.append(file)
 
 
+static func reimport_all_files() -> void:
+	reimport_files(_get_dialogue_files_in_filesystem())
+
+
 static func reimport_files(and_files: PackedStringArray = []) -> void:
 	for file: String in and_files:
 		if not _files_marked_for_reimport.has(file):

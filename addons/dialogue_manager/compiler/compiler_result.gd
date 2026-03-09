@@ -22,6 +22,3 @@ var errors: Array[DMError] = []
 
 ## A map of all compiled lines.
 var lines: Dictionary = {}
-
-## The raw dialogue text.
-var raw_text: String = ""

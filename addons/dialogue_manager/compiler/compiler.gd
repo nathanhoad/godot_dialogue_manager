@@ -15,7 +15,6 @@ static func compile_string(text: String, path: String) -> DMCompilerResult:
 	result.first_label = compilation.first_label
 	result.errors = compilation.errors
 	result.lines = compilation.data
-	result.raw_text = text
 
 	return result
 

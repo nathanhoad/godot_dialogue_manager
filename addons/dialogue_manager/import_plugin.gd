@@ -5,7 +5,14 @@ class_name DMImportPlugin extends EditorImportPlugin
 signal compiled_resource(resource: Resource)
 
 
-const COMPILER_VERSION: int = 16
+const COMPILER_VERSION: int = 17
+
+
+func _init() -> void:
+	var current_version: int = DMSettings.get_user_value("compiler_version", -1)
+	if current_version != COMPILER_VERSION:
+		DMSettings.set_user_value("compiler_version", COMPILER_VERSION)
+		DMCache.reimport_all_files()
 
 
 func _get_importer_name() -> String:
@@ -91,7 +98,6 @@ func _import(source_file: String, save_path: String, _options: Dictionary, _plat
 	resource.first_label = result.first_label
 	resource.character_names = result.character_names
 	resource.lines = result.lines
-	resource.raw_text = result.raw_text
 
 	# Clear errors and possibly trigger any cascade recompiles
 	DMCache.add_file(source_file, result)

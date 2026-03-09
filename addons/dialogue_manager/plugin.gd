@@ -50,7 +50,7 @@ func _enter_tree() -> void:
 
 		translation_parser_plugin = DMTranslationParserPlugin.new()
 		add_translation_parser_plugin(translation_parser_plugin)
-		
+
 		debugger_plugin = DMDebuggerPlugin.new()
 		add_debugger_plugin(debugger_plugin)
 
@@ -78,7 +78,7 @@ func _exit_tree() -> void:
 
 	remove_translation_parser_plugin(translation_parser_plugin)
 	translation_parser_plugin = null
-	
+
 	remove_debugger_plugin(debugger_plugin)
 	debugger_plugin = null
 
