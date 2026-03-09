@@ -20,9 +20,6 @@ class_name DialogueResource extends Resource
 ## A map of the encoded lines of dialogue.
 @export var lines: Dictionary = {}
 
-## raw version of the text
-@export var raw_text: String
-
 
 ## Get the next printable line of dialogue, starting from a referenced line ([code]label[/code] can
 ## be a labels string or a stringified line number). Runs any mutations along the way and then returns

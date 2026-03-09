@@ -174,7 +174,7 @@ func get_line(resource: DialogueResource, key: String, extra_game_states: Array)
 		assert(false, DMConstants.translate(&"errors.key_not_found").format({ key = key }))
 
 	var data: Dictionary = resource.lines.get(key)
-	
+
 	# Inject some debugger information into the game states.
 	extra_game_states = [{ "debugger": {
 		resource_path = resource.resource_path,
@@ -492,7 +492,6 @@ func create_resource_from_text(text: String) -> Resource:
 	resource.first_label = result.first_label
 	resource.character_names = result.character_names
 	resource.lines = result.lines
-	resource.raw_text = text
 
 	return resource
 
