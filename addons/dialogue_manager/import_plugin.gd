@@ -2,7 +2,7 @@
 class_name DMImportPlugin extends EditorImportPlugin
 
 
-signal compiled_resource(resource: Resource)
+signal compiled_resource(resource: DialogueResource)
 
 
 const COMPILER_VERSION: int = 17

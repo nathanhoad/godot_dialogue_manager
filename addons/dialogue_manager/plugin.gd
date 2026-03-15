@@ -175,20 +175,26 @@ func _build() -> bool:
 	return true
 
 
+## Open a [DialogueResource] in the dialogue editor.
+static func open_file(resource_or_path: Variant) -> void:
+	var resource: DialogueResource = resource_or_path if resource_or_path is DialogueResource else load(resource_or_path)
+	instance.main_view.open_file(resource.resource_path)
+	EditorInterface.set_main_screen_editor("Dialogue")
+
+
 ## Open a [DialogueResource] and jump to a given label.
 static func open_file_at_label(resource_or_path: Variant, label: String, create_if_none: bool = false) -> void:
-	var resource: DialogueResource = resource_or_path if resource_or_path is DialogueResource else load(resource_or_path)
-	EditorInterface.edit_resource(resource)
+	open_file(resource_or_path)
 	instance.main_view.go_to_label(label, create_if_none)
 
 
 ## Open a [DialogueResource] and jump to a given line number.
 static func open_file_at_line(resource_or_path: Variant, line_number: int) -> void:
-	var resource: DialogueResource = resource_or_path if resource_or_path is DialogueResource else load(resource_or_path)
-	EditorInterface.edit_resource(resource)
+	open_file(resource_or_path)
 	instance.main_view.go_to_line_number(line_number)
 
 
+## Show the panel for finding text in dialogue files.
 static func show_find_in_dialogue() -> void:
 	instance._show_find_in_dialogue()
 

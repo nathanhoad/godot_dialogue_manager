@@ -1,0 +1,22 @@
+[gd_scene format=3 uid="uid://molgra7vqxts"]
+
+[ext_resource type="Script" uid="uid://cn5hcy57m088v" path="res://addons/dialogue_manager/components/label_editor_property/editor_property_control.gd" id="1_4prea"]
+
+[node name="EditorPropertyControl" type="HBoxContainer" unique_id=1721562088]
+offset_right = 40.0
+offset_bottom = 40.0
+script = ExtResource("1_4prea")
+
+[node name="Button" type="OptionButton" parent="." unique_id=1093477450]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+flat = true
+alignment = 1
+
+[node name="LinkButton" type="Button" parent="." unique_id=713900927]
+unique_name_in_owner = true
+layout_mode = 2
+flat = true
+
+[connection signal="pressed" from="LinkButton" to="." method="_on_link_button_pressed"]

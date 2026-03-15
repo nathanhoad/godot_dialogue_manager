@@ -470,3 +470,6 @@ msgstr "Labels"
 
 msgid "Auto"
 msgstr "Auto"
+
+msgid "<empty>"
+msgstr "<empty>"
