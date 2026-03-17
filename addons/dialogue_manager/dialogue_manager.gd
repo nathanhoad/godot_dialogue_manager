@@ -283,6 +283,7 @@ func get_line(resource: DialogueResource, key: String, extra_game_states: Array)
 			data.id = key
 
 	# Set up a line object.
+	data.resource = resource
 	var line: DialogueLine = await create_dialogue_line(data, extra_game_states)
 
 	# If the jump point somehow has no content then just end.
@@ -658,7 +659,7 @@ func create_dialogue_line(data: Dictionary, extra_game_states: Array) -> Dialogu
 		DMConstants.TYPE_DIALOGUE:
 			var resolved_data: DMResolvedLineData = await get_resolved_line_data(data, extra_game_states)
 			return DialogueLine.new({
-				id = data.get(&"id", ""),
+				id = _get_id_with_resource(data.resource, data.get(&"id", "")),
 				type = DMConstants.TYPE_DIALOGUE,
 				next_id = data.next_id,
 				character = await get_resolved_character(data, extra_game_states),
@@ -675,7 +676,7 @@ func create_dialogue_line(data: Dictionary, extra_game_states: Array) -> Dialogu
 
 		DMConstants.TYPE_RESPONSE:
 			return DialogueLine.new({
-				id = data.get(&"id", ""),
+				id = _get_id_with_resource(data.resource, data.get(&"id", "")),
 				type = DMConstants.TYPE_RESPONSE,
 				next_id = data.next_id,
 				tags = data.get(&"tags", []),
@@ -684,7 +685,7 @@ func create_dialogue_line(data: Dictionary, extra_game_states: Array) -> Dialogu
 
 		DMConstants.TYPE_MUTATION:
 			return DialogueLine.new({
-				id = data.get(&"id", ""),
+				id = _get_id_with_resource(data.resource, data.get(&"id", "")),
 				type = DMConstants.TYPE_MUTATION,
 				next_id = data.next_id,
 				mutation = data.mutation,
