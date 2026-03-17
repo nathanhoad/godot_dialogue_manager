@@ -1,7 +1,7 @@
 [gd_scene format=3 uid="uid://ycn6uaj7dsrh"]
 
-[ext_resource type="Script" uid="uid://dooe2pflnqtve" path="res://addons/dialogue_manager/components/editor_property/editor_property_control.gd" id="1_het12"]
-[ext_resource type="PackedScene" uid="uid://b16uuqjuof3n5" path="res://addons/dialogue_manager/components/editor_property/resource_button.tscn" id="2_hh3d4"]
+[ext_resource type="Script" uid="uid://dooe2pflnqtve" path="res://addons/dialogue_manager/components/dialogue_editor_property/editor_property_control.gd" id="1_het12"]
+[ext_resource type="PackedScene" uid="uid://b16uuqjuof3n5" path="res://addons/dialogue_manager/components/dialogue_editor_property/resource_button.tscn" id="2_hh3d4"]
 [ext_resource type="PackedScene" uid="uid://dnufpcdrreva3" path="res://addons/dialogue_manager/components/files_list.tscn" id="3_l8fp6"]
 
 [node name="PropertyEditorButton" type="HBoxContainer" unique_id=94139718]
@@ -14,11 +14,13 @@ script = ExtResource("1_het12")
 [node name="ResourceButton" parent="." unique_id=371241282 instance=ExtResource("2_hh3d4")]
 layout_mode = 2
 text = "<empty>"
+flat = true
 text_overrun_behavior = 3
 clip_text = true
 
 [node name="MenuButton" type="Button" parent="." unique_id=1528906238]
 layout_mode = 2
+flat = true
 
 [node name="Menu" type="PopupMenu" parent="." unique_id=1401460802]
 
