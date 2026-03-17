@@ -336,6 +336,15 @@ func _add_mutation_completions(current_line: String, cursor: Vector2i) -> void:
 		if "false".contains(prompt):
 			add_code_completion_option(CodeEdit.KIND_CONSTANT, "false", "false".substr(prompt.length()), color, icon)
 
+	# Remove duplicates
+	var unique_auto_completes: PackedStringArray = []
+	auto_completes = auto_completes.filter(func(auto_complete: Dictionary) -> bool:
+		if unique_auto_completes.has(auto_complete.text): return false
+		
+		unique_auto_completes.append(auto_complete.text)
+		return true
+	)
+
 	auto_completes.sort_custom(func(a: Dictionary, b: Dictionary) -> bool:
 		return a.text.to_lower().similarity(prompt) > b.text.to_lower().similarity(prompt)
 	)
