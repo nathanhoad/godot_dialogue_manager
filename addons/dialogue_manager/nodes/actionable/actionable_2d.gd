@@ -12,6 +12,10 @@ class_name Actionable2D extends Area2D
 ## Emitted when this [Actionable2D] has [code]action()[/code] called on it.
 signal actioned()
 
+## Emitted when the [DialogueResource] associated with this [Actionable2D] ends. [b]NOTE:[/b] The
+## signal is also emitted if the same resource is used for multiple [Actionable2D] nodes in the tree.
+signal dialogue_ended()
+
 
 ## The [DialogueResource] to use when starting dialogue.
 @export var dialogue_resource: DialogueResource = null:
@@ -24,19 +28,21 @@ signal actioned()
 		return dialogue_resource
 
 ## The target cue to start dialogue from.
-var dialogue_cue: String = ""
+@export var dialogue_cue: String = ""
 
 ## The dialogue balloon that was last used by calling [code]action()[/code] (if there was one).
 var dialogue_balloon: Node
 
 ## The method used to start dialogue action [code]action()[/code] is called. Override if you need
 ## different logic.
-static var start_dialogue: Callable = func(p_dialogue_resource: DialogueResource, from_cue: String, extra_game_states: Array) -> Node2D:
-	return DialogueManager.show_dialogue_balloon(p_dialogue_resource, from_cue, extra_game_states)
+static var start_dialogue: Callable = func(with_dialogue_resource: DialogueResource, from_cue: String, extra_game_states: Array) -> Node2D:
+	return DialogueManager.show_dialogue_balloon(with_dialogue_resource, from_cue, extra_game_states)
 
 
 func _ready() -> void:
-	add_to_group("dialogue_actionables")
+	if not Engine.is_editor_hint():
+		add_to_group("dialogue_actionables")
+		DialogueManager.dialogue_ended.connect(_on_dialogue_ended)
 
 
 #region Public
@@ -66,53 +72,12 @@ static func get_nearest_actionable_to(target_position: Vector2) -> Actionable2D:
 
 #endregion
 
-#region Properties
+#region Signals
 
 
-func _get_property_list() -> Array[Dictionary]:
-	var props: Array[Dictionary] = []
-
-	if is_instance_valid(dialogue_resource):
-		props.append({
-			name = "dialogue_cue",
-			type = TYPE_STRING
-		})
-
-	return props
-
-
-func _get(property: StringName) -> Variant:
-	match property:
-		"dialogue_cue":
-			return dialogue_cue
-
-	return null
-
-
-func _set(property: StringName, value: Variant) -> bool:
-	match property:
-		"dialogue_cue":
-			dialogue_cue = value
-			notify_property_list_changed()
-			return true
-
-	return false
-
-
-func _property_can_revert(property: StringName) -> bool:
-	match property:
-		"dialogue_cue":
-			return true
-
-	return false
-
-
-func _property_get_revert(property: StringName) -> Variant:
-	match property:
-		"dialogue_cue":
-			return ""
-
-	return null
+func _on_dialogue_ended(ending_dialogue_resource: DialogueResource) -> void:
+	if ending_dialogue_resource == dialogue_resource:
+		dialogue_ended.emit()
 
 
 #endregion
