@@ -5,7 +5,7 @@ class_name DMImportPlugin extends EditorImportPlugin
 signal compiled_resource(resource: DialogueResource)
 
 
-const COMPILER_VERSION: int = 17
+const COMPILER_VERSION: int = 18
 
 
 func _init() -> void:
@@ -94,8 +94,8 @@ func _import(source_file: String, save_path: String, _options: Dictionary, _plat
 	resource.set_meta("dialogue_manager_version", version)
 
 	resource.using_states = result.using_states
-	resource.labels = result.labels
-	resource.first_label = result.first_label
+	resource.cues = result.cues
+	resource.first_cue = result.first_cue
 	resource.character_names = result.character_names
 	resource.lines = result.lines
 

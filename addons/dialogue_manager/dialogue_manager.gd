@@ -4,9 +4,9 @@ extends Node
 ## Emitted when a dialogue balloon is created and dialogue starts
 signal dialogue_started(resource: DialogueResource)
 
-## Emitted when a label is encountered while traversing dialogue, usually when jumping from a
+## Emitted when a cue is encountered while traversing dialogue, usually when jumping from a
 ## goto line
-signal passed_label(label: String)
+signal passed_cue(cue: String)
 
 ## Emitted when a line of dialogue is encountered.
 signal got_dialogue(line: DialogueLine)
@@ -139,12 +139,12 @@ func get_line(resource: DialogueResource, key: String, extra_game_states: Array)
 			resource = load("uid://" + bits[0])
 		key = bits[1]
 
-	# Key is blank so just use the first label (or start of file)
+	# Key is blank so just use the first cue (or start of file)
 	if key == null or key == "":
-		if resource.first_label.is_empty():
+		if resource.first_cue.is_empty():
 			key = resource.lines.keys()[0]
 		else:
-			key = resource.first_label
+			key = resource.first_cue
 
 	# See if we just ended the conversation
 	if key in [DMConstants.ID_END, DMConstants.ID_NULL, null]:
@@ -155,20 +155,20 @@ func get_line(resource: DialogueResource, key: String, extra_game_states: Array)
 	elif key == DMConstants.ID_END_CONVERSATION:
 		return null
 
-	# See if it is a label
+	# See if it is a cue
 	if key.begins_with("~ "):
 		key = key.substr(2)
-	if resource.labels.has(key):
-		key = resource.labels.get(key)
-		# Handle the resource reference if the label had one
+	if resource.cues.has(key):
+		key = resource.cues.get(key)
+		# Handle the resource reference if the cue had one
 		if "@" in key:
 			var bits: PackedStringArray = key.split("@")
 			if bits[0] != _get_resource_uid(resource):
 				resource = load("uid://" + bits[0])
 			key = bits[1]
 
-	if key in resource.labels.values():
-		passed_label.emit(resource.labels.find_key(key))
+	if key in resource.cues.values():
+		passed_cue.emit(resource.cues.find_key(key))
 
 	if not resource.lines.has(key):
 		assert(false, DMConstants.translate(&"errors.key_not_found").format({ key = key }))
@@ -185,8 +185,8 @@ func get_line(resource: DialogueResource, key: String, extra_game_states: Array)
 	if data.has(&"next_id_expression"):
 		data.next_id = await _resolve(data.next_id_expression, extra_game_states)
 
-	# This label key points to another label key so we should jump there instead
-	if data.type == DMConstants.TYPE_LABEL and data.next_id in resource.labels.values():
+	# This cue key points to another cue key so we should jump there instead
+	if data.type == DMConstants.TYPE_CUE and data.next_id in resource.cues.values():
 		return await get_line(resource, data.next_id + id_trail, extra_game_states)
 
 	# Handle match statements
@@ -265,8 +265,8 @@ func get_line(resource: DialogueResource, key: String, extra_game_states: Array)
 			resource = load("uid://" + bits[0])
 			next_id = bits[1]
 
-		# If the label isn't in this resource it might be back in the original one
-		if not resource.lines.has(next_id) and not resource.labels.has(next_id):
+		# If the cue isn't in this resource it might be back in the original one
+		if not resource.lines.has(next_id) and not resource.cues.has(next_id):
 			resource = previous_resource
 
 		return await get_line(resource, next_id + id_trail, extra_game_states)
@@ -314,16 +314,16 @@ func get_line(resource: DialogueResource, key: String, extra_game_states: Array)
 				return_to_id = bits[1]
 			next_line = return_to_resource.lines.get(return_to_id)
 
-		# If the response line is marked as a label then make sure to emit the passed_label signal.
-		if line.next_id in resource.labels.values():
-			passed_label.emit(resource.labels.find_key(line.next_id))
+		# If the response line is marked as a cue then make sure to emit the passed_cue signal.
+		if line.next_id in resource.cues.values():
+			passed_cue.emit(resource.cues.find_key(line.next_id))
 
 		# If the responses come from a snippet then we need to come back here afterwards.
 		if not peeked_at_stack and next_line.type == DMConstants.TYPE_GOTO and next_line.is_snippet and not id_trail.begins_with("|" + _get_id_with_resource(resource, next_line.next_id_after)):
 			id_trail = "|" + _get_id_with_resource(resource, next_line.next_id_after) + id_trail
 
-		# If the next line is a label then check where it points to see if that is a set of responses.
-		while [DMConstants.TYPE_LABEL, DMConstants.TYPE_GOTO].has(next_line.type) and resource.lines.has(next_line.next_id):
+		# If the next line is a cue then check where it points to see if that is a set of responses.
+		while [DMConstants.TYPE_CUE, DMConstants.TYPE_GOTO].has(next_line.type) and resource.lines.has(next_line.next_id):
 			next_line = resource.lines.get(next_line.next_id)
 
 		if next_line != null and next_line.type == DMConstants.TYPE_RESPONSE:
@@ -495,8 +495,8 @@ func create_resource_from_text(text: String) -> Resource:
 
 	var resource: DialogueResource = DialogueResource.new()
 	resource.using_states = result.using_states
-	resource.labels = result.labels
-	resource.first_label = result.first_label
+	resource.cues = result.cues
+	resource.first_cue = result.first_cue
 	resource.character_names = result.character_names
 	resource.lines = result.lines
 
@@ -507,29 +507,29 @@ func create_resource_from_text(text: String) -> Resource:
 
 
 ## Show the example balloon
-func show_example_dialogue_balloon(resource: DialogueResource, label: String = "", extra_game_states: Array = []) -> CanvasLayer:
+func show_example_dialogue_balloon(resource: DialogueResource, cue: String = "", extra_game_states: Array = []) -> CanvasLayer:
 	var balloon: Node = load(_get_example_balloon_path()).instantiate()
-	_start_balloon.call_deferred(balloon, resource, label, extra_game_states)
+	_start_balloon.call_deferred(balloon, resource, cue, extra_game_states)
 	return balloon
 
 
 ## Show the configured dialogue balloon
-func show_dialogue_balloon(resource: DialogueResource, label: String = "", extra_game_states: Array = []) -> Node:
+func show_dialogue_balloon(resource: DialogueResource, cue: String = "", extra_game_states: Array = []) -> Node:
 	var balloon_path: String = DMSettings.get_setting(DMSettings.BALLOON_PATH, _get_example_balloon_path())
 	if not ResourceLoader.exists(balloon_path):
 		balloon_path = _get_example_balloon_path()
-	return show_dialogue_balloon_scene(balloon_path, resource, label, extra_game_states)
+	return show_dialogue_balloon_scene(balloon_path, resource, cue, extra_game_states)
 
 
 ## Show a given balloon scene
-func show_dialogue_balloon_scene(balloon_scene: Variant, resource: DialogueResource, label: String = "", extra_game_states: Array = []) -> Node:
+func show_dialogue_balloon_scene(balloon_scene: Variant, resource: DialogueResource, cue: String = "", extra_game_states: Array = []) -> Node:
 	if balloon_scene is String:
 		balloon_scene = load(balloon_scene)
 	if balloon_scene is PackedScene:
 		balloon_scene = balloon_scene.instantiate()
 
 	var balloon: Node = balloon_scene
-	_start_balloon.call_deferred(balloon, resource, label, extra_game_states)
+	_start_balloon.call_deferred(balloon, resource, cue, extra_game_states)
 	return balloon
 
 
@@ -550,15 +550,15 @@ func static_id_to_line_ids(resource: DialogueResource, static_id: String) -> Pac
 
 
 # Call "start" on the given balloon.
-func _start_balloon(balloon: Node, resource: DialogueResource, label: String, extra_game_states: Array) -> void:
+func _start_balloon(balloon: Node, resource: DialogueResource, cue: String, extra_game_states: Array) -> void:
 	dialogue_started.emit(resource)
 
 	get_current_scene.call().add_child(balloon)
 
 	if balloon.has_method(&"start"):
-		balloon.start(resource, label, extra_game_states)
+		balloon.start(resource, cue, extra_game_states)
 	elif balloon.has_method(&"Start"):
-		balloon.Start(resource, label, extra_game_states)
+		balloon.Start(resource, cue, extra_game_states)
 	else:
 		assert(false, DMConstants.translate(&"runtime.dialogue_balloon_missing_start_method"))
 

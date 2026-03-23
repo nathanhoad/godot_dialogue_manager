@@ -47,8 +47,8 @@ func _get_line_syntax_highlighting(line: int) -> Dictionary:
 		DMConstants.TYPE_COMMENT:
 			colors[index] = { color = theme.comments_color }
 
-		DMConstants.TYPE_LABEL:
-			colors[index] = { color = theme.labels_color }
+		DMConstants.TYPE_CUE:
+			colors[index] = { color = theme.cues_color }
 
 		DMConstants.TYPE_CONDITION, DMConstants.TYPE_WHILE, DMConstants.TYPE_MATCH, DMConstants.TYPE_WHEN:
 			colors[0] = { color = theme.conditions_color }
@@ -80,7 +80,7 @@ func _get_line_syntax_highlighting(line: int) -> Dictionary:
 
 		DMConstants.TYPE_DIALOGUE, DMConstants.TYPE_RESPONSE:
 			if text.strip_edges().begins_with("- "):
-				colors[index] = { color = theme.labels_color }
+				colors[index] = { color = theme.cues_color }
 				index = text.find(" ", text.find("- "))
 
 			if text.strip_edges().begins_with("%"):

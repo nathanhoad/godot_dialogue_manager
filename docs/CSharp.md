@@ -94,7 +94,7 @@ DialogueManager.DialogueEnded += (Resource dialogueResource) =>
   // ...
 };
 
-DialogueManager.PassedLabel += (string label) =>
+DialogueManager.PasssedCue += (string cue) =>
 {
   // ...
 };
@@ -125,7 +125,7 @@ If you need to construct a dialogue resource at runtime, you can use `CreateReso
 Please note, a balloon or Dialogue must be opened for the dialogue to attach to.
 
 ```csharp
-var resource = DialogueManager.CreateResourceFromText("~ label\nCharacter: Hello!");
+var resource = DialogueManager.CreateResourceFromText("~ cue\nCharacter: Hello!");
 ```
 
 This will run the given text through the parser.

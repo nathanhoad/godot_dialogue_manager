@@ -1,6 +1,6 @@
 [gd_scene format=3 uid="uid://molgra7vqxts"]
 
-[ext_resource type="Script" uid="uid://cn5hcy57m088v" path="res://addons/dialogue_manager/components/label_editor_property/editor_property_control.gd" id="1_4prea"]
+[ext_resource type="Script" uid="uid://cn5hcy57m088v" path="res://addons/dialogue_manager/components/cue_editor_property/editor_property_control.gd" id="1_4prea"]
 
 [node name="EditorPropertyControl" type="HBoxContainer" unique_id=1721562088]
 offset_right = 40.0

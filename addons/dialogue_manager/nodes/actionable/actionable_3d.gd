@@ -4,7 +4,7 @@
 
 ## A special [Area3D] node to hold information about starting dialogue.
 ##
-## Assuming [code]dialogue_resource[/code] and [code]label[/code] have been configured you can
+## Assuming [code]dialogue_resource[/code] and [code]cue[/code] have been configured you can
 ## call [code]action()[/code] on this node at runtime to start dialogue.
 class_name Actionable3D extends Area3D
 
@@ -18,21 +18,21 @@ signal actioned()
 	set(value):
 		dialogue_resource = value
 		if dialogue_resource == null:
-			dialogue_label = ""
+			dialogue_cue = ""
 		notify_property_list_changed()
 	get:
 		return dialogue_resource
 
-## The target label to start dialogue from.
-var dialogue_label: String = ""
+## The target cue to start dialogue from.
+var dialogue_cue: String = ""
 
 ## The dialogue balloon that was last used by calling [code]action()[/code] (if there was one).
 var dialogue_balloon: Node
 
 ## The method used to start dialogue action [code]action()[/code] is called. Override if you need
 ## different logic.
-static var start_dialogue: Callable = func(p_dialogue_resource: DialogueResource, p_label: String, extra_game_states: Array) -> Node2D:
-	return DialogueManager.show_dialogue_balloon(p_dialogue_resource, p_label, extra_game_states)
+static var start_dialogue: Callable = func(p_dialogue_resource: DialogueResource, from_cue: String, extra_game_states: Array) -> Node2D:
+	return DialogueManager.show_dialogue_balloon(p_dialogue_resource, from_cue, extra_game_states)
 
 
 func _ready() -> void:
@@ -42,11 +42,11 @@ func _ready() -> void:
 #region Public
 
 
-## Action this [Actionable3D]. If a [DialogueResource] and label have been set on this node then
+## Action this [Actionable3D]. If a [DialogueResource] and cue have been set on this node then
 ## it will start dialogue.
 func action() -> void:
-	if is_instance_valid(dialogue_resource) and not dialogue_label.is_empty():
-		dialogue_balloon = start_dialogue.call(dialogue_resource, dialogue_label, [owner])
+	if is_instance_valid(dialogue_resource) and not dialogue_cue.is_empty():
+		dialogue_balloon = start_dialogue.call(dialogue_resource, dialogue_cue, [owner])
 	actioned.emit()
 
 
@@ -74,7 +74,7 @@ func _get_property_list() -> Array[Dictionary]:
 
 	if is_instance_valid(dialogue_resource):
 		props.append({
-			name = "dialogue_label",
+			name = "dialogue_cue",
 			type = TYPE_STRING
 		})
 
@@ -83,16 +83,16 @@ func _get_property_list() -> Array[Dictionary]:
 
 func _get(property: StringName) -> Variant:
 	match property:
-		"dialogue_label":
-			return dialogue_label
+		"dialogue_cue":
+			return dialogue_cue
 
 	return null
 
 
 func _set(property: StringName, value: Variant) -> bool:
 	match property:
-		"dialogue_label":
-			dialogue_label = value
+		"dialogue_cue":
+			dialogue_cue = value
 			notify_property_list_changed()
 			return true
 
@@ -101,7 +101,7 @@ func _set(property: StringName, value: Variant) -> bool:
 
 func _property_can_revert(property: StringName) -> bool:
 	match property:
-		"dialogue_label":
+		"dialogue_cue":
 			return true
 
 	return false
@@ -109,7 +109,7 @@ func _property_can_revert(property: StringName) -> bool:
 
 func _property_get_revert(property: StringName) -> Variant:
 	match property:
-		"dialogue_label":
+		"dialogue_cue":
 			return ""
 
 	return null

@@ -2,9 +2,9 @@
 class_name DMCodeEdit extends CodeEdit
 
 
-signal active_label_changed(label: String)
+signal active_cue_changed(cue: String)
 signal error_clicked(line_number: int)
-signal external_file_requested(path: String, label: String)
+signal external_file_requested(path: String, cue: String)
 
 
 const MUTATION_PREFIXES: PackedStringArray = ["$>", "$>>", "do ", "do! ", "set ", "if ", "elif ", "else if ", "match ", "when "]
@@ -251,17 +251,17 @@ func _add_jump_completions(current_line: String, cursor: Vector2) -> void:
 		if _matches_prompt(prompt, "end!"):
 			add_code_completion_option(CodeEdit.KIND_CLASS, "END!", "END!".substr(prompt.length()), theme_overrides.text_color, get_theme_icon("Stop", "EditorIcons"))
 
-	# Get all labels, including those in imports
-	for label: String in DMCompiler.get_labels_in_text(text, main_view.current_file_path):
-		# Ignore any imported labels that aren't resolved to human readable.
-		if label.to_int() > 0:
+	# Get all cues, including those in imports
+	for cue: String in DMCompiler.get_cues_in_text(text, main_view.current_file_path):
+		# Ignore any imported cues that aren't resolved to human readable.
+		if cue.to_int() > 0:
 			continue
-		elif "/" in label:
-			var bits: PackedStringArray = label.split("/")
+		elif "/" in cue:
+			var bits: PackedStringArray = cue.split("/")
 			if _matches_prompt(prompt, bits[0]) or _matches_prompt(prompt, bits[1]):
-				add_code_completion_option(CodeEdit.KIND_CLASS, label, label.substr(prompt.length()), theme_overrides.text_color, get_theme_icon("CombineLines", "EditorIcons"))
-		elif _matches_prompt(prompt, label):
-			add_code_completion_option(CodeEdit.KIND_CLASS, label, label.substr(prompt.length()), theme_overrides.text_color, get_theme_icon("ArrowRight", "EditorIcons"))
+				add_code_completion_option(CodeEdit.KIND_CLASS, cue, cue.substr(prompt.length()), theme_overrides.text_color, get_theme_icon("CombineLines", "EditorIcons"))
+		elif _matches_prompt(prompt, cue):
+			add_code_completion_option(CodeEdit.KIND_CLASS, cue, cue.substr(prompt.length()), theme_overrides.text_color, get_theme_icon("ArrowRight", "EditorIcons"))
 
 
 # Add completions for character names at the start of dialogue lines.
@@ -1052,49 +1052,49 @@ func _resolve_script_for_property_chain(segments: PackedStringArray) -> Variant:
 #region Label and Character Helpers
 
 
-## Get a list of labels from the current text.
-func get_labels(include_regions: bool = false) -> PackedStringArray:
-	var labels: PackedStringArray = PackedStringArray([])
+## Get a list of cues from the current text.
+func get_cues(include_regions: bool = false) -> PackedStringArray:
+	var cues: PackedStringArray = PackedStringArray([])
 	var lines: PackedStringArray = text.split("\n")
 	for line: String in lines:
 		if line.strip_edges().begins_with("~ "):
-			labels.append(line.strip_edges().substr(2))
+			cues.append(line.strip_edges().substr(2))
 		elif include_regions and line.strip_edges().begins_with("#region "):
-			labels.append("#" + line.strip_edges().replace("#region ", ""))
+			cues.append("#" + line.strip_edges().replace("#region ", ""))
 
-	return labels
+	return cues
 
 
-## Work out what the next label above the current line is
-func check_active_label() -> void:
+## Work out what the next cue above the current line is
+func check_active_cue() -> void:
 	var line_number: int = get_caret_line()
 	var lines: PackedStringArray = text.split("\n")
-	# Look at each line above this one to find the next label line
+	# Look at each line above this one to find the next cue line
 	for i: int in range(line_number, -1, -1):
-		if lines[i].begins_with("~ ") and "labels" in DMSettings.get_user_value("label_list_view", "regions+labels"):
-			active_label_changed.emit(lines[i].replace("~ ", ""))
+		if lines[i].begins_with("~ ") and "cues" in DMSettings.get_user_value("cue_list_view", "regions+cues"):
+			active_cue_changed.emit(lines[i].replace("~ ", ""))
 			return
-		elif lines[i].begins_with("#region ") and "regions" in DMSettings.get_user_value("label_list_view", "regions+labels"):
-			active_label_changed.emit(lines[i].replace("#region ", ""))
+		elif lines[i].begins_with("#region ") and "regions" in DMSettings.get_user_value("cue_list_view", "regions+cues"):
+			active_cue_changed.emit(lines[i].replace("#region ", ""))
 			return
 
-	active_label_changed.emit("")
+	active_cue_changed.emit("")
 
 
-## Move the caret line to match a given label.
-func go_to_label(label: String, create_if_none: bool = false) -> void:
-	var found_label: bool = false
+## Move the caret line to match a given cue.
+func go_to_cue(cue: String, create_if_none: bool = false) -> void:
+	var found_cue: bool = false
 
 	var lines: PackedStringArray = text.split("\n")
 	for i: int in range(0, lines.size()):
-		if lines[i].strip_edges() == "~ " + label or lines[i].strip_edges() == "#region " + label:
-			found_label = true
+		if lines[i].strip_edges() == "~ " + cue or lines[i].strip_edges() == "#region " + cue:
+			found_cue = true
 			set_caret_line(i)
 			set_caret_column(0)
 			center_viewport_to_caret()
 
-	if create_if_none and not found_label:
-		text += "\n\n\n~ %s\n\n=> END" % [label]
+	if create_if_none and not found_cue:
+		text += "\n\n\n~ %s\n\n=> END" % [cue]
 		set_caret_line(text.split("\n").size() - 2)
 		center_viewport_to_caret()
 
@@ -1313,20 +1313,20 @@ func _on_code_edit_symbol_validate(symbol: String) -> void:
 		set_symbol_lookup_word_as_valid(true)
 		return
 
-	for label: String in get_labels():
-		if symbol == label:
+	for cue: String in get_cues():
+		if symbol == cue:
 			set_symbol_lookup_word_as_valid(true)
 			return
 
 	var cursor: Vector2i = get_line_column_at_pos(get_local_mouse_pos())
 	var line_text: String = get_line(cursor.y)
 
-	# Check if it's an imported label (eg. "alias/label")
+	# Check if it's an imported cue (eg. "alias/cue")
 	if "/" in line_text and "=>" in line_text:
 		var goto_marker: String = "=>< " if "=><" in line_text else "=> "
 		var actual_symbol: String = line_text.substr(line_text.find(goto_marker) + goto_marker.length())
-		for label: String in DMCompiler.get_labels_in_text(text, main_view.current_file_path):
-			if label == actual_symbol:
+		for cue: String in DMCompiler.get_cues_in_text(text, main_view.current_file_path):
+			if cue == actual_symbol:
 				set_symbol_lookup_word_as_valid(true)
 				return
 
@@ -1352,26 +1352,26 @@ func _on_code_edit_symbol_lookup(symbol: String, line: int, column: int) -> void
 		external_file_requested.emit(symbol, "")
 		return
 
-	# Check if it's a label
-	for label: String in get_labels():
-		if symbol == label:
-			go_to_label(symbol)
+	# Check if it's a cue
+	for cue: String in get_cues():
+		if symbol == cue:
+			go_to_cue(symbol)
 			return
 
 	var line_text: String = get_line(line)
 
-	# Check if it's an imported label (eg. "alias/label")
+	# Check if it's an imported cue (eg. "alias/cue")
 	if "/" in line_text and "=>" in line_text:
 		var goto_marker: String = "=>< " if "=><" in line_text else "=> "
 		var actual_symbol: String = line_text.substr(line_text.find(goto_marker) + goto_marker.length())
 		var prefix: String = actual_symbol.split("/")[0]
-		var label_name: String = actual_symbol.split("/")[1]
+		var cue_name: String = actual_symbol.split("/")[1]
 		var lines: PackedStringArray = text.split("\n")
 		for l: String in lines:
 			if not l.begins_with("import "): continue
 			var found: RegExMatch = compiler_regex.IMPORT_REGEX.search(l)
 			if found and found.strings[found.names.prefix] == prefix:
-				external_file_requested.emit(found.strings[found.names.path], label_name)
+				external_file_requested.emit(found.strings[found.names.path], cue_name)
 				return
 
 	# Check if it's a mutation line symbol
@@ -1401,7 +1401,7 @@ func _on_code_edit_text_set() -> void:
 
 
 func _on_code_edit_caret_changed() -> void:
-	check_active_label()
+	check_active_cue()
 	last_selected_text = get_selected_text()
 	_update_code_hint()
 

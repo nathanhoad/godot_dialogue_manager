@@ -81,8 +81,8 @@ msgstr "Auto advance"
 msgid "insert.templates"
 msgstr "Templates"
 
-msgid "insert.label"
-msgstr "Label"
+msgid "insert.cue"
+msgstr "Cue"
 
 msgid "insert.dialogue"
 msgstr "Dialogue"
@@ -100,7 +100,7 @@ msgid "insert.actions"
 msgstr "Actions"
 
 msgid "insert.jump"
-msgstr "Jump to label"
+msgstr "Jump to cue"
 
 msgid "insert.end_dialogue"
 msgstr "End dialogue"
@@ -213,8 +213,8 @@ msgstr "Replace all"
 msgid "files_list.filter"
 msgstr "Filter files"
 
-msgid "labels_list.filter"
-msgstr "Filter labels"
+msgid "cues_list.filter"
+msgstr "Filter cues"
 
 msgid "errors.key_not_found"
 msgstr "Key \"{key}\" not found."
@@ -240,26 +240,26 @@ msgstr "Duplicate import name."
 msgid "errors.unknown_using"
 msgstr "Unknown autoload in using statement."
 
-msgid "errors.empty_label"
-msgstr "Labels cannot be empty."
+msgid "errors.empty_cue"
+msgstr "Cues cannot be empty."
 
-msgid "errors.duplicate_label"
-msgstr "There is already a label with that name."
+msgid "errors.duplicate_cue"
+msgstr "There is already a cue with that name."
 
-msgid "errors.invalid_label_string"
-msgstr "Labels can only contain alphanumeric characters and numbers."
+msgid "errors.invalid_cue_string"
+msgstr "Cues can only contain alphanumeric characters and numbers."
 
-msgid "errors.invalid_label_number"
-msgstr "Labels cannot begin with a number."
+msgid "errors.invalid_cue_number"
+msgstr "Cues cannot begin with a number."
 
-msgid "errors.unknown_label"
-msgstr "Unknown label."
+msgid "errors.unknown_cue"
+msgstr "Unknown cue."
 
-msgid "errors.jump_to_invalid_label"
-msgstr "This jump is pointing to an invalid label."
+msgid "errors.jump_to_invalid_cue"
+msgstr "This jump is pointing to an invalid cue."
 
-msgid "errors.label_has_no_content"
-msgstr "That label has no content. Maybe change this to a \"=> END\"."
+msgid "errors.cue_has_no_content"
+msgstr "That cue has no content. Maybe change this to a \"=> END\"."
 
 msgid "errors.invalid_expression"
 msgstr "Expression is invalid."
@@ -459,14 +459,14 @@ msgstr "Multiple top-level states ({states}) share method/property/signal name \
 msgid "translation_plugin.character_name"
 msgstr "Character name"
 
-msgid "Regions & Labels"
-msgstr "Regions & Labels"
+msgid "Regions & Cues"
+msgstr "Regions & Cues"
 
 msgid "Regions"
 msgstr "Regions"
 
-msgid "Labels"
-msgstr "Labels"
+msgid "Cues"
+msgstr "Cues"
 
 msgid "Auto"
 msgstr "Auto"
