@@ -94,7 +94,7 @@ func _get_next_dialogue_line(resource: DialogueResource, key: String = "", extra
 			extra_game_states = [autoload] + extra_game_states
 
 	# Inject "self" into the extra game states.
-	extra_game_states = [{ "self": resource }] + extra_game_states
+	_inject_state("self", resource, extra_game_states)
 
 	# Get the line data
 	var dialogue: DialogueLine = await get_line(resource, key, extra_game_states)
@@ -108,15 +108,15 @@ func _get_next_dialogue_line(resource: DialogueResource, key: String = "", extra
 		var actual_next_id: String = dialogue.next_id.split("|")[0]
 		match mutation_behaviour:
 			DMConstants.MutationBehaviour.Wait:
-				await _mutate(dialogue.mutation, extra_game_states)
+				await _mutate(dialogue.mutation, dialogue.extra_game_states)
 			DMConstants.MutationBehaviour.DoNotWait:
-				_mutate(dialogue.mutation, extra_game_states)
+				_mutate(dialogue.mutation, dialogue.extra_game_states)
 			DMConstants.MutationBehaviour.Skip:
 				pass
 		if actual_next_id in [DMConstants.ID_END_CONVERSATION, DMConstants.ID_NULL, null]:
 			return null
 		else:
-			return await _get_next_dialogue_line(resource, dialogue.next_id, extra_game_states, mutation_behaviour)
+			return await _get_next_dialogue_line(resource, dialogue.next_id, dialogue.extra_game_states, mutation_behaviour)
 	else:
 		got_dialogue.emit.call_deferred(dialogue)
 		return dialogue
@@ -176,12 +176,10 @@ func get_line(resource: DialogueResource, key: String, extra_game_states: Array)
 	var data: Dictionary = resource.lines.get(key)
 
 	# Inject some debugger information into the game states.
-	extra_game_states = [{ "debugger": {
+	_inject_state("debugger", {
 		resource_path = resource.resource_path,
 		line_number = int(key)
-	} }] + extra_game_states.filter(func(state: Variant) -> bool:
-		return not (typeof(state) == TYPE_DICTIONARY and state.has("debugger"))
-	)
+	}, extra_game_states)
 
 	# If next_id is an expression we need to resolve it.
 	if data.has(&"next_id_expression"):
@@ -335,6 +333,14 @@ func get_line(resource: DialogueResource, key: String, extra_game_states: Array)
 
 	line.next_id = "|".join(stack) if line.next_id == DMConstants.ID_NULL else _get_id_with_resource(resource, line.next_id) + id_trail
 	return line
+
+
+# Inject a value into the current states.
+func _inject_state(key: String, value: Variant, extra_game_states: Array) -> void:
+	if extra_game_states.size() > 0 and typeof(extra_game_states[0]) == TYPE_DICTIONARY and extra_game_states[0].has("self"):
+		extra_game_states[0][key] = value
+	else:
+		extra_game_states.insert(0, { key: value })
 
 
 ## Replace any variables, etc in the text.
@@ -607,12 +613,15 @@ func _bridge_get_error_message(error: int) -> String:
 
 
 # Show a message or crash with error
-func show_error_for_missing_state_value(message: String, will_show: bool = true) -> void:
+func show_error_for_missing_state_value(message: String, extra_game_states: Array, will_show: bool = true) -> void:
 	if not will_show: return
 
 	if DMSettings.get_setting(DMSettings.IGNORE_MISSING_STATE_VALUES, false):
 		push_error(message)
 	elif will_show:
+		# Let the debugger know before we break
+		EngineDebugger.send_message("dm:debug", [extra_game_states[0].debugger])
+
 		# If you're here then you're missing a method or property in your game state. The error
 		# message down in the debugger will give you some more information.
 		assert(false, message)
@@ -894,12 +903,10 @@ func _get_state_value(property: String, extra_game_states: Array) -> Variant:
 			if class_data.get(&"class") == property:
 				return load(class_data.path)
 
-	# Let the debugger know before we break
-	for state: Variant in extra_game_states:
-		if typeof(state) == TYPE_DICTIONARY and state.has("debugger"):
-			EngineDebugger.send_message("dm:debug", [state.get("debugger")])
-
-	show_error_for_missing_state_value(DMConstants.translate(&"runtime.property_not_found").format({ property = property, states = _get_state_shortcut_names(extra_game_states) }))
+	show_error_for_missing_state_value(
+		DMConstants.translate(&"runtime.property_not_found").format({ property = property, states = _get_state_shortcut_names(extra_game_states) }),
+		extra_game_states
+	)
 	return null
 
 
@@ -959,15 +966,22 @@ func _set_state_value(property: String, value: Variant, extra_game_states: Array
 			return
 
 	if property.to_snake_case() != property:
-		show_error_for_missing_state_value(DMConstants.translate(&"runtime.property_not_found_missing_export").format({ property = property, states = _get_state_shortcut_names(extra_game_states) }))
+		show_error_for_missing_state_value(
+			DMConstants.translate(&"runtime.property_not_found_missing_export").format({ property = property, states = _get_state_shortcut_names(extra_game_states) }),
+			extra_game_states
+		)
 	else:
-		show_error_for_missing_state_value(DMConstants.translate(&"runtime.property_not_found").format({ property = property, states = _get_state_shortcut_names(extra_game_states) }))
+		show_error_for_missing_state_value(
+			DMConstants.translate(&"runtime.property_not_found").format({ property = property, states = _get_state_shortcut_names(extra_game_states) }),
+			extra_game_states
+		)
 
 
 # Get the list of state shortcut names
 func _get_state_shortcut_names(extra_game_states: Array) -> String:
 	var states: Array = _get_game_states(extra_game_states)
 	states.erase(_autoloads)
+	states.remove_at(0)
 	return ", ".join(states.map(func(s: Variant) -> String: return "\"%s\"" % (s.name if "name" in s else s)))
 
 
@@ -1053,7 +1067,10 @@ func _resolve(tokens: Array, extra_game_states: Array) -> Variant:
 					tokens.remove_at(i - 1)
 					i -= 2
 				else:
-					show_error_for_missing_state_value(DMConstants.translate(&"runtime.method_not_callable").format({ method = function_name, object = str(caller.value) }))
+					show_error_for_missing_state_value(
+						DMConstants.translate(&"runtime.method_not_callable").format({ method = function_name, object = str(caller.value) }),
+						extra_game_states
+					)
 			else:
 				var found: bool = false
 				match function_name:
@@ -1135,7 +1152,7 @@ func _resolve(tokens: Array, extra_game_states: Array) -> Variant:
 				show_error_for_missing_state_value(DMConstants.translate(&"runtime.method_not_found").format({
 					method = args[0] if function_name in ["call", "call_deferred"] else function_name,
 					states = _get_state_shortcut_names(extra_game_states)
-				}), not found)
+				}), extra_game_states, not found)
 
 		elif token.type == DMConstants.TOKEN_DICTIONARY_REFERENCE:
 			var value: Variant
@@ -1166,7 +1183,10 @@ func _resolve(tokens: Array, extra_game_states: Array) -> Variant:
 						token.type = DMConstants.TOKEN_VALUE
 						token.value = value[index]
 					else:
-						show_error_for_missing_state_value(DMConstants.translate(&"runtime.key_not_found").format({ key = str(index), dictionary = token.variable }))
+						show_error_for_missing_state_value(
+							DMConstants.translate(&"runtime.key_not_found").format({ key = str(index), dictionary = token.variable }),
+							extra_game_states
+						)
 			elif typeof(value) in [TYPE_ARRAY, TYPE_PACKED_STRING_ARRAY, TYPE_PACKED_INT32_ARRAY, TYPE_PACKED_INT64_ARRAY, TYPE_PACKED_BYTE_ARRAY, TYPE_PACKED_COLOR_ARRAY, TYPE_PACKED_FLOAT32_ARRAY, TYPE_PACKED_FLOAT64_ARRAY]:
 				if tokens.size() > i + 1 and tokens[i + 1].type == DMConstants.TOKEN_ASSIGNMENT:
 					# If the next token is an assignment then we need to leave this as a reference
@@ -1179,7 +1199,10 @@ func _resolve(tokens: Array, extra_game_states: Array) -> Variant:
 						token.type = DMConstants.TOKEN_VALUE
 						token.value = value[index]
 					else:
-						show_error_for_missing_state_value(DMConstants.translate(&"runtime.array_index_out_of_bounds").format({ index = index, array = token.variable }))
+						show_error_for_missing_state_value(
+							DMConstants.translate(&"runtime.array_index_out_of_bounds").format({ index = index, array = token.variable }),
+							extra_game_states
+						)
 
 		elif token.type == DMConstants.TOKEN_DICTIONARY_NESTED_REFERENCE:
 			var dictionary: Dictionary = tokens[i - 1]
@@ -1200,7 +1223,10 @@ func _resolve(tokens: Array, extra_game_states: Array) -> Variant:
 						tokens.remove_at(i)
 						i -= 1
 					else:
-						show_error_for_missing_state_value(DMConstants.translate(&"runtime.key_not_found").format({ key = str(index), dictionary = value }))
+						show_error_for_missing_state_value(
+							DMConstants.translate(&"runtime.key_not_found").format({ key = str(index), dictionary = value }),
+							extra_game_states
+						)
 			elif typeof(value) == TYPE_ARRAY:
 				if tokens.size() > i + 1 and tokens[i + 1].type == DMConstants.TOKEN_ASSIGNMENT:
 					# If the next token is an assignment then we need to leave this as a reference
@@ -1216,7 +1242,10 @@ func _resolve(tokens: Array, extra_game_states: Array) -> Variant:
 						tokens.remove_at(i)
 						i -= 1
 					else:
-						show_error_for_missing_state_value(DMConstants.translate(&"runtime.array_index_out_of_bounds").format({ index = index, array = value }))
+						show_error_for_missing_state_value(
+							DMConstants.translate(&"runtime.array_index_out_of_bounds").format({ index = index, array = value }),
+							extra_game_states
+						)
 
 		elif token.type == DMConstants.TOKEN_ARRAY:
 			token.type = DMConstants.TOKEN_VALUE
@@ -1384,12 +1413,16 @@ func _resolve(tokens: Array, extra_game_states: Array) -> Variant:
 				&"array":
 					show_error_for_missing_state_value(
 						DMConstants.translate(&"runtime.array_index_out_of_bounds").format({ index = lhs.key, array = lhs.value }),
+						extra_game_states,
 						lhs.key >= lhs.value.size()
 					)
 					value = _apply_operation(token.value, lhs.value[lhs.key], tokens[i + 1].value)
 					lhs.value[lhs.key] = value
 				_:
-					show_error_for_missing_state_value(DMConstants.translate(&"runtime.left_hand_size_cannot_be_assigned_to"))
+					show_error_for_missing_state_value(
+						DMConstants.translate(&"runtime.left_hand_size_cannot_be_assigned_to"),
+						extra_game_states
+					)
 
 			token.type = DMConstants.TOKEN_VALUE
 			token.value = value

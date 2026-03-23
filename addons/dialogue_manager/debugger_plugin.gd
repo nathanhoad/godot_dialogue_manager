@@ -32,16 +32,16 @@ func _on_started() -> void:
 
 func _on_breaked(_can_debug: bool) -> void:
 	if debug_info.is_empty(): return
-	
+
 	DMPlugin.open_file_at_line(debug_info.resource_path, debug_info.line_number)
-	
-	await (Engine.get_main_loop() as SceneTree).create_timer(0.05).timeout
-	
+
+	await (Engine.get_main_loop() as SceneTree).create_timer(1).timeout
+
 	EditorInterface.set_main_screen_editor("Dialogue")
 	DMPlugin.instance.main_view.code_edit.runtime_error = DMError.new({
 		line_number = debug_info.line_number + 1
 	})
-	
+
 	debug_info = {}
 
 
