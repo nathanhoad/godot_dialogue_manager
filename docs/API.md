@@ -30,7 +30,25 @@ Returns the balloon's base node in case you want to `queue_free()` it yourself.
 
 Given a resource and label/ID, it will find the next printable line of dialogue (running mutations along the way).
 
-Returns a `DialogueLine` that looks something like this:
+Returns a `DialogueLine` or `null`.
+
+Pass an array of nodes as `extra_game_states` in order to temporarily add to the game state shortcuts that are available to conditions and mutations.
+
+You can specify `mutation_behaviour` to be one of the values provided in the `DialogueManager.MutationBehaviour` enum. `Wait` is the default and will `await` any mutation lines. `DoNoWait` will run the mutations but not wait for them before moving to the next line. `Skip` will skip mutations entirely. In most cases, you should leave this as the default. _The example balloon only supports `Wait`_.
+
+#### `func show_example_dialogue_balloon(resource: DialogueResource, label: String = "", extra_game_states: Array = []) -> CanvasLayer`
+
+Opens the example balloon.
+
+If your game viewport is less than 400, it will open the low res balloon. Otherwise, it will open the usual balloon.
+
+It will close once dialogue runs out.
+
+Returns the example balloon's base CanvasLayer in case you want to `queue_free()` it yourself.
+
+## `DialogueLine`
+
+A line of dialogue.
 
 - `id: String` - the ID of the line.
 - `next_id: String` - the ID of the next line of dialogue after this one.
@@ -49,21 +67,17 @@ Returns a `DialogueLine` that looks something like this:
   - `translation_key: String` - the key used to translate the text (or the whole text again if no ID was specified on the response).
 - `concurrent_lines: Array[DialogueLine]` - A list of lines that are to be spoken at the same time as this one.
 
-If there is no next line of dialogue found, it will return an empty dictionary (`{}`).
+#### `func to_serialized() -> String`
 
-Pass an array of nodes as `extra_game_states` in order to temporarily add to the game state shortcuts that are available to conditions and mutations.
+Convert a line of dialogue to a string that can be used to restore it later.
 
-You can specify `mutation_behaviour` to be one of the values provided in the `DialogueManager.MutationBehaviour` enum. `Wait` is the default and will `await` any mutation lines. `DoNoWait` will run the mutations but not wait for them before moving to the next line. `Skip` will skip mutations entirely. In most cases, you should leave this as the default. _The example balloon only supports `Wait`_.
+#### `static func new_from_serialized(serialized_string: String, extra_game_states: Array = []) -> DialogueLine`
 
-#### `func show_example_dialogue_balloon(resource: DialogueResource, label: String = "", extra_game_states: Array = []) -> CanvasLayer`
+Restore a serialized line of dialogue. Pass in an array of game states if needed.
 
-Opens the example balloon.
+> [!WARNING]
+> Serializing only works with persisted resources, not resources that have been created with `DialogueManager.create_resource_from_text()`.
 
-If your game viewport is less than 400, it will open the low res balloon. Otherwise, it will open the usual balloon.
-
-It will close once dialogue runs out.
-
-Returns the example balloon's base CanvasLayer in case you want to `queue_free()` it yourself.
 
 ## `DialogueLabel`
 
