@@ -11,8 +11,8 @@ func _can_handle(object: Object) -> bool:
 
 
 func _parse_property(object: Object, _type: Variant, name: String, _hint_type: PropertyHint, hint_string: String, _usage_flags: int, _wide: bool) -> bool:
-	if "dialogue_label" in name.to_lower() and object.get_property_list().filter(func(p: Dictionary) -> bool: return _is_dialogue_resource_property(p.name, p.hint_string)):
-		add_property_editor(name, DMLabelEditorProperty.new())
+	if "dialogue_cue" in name.to_lower() and object.get_property_list().filter(func(p: Dictionary) -> bool: return _is_dialogue_resource_property(p.name, p.hint_string)):
+		add_property_editor(name, DMCueEditorProperty.new())
 		return true
 
 	if _is_dialogue_resource_property(name, hint_string):

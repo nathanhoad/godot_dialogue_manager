@@ -9,7 +9,7 @@ var error_line_color: Color = Color.WHITE
 var critical_color: Color = Color.WHITE
 var notice_color: Color = Color.WHITE
 
-var labels_color: Color = Color.WHITE
+var cues_color: Color = Color.WHITE
 var text_color: Color = Color.WHITE
 var tags_color: Color = Color.WHITE
 var conditions_color: Color = Color.WHITE
@@ -35,7 +35,7 @@ func _init(values: Dictionary) -> void:
 	critical_color = values.critical_color
 	notice_color = values.notice_color
 
-	labels_color = values.labels_color
+	cues_color = values.cues_color
 	text_color = values.text_color
 	tags_color = values.tags_color
 	conditions_color = values.conditions_color
@@ -64,7 +64,7 @@ static func get_values_from_editor() -> DMThemeValues:
 		critical_color = editor_settings.get_setting("text_editor/theme/highlighting/comment_markers/critical_color"),
 		notice_color = editor_settings.get_setting("text_editor/theme/highlighting/comment_markers/notice_color"),
 
-		labels_color = editor_settings.get_setting("text_editor/theme/highlighting/gdscript/node_reference_color"),
+		cues_color = editor_settings.get_setting("text_editor/theme/highlighting/gdscript/node_reference_color"),
 		text_color = editor_settings.get_setting("text_editor/theme/highlighting/text_color"),
 		tags_color = editor_settings.get_setting("text_editor/theme/highlighting/string_placeholder_color"),
 		conditions_color = editor_settings.get_setting("text_editor/theme/highlighting/keyword_color"),

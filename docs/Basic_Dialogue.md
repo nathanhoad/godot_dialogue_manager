@@ -186,23 +186,23 @@ To use concurrent line, access the `concurrent_lines` property on a `DialogueLin
 
 _NOTE: In an effort to keeps things simple, the built-in example balloon does not contain an implementation for concurrent lines._
 
-## Labels and Jumps
+## Cues and Jumps
 
-Labels are markers within your dialogue that you can start from and jump to. Usually, in your game you would start some dialogue by providing a label (the default label is `start` but it could be whatever you've written in your dialogue).
+Cues are markers within your dialogue that you can start from and jump to. Usually, in your game you would start some dialogue by providing a cue (the default cue is `start` but it could be whatever you've written in your dialogue).
 
-Labels start with a `~ ` and are named (without any spaces):
-
-```
-~ this_is_a_label
-```
-
-To jump to a label from somewhere in dialogue you can use a jump/goto line. Jump lines are prefixed with a `=> ` and then specify the label to go to.
+Cues start with a `~ ` and are named (without any spaces):
 
 ```
-=> this_is_a_label
+~ this_is_a_cue
 ```
 
-When the dialogue runtime encounters a jump it will then direct the flow to that label marker and continue from there.
+To jump to a cue from somewhere in dialogue you can use a jump/goto line. Jump lines are prefixed with a `=> ` and then specify the cue to go to.
+
+```
+=> this_is_a_cue
+```
+
+When the dialogue runtime encounters a jump it will then direct the flow to that cue marker and continue from there.
 
 If you want to end the flow from within the dialogue you can jump to `END`:
 

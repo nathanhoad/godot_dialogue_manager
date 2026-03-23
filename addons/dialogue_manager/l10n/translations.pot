@@ -74,7 +74,7 @@ msgstr ""
 msgid "insert.templates"
 msgstr ""
 
-msgid "insert.label"
+msgid "insert.cue"
 msgstr ""
 
 msgid "insert.dialogue"
@@ -203,7 +203,7 @@ msgstr ""
 msgid "files_list.filter"
 msgstr ""
 
-msgid "labels_list.filter"
+msgid "cues_list.filter"
 msgstr ""
 
 msgid "errors.key_not_found"
@@ -230,25 +230,25 @@ msgstr ""
 msgid "errors.unknown_using"
 msgstr ""
 
-msgid "errors.empty_label"
+msgid "errors.empty_cue"
 msgstr ""
 
-msgid "errors.duplicate_label"
+msgid "errors.duplicate_cue"
 msgstr ""
 
-msgid "errors.invalid_label_string"
+msgid "errors.invalid_cue_string"
 msgstr ""
 
-msgid "errors.invalid_label_number"
+msgid "errors.invalid_cue_number"
 msgstr ""
 
-msgid "errors.unknown_label"
+msgid "errors.unknown_cue"
 msgstr ""
 
-msgid "errors.jump_to_invalid_label"
+msgid "errors.jump_to_invalid_cue"
 msgstr ""
 
-msgid "errors.label_has_no_content"
+msgid "errors.cue_has_no_content"
 msgstr ""
 
 msgid "errors.invalid_expression"
@@ -449,13 +449,13 @@ msgstr ""
 msgid "translation_plugin.character_name"
 msgstr ""
 
-msgid "Regions & Labels"
+msgid "Regions & Cues"
 msgstr ""
 
 msgid "Regions"
 msgstr ""
 
-msgid "Labels"
+msgid "Cues"
 msgstr ""
 
 msgid "Auto"

@@ -50,7 +50,7 @@ const TYPE_IMPORT: StringName = &"import"
 const TYPE_USING: StringName = &"using"
 const TYPE_COMMENT: StringName = &"comment"
 const TYPE_RESPONSE: StringName = &"response"
-const TYPE_LABEL: StringName = &"label"
+const TYPE_CUE: StringName = &"cue"
 const TYPE_CONDITION: StringName = &"condition"
 const TYPE_WHILE: StringName = &"while"
 const TYPE_MATCH: StringName = &"match"
@@ -73,12 +73,12 @@ const ID_END_CONVERSATION: StringName = &"end!"
 const ERR_ERRORS_IN_IMPORTED_FILE: int = 100
 const ERR_FILE_ALREADY_IMPORTED: int = 101
 const ERR_DUPLICATE_IMPORT_NAME: int = 102
-const ERR_EMPTY_LABEL: int = 103
-const ERR_DUPLICATE_LABEL: int = 104
-const ERR_LABEL_INVALID_CHARACTERS: int = 106
-const ERR_UNKNOWN_LABEL: int = 107
-const ERR_INVALID_LABEL_REFERENCE: int= 108
-const ERR_LABEL_REFERENCE_HAS_NO_CONTENT: int = 109
+const ERR_EMPTY_CUE: int = 103
+const ERR_DUPLICATE_CUE: int = 104
+const ERR_CUE_INVALID_CHARACTERS: int = 106
+const ERR_UNKNOWN_CUE: int = 107
+const ERR_INVALID_CUE_REFERENCE: int= 108
+const ERR_CUE_REFERENCE_HAS_NO_CONTENT: int = 109
 const ERR_INVALID_EXPRESSION: int = 110
 const ERR_UNEXPECTED_CONDITION: int = 111
 const ERR_DUPLICATE_ID: int = 112
@@ -88,7 +88,7 @@ const ERR_INVALID_CONDITION_INDENTATION: int = 115
 const ERR_INCOMPLETE_EXPRESSION: int = 116
 const ERR_INVALID_EXPRESSION_FOR_VALUE: int = 117
 const ERR_UNKNOWN_ERROR: int = 118
-const ERR_LABEL_BEGINS_WITH_NUMBER: int = 119
+const ERR_CUE_BEGINS_WITH_NUMBER: int = 119
 const ERR_UNEXPECTED_END_OF_EXPRESSION: int = 120
 const ERR_UNEXPECTED_FUNCTION: int = 121
 const ERR_UNEXPECTED_BRACKET: int = 122
@@ -129,20 +129,20 @@ static func get_error_message(error: int) -> String:
 			return translate(&"errors.already_imported")
 		ERR_DUPLICATE_IMPORT_NAME:
 			return translate(&"errors.duplicate_import")
-		ERR_EMPTY_LABEL:
-			return translate(&"errors.empty_label")
-		ERR_DUPLICATE_LABEL:
-			return translate(&"errors.duplicate_label")
-		ERR_LABEL_INVALID_CHARACTERS:
-			return translate(&"errors.invalid_label_string")
-		ERR_LABEL_BEGINS_WITH_NUMBER:
-			return translate(&"errors.invalid_label_number")
-		ERR_UNKNOWN_LABEL:
-			return translate(&"errors.unknown_label")
-		ERR_INVALID_LABEL_REFERENCE:
-			return translate(&"errors.jump_to_invalid_label")
-		ERR_LABEL_REFERENCE_HAS_NO_CONTENT:
-			return translate(&"errors.label_has_no_content")
+		ERR_EMPTY_CUE:
+			return translate(&"errors.empty_cue")
+		ERR_DUPLICATE_CUE:
+			return translate(&"errors.duplicate_cue")
+		ERR_CUE_INVALID_CHARACTERS:
+			return translate(&"errors.invalid_cue_string")
+		ERR_CUE_BEGINS_WITH_NUMBER:
+			return translate(&"errors.invalid_cue_number")
+		ERR_UNKNOWN_CUE:
+			return translate(&"errors.unknown_cue")
+		ERR_INVALID_CUE_REFERENCE:
+			return translate(&"errors.jump_to_invalid_cue")
+		ERR_CUE_REFERENCE_HAS_NO_CONTENT:
+			return translate(&"errors.cue_has_no_content")
 		ERR_INVALID_EXPRESSION:
 			return translate(&"errors.invalid_expression")
 		ERR_UNEXPECTED_CONDITION:
@@ -224,4 +224,9 @@ static func translate(string: String) -> String:
 		_current_locale = locale
 		_en_translation = load(en_translation_path)
 	var message: StringName = _current_translation.get_message(string)
-	return message if not message.is_empty() else _en_translation.get_message(string)
+	if not message.is_empty():
+		return message
+	elif not _en_translation.get_message(string).is_empty():
+		return _en_translation.get_message(string)
+	else:
+		return string

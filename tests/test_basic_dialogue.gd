@@ -1,41 +1,41 @@
 extends AbstractTest
 
 
-func test_can_parse_labels() -> void:
-	var output: DMCompilerResult = compile("~ some_label\nNathan: Hello.")
+func test_can_parse_cues() -> void:
+	var output: DMCompilerResult = compile("~ some_cue\nNathan: Hello.")
 
 	assert(output.errors.is_empty(), "Should have no errors.")
-	assert(output.labels.size() == 1, "Should have one label.")
-	assert(output.labels.has("some_label"), "Should have known label.")
-	assert(output.labels["some_label"] == "1", "Should point to the next line.")
+	assert(output.cues.size() == 1, "Should have one cue.")
+	assert(output.cues.has("some_cue"), "Should have known cue.")
+	assert(output.cues["some_cue"] == "1", "Should point to the next line.")
 
 	output = compile("
 ~ start
 if StateForTests.some_property
 	Nathan: Some unrelated but indented line.
-	=> label_directly_after_dedent
-~ label_directly_after_dedent")
+	=> cue_directly_after_dedent
+~ cue_directly_after_dedent")
 
 	assert(output.errors.is_empty(), "Should have no errors.")
-	assert(output.labels.size() == 2, "Should have two labels.")
-	assert(output.labels.keys()[1] == "label_directly_after_dedent", "Should have second label.")
+	assert(output.cues.size() == 2, "Should have two cues.")
+	assert(output.cues.keys()[1] == "cue_directly_after_dedent", "Should have second cue.")
 
 	output = compile("
 ~ start
 if true
-	~ indented_label
+	~ indented_cue
 	Nathan: Some unrelated but indented line.
 Nathan: After.
-=> indented_label")
+=> indented_cue")
 
 	assert(output.errors.is_empty(), "Should have no errors.")
-	assert(output.labels.size() == 2, "Should have two labels.")
-	assert(output.labels["indented_label"] == "4", "Should have second label.")
+	assert(output.cues.size() == 2, "Should have two cues.")
+	assert(output.cues["indented_cue"] == "4", "Should have second cue.")
 
 	output = compile("~ t")
 
 	assert(output.errors.is_empty(), "Should have no errors.")
-	assert("t" in output.labels.keys(), "Should include label.")
+	assert("t" in output.cues.keys(), "Should include cue.")
 
 
 func test_can_parse_basic_dialogue() -> void:
@@ -191,7 +191,7 @@ Nathan: Jump 3.")
 => END")
 
 	assert(output.errors.is_empty(), "Should have no errors.")
-	assert(output.lines["1"].next_id == "2", "Label should point to first random line.")
+	assert(output.lines["1"].next_id == "2", "Cue should point to first random line.")
 	assert(output.lines["2"].type == DMConstants.TYPE_DIALOGUE, "Should be a dialogue line.")
 	assert(output.lines["2"].siblings.size() == 2, "Should have two siblings")
 
@@ -267,11 +267,11 @@ Nathan: With optional arguments.
 	assert(test.number == 1, "Method call should set optional argument")
 
 
-func test_can_have_subsequent_labels() -> void:
+func test_can_have_subsequent_cues() -> void:
 	var resource: DialogueResource = create_resource("
 ~ start
-~ another_label
-~ third_label
+~ another_cue
+~ third_cue
 Nathan: Hello.")
 
 	var line: DialogueLine = await resource.get_next_dialogue_line("start")

@@ -3,21 +3,21 @@
 extends HBoxContainer
 
 
-signal label_changed(next_label: String)
+signal cue_changed(next_cue: String)
 
 
-const LABEL_ICON: Texture2D = preload("uid://d1aawtj2vsnxx")
+const CUE_ICON: Texture2D = preload("uid://d1aawtj2vsnxx")
 
 
 var actionable: Node = null
-var label: String = "":
+var cue: String = "":
 	set(value):
-		label = value
+		cue = value
 		if not is_node_ready():
 			await ready
 		_update()
 	get:
-		return label
+		return cue
 
 @onready var button: OptionButton = %Button
 @onready var link_button: Button = %LinkButton
@@ -35,36 +35,36 @@ func _ready() -> void:
 func _update() -> void:
 	if not is_instance_valid(actionable): return
 
-	var labels: PackedStringArray = Array(actionable.dialogue_resource.get_labels()).filter(func(l: String) -> bool: return not l.contains("/"))
+	var cues: PackedStringArray = Array(actionable.dialogue_resource.get_cues()).filter(func(l: String) -> bool: return not l.contains("/"))
 
 	var popup: PopupMenu = button.get_popup()
 	popup.clear()
 
-	var label_icon: Texture2D = DMThemeValues.get_icon_with_color(LABEL_ICON, DMThemeValues.get_values_from_editor().labels_color)
+	var cue_icon: Texture2D = DMThemeValues.get_icon_with_color(CUE_ICON, DMThemeValues.get_values_from_editor().cues_color)
 
 	if actionable.dialogue_resource == null:
 		popup.add_item(DMConstants.translate("<empty>"))
 		popup.set_item_disabled(0, true)
 	else:
-		for existing_label: String in labels:
-			popup.add_icon_item(label_icon, existing_label)
-		if not label.is_empty() and not labels.has(label):
-			popup.add_icon_item(LABEL_ICON, label)
+		for existing_cue: String in cues:
+			popup.add_icon_item(cue_icon, existing_cue)
+		if not cue.is_empty() and not cues.has(cue):
+			popup.add_icon_item(CUE_ICON, cue)
 
-	if label.is_empty():
+	if cue.is_empty():
 		button.text = DMConstants.translate("<empty>")
 		button.icon = null
-	elif labels.has(label):
+	elif cues.has(cue):
 		button.select(-1)
-		button.select(labels.find(label))
+		button.select(cues.find(cue))
 	else:
-		button.selected = labels.size()
+		button.selected = cues.size()
 
 
-func show_label_in_editor(next_label: String) -> void:
+func show_cue_in_editor(next_cue: String) -> void:
 	var resource: DialogueResource = actionable.dialogue_resource
 	if is_instance_valid(resource):
-		DMPlugin.open_file_at_label(resource, next_label, true)
+		DMPlugin.open_file_at_cue(resource, next_cue, true)
 
 
 #region Signals
@@ -75,17 +75,17 @@ func _on_menu_about_to_popup() -> void:
 
 
 func _on_index_pressed(index: int) -> void:
-	label = button.get_popup().get_item_text(index)
-	label_changed.emit(label)
+	cue = button.get_popup().get_item_text(index)
+	cue_changed.emit(cue)
 	_update()
 
 
 func _on_link_button_pressed() -> void:
-	if label.is_empty():
-		label = actionable.name.to_snake_case()
-		label_changed.emit(label)
+	if cue.is_empty():
+		cue = actionable.name.to_snake_case()
+		cue_changed.emit(cue)
 
-	show_label_in_editor.call_deferred(label)
+	show_cue_in_editor.call_deferred(cue)
 	_update.call_deferred()
 
 

@@ -182,10 +182,10 @@ static func open_file(resource_or_path: Variant) -> void:
 	EditorInterface.set_main_screen_editor("Dialogue")
 
 
-## Open a [DialogueResource] and jump to a given label.
-static func open_file_at_label(resource_or_path: Variant, label: String, create_if_none: bool = false) -> void:
+## Open a [DialogueResource] and jump to a given cue.
+static func open_file_at_cue(resource_or_path: Variant, cue: String, create_if_none: bool = false) -> void:
 	open_file(resource_or_path)
-	instance.main_view.go_to_label(label, create_if_none)
+	instance.main_view.go_to_cue(cue, create_if_none)
 
 
 ## Open a [DialogueResource] and jump to a given line number.
