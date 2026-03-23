@@ -1091,18 +1091,18 @@ func go_to_cue(cue: String, create_if_none: bool = false) -> void:
 			found_cue = true
 			set_caret_line(i)
 			set_caret_column(0)
-			center_viewport_to_caret()
+			center_viewport_to_caret.call_deferred()
 
 	if create_if_none and not found_cue:
 		text += "\n\n\n~ %s\n\n=> END" % [cue]
 		set_caret_line(text.split("\n").size() - 2)
-		center_viewport_to_caret()
+		center_viewport_to_caret.call_deferred()
 
 
 ## Go to a given line number.
 func go_to_line_number(line_number: int) -> void:
 	set_caret_line(line_number)
-	center_viewport_to_caret()
+	center_viewport_to_caret.call_deferred()
 
 
 ## Get all character names from the dialogue that match the given prefix.
