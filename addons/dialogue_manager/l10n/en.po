@@ -473,3 +473,6 @@ msgstr "Auto"
 
 msgid "<empty>"
 msgstr "<empty>"
+
+msgid "Cue:"
+msgstr ""
