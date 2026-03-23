@@ -212,7 +212,7 @@ If you want to end the flow from within the dialogue you can jump to `END`:
 
 This will end the current flow of dialogue.
 
-You can also use a "jump and return" kind of jump that redirects the flow of dialogue and then returns to where it jumped from. Those lines are prefixed with `=>< ` and then specify the label to jump to. Once the flow encounters an `END` (or the end of the file) flow will return to where it jumped from and continue from there.
+You can also use a "jump and return" kind of jump that redirects the flow of dialogue and then returns to where it jumped from. Those lines are prefixed with `=>< ` and then specify the cue to jump to. Once the flow encounters an `END` (or the end of the file) flow will return to where it jumped from and continue from there.
 
 If you want to force the end of the conversation regardless of any chained "jump and returns", you can use an `=> END!` line.
 
@@ -222,20 +222,20 @@ Jumps can also be used inline for responses:
 ~ start
 Nathan: Well?
 - First one
-- Another one => another_label
+- Another one => another_cue
 - Start again => start
 => END
 
-~ another_label
+~ another_cue
 Nathan: Another one?
 => END
 ```
 
 ### Expression Jumps
 
-You can use expressions as jump directives. The expression needs to resolve to a known label name or results will be unexpected.
+You can use expressions as jump directives. The expression needs to resolve to a known cue name or results will be unexpected.
 
-**Use these with caution** as the dialogue compiler can't verify expression values match any labels at compile time.
+**Use these with caution** as the dialogue compiler can't verify expression values match any cues at compile time.
 
 Expression jumps look something like:
 
@@ -253,7 +253,7 @@ Nathan: Blah blah blah.
 => END
 ```
 
-Which we can then import into another dialogue file and jump to the `banter` label from the snippets file (note the `=><` syntax which denotes to return to this line after the jumped dialogue finishes):
+Which we can then import into another dialogue file and jump to the `banter` cue from the snippets file (note the `=><` syntax which denotes to return to this line after the jumped dialogue finishes):
 
 ```
 import "res://snippets.dialogue" as snippets

@@ -33,18 +33,21 @@ func _ready() -> void:
 
 
 func _update() -> void:
-	if not is_instance_valid(actionable): return
+	var has_valid_dialogue_resource: bool = is_instance_valid(actionable) and "dialogue_resource" in actionable and is_instance_valid(actionable.dialogue_resource)
 
-	var cues: PackedStringArray = Array(actionable.dialogue_resource.get_cues()).filter(func(l: String) -> bool: return not l.contains("/"))
+	var cues: PackedStringArray = []
+	if has_valid_dialogue_resource:
+		cues = Array(actionable.dialogue_resource.get_cues()).filter(func(l: String) -> bool: return not l.contains("/"))
 
 	var popup: PopupMenu = button.get_popup()
 	popup.clear()
 
 	var cue_icon: Texture2D = DMThemeValues.get_icon_with_color(CUE_ICON, DMThemeValues.get_values_from_editor().cues_color)
 
-	if actionable.dialogue_resource == null:
+	if cues.is_empty() or not has_valid_dialogue_resource:
 		popup.add_item(DMConstants.translate("<empty>"))
 		popup.set_item_disabled(0, true)
+		link_button.disabled = true
 	else:
 		for existing_cue: String in cues:
 			popup.add_icon_item(cue_icon, existing_cue)
@@ -54,11 +57,14 @@ func _update() -> void:
 	if cue.is_empty():
 		button.text = DMConstants.translate("<empty>")
 		button.icon = null
+		link_button.disabled = true
 	elif cues.has(cue):
 		button.select(-1)
 		button.select(cues.find(cue))
+		link_button.disabled = false
 	else:
 		button.selected = cues.size()
+		link_button.disabled = true
 
 
 func show_cue_in_editor(next_cue: String) -> void:
