@@ -340,7 +340,7 @@ func _add_mutation_completions(current_line: String, cursor: Vector2i) -> void:
 	var unique_auto_completes: PackedStringArray = []
 	auto_completes = auto_completes.filter(func(auto_complete: Dictionary) -> bool:
 		if unique_auto_completes.has(auto_complete.text): return false
-		
+
 		unique_auto_completes.append(auto_complete.text)
 		return true
 	)
@@ -464,15 +464,25 @@ func _matches_prompt(prompt: String, candidate: String) -> bool:
 func _get_state_shortcuts() -> PackedStringArray:
 	# Get any shortcuts defined in settings
 	var shortcuts: PackedStringArray = DMSettings.get_setting(DMSettings.STATE_AUTOLOAD_SHORTCUTS, [])
+
 	# Check for "using" clauses
 	for line: String in text.split("\n"):
 		var found: RegExMatch = compiler_regex.USING_REGEX.search(line)
 		if found:
 			shortcuts.append(found.strings[found.names.state])
+
 	# Check for any other script sources
 	for extra_script_source: String in DMSettings.get_setting(DMSettings.EXTRA_AUTO_COMPLETE_SCRIPT_SOURCES, []):
 		if extra_script_source:
 			shortcuts.append(extra_script_source)
+
+	# Check for current open scene
+	if DMSettings.get_user_value("autocomplete_current_scene", false):
+		var edited_scene: Node = EditorInterface.get_edited_scene_root()
+		if is_instance_valid(edited_scene):
+			var script: Script = edited_scene.get_script()
+			if is_instance_valid(script):
+				shortcuts.append(script.resource_path)
 
 	return shortcuts
 
