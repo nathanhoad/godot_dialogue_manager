@@ -692,13 +692,13 @@ func _get_cs_chain_method_info(chain_segments: PackedStringArray, method_name: S
 
 
 # Find the line number where a member is defined in a script's source code.
-func _find_definition_in_script(script: Script, member_name: String) -> int:
-	if not is_instance_valid(script): return -1
+func _find_definition_in_script(script: Script, member_name: String) -> Dictionary:
+	if not is_instance_valid(script): return { script = script, line_number = -1 }
 
 	var lines: PackedStringArray = script.source_code.split("\n")
 
 	var method_regex: RegEx = RegEx.create_from_string("^\\s*func\\s+" + member_name + "\\s*\\(")
-	var property_regex: RegEx = RegEx.create_from_string("^\\s*var\\s+" + member_name + "\\s*[:\\s=]")
+	var property_regex: RegEx = RegEx.create_from_string("^(@.*\\s)?\\s*var\\s+" + member_name + "\\s*[:\\s=]")
 	var signal_regex: RegEx = RegEx.create_from_string("^\\s*signal\\s+" + member_name + "\\s*[\\(\\s]")
 	var const_regex: RegEx = RegEx.create_from_string("^\\s*const\\s+" + member_name + "\\s*[:\\s=]")
 	var enum_regex: RegEx = RegEx.create_from_string("^\\s*enum\\s+" + member_name + "[\\s$]")
@@ -707,15 +707,30 @@ func _find_definition_in_script(script: Script, member_name: String) -> int:
 	for i: int in range(lines.size()):
 		var line: String = lines[i]
 		if method_regex.search(line) \
-		or property_regex.search(line) \
-		or signal_regex.search(line) \
-		or const_regex.search(line) \
-		or enum_regex.search(line) \
-		or inner_class_regex.search(line):
+			or property_regex.search(line) \
+			or signal_regex.search(line) \
+			or const_regex.search(line) \
+			or enum_regex.search(line) \
+			or inner_class_regex.search(line):
 			# Editor line numbers start at 1
-			return i + 1
+			return {
+				script = script,
+				line_number = i + 1
+			}
 
-	return -1
+	# Does the script extend another one?
+	var extends_regex: RegEx = RegEx.create_from_string("extends (?<extends>.*)")
+	var found_extends: RegExMatch = extends_regex.search(script.source_code)
+	if found_extends:
+		var extends_name: String = found_extends.get_string(found_extends.names.extends)
+		if not "\"" in extends_name:
+			script = _get_script_for_class_name(extends_name)
+			return _find_definition_in_script(script, member_name)
+
+	return {
+		script = script,
+		line_number = -1
+	}
 
 
 # Resolve the symbol at a given position in a mutation line for definition lookup.
@@ -728,7 +743,8 @@ func _resolve_mutation_symbol_at_position(line_text: String, column: int) -> Dic
 
 	# Find the full chain by looking backwards from the token start for dots and identifiers
 	var token_start: int = column
-	while token_start > 0 and line_text[token_start - 1].is_valid_ascii_identifier():
+	# NOTE: "a" prefix is so that numbers are counted as valid identifiers.
+	while token_start > 0 and ("a" + line_text[token_start - 1]).is_valid_ascii_identifier():
 		token_start -= 1
 
 	var chain_start: int = token_start
@@ -737,12 +753,13 @@ func _resolve_mutation_symbol_at_position(line_text: String, column: int) -> Dic
 		if prev_char == ".":
 			chain_start -= 1
 			# Continue backwards to get the identifier before the dot
-			while chain_start > 0 and line_text[chain_start - 1].is_valid_ascii_identifier():
+			while chain_start > 0 and ("a" + line_text[chain_start - 1]).is_valid_ascii_identifier():
 				chain_start -= 1
 		else:
 			break
 
 	var full_chain: String = line_text.substr(chain_start, token_start + symbol.length() - chain_start)
+
 	# Remove any trailing parentheses content
 	if "(" in full_chain:
 		full_chain = full_chain.substr(0, full_chain.find("("))
@@ -1339,8 +1356,8 @@ func _on_code_edit_symbol_validate(symbol: String) -> void:
 			set_symbol_lookup_word_as_valid(true)
 			return
 		else:
-			var line_number: int = _find_definition_in_script(script, member_name)
-			if line_number > 0:
+			var definition: Dictionary = _find_definition_in_script(script, member_name)
+			if definition.line_number > 0:
 				set_symbol_lookup_word_as_valid(true)
 				return
 
@@ -1383,10 +1400,10 @@ func _on_code_edit_symbol_lookup(symbol: String, line: int, column: int) -> void
 			EditorInterface.edit_script(script, 1, 0, true)
 			EditorInterface.set_main_screen_editor.call_deferred("Script")
 		else:
-			var line_number: int = _find_definition_in_script(script, member_name)
-			if line_number > 0:
+			var definition: Dictionary = _find_definition_in_script(script, member_name)
+			if definition.line_number > -1:
 				# Open the script in the editor
-				EditorInterface.edit_script(script, line_number, 0, true)
+				EditorInterface.edit_script(definition.script, definition.line_number, 0, true)
 				EditorInterface.set_main_screen_editor.call_deferred("Script")
 				return
 
