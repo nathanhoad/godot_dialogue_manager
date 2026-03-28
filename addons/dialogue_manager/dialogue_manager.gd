@@ -36,6 +36,9 @@ var include_singletons: bool = true
 ## Allow dialogue to call static methods/properties on classes
 var include_classes: bool = true
 
+## A runtime override for the project setting to ignore missing state values.
+var ignore_missing_state_values: bool = false
+
 ## Used to resolve the current scene. Override if your game manages the current scene itself.
 var get_current_scene: Callable = func() -> Node:
 	var current_scene: Node = Engine.get_main_loop().current_scene
@@ -66,6 +69,8 @@ func _ready() -> void:
 	# Make the dialogue manager available as a singleton
 	if not Engine.has_singleton("DialogueManager"):
 		Engine.register_singleton("DialogueManager", self)
+
+	ignore_missing_state_values = DMSettings.get_setting(DMSettings.IGNORE_MISSING_STATE_VALUES, false)
 
 
 ## Step through lines and run any mutations until we either hit some dialogue or the end of the conversation
@@ -616,7 +621,7 @@ func _bridge_get_error_message(error: int) -> String:
 func show_error_for_missing_state_value(message: String, extra_game_states: Array, will_show: bool = true) -> void:
 	if not will_show: return
 
-	if DMSettings.get_setting(DMSettings.IGNORE_MISSING_STATE_VALUES, false):
+	if ignore_missing_state_values:
 		push_error(message)
 	elif will_show:
 		# Let the debugger know before we break
