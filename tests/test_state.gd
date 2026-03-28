@@ -577,3 +577,18 @@ Nathan: Done!
 
 	line = await resource.get_next_dialogue_line(line.next_id)
 	assert(line.text == "Done!", "Should finish.")
+
+
+func test_ignore_missing_state() -> void:
+	var resource: DialogueResource = create_resource("
+~ start
+Nathan: This has {{missing_state}}.
+=> END")
+
+	DialogueManager.ignore_missing_state_values = true
+
+	var line: DialogueLine = await resource.get_next_dialogue_line("start")
+
+	assert(line.text == "This has <null>.", "Should render the line and not halt.")
+
+	DialogueManager.ignore_missing_state_values = false
