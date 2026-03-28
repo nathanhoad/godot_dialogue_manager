@@ -19,6 +19,7 @@ var translation_parser_plugin: DMTranslationParserPlugin
 var debugger_plugin: DMDebuggerPlugin
 var main_view: Control
 var find_in_dialogue_view: Control
+var preview_generator: DMPreviewGenerator
 
 
 func _init() -> void:
@@ -54,6 +55,9 @@ func _enter_tree() -> void:
 		debugger_plugin = DMDebuggerPlugin.new()
 		add_debugger_plugin(debugger_plugin)
 
+		preview_generator = DMPreviewGenerator.new()
+		EditorInterface.get_resource_previewer().add_preview_generator(preview_generator)
+
 		main_view = MainView.instantiate()
 		EditorInterface.get_editor_main_screen().add_child(main_view)
 		_make_visible(false)
@@ -81,6 +85,9 @@ func _exit_tree() -> void:
 
 	remove_debugger_plugin(debugger_plugin)
 	debugger_plugin = null
+
+	EditorInterface.get_resource_previewer().remove_preview_generator(preview_generator)
+	preview_generator = null
 
 	if is_instance_valid(main_view):
 		main_view.queue_free()
