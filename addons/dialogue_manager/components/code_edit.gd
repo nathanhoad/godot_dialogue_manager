@@ -697,35 +697,56 @@ func _find_definition_in_script(script: Script, member_name: String) -> Dictiona
 
 	var lines: PackedStringArray = script.source_code.split("\n")
 
-	var method_regex: RegEx = RegEx.create_from_string("^\\s*func\\s+" + member_name + "\\s*\\(")
-	var property_regex: RegEx = RegEx.create_from_string("^(@.*\\s)?\\s*var\\s+" + member_name + "\\s*[:\\s=]")
-	var signal_regex: RegEx = RegEx.create_from_string("^\\s*signal\\s+" + member_name + "\\s*[\\(\\s]")
-	var const_regex: RegEx = RegEx.create_from_string("^\\s*const\\s+" + member_name + "\\s*[:\\s=]")
-	var enum_regex: RegEx = RegEx.create_from_string("^\\s*enum\\s+" + member_name + "[\\s$]")
-	var inner_class_regex: RegEx = RegEx.create_from_string("^\\s*class\\s+" + member_name + ":")
+	if script is GDScript:
+		# Try to find the line in a GDScript file.
+		var method_regex: RegEx = RegEx.create_from_string("^\\s*func\\s+" + member_name + "\\s*\\(")
+		var property_regex: RegEx = RegEx.create_from_string("^(@.*\\s)?\\s*var\\s+" + member_name + "\\s*[:\\s=]")
+		var signal_regex: RegEx = RegEx.create_from_string("^\\s*signal\\s+" + member_name + "\\s*[\\(\\s]")
+		var const_regex: RegEx = RegEx.create_from_string("^\\s*const\\s+" + member_name + "\\s*[:\\s=]")
+		var enum_regex: RegEx = RegEx.create_from_string("^\\s*enum\\s+" + member_name + "[\\s$]")
+		var inner_class_regex: RegEx = RegEx.create_from_string("^\\s*class\\s+" + member_name + ":")
 
-	for i: int in range(lines.size()):
-		var line: String = lines[i]
-		if method_regex.search(line) \
-			or property_regex.search(line) \
-			or signal_regex.search(line) \
-			or const_regex.search(line) \
-			or enum_regex.search(line) \
-			or inner_class_regex.search(line):
-			# Editor line numbers start at 1
-			return {
-				script = script,
-				line_number = i + 1
-			}
+		for i: int in range(lines.size()):
+			var line: String = lines[i]
+			if method_regex.search(line) \
+				or property_regex.search(line) \
+				or signal_regex.search(line) \
+				or const_regex.search(line) \
+				or enum_regex.search(line) \
+				or inner_class_regex.search(line):
+				# Editor line numbers start at 1
+				return {
+					script = script,
+					line_number = i + 1
+				}
 
-	# Does the script extend another one?
-	var extends_regex: RegEx = RegEx.create_from_string("extends (?<extends>.*)")
-	var found_extends: RegExMatch = extends_regex.search(script.source_code)
-	if found_extends:
-		var extends_name: String = found_extends.get_string(found_extends.names.extends)
-		if not "\"" in extends_name:
-			script = _get_script_for_class_name(extends_name)
-			return _find_definition_in_script(script, member_name)
+		# Does the script extend another one?
+		var extends_regex: RegEx = RegEx.create_from_string("extends (?<extends>.*)")
+		var found_extends: RegExMatch = extends_regex.search(script.source_code)
+		if found_extends:
+			var extends_name: String = found_extends.get_string(found_extends.names.extends)
+			if not "\"" in extends_name:
+				script = _get_script_for_class_name(extends_name)
+				return _find_definition_in_script(script, member_name)
+
+	elif script.resource_path.ends_with(".cs"):
+		# Try to find the line in a C# file.
+		var method_regex: RegEx = RegEx.create_from_string("^\\s*public\\s+.*?" + member_name + "\\s*\\(")
+		var property_regex: RegEx = RegEx.create_from_string("^\\s*(\\[Export\\] )?public\\s+.*?" + member_name)
+		var const_regex: RegEx = RegEx.create_from_string("^\\s*const\\s+.*?" + member_name)
+		var enum_regex: RegEx = RegEx.create_from_string("^\\s*public enum\\s+" + member_name)
+
+		for i: int in range(lines.size()):
+			var line: String = lines[i]
+			if method_regex.search(line) \
+				or property_regex.search(line) \
+				or const_regex.search(line) \
+				or enum_regex.search(line):
+				# Editor line numbers start at 1
+				return {
+					script = script,
+					line_number = i + 1
+				}
 
 	return {
 		script = script,
@@ -799,9 +820,6 @@ func _resolve_mutation_symbol_at_position(line_text: String, column: int) -> Dic
 			"member_name": segments.slice(0, -1)[segments.size() - 2],
 			"symbol": symbol
 		}
-	# C# symbol lookups aren't supported
-	if target_script is Script and target_script.resource_path.ends_with(".cs"):
-		return {}
 
 	return {
 		"script": target_script,
