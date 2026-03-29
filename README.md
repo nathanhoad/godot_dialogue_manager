@@ -1,4 +1,4 @@
-<img src="docs/media/logo.svg" width="128" height="128">
+<img src="docs/media/icon.svg" width="128" height="128">
 
 # Dialogue Manager 4 _for Godot 4.6+_
 
