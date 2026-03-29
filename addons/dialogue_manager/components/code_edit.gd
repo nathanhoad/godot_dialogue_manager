@@ -259,8 +259,8 @@ func _add_character_name_completions(current_line: String) -> void:
 			return
 
 	var name_so_far: String = WEIGHTED_RANDOM_PREFIX.sub(current_line.strip_edges(), "")
-	if name_so_far == "" or name_so_far[0].to_upper() != name_so_far[0]:
-		return
+
+	if name_so_far == "": return
 
 	var names: PackedStringArray = get_character_names(name_so_far)
 	for character_name: String in names:
@@ -1007,14 +1007,21 @@ func go_to_title(title: String, create_if_none: bool = false) -> void:
 
 ## Get all character names from the dialogue that match the given prefix.
 func get_character_names(beginning_with: String) -> PackedStringArray:
+	if beginning_with.is_empty(): return []
+
 	var names: PackedStringArray = []
 	var lines = text.split("\n")
 	for line: String in lines:
 		if line.strip_edges().begins_with("#"): continue # skip comments
 		if ": " in line:
 			var character_name: String = WEIGHTED_RANDOM_PREFIX.sub(line.split(": ")[0].strip_edges(), "")
-			if not character_name in names and _matches_prompt(beginning_with, character_name):
-				names.append(character_name)
+
+			if character_name.is_empty() or character_name in names: continue
+			if character_name.to_lower()[0] != beginning_with.to_lower()[0]: continue
+			if not _matches_prompt(beginning_with, character_name): continue
+
+			names.append(character_name)
+
 	return names
 
 
