@@ -65,7 +65,7 @@ Responses can include conditions that determine if they are selectable. To inclu
 
 ```
 - This is a normal response
-- This is a conditional response [if SomeGlobal.some_property == true]
+- This is a conditional response [if SomeGlobal.some_property == true /]
 ```
 
 ## Randomising lines of dialogue

@@ -35,15 +35,15 @@ func _parse_file(path: String) -> Array[PackedStringArray]:
 
 		if not line.type in [DMConstants.TYPE_DIALOGUE, DMConstants.TYPE_RESPONSE]: continue
 
-		var translation_key: String = line.get(&"translation_key", line.text)
+		var static_id: String = line.get(&"static_id", line.text)
 
-		if translation_key in known_keys: continue
+		if static_id in known_keys: continue
 
-		known_keys.append(translation_key)
+		known_keys.append(static_id)
 		translated_lines.append(line)
 
 		var message: String = line.text.replace('"', '\"')
-		var context: String = line.translation_key.replace('"', '\"') if translation_key != line.text else ""
+		var context: String = line.static_id.replace('"', '\"') if static_id != line.text else ""
 		var plural: String = ""
 		var notes: String = "\n".join(["Character name: %s" % line.character, line.get("notes", "")].filter(func(s: String) -> bool: return not s.is_empty()))
 		msgs.append(PackedStringArray([

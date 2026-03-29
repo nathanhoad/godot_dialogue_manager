@@ -2,16 +2,16 @@
 class_name DMTranslationUtilities extends RefCounted
 
 
-## Generate translation keys from some text.
+## Generate static IDs/translation keys from some text.
 static func generate_static_line_ids_for_project() -> void:
 	var rng: RandomNumberGenerator = RandomNumberGenerator.new()
 	rng.randomize()
 
 	for file_path: String in DMCache.get_files():
 		var text: String = FileAccess.get_file_as_string(file_path)
-		
+
 		text = generate_static_line_ids_for_text(text, file_path)
-		
+
 		var file: FileAccess = FileAccess.open(file_path, FileAccess.WRITE)
 		file.store_string(text)
 		file.close()

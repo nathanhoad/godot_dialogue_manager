@@ -33,7 +33,7 @@ var text_replacements: Array[Dictionary] = []
 var tags: PackedStringArray = []
 
 ## The key to use for translating the text.
-var translation_key: String = ""
+var static_id: String = ""
 
 
 func _init(data: Dictionary = {}) -> void:
@@ -47,7 +47,7 @@ func _init(data: Dictionary = {}) -> void:
 		text = data.text
 		text_replacements = data.text_replacements
 		tags = data.tags
-		translation_key = data.translation_key
+		static_id = data.static_id
 		condition_as_text = data.condition_as_text
 
 

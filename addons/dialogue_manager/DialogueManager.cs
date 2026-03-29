@@ -579,11 +579,11 @@ namespace DialogueManagerRuntime
             set => text = value;
         }
 
-        private string translation_key = "";
-        public string TranslationKey
+        private string static_id = "";
+        public string StaticId
         {
-            get => translation_key;
-            set => translation_key = value;
+            get => static_id;
+            set => static_id = value;
         }
 
         private Array<DialogueResponse> responses = new Array<DialogueResponse>();
@@ -635,7 +635,7 @@ namespace DialogueManagerRuntime
             next_id = (string)data.Get("next_id");
             character = (string)data.Get("character");
             text = (string)data.Get("text");
-            translation_key = (string)data.Get("translation_key");
+            static_id = (string)data.Get("static_id");
             speeds = (Dictionary)data.Get("speeds");
             inline_mutations = (Array<Godot.Collections.Array>)data.Get("inline_mutations");
             time = (string)data.Get("time");
@@ -725,11 +725,11 @@ namespace DialogueManagerRuntime
             set => text = value;
         }
 
-        private string translation_key = "";
+        private string static_id = "";
         public string TranslationKey
         {
-            get => translation_key;
-            set => translation_key = value;
+            get => static_id;
+            set => static_id = value;
         }
 
         private Array<string> tags = new Array<string>();
@@ -743,7 +743,7 @@ namespace DialogueManagerRuntime
             next_id = (string)data.Get("next_id");
             is_allowed = (bool)data.Get("is_allowed");
             text = (string)data.Get("text");
-            translation_key = (string)data.Get("translation_key");
+            static_id = (string)data.Get("static_id");
             tags = (Array<string>)data.Get("tags");
         }
 

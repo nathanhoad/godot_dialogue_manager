@@ -26,15 +26,19 @@ Returns the balloon's base node in case you want to `queue_free()` it yourself.
 
 #### `func get_next_dialogue_line(resource: DialogueResource, key: String = "", extra_game_states: Array = [], mutation_behaviour: MutationBehaviour = MutationBehaviour.Wait) -> DialogueLine`
 
-**Must be used with `await`.**
+> [!IMPORTANT]
+> Must be used with `await`.
 
-Given a resource and Cue/ID, it will find the next printable line of dialogue (running mutations along the way).
+Given a resource and Cue/key, it will find the next printable line of dialogue (running mutations along the way unless `mutation_behaviour` is overriden).
 
 Returns a `DialogueLine` or `null`.
 
-Pass an array of nodes as `extra_game_states` in order to temporarily add to the game state shortcuts that are available to conditions and mutations.
+Pass an array of nodes/dictionaries as `extra_game_states` in order to temporarily add to the game state shortcuts that are available to conditions and mutations.
 
-You can specify `mutation_behaviour` to be one of the values provided in the `DialogueManager.MutationBehaviour` enum. `Wait` is the default and will `await` any mutation lines. `DoNoWait` will run the mutations but not wait for them before moving to the next line. `Skip` will skip mutations entirely. In most cases, you should leave this as the default. _The example balloon only supports `Wait`_.
+You can specify `mutation_behaviour` to be one of the values provided in the `DialogueManager.MutationBehaviour` enum. `Wait` is the default and will `await` any mutation lines. `DoNoWait` will run the mutations but not wait for them before moving to the next line. `Skip` will skip mutations entirely. In most cases, you should leave this as the default. 
+
+> [!NOTE]
+> The example balloon only supports `Wait`.
 
 #### `func show_example_dialogue_balloon(resource: DialogueResource, Cue: String = "", extra_game_states: Array = []) -> CanvasLayer`
 
@@ -55,7 +59,7 @@ A line of dialogue.
 - `character: String` - the name of the character speaking (or `""`).
 - `text: String` - the text that the character is saying.
 - `tags: PackedStringArray` - a list of tags.
-- `translation_key: String` - the key used to translate the text (or the whole text again if no ID was specified on the line).
+- `static_id: String` - the key used to translate the text (or the whole text again if no ID was specified on the line).
 - `responses: Array[DialogueResponse]` - the list of responses to this line (or `[]` if none are available).
   - `id: String` - the ID of the response.
   - `next_id: String` - the ID of the next line if this response is chosen.
@@ -64,7 +68,7 @@ A line of dialogue.
   - `character: String` - the character name (or `""`).
   - `text: String` - the text for this response.
   - `tags: PackedStringArray` - a list of tags.
-  - `translation_key: String` - the key used to translate the text (or the whole text again if no ID was specified on the response).
+  - `static_id: String` - the key used to translate the text (or the whole text again if no ID was specified on the response).
 - `concurrent_lines: Array[DialogueLine]` - A list of lines that are to be spoken at the same time as this one.
 
 #### `func to_serialized() -> String`

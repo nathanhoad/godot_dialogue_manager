@@ -4,8 +4,8 @@ class_name DMCompiledLine extends RefCounted
 
 ## The ID of the line
 var id: String
-## The translation key (or static line ID).
-var translation_key: String = ""
+## The static line ID (or translation key).
+var static_id: String = ""
 ## The type of line.
 var type: String = ""
 ## The character name.
@@ -117,8 +117,8 @@ func to_data() -> Dictionary:
 			if not responses.is_empty():
 				d.responses = responses
 
-			if translation_key != text:
-				d.translation_key = translation_key
+			if static_id != text:
+				d.static_id = static_id
 			if not expression.is_empty():
 				d.condition = expression
 			if not character.is_empty():
@@ -137,8 +137,8 @@ func to_data() -> Dictionary:
 		DMConstants.TYPE_DIALOGUE:
 			d.text = text
 
-			if translation_key != text:
-				d.translation_key = translation_key
+			if static_id != text:
+				d.static_id = static_id
 
 			if not character.is_empty():
 				d.character = character

@@ -359,7 +359,7 @@ func _update_import_paths(from_path: String, to_path: String) -> void:
 
 
 func _update_localization() -> void:
-	if not DMSettings.get_setting(DMSettings.UPDATE_POT_FILES_AUTOMATICALLY, true):
+	if not DMSettings.get_setting(DMSettings.UPDATE_TRANSLATION_TEMPLATES_AUTOMATICALLY, true):
 		return
 
 	var dialogue_files: PackedStringArray = DMCache.get_files()

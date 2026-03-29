@@ -548,7 +548,7 @@ func static_id_to_line_id(resource: DialogueResource, static_id: String) -> Stri
 ## Resolve a static line ID to any actual line IDs that match
 func static_id_to_line_ids(resource: DialogueResource, static_id: String) -> PackedStringArray:
 	return resource.lines.values().filter(func(l: Dictionary) -> bool:
-		return l.get(&"translation_key", "") == static_id
+		return l.get(&"static_id", "") == static_id
 	).map(func(l: Dictionary) -> String:
 		return l.id
 	)
@@ -637,12 +637,12 @@ func translate(data: Dictionary) -> String:
 	if TranslationServer.get_loaded_locales().size() == 0:
 		return data.text
 
-	var translation_key: String = data.get(&"translation_key", data.text)
+	var static_id: String = data.get(&"static_id", data.text)
 
-	if translation_key == "" or translation_key == data.text:
+	if static_id == "" or static_id == data.text:
 		return tr(data.text)
 	else:
-		return tr(data.text, StringName(translation_key))
+		return tr(data.text, StringName(static_id))
 
 
 # Create a line of dialogue
@@ -658,7 +658,7 @@ func create_dialogue_line(data: Dictionary, extra_game_states: Array) -> Dialogu
 				character_replacements = data.get(&"character_replacements", [] as Array[Dictionary]),
 				text = resolved_data.text,
 				text_replacements = data.get(&"text_replacements", [] as Array[Dictionary]),
-				translation_key = data.get(&"translation_key", data.text),
+				static_id = data.get(&"static_id", data.text),
 				speeds = resolved_data.speeds,
 				inline_mutations = resolved_data.mutations,
 				time = resolved_data.time,
@@ -701,7 +701,7 @@ func create_response(data: Dictionary, extra_game_states: Array) -> DialogueResp
 		text = resolved_data.text,
 		text_replacements = data.get(&"text_replacements", [] as Array[Dictionary]),
 		tags = data.get(&"tags", []),
-		translation_key = data.get(&"translation_key", data.text),
+		static_id = data.get(&"static_id", data.text),
 	})
 
 
