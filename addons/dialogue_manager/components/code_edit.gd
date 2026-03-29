@@ -272,7 +272,7 @@ func _add_character_name_completions(current_line: String) -> void:
 			return
 
 	var name_so_far: String = WEIGHTED_RANDOM_PREFIX.sub(current_line.strip_edges(), "")
-	if name_so_far == "" or name_so_far[0].to_upper() != name_so_far[0]:
+	if name_so_far == "":
 		return
 
 	var names: PackedStringArray = get_character_names(name_so_far)
@@ -1148,7 +1148,10 @@ func get_character_names(beginning_with: String) -> PackedStringArray:
 		if line.strip_edges().begins_with("#"): continue # skip comments
 		if ": " in line:
 			var character_name: String = WEIGHTED_RANDOM_PREFIX.sub(line.split(": ")[0].strip_edges(), "")
-			if not character_name in names and _matches_prompt(beginning_with, character_name):
+			# Checks for first-letter match before doing fuzzy matching
+			if not character_name in names and character_name.length() > 0 and beginning_with.length() > 0 \
+			and character_name.to_lower()[0] == beginning_with.to_lower()[0] \
+			and _matches_prompt(beginning_with, character_name):
 				names.append(character_name)
 	return names
 
