@@ -79,7 +79,7 @@ You can also start a conditional block with "while". These blocks will loop as l
 ```
 while SomeGlobal.some_property < 10
     Nathan: The property is still less than 10 - specifically, it is {{SomeGlobal.some_property}}.
-    do SomeGlobal.some_property += 1
+    $> SomeGlobal.some_property += 1
 Nathan: Now, we can move on.
 ```
 
@@ -89,9 +89,9 @@ You can affect state with either a "set" or a "do" line.
 
 ```
 if SomeGlobal.has_met_nathan == false
-    do SomeGlobal.animate("Nathan", "Wave")
+    $> SomeGlobal.animate("Nathan", "Wave")
     Nathan: Hi, I'm Nathan.
-    set SomeGlobal.has_met_nathan = true
+    $> SomeGlobal.has_met_nathan = true
 Nathan: What can I do for you?
 - Tell me more about this dialogue editor
 ```
@@ -101,11 +101,11 @@ In the example above, the dialogue manager would expect a global called `SomeGlo
 Mutations can also be used inline. Inline mutations will be called as the typed out dialogue reaches that point in the text.
 
 ```
-Nathan: I'm not sure we've met before [do wave()]I'm Nathan.
-Nathan: I can also emit signals[do SomeGlobal.some_signal.emit()] inline.
+Nathan: I'm not sure we've met before [$> wave()]I'm Nathan.
+Nathan: I can also emit signals[$> SomeGlobal.some_signal.emit()] inline.
 ```
 
-Inline mutations that use `await` in their implementation will pause typing of dialogue until they resolve. To ignore awaiting, add a "!" after the "do" keyword - e.g. `[do! something()]`.
+Inline mutations that use `await` in their implementation will pause typing of dialogue until they resolve. To ignore awaiting, add a ">" after the "$>" directive - e.g. "[\$>> something()]".
 
 ### Extra Game States
 
@@ -124,18 +124,18 @@ func _ready() -> void:
     DialogueManager.show_example_dialogue_balloon(load("res://main.dialogue"), "start", [self, { "game" = GameStateClass.new() }]) 
 ```
 
-On the dialogue end, you can call functions directly from objects passed in (for example: `self.pirate()` can be called as `do pirate()`) or through dereference of member variables or dictionary keys (for example: `do game.hello()`):
+On the dialogue end, you can call functions directly from objects passed in (for example: `self.pirate()` can be called as `$> pirate()`) or through dereference of member variables or dictionary keys (for example: `$> game.hello()`):
 
 ```
 ~ start
-do game.hello()
-do pirate()
-set game.pirate_name = "delilah"
-do debug(game.pirate_name)
+$> game.hello()
+$> pirate()
+$> game.pirate_name = "delilah"
+$> debug(game.pirate_name)
 => END
 ```
 
-Extra game states provide references to objects, nodes, or dictionaries that exist outside the dialogue system. Changes made to their properties will persist after the conversation ends. The main difference from locals is that extra game states are accessed directly by name (e.g., `level`), while variables created with `set locals.variable_name = value` must always be prefixed with `locals.` (e.g., `locals.counter`).
+Extra game states provide references to objects, nodes, or dictionaries that exist outside the dialogue system. Changes made to their properties will persist after the conversation ends. The main difference from locals is that extra game states are accessed directly by name (e.g., `level`), while variables created with `$> locals.variable_name = value` must always be prefixed with `locals.` (e.g., `locals.counter`).
 
 ### Signals
 
@@ -144,7 +144,7 @@ Signals can be emitted similarly to how they are emitted in GDScript - by callin
 For example, if `SomeGlobal` has a signal called `some_signal` that has a single string parameter, you can emit it from dialogue like this:
 
 ```
-do SomeGlobal.some_signal.emit("some argument")
+$> SomeGlobal.some_signal.emit("some argument")
 ```
 
 ### Null coalescing
@@ -169,7 +169,7 @@ If you want to shorten your references to state from something like `SomeGlobal.
 
 There are a couple of special built-in mutations you can use:
 
-- `do wait(float)` - wait for `float` seconds (this has no effect when used inline).
-- `do debug(...)` - print something to the Output window.
+- `$> wait(float)` - wait for `float` seconds (this has no effect when used inline).
+- `$> debug(...)` - print something to the Output window.
 
 There is also a special property `self` that you can use in dialogue to refer to the `DialogueResource` that is currently being run.

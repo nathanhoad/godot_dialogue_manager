@@ -25,7 +25,8 @@ Dialogue Manager settings are found in Project Settings at the bottom of the Gen
 
   If enabled, when there is more than one property, method, or signal sharing the same name at the top-level (ie. extra game states, current scene, or autoload shortcut) a warning will be shown in the Debugger panel.
 
-  _NOTE: Even when enabled, this does nothing when running in a non-debug build._
+  > [!NOTE]
+  > Even when enabled, this does nothing when running in a non-debug build._
 
 - **Balloon Path**
 
@@ -51,19 +52,7 @@ Dialogue Manager settings are found in Project Settings at the bottom of the Gen
 
 - **Include Characters in Translatable Strings List**
 
-  Include any charactter names in the POT export.
-
-- **Default Csv Locale**
-
-  The default locale to use when first exporting a translations CSV.
-
-- **Include Character in Translation Exports** (advanced)
-
-  Include a _\_character_ column in CSV exports that shows which character was speaking the line of dialogue.
-
-- **Include Notes in Translation Exports** (advanced)
-
-  Include a _\_notes_ column in CSV exports for doc comments.
+  Include any character names in the Template Generation export.
 
 - **Dialogue Processor Path** (advanced)
   

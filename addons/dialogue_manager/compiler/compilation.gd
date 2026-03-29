@@ -492,7 +492,7 @@ func parse_response_line(tree_line: DMTreeLine, line: DMCompiledLine, siblings: 
 		else:
 			DMCache.known_static_ids[static_line_id] = file_path
 		tree_line.text = tree_line.text.replace("[ID:%s]" % [static_line_id], "")
-		line.translation_key = static_line_id
+		line.static_id = static_line_id
 
 	# Handle conditional responses and remove them from the prompt text.
 	if "[if " in tree_line.text and " /]" in tree_line.text:
@@ -657,7 +657,7 @@ func parse_dialogue_line(tree_line: DMTreeLine, line: DMCompiledLine, siblings: 
 			DMCache.known_static_ids[static_line_id] = file_path
 
 		tree_line.text = tree_line.text.replace(" [ID:", "[ID:").replace("[ID:%s]" % [static_line_id], "")
-		line.translation_key = static_line_id
+		line.static_id = static_line_id
 
 	# Check for simultaneous lines
 	if tree_line.text.begins_with("| "):
@@ -775,14 +775,11 @@ func parse_character_and_dialogue(tree_line: DMTreeLine, line: DMCompiledLine, s
 	# Replace any newlines.
 	text = text.replace("\\n", "\n").strip_edges()
 
-	# If there was no manual translation key then just use the text itself (unless this is a
-	# child dialogue below another dialogue line).
-	if not tree_line.is_nested_dialogue and line.translation_key == "":
-		# Show an error if missing translations is enabled
-		if DMSettings.get_setting(DMSettings.MISSING_TRANSLATIONS_ARE_ERRORS, false):
-			result = add_error(tree_line.line_number, tree_line.indent, DMConstants.ERR_MISSING_ID)
-		else:
-			line.translation_key = text
+	# If there was no manual static ID and we have errors enabled then show an error
+	if not tree_line.is_nested_dialogue \
+		and line.static_id == "" \
+		and DMSettings.get_setting(DMSettings.MISSING_TRANSLATIONS_ARE_ERRORS, false):
+		result = add_error(tree_line.line_number, tree_line.indent, DMConstants.ERR_MISSING_ID)
 
 	line.text = text
 
@@ -950,7 +947,7 @@ func get_next_matching_sibling_id(siblings: Array[DMTreeLine], from_index: int, 
 
 ## Extract a static line ID from some text.
 func extract_static_line_id(text: String) -> String:
-		# Find a static translation key, eg. [ID:something]
+	# Find a static ID, eg. [ID:something]
 	var found: RegExMatch = regex.STATIC_LINE_ID_REGEX.search(text)
 	if found:
 		return found.strings[found.names.id]

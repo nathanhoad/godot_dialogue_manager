@@ -54,8 +54,8 @@ Nathan: Something[if true] conditional[/if] [ID:SOMETHING]
 => END")
 
 	assert(output.errors.is_empty(), "Should have no errors.")
-	assert(output.lines["2"].translation_key == "HELLO", "Should have correct translation key.")
-	assert(output.lines["3"].translation_key == "SOMETHING", "Should have correct translation key.")
+	assert(output.lines["2"].static_id == "HELLO", "Should have correct translation key.")
+	assert(output.lines["3"].static_id == "SOMETHING", "Should have correct translation key.")
 
 
 func test_can_run_basic_dialogue() -> void:

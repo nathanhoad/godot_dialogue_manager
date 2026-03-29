@@ -1,8 +1,11 @@
 <img src="docs/media/logo.svg" width="128" height="128">
 
-# Dialogue Manager _for Godot 4.4+_
+# Dialogue Manager 4 _for Godot 4.6+_
 
-Dialogue Manager is an addon for [Godot 4.4+](https://godotengine.org/) that provides a stateless branching dialogue editor and runtime. Write your dialogue in a script-like way and easily integrate it into your game.
+> [!IMPORTANT]
+> Until Dialogue Manager 4 is officially released, you should probably use [version 3](https://github.com/nathanhoad/godot_dialogue_manager/tree/v3.x).
+
+Dialogue Manager 4 is an addon for [Godot 4.6+](https://godotengine.org/) that provides a stateless branching dialogue editor and runtime. Write your dialogue in a script-like way and easily integrate it into your game.
 
 You can install it via the Asset Library or [downloading a copy](https://github.com/nathanhoad/godot_dialogue_manager/archive/refs/heads/main.zip) from GitHub.
 
@@ -21,7 +24,7 @@ You can install it via the Asset Library or [downloading a copy](https://github.
 - [Translations](docs/Translations.md)
 - [API](docs/API.md)
 - [C# wrapper](docs/CSharp.md)
-- [Upgrading from v2 to v3](docs/2to3.md)
+- [Upgrading from v3 to v4](docs/3to4.md)
 
 ## Example Projects
 
@@ -43,6 +46,7 @@ You can install it via the Asset Library or [downloading a copy](https://github.
 
 ## Older versions of Dialogue Manager
 
+- [Dialogue Manager v3.10](https://github.com/nathanhoad/godot_dialogue_manager/tree/v3.x) for Godot 4.4 or Godot 4.5
 - [Dialogue Manager v3.3](https://github.com/nathanhoad/godot_dialogue_manager/releases/tag/v3.3.3) for Godot 4.3
 - [Dialogue Manager v2.x](https://github.com/nathanhoad/godot_dialogue_manager/tree/v2.x) for Godot <=4.3
 - [Dialogue Manager v1.x](https://github.com/nathanhoad/godot_dialogue_manager/tree/v1.x) for Godot 3

@@ -24,7 +24,7 @@ var text: String = ""
 var text_replacements: Array[Dictionary] = []
 
 ## The key to use for translating this line.
-var translation_key: String = ""
+var static_id: String = ""
 
 ## A map for speed changes when typing out the dialogue text.
 var speeds: Dictionary = {}
@@ -64,7 +64,7 @@ func _init(data: Dictionary = {}) -> void:
 				character_replacements = data.get("character_replacements", [] as Array[Dictionary])
 				text = data.text
 				text_replacements = data.get("text_replacements", [] as Array[Dictionary])
-				translation_key = data.get("translation_key", data.text)
+				static_id = data.get("static_id", data.text)
 				speeds = data.get("speeds", {})
 				inline_mutations = data.get("inline_mutations", [] as Array[Array])
 				time = data.get("time", "")

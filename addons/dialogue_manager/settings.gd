@@ -16,7 +16,7 @@ const MISSING_TRANSLATIONS_ARE_ERRORS: StringName = &"editor/translations/missin
 ## Include character names in the list of translatable strings.
 const INCLUDE_CHARACTERS_IN_TRANSLATABLE_STRINGS_LIST: StringName = &"editor/translations/include_characters_in_translatable_strings_list"
 ## Automatically update the project's list of translatable files when dialogue files are added or removed
-const UPDATE_POT_FILES_AUTOMATICALLY: StringName = &"editor/translations/update_pot_files_automatically"
+const UPDATE_TRANSLATION_TEMPLATES_AUTOMATICALLY: StringName = &"editor/translations/UPDATE_TRANSLATION_TEMPLATES_AUTOMATICALLY"
 
 ## A processor handling special case compilation.
 const DIALOGUE_PROCESSOR_PATH: StringName = &"editor/advanced/dialogue_processor_path"
@@ -59,7 +59,7 @@ static var SETTINGS_CONFIGURATION: Dictionary = {
 		value = true,
 		type = TYPE_BOOL,
 	},
-	UPDATE_POT_FILES_AUTOMATICALLY: {
+	UPDATE_TRANSLATION_TEMPLATES_AUTOMATICALLY: {
 		value = true,
 		type = TYPE_BOOL,
 		is_advanced = true
