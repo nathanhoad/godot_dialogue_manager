@@ -439,7 +439,7 @@ func parse_when_line(tree_line: DMTreeLine, line: DMCompiledLine, siblings: Arra
 	var result: int = OK
 
 	# This when line should be found inside a match line
-	if parent.type != DMConstants.TYPE_MATCH:
+	if parent == null or parent.type != DMConstants.TYPE_MATCH:
 		result = add_error(tree_line.line_number, tree_line.indent, DMConstants.ERR_WHEN_MUST_BELONG_TO_MATCH)
 
 	# When lines should have children

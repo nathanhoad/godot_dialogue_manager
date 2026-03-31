@@ -258,7 +258,7 @@ func _add_jump_completions(current_line: String, cursor: Vector2) -> void:
 			continue
 		elif "/" in cue:
 			var bits: PackedStringArray = cue.split("/")
-			if _matches_prompt(prompt, bits[0]) or _matches_prompt(prompt, bits[1]):
+			if _matches_prompt(prompt, cue) or _matches_prompt(prompt, bits[0]) or _matches_prompt(prompt, bits[1]):
 				add_code_completion_option(CodeEdit.KIND_CLASS, cue, cue.substr(prompt.length()), theme_overrides.text_color, get_theme_icon("CombineLines", "EditorIcons"))
 		elif _matches_prompt(prompt, cue):
 			add_code_completion_option(CodeEdit.KIND_CLASS, cue, cue.substr(prompt.length()), theme_overrides.text_color, get_theme_icon("ArrowRight", "EditorIcons"))
@@ -1390,12 +1390,6 @@ func _on_code_edit_symbol_lookup(symbol: String, line: int, column: int) -> void
 		external_file_requested.emit(symbol, "")
 		return
 
-	# Check if it's a cue
-	for cue: String in get_cues():
-		if symbol == cue:
-			go_to_cue(symbol)
-			return
-
 	var line_text: String = get_line(line)
 
 	# Check if it's an imported cue (eg. "alias/cue")
@@ -1411,6 +1405,12 @@ func _on_code_edit_symbol_lookup(symbol: String, line: int, column: int) -> void
 			if found and found.strings[found.names.prefix] == prefix:
 				external_file_requested.emit(found.strings[found.names.path], cue_name)
 				return
+
+	# Check if it's a cue
+	for cue: String in get_cues():
+		if symbol == cue:
+			go_to_cue(symbol)
+			return
 
 	# Check if it's a mutation line symbol
 	var symbol_info: Dictionary = _resolve_mutation_symbol_at_position(line_text, column)
