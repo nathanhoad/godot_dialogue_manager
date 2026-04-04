@@ -650,6 +650,9 @@ func parse_dialogue_line(tree_line: DMTreeLine, line: DMCompiledLine, siblings: 
 	# Extract the static line ID
 	var static_line_id: String = extract_static_line_id(tree_line.text)
 	if static_line_id:
+		if tree_line.text == "[ID:%s]" % [static_line_id]:
+			result = add_error(tree_line.line_number, tree_line.indent, DMConstants.ERR_LONELY_STATIC_ID)
+
 		if DMCache.known_static_ids.has(static_line_id):
 			result = add_error(tree_line.line_number, tree_line.indent, DMConstants.ERR_DUPLICATE_ID)
 		else:

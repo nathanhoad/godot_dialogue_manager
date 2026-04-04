@@ -461,3 +461,6 @@ msgstr "Multiple top-level states ({states}) share method/property/signal name \
 
 msgid "translation_plugin.character_name"
 msgstr "Character name"
+
+msgid "Static ID can't be on a line with no other content."
+msgstr "Static ID can't be on a line with no other content."

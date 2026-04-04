@@ -451,3 +451,6 @@ msgstr ""
 
 msgid "translation_plugin.character_name"
 msgstr ""
+
+msgid "Static ID can't be on a line with no other content."
+msgstr ""
