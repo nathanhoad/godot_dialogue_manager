@@ -113,6 +113,7 @@ const ERR_GOTO_NOT_ALLOWED_ON_CONCURRECT_LINES: int = 140
 const ERR_UNEXPECTED_SYNTAX_ON_NESTED_DIALOGUE_LINE: int = 141
 const ERR_NESTED_DIALOGUE_INVALID_JUMP: int = 142
 const ERR_MISSING_RESOURCE_FOR_AUTOSTART: int = 143
+const ERR_LONELY_STATIC_ID: int = 144
 
 
 static var _current_locale: String = ""
@@ -209,6 +210,8 @@ static func get_error_message(error: int) -> String:
 			return translate(&"errors.err_nested_dialogue_invalid_jump")
 		ERR_MISSING_RESOURCE_FOR_AUTOSTART:
 			return translate(&"errors.missing_resource_for_autostart")
+		ERR_LONELY_STATIC_ID:
+			return translate(&"Static IDs can't be on a line with no other content.")
 
 	return translate(&"errors.unknown")
 

@@ -466,3 +466,6 @@ msgstr ""
 
 msgid "Cue:"
 msgstr ""
+
+msgid "Static IDs can't be on a line with no other content."
+msgstr ""
