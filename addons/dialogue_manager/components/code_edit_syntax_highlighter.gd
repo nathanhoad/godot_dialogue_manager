@@ -76,7 +76,7 @@ func _get_line_syntax_highlighting(line: int) -> Dictionary:
 			_highlight_goto(text, colors, index)
 
 		DMConstants.TYPE_RANDOM:
-			colors[index] = { color = theme.symbols_color }
+			colors[index] = { color = theme.numbers_color }
 
 		DMConstants.TYPE_DIALOGUE, DMConstants.TYPE_RESPONSE:
 			if text.strip_edges().begins_with("- "):
