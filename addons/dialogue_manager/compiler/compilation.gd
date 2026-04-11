@@ -607,21 +607,6 @@ func parse_random_line(tree_line: DMTreeLine, line: DMCompiledLine, siblings: Ar
 func parse_dialogue_line(tree_line: DMTreeLine, line: DMCompiledLine, siblings: Array[DMTreeLine], sibling_index: int, parent: DMCompiledLine) -> int:
 	var result: int = OK
 
-	# Remove escape character
-	if tree_line.text.begins_with("\\using"): tree_line.text = tree_line.text.substr(1)
-	if tree_line.text.begins_with("\\if"): tree_line.text = tree_line.text.substr(1)
-	if tree_line.text.begins_with("\\elif"): tree_line.text = tree_line.text.substr(1)
-	if tree_line.text.begins_with("\\else"): tree_line.text = tree_line.text.substr(1)
-	if tree_line.text.begins_with("\\while"): tree_line.text = tree_line.text.substr(1)
-	if tree_line.text.begins_with("\\match"): tree_line.text = tree_line.text.substr(1)
-	if tree_line.text.begins_with("\\when"): tree_line.text = tree_line.text.substr(1)
-	if tree_line.text.begins_with("\\do"): tree_line.text = tree_line.text.substr(1)
-	if tree_line.text.begins_with("\\set"): tree_line.text = tree_line.text.substr(1)
-	if tree_line.text.begins_with("\\-"): tree_line.text = tree_line.text.substr(1)
-	if tree_line.text.begins_with("\\~"): tree_line.text = tree_line.text.substr(1)
-	if tree_line.text.begins_with("\\=>"): tree_line.text = tree_line.text.substr(1)
-	if tree_line.text.begins_with("\\%"): tree_line.text = tree_line.text.substr(1)
-
 	# Append any further dialogue
 	for i: int in range(0, tree_line.children.size()):
 		var child: DMTreeLine = tree_line.children[i]
@@ -642,7 +627,7 @@ func parse_dialogue_line(tree_line: DMTreeLine, line: DMCompiledLine, siblings: 
 			if i == 0 and " =>" in tree_line.text:
 				add_error(tree_line.line_number, tree_line.indent, DMConstants.ERR_NESTED_DIALOGUE_INVALID_JUMP)
 
-			tree_line.text += "\n" + child.text
+			tree_line.text += "\n" + child_line.text
 		elif child.type == DMConstants.TYPE_UNKNOWN:
 			tree_line.text += "\n"
 		else:
@@ -709,6 +694,21 @@ func parse_character_and_dialogue(tree_line: DMTreeLine, line: DMCompiledLine, s
 	var result: int = OK
 
 	var text: String = tree_line.text
+	
+	# Remove escape character
+	if text.begins_with("\\using"): text = text.substr(1)
+	if text.begins_with("\\if"): text = text.substr(1)
+	if text.begins_with("\\elif"): text = text.substr(1)
+	if text.begins_with("\\else"): text = text.substr(1)
+	if text.begins_with("\\while"): text = text.substr(1)
+	if text.begins_with("\\match"): text = text.substr(1)
+	if text.begins_with("\\when"): text = text.substr(1)
+	if text.begins_with("\\do"): text = text.substr(1)
+	if text.begins_with("\\set"): text = text.substr(1)
+	if text.begins_with("\\-"): text = text.substr(1)
+	if text.begins_with("\\~"): text = text.substr(1)
+	if text.begins_with("\\=>"): text = text.substr(1)
+	if text.begins_with("\\%"): text = text.substr(1)
 
 	# Attach any doc comments.
 	line.notes = tree_line.notes
