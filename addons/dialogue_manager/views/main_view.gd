@@ -517,8 +517,9 @@ func _on_cache_file_content_changed(path: String, new_content: String) -> void:
 		var buffer: Dictionary = open_buffers[path]
 		if buffer.text == buffer.pristine_text and buffer.text != new_content:
 			buffer.text = new_content
-			code_edit.text = new_content
-			cue_list.cues = code_edit.get_cues(true)
+			if path == current_file_path:
+				code_edit.text = new_content
+				cue_list.cues = code_edit.get_cues(true)
 		buffer.pristine_text = new_content
 
 
@@ -580,8 +581,11 @@ func _on_insert_button_menu_id_pressed(id: int) -> void:
 			code_edit.insert_text_at_cursor("=> END")
 		13:
 			var cursor: Vector2i = code_edit.get_cursor()
+			var scroll_vertical: float = code_edit.scroll_vertical
 			code_edit.text = DMTranslationUtilities.generate_static_line_ids_for_text(code_edit.text, current_file_path)
 			code_edit.set_cursor(cursor)
+			_on_code_edit_text_changed()
+			code_edit.set_deferred("scroll_vertical", scroll_vertical)
 
 
 func _on_main_view_theme_changed() -> void:
