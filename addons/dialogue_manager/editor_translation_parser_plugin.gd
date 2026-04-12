@@ -36,6 +36,8 @@ func _parse_file(path: String) -> Array[PackedStringArray]:
 		if not line.type in [DMConstants.TYPE_DIALOGUE, DMConstants.TYPE_RESPONSE]: continue
 
 		var static_id: String = line.get(&"static_id", line.text)
+		if static_id.is_empty():
+			static_id = line.text
 
 		if static_id in known_keys: continue
 
@@ -43,7 +45,7 @@ func _parse_file(path: String) -> Array[PackedStringArray]:
 		translated_lines.append(line)
 
 		var message: String = line.text.replace('"', '\"')
-		var context: String = line.static_id.replace('"', '\"') if static_id != line.text else ""
+		var context: String = static_id.replace('"', '\"') if static_id != line.text else ""
 		var plural: String = ""
 		var notes: String = "\n".join(["Character name: %s" % line.character, line.get("notes", "")].filter(func(s: String) -> bool: return not s.is_empty()))
 		msgs.append(PackedStringArray([
