@@ -230,7 +230,7 @@ func get_line(key: String, local_resource: DialogueResource, extra_game_states: 
 		return line
 	
 	# Inject the next node's responses if they have any
-	var next_line = local_resource.lines.get(line.next_id)
+	var next_line = local_resource.lines.get(line.next_id.split(",")[0])
 	if next_line != null and next_line.get("type") == DialogueConstants.TYPE_RESPONSE:
 		line.responses = get_responses(next_line.get("responses"), local_resource, id_trail, extra_game_states)
 	
