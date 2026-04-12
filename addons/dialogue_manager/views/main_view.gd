@@ -617,8 +617,9 @@ func _on_cache_file_content_changed(path: String, new_content: String) -> void:
 		var buffer = open_buffers[path]
 		if buffer.text == buffer.pristine_text and buffer.text != new_content:
 			buffer.text = new_content
-			code_edit.text = new_content
-			title_list.titles = code_edit.get_titles()
+			if path == current_file_path:
+				code_edit.text = new_content
+				title_list.titles = code_edit.get_titles()
 		buffer.pristine_text = new_content
 
 
@@ -683,8 +684,13 @@ func _on_insert_button_menu_id_pressed(id: int) -> void:
 func _on_translations_button_menu_id_pressed(id: int) -> void:
 	match id:
 		TRANSLATIONS_GENERATE_LINE_IDS_FOR_FILE:
+			var scroll_vertical: float = code_edit.scroll_vertical
+			var cursor: Vector2i = code_edit.get_cursor()
 			code_edit.text = DMTranslationUtilities.generate_static_line_ids_for_text(code_edit.text, current_file_path)
-			
+			code_edit.set_cursor(cursor)
+			code_edit.set_deferred("scroll_vertical",scroll_vertical)
+			_on_code_edit_text_changed()
+
 		TRANSLATIONS_GENERATE_LINE_IDS_FOR_PROJECT:
 			generate_translations_keys()
 
