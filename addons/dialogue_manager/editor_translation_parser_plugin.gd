@@ -47,7 +47,12 @@ func _parse_file(path: String) -> Array[PackedStringArray]:
 		var message: String = line.text.replace('"', '\"')
 		var context: String = static_id.replace('"', '\"') if static_id != line.text else ""
 		var plural: String = ""
-		var notes: String = "\n".join(["Character name: %s" % line.character, line.get("notes", "")].filter(func(s: String) -> bool: return not s.is_empty()))
+		var extra_details: PackedStringArray = []
+		if line.has("character"):
+			extra_details.append("Character name: %s" % line.get("character", ""))
+		if line.has("notes"):
+			extra_details.append(line.get("notes", ""))
+		var notes: String = "\n".join(extra_details)
 		msgs.append(PackedStringArray([
 			message,
 			context,
