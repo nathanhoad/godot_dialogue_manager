@@ -36,6 +36,8 @@ func _parse_file(path: String) -> Array[PackedStringArray]:
 		if not line.type in [DMConstants.TYPE_DIALOGUE, DMConstants.TYPE_RESPONSE]: continue
 
 		var translation_key: String = line.get(&"translation_key", line.text)
+		if translation_key.is_empty():
+			translation_key = line.text
 
 		if translation_key in known_keys: continue
 

@@ -9,9 +9,9 @@ static func generate_static_line_ids_for_project() -> void:
 
 	for file_path: String in DMCache.get_files():
 		var text: String = FileAccess.get_file_as_string(file_path)
-		
+
 		text = generate_static_line_ids_for_text(text, file_path)
-		
+
 		var file: FileAccess = FileAccess.open(file_path, FileAccess.WRITE)
 		file.store_string(text)
 		file.close()
@@ -42,7 +42,7 @@ static func generate_static_line_ids_for_text(text: String, file_path: String) -
 		while key in DMCache.known_static_ids:
 			key = _generate_id(file_path)
 		line = line.replace("\\n", "!NEWLINE!")
-		translatable_text = translatable_text.replace("\n", "!NEWLINE!")
+		translatable_text = translatable_text.replace("\\n", "!NEWLINE!")
 		lines[i] = line.replace(translatable_text, translatable_text + " [ID:%s]" % [key]).replace("!NEWLINE!", "\\n")
 
 		DMCache.known_static_ids[key] = file_path
