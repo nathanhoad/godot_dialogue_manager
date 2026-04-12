@@ -41,8 +41,9 @@ static func generate_static_line_ids_for_text(text: String, file_path: String) -
 		var key: String = _generate_id(file_path)
 		while key in DMCache.known_static_ids:
 			key = _generate_id(file_path)
+
 		line = line.replace("\\n", "!NEWLINE!")
-		translatable_text = translatable_text.replace("\n", "!NEWLINE!")
+		translatable_text = translatable_text.replace("\\n", "!NEWLINE!")
 		lines[i] = line.replace(translatable_text, translatable_text + " [ID:%s]" % [key]).replace("!NEWLINE!", "\\n")
 
 		DMCache.known_static_ids[key] = file_path
