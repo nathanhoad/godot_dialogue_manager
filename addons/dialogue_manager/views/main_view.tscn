@@ -226,10 +226,10 @@ flat = true
 layout_mode = 2
 size_flags_horizontal = 3
 
-[node name="FilenameLabel" type="Label" parent="Margin/Content/CodePanel/Toolbar" unique_id=674691435]
+[node name="FilenameLabel" type="Button" parent="Margin/Content/CodePanel/Toolbar" unique_id=1051945501]
 unique_name_in_owner = true
 layout_mode = 2
-vertical_alignment = 1
+flat = true
 
 [node name="Spacer3" type="Control" parent="Margin/Content/CodePanel/Toolbar" unique_id=610372586]
 layout_mode = 2
@@ -405,6 +405,7 @@ dialog_text = "You're now up to date!"
 [connection signal="toggled" from="Margin/Content/CodePanel/Toolbar/SearchButton" to="." method="_on_search_button_toggled"]
 [connection signal="pressed" from="Margin/Content/CodePanel/Toolbar/TestButton" to="." method="_on_test_button_pressed"]
 [connection signal="pressed" from="Margin/Content/CodePanel/Toolbar/TestLineButton" to="." method="_on_test_line_button_pressed"]
+[connection signal="pressed" from="Margin/Content/CodePanel/Toolbar/FilenameLabel" to="." method="_on_filename_label_pressed"]
 [connection signal="pressed" from="Margin/Content/CodePanel/Toolbar/SupportButton" to="." method="_on_support_button_pressed"]
 [connection signal="pressed" from="Margin/Content/CodePanel/Toolbar/DocsButton" to="." method="_on_docs_button_pressed"]
 [connection signal="close_requested" from="Margin/Content/CodePanel/SearchAndReplace" to="." method="_on_search_and_replace_close_requested"]
