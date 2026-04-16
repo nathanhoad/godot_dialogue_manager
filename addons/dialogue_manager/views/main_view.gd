@@ -42,7 +42,7 @@ signal confirmation_closed()
 @onready var open_button: MenuButton = %OpenButton
 @onready var save_all_button: Button = %SaveAllButton
 @onready var find_in_files_button: Button = %FindInFilesButton
-@onready var file_name_label: Label = %FilenameLabel
+@onready var file_name_label: Button = %FilenameLabel
 @onready var test_button: Button = %TestButton
 @onready var test_line_button: Button = %TestLineButton
 @onready var search_button: Button = %SearchButton
@@ -829,6 +829,10 @@ func _on_banner_quick_open_pressed() -> void:
 
 func _on_banner_examples_pressed() -> void:
 	OS.shell_open("https://itch.io/c/5226650/godot-dialogue-manager-example-projects")
+
+
+func _on_filename_label_pressed() -> void:
+	EditorInterface.get_file_system_dock().navigate_to_path(current_file_path)
 
 
 #endregion
