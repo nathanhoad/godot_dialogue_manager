@@ -2,9 +2,11 @@
 
 @icon("uid://c22t5famre1yo")
 
+## Add a [DialogueStateContext] to a scene to expose a node (usually the base node) to dialogue.
 class_name DialogueStateContext extends Node
 
 
+## The name used in dialogue to refer to the exposed target node.
 @export var alias: String = "":
 	set(value):
 		alias = value
@@ -12,6 +14,7 @@ class_name DialogueStateContext extends Node
 	get:
 		return alias
 
+## The target who's values are exposed to dialogue.
 @export var target: Node:
 	set(value):
 		target = value
