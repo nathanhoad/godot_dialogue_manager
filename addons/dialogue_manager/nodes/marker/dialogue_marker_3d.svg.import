@@ -2,8 +2,8 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://c22t5famre1yo"
-path="res://.godot/imported/state_context.svg-16f091be9bf2aaf4ec4ddd5737fc0fef.ctex"
+uid="uid://bo1hdyjmnjdql"
+path="res://.godot/imported/dialogue_marker_3d.svg-f68ab9ede59096854a7c6ee123dd8e4e.ctex"
 metadata={
 "has_editor_variant": true,
 "vram_texture": false
@@ -11,8 +11,8 @@ metadata={
 
 [deps]
 
-source_file="res://addons/dialogue_manager/assets/state_context.svg"
-dest_files=["res://.godot/imported/state_context.svg-16f091be9bf2aaf4ec4ddd5737fc0fef.ctex"]
+source_file="res://addons/dialogue_manager/nodes/marker/dialogue_marker_3d.svg"
+dest_files=["res://.godot/imported/dialogue_marker_3d.svg-f68ab9ede59096854a7c6ee123dd8e4e.ctex"]
 
 [params]
 

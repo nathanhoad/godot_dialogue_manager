@@ -24,3 +24,9 @@ For example, this is what I have in my game, [Bravest Coconut](https://bravestco
 
 ![My own balloon](media/real-example.jpg)  
 _With a bit of extra code, balloons can follow characters._
+
+## Dialogue Markers
+
+If you are building a custom balloon that uses speech balloons attached to the speaking player you can use the provided `DialogueMarker2D` and `DialogueMarker3D` nodes.
+
+Add one to your character scene and position it near the character's mouth. Specify the character name in the property inspector so that you can reference it in your balloon with `DialogueMarker2D.find_for_character("...character name... ")` or `DialogueMarker3D.find_for_character("...character name... ")`.
