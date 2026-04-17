@@ -1,5 +1,7 @@
 # Conditions & Mutations
 
+In order to use conditions and mutations you'll need to have an understanding of how Dialogue Manager uses [State](./State.md).
+
 ## Conditions
 
 ### If/else
@@ -30,7 +32,7 @@ Responses can also have "if" conditions. Wrap these in `[` and `/]` (sometimes r
 
 ```
 Nathan: What would you like?
-- This one [if SomeGlobal.some_property == 0 or SomeGlobal.some_other_property == false /]
+- This one [if SomeGlobal.some_property == 0 or some_node_in_scope.some_other_property == false /]
     Nathan: Ah, so you want this one?
 - Another one [if SomeGlobal.some_method() /] => another_cue
 - Nothing => END
@@ -38,7 +40,7 @@ Nathan: What would you like?
 
 If using a condition and a goto on a response line, make sure the goto is provided last.
 
-Conditions can also be used inline in a dialogue line when wrapped with "[if predicate]" and "[/if]".
+Conditions can also be used inline in a dialogue line when wrapped with "[if condition]" and "[/if]".
 
 ```
 Nathan: I have done this [if already_done]once again[/if]

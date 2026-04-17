@@ -469,3 +469,12 @@ msgstr ""
 
 msgid "Static IDs can't be on a line with no other content."
 msgstr ""
+
+msgid "\"{alias}\" will overwrite already registered context alias."
+msgstr ""
+
+msgid "Alias cannot be empty."
+msgstr ""
+
+msgid "Target cannot be null."
+msgstr ""

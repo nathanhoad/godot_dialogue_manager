@@ -30,6 +30,9 @@ signal bridge_mutated(call_index: int)
 ## The list of globals that dialogue can query
 var game_states: Array = []
 
+# Any known state contexts in the current tree.
+var _registered_contexts: Dictionary[String, Node] = {}
+
 ## Allow dialogue to call singletons
 var include_singletons: bool = true
 
@@ -705,6 +708,18 @@ func create_response(data: Dictionary, extra_game_states: Array) -> DialogueResp
 	})
 
 
+## Register a state context. This is handled automatically by [DialogueStateContext] nodes.
+func register_state_context(alias: String, target: Node) -> void:
+	if _registered_contexts.has(alias):
+		push_warning(DMConstants.translate("\"{alias}\" will overwrite already registered context alias.").format({ alias = alias }))
+	_registered_contexts[alias] = target
+
+
+## Unregister a state context. This is handled automatically by [DialogueStateContext] nodes.
+func unregister_state_context(alias: String) -> void:
+	_registered_contexts.erase(alias)
+
+
 # Get the current game states
 func _get_game_states(extra_game_states: Array) -> Array:
 	if not _has_loaded_autoloads:
@@ -726,7 +741,7 @@ func _get_game_states(extra_game_states: Array) -> Array:
 
 	var current_scene: Node = get_current_scene.call()
 	var unique_states: Array = []
-	for state: Variant in extra_game_states + [current_scene] + game_states:
+	for state: Variant in extra_game_states + [_registered_contexts] + [current_scene] + game_states:
 		if state != null and not unique_states.has(state):
 			unique_states.append(state)
 	return unique_states

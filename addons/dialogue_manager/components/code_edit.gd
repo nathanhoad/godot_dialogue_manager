@@ -61,7 +61,10 @@ var STATIC_CONTENT_REGEX: RegEx = RegEx.create_from_string("static (var|func)")
 
 var compiler_regex: DMCompilerRegEx = DMCompilerRegEx.new()
 var _autoloads: Dictionary[String, String] = {}
-var _autoload_member_cache: Dictionary[String, Dictionary] = {}
+var _member_cache: Dictionary[String, Dictionary] = {}
+
+var _current_edited_scene_root: Node
+var _context_cache: Dictionary = {}
 
 
 func _ready() -> void:
@@ -315,13 +318,14 @@ func _add_mutation_completions(current_line: String, cursor: Vector2i) -> void:
 
 	if segments.size() == 1:
 		# Suggest autoloads and state shortcuts
-		auto_completes = _get_autoload_completions(segments[0])
+		auto_completes = _get_top_level_completions(segments[0])
 	elif not is_using_line:
 		if not segments[0] in _autoloads.keys():
 			# See if the first segment is a property of a shortcut
 			var shortcut: String = _find_shortcut_with_member(segments[0])
 			if not shortcut.is_empty():
 				segments.insert(0, shortcut)
+
 		# Suggest members of an autoload or nested property
 		auto_completes = _get_member_completions(segments)
 
@@ -367,7 +371,7 @@ func _find_shortcut_with_member(member_name: String) -> String:
 
 
 # Get completions for autoload names and state shortcut members.
-func _get_autoload_completions(prompt: String) -> Array[Dictionary]:
+func _get_top_level_completions(prompt: String) -> Array[Dictionary]:
 	var completions: Array[Dictionary] = []
 	for autoload: String in _autoloads.keys():
 		if _matches_prompt(prompt, autoload):
@@ -376,6 +380,12 @@ func _get_autoload_completions(prompt: String) -> Array[Dictionary]:
 		for member: Dictionary in _get_members_for_base_script(autoload):
 			if _matches_prompt(prompt, member.name):
 				completions.append({ prompt = prompt, text = member.name, type = member.type })
+
+	# Check for state context aliases.
+	for alias: String in _context_cache.keys():
+		if _matches_prompt(prompt, alias):
+			completions.append({ prompt = prompt, text = alias, type = "context" })
+
 	return completions
 
 
@@ -407,6 +417,8 @@ func _get_member_completions(segments: PackedStringArray) -> Array[Dictionary]:
 # Get the appropriate icon for a member type.
 func _get_icon_for_type(type: String) -> Texture2D:
 	match type:
+		"context":
+			return load("res://addons/dialogue_manager/assets/state_context.svg")
 		"keyword":
 			return get_theme_icon("CodeHighlighter", "EditorIcons")
 		"script":
@@ -476,47 +488,66 @@ func _get_state_shortcuts() -> PackedStringArray:
 		if extra_script_source:
 			shortcuts.append(extra_script_source)
 
+	var edited_scene_root: Node = EditorInterface.get_edited_scene_root()
+
 	# Check for current open scene
-	if DMSettings.get_user_value("autocomplete_current_scene", false):
-		var edited_scene: Node = EditorInterface.get_edited_scene_root()
-		if is_instance_valid(edited_scene):
-			var script: Script = edited_scene.get_script()
-			if is_instance_valid(script):
-				shortcuts.append(script.resource_path)
+	if DMSettings.get_user_value("autocomplete_current_scene", false) and is_instance_valid(edited_scene_root):
+		var script: Script = edited_scene_root.get_script()
+		if is_instance_valid(script):
+			shortcuts.append(script.resource_path)
+
+	# Autocomplete from any context nodes in the edited scene tree
+	if edited_scene_root != _current_edited_scene_root:
+		_context_cache.clear()
+		_current_edited_scene_root = edited_scene_root
+		if is_instance_valid(edited_scene_root):
+			var context_nodes: Array = edited_scene_root.find_children("*", "DialogueStateContext", true, false)
+			for context_node: DialogueStateContext in context_nodes:
+				if context_node.target.get_script():
+					_context_cache[context_node.alias] = context_node.target.get_script()
 
 	return shortcuts
 
 
-# Get all members (methods, properties, signals, constants) for an autoload.
-func _get_members_for_base_script(base_script_name: String) -> Array[Dictionary]:
-	# Debounce method list lookups
-	if _autoload_member_cache.has(base_script_name) \
-	and _autoload_member_cache.get(base_script_name).get("at") > Time.get_ticks_msec() - 10000:
-		return _autoload_member_cache.get(base_script_name).get("members")
+# Get all members (methods, properties, signals, constants) for an top level object.
+func _get_members_for_base_script(base_script: Variant) -> Array[Dictionary]:
+	var script: Script
 
-	if not _autoloads.has(base_script_name) \
-	and not base_script_name.begins_with("res://") \
-	and not base_script_name.begins_with("uid://"):
-		return []
+	if base_script is String:
+		# Debounce method list lookups
+		if _member_cache.has(base_script) \
+		and _member_cache.get(base_script).get("at") > Time.get_ticks_msec() - 10000:
+			return _member_cache.get(base_script).get("members")
 
-	var autoload: Variant = load(_autoloads.get(base_script_name, base_script_name))
-	if autoload is PackedScene:
-		var node: Node = autoload.instantiate()
-		autoload = node.get_script()
-		node.free()
+		if _context_cache.has(base_script):
+			script = _context_cache.get(base_script)
+		else:
+			if not _autoloads.has(base_script) \
+			and not base_script.begins_with("res://") \
+			and not base_script.begins_with("uid://"):
+				return []
 
-	if autoload == null: return []
+			var autoload: Variant = load(_autoloads.get(base_script, base_script))
+			if autoload is PackedScene:
+				var node: Node = autoload.instantiate()
+				autoload = node.get_script()
+				node.free()
 
-	var script: Script = autoload if autoload is Script else autoload.get_script()
+			if autoload == null: return []
+
+			script = autoload if autoload is Script else autoload.get_script()
+	else:
+		script = base_script
 
 	if not is_instance_valid(script): return []
 
 	var members: Array[Dictionary] = _get_members_for_script(script)
 
-	_autoload_member_cache[base_script_name] = {
-		at = Time.get_ticks_msec(),
-		members = members
-	}
+	if base_script is String:
+		_member_cache[base_script] = {
+			at = Time.get_ticks_msec(),
+			members = members
+		}
 
 	return members
 
