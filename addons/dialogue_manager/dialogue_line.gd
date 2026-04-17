@@ -89,10 +89,13 @@ func _to_string() -> String:
 
 ## Check if a dialogue line has a given tag.
 func has_tag(tag_name: String) -> bool:
-	var wrapped: String = "%s=" % tag_name
-	for t in tags:
-		if t.begins_with(wrapped):
-			return true
+	if tags.has(tag_name):
+		return true
+	else:
+		var wrapped: String = "%s=" % tag_name
+		for t in tags:
+			if t.begins_with(wrapped):
+				return true
 	return false
 
 

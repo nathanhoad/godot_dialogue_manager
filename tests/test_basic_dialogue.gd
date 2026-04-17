@@ -157,6 +157,22 @@ func test_can_parse_tags() -> void:
 	assert(output.lines["0"].tags[1] == "tag2", "Should have tag2 tag.")
 
 
+func test_can_use_tag_values() -> void:
+	var resource: DialogueResource = create_resource("
+~ start
+Nathan: Hello [#mood=happy]
+Nathan: Bye [#simple]
+=> END")
+
+	var line: DialogueLine = await resource.get_next_dialogue_line("start")
+	assert(line.has_tag("mood"), "Should have tag.")
+	assert(line.get_tag_value("mood") == "happy", "Should get tag value.")
+
+	line = await resource.get_next_dialogue_line(line.next_id)
+	assert(line.has_tag("simple"), "Should have simple tag.")
+	assert(line.get_tag_value("simple") == "", "Should have no value.")
+
+
 func test_can_parse_random_lines() -> void:
 	var output: DMCompilerResult = compile("
 % Nathan: Random 1.
