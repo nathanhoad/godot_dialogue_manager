@@ -488,3 +488,6 @@ msgstr "Alias cannot be empty."
 
 msgid "Target cannot be null."
 msgstr "Target cannot be null."
+
+msgid "Cannot refresh dialogue line because its ID is missing a resource UID."
+msgstr "Cannot refresh dialogue line because its ID is missing a resource UID."

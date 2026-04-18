@@ -694,7 +694,7 @@ func parse_character_and_dialogue(tree_line: DMTreeLine, line: DMCompiledLine, s
 	var result: int = OK
 
 	var text: String = tree_line.text
-	
+
 	# Remove escape character
 	if text.begins_with("\\using"): text = text.substr(1)
 	if text.begins_with("\\if"): text = text.substr(1)

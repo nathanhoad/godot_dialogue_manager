@@ -75,12 +75,37 @@ func _init(data: Dictionary = {}) -> void:
 				mutation = data.mutation
 
 
+## Reload this line from it's resource.
+func refresh() -> void:
+	if not "@" in id:
+		push_warning(DMConstants.translate("Cannot refresh dialogue line because its ID is missing a resource UID."))
+		return
+
+	var resource: DialogueResource = load("uid://%s" % id.split("@")[0])
+	var next_dialogue_line: DialogueLine = await resource.get_next_dialogue_line(next_id, extra_game_states)
+	type = next_dialogue_line.type
+	next_id = next_dialogue_line.next_id
+	character = next_dialogue_line.character
+	character_replacements = next_dialogue_line.character_replacements
+	text = next_dialogue_line.text
+	text_replacements = next_dialogue_line.text_replacements
+	static_id = next_dialogue_line.static_id
+	speeds = next_dialogue_line.speeds
+	inline_mutations = next_dialogue_line.inline_mutations
+	responses = next_dialogue_line.responses
+	concurrent_lines = next_dialogue_line.concurrent_lines
+	extra_game_states = next_dialogue_line.extra_game_states
+	time = next_dialogue_line.time
+	tags = next_dialogue_line.tags
+	mutation = next_dialogue_line.mutation
+
+
 ## Restore a [DialogueLine] from a [code]to_serialized[/code] string, providing any extra
 ## game states that would have been used fetch the line in the first place.
 static func new_from_serialized(serialized_data: String, extra_game_states_: Array = []) -> DialogueLine:
 	var bits: PackedStringArray = serialized_data.split("=>")
 	var id_bits: PackedStringArray = bits[0].split("@")
-	var resource: DialogueResource = load("uid://" + id_bits[0])
+	var resource: DialogueResource = load("uid://%s" % id_bits[0])
 	var line: DialogueLine = await resource.get_next_dialogue_line(id_bits[1], extra_game_states_)
 	line.next_id = bits[1]
 	return line

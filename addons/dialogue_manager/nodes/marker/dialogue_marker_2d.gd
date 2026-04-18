@@ -10,6 +10,8 @@ class_name DialogueMarker2D extends Marker2D
 @export var character_name: String = ""
 
 
+#region Static
+
 ## Get all [DialogueMarker2D] nodes.
 static func all() -> Array[DialogueMarker2D]:
 	var markers: Array[DialogueMarker2D] = []
@@ -26,10 +28,19 @@ static func find_for_character(target_character_name: String) -> DialogueMarker2
 	return null
 
 
+#endregion
+
+
 func _ready() -> void:
 	add_to_group("2d_dialogue_markers")
+
+
+#region Helpers
 
 
 ## Get the marker's position relative to the viewport.
 func get_position_in_viewport() -> Vector2:
 	return get_global_transform_with_canvas().origin
+
+
+#endregion
