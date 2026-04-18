@@ -83,29 +83,6 @@ Restore a serialized line of dialogue. Pass in an array of game states if needed
 > Serializing only works with persisted resources, not resources that have been created with `DialogueManager.create_resource_from_text()`.
 
 
-## `DialogueLabel`
+## Nodes
 
-### Exports
-
-- `seconds_per_step: float = 0.02` - the speed at which the text types out.
-- `pause_at_characters: String = ".?!"` - automatically have a brief pause when these characters are encountered.
-- `skip_pause_at_character_if_followed_by: String = ")\""` - ignore automatic pausing if the pause character is followed by one of these.
-- `skip_pause_at_abbreviations: Array = ["Mr", "Mrs", "Ms", "Dr", "etc", "ex"]` - don't auto pause after these abbreviations (only if "." is in `pause_at_characters`).
-- `seconds_per_pause_step: float = 0.3` - the amount of time to pause when exposing a character present in pause_at_characters.
-
-### Signals
-
-- `spoke(letter: String, letter_index: int, speed: float)` - emitted each step while typing out.
-- `started_typing()` - emitted when the label starts typing.
-- `skipped_typing()` - emitted when the player skips the label typing out.
-- `finished_typing()` - emitted when the label finishes typing.
-
-### Methods
-
-#### `func type_out() -> void`
-
-Starts typing out the text of the label.
-
-#### `func skip_typing() -> void`
-
-Stop typing out the text and jump right to the end. This will emit `skipped_typing`.
+See [Nodes](./Nodes.md)

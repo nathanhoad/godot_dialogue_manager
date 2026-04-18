@@ -478,3 +478,6 @@ msgstr ""
 
 msgid "Target cannot be null."
 msgstr ""
+
+msgid "Cannot refresh dialogue line because its ID is missing a resource UID."
+msgstr ""

@@ -104,7 +104,7 @@ func _notification(what: int) -> void:
 	if what == NOTIFICATION_TRANSLATION_CHANGED and _locale != TranslationServer.get_locale() and is_instance_valid(dialogue_label):
 		_locale = TranslationServer.get_locale()
 		var visible_ratio: float = dialogue_label.visible_ratio
-		dialogue_line = await dialogue_resource.get_next_dialogue_line(dialogue_line.id)
+		await dialogue_line.refresh()
 		if visible_ratio < 1:
 			dialogue_label.skip_typing()
 

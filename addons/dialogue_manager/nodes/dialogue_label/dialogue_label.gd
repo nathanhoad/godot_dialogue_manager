@@ -1,4 +1,4 @@
-@icon("./assets/icon.svg")
+@icon("uid://s0s1348tpm6d")
 
 @tool
 

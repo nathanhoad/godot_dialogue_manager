@@ -10,6 +10,8 @@ class_name DialogueMarker3D extends Marker3D
 @export var character_name: String = ""
 
 
+#region Static
+
 ## Get all [DialogueMarker3D] nodes.
 static func all() -> Array[DialogueMarker3D]:
 	var markers: Array[DialogueMarker3D] = []
@@ -26,8 +28,14 @@ static func find_for_character(target_character_name: String) -> DialogueMarker3
 	return null
 
 
+#endregion
+
+
 func _ready() -> void:
 	add_to_group("3d_dialogue_markers")
+
+
+#region Helpers
 
 
 ## Get the marker's position relative to the viewport.
@@ -37,3 +45,6 @@ func get_position_in_viewport() -> Vector2:
 		return camera.unproject_position(global_position)
 	else:
 		return Vector2.ZERO
+
+
+#endregion
