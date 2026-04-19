@@ -15,7 +15,7 @@ func _make_line(text: String) -> DialogueLine:
 
 
 func _before_each() -> void:
-	label = load("res://addons/dialogue_manager/dialogue_label.tscn").instantiate()
+	label = load("res://addons/dialogue_manager/nodes/dialogue_label/dialogue_label.tscn").instantiate()
 	Engine.get_main_loop().current_scene.add_child(label)
 
 
