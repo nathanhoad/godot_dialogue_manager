@@ -191,7 +191,7 @@ func get_line(resource: DialogueResource, key: String, extra_game_states: Array)
 
 	# If next_id is an expression we need to resolve it.
 	if data.has(&"next_id_expression"):
-		data.next_id = await _resolve(data.next_id_expression, extra_game_states)
+		data.next_id = await _resolve(data.next_id_expression.duplicate(true), extra_game_states)
 
 	# This cue key points to another cue key so we should jump there instead
 	if data.type == DMConstants.TYPE_CUE and data.next_id in resource.cues.values():
@@ -810,7 +810,6 @@ func _check_case_value(match_value: Variant, data: Dictionary, extra_game_states
 				return true
 
 	return false
-
 
 
 # Make a change to game state or run a method

@@ -115,7 +115,11 @@ func test_can_run_expression_jumps() -> void:
 ~ start
 Nathan: Start.
 Nathan: Restart?
-=> {{StateForTests.jump_target}}")
+=> {{StateForTests.jump_target}}
+
+~ other_cue
+Nathan: The other one.
+=> END")
 
 	StateForTests.jump_target = "start"
 
@@ -127,3 +131,10 @@ Nathan: Restart?
 
 	line = await resource.get_next_dialogue_line(line.next_id)
 	assert(line.text == "Start.", "Line should be back to first line.")
+
+	StateForTests.jump_target = "other_cue"
+
+	line = await resource.get_next_dialogue_line("start")
+	line = await resource.get_next_dialogue_line(line.next_id)
+	line = await resource.get_next_dialogue_line(line.next_id)
+	assert(line.text == "The other one.", "Should be at the other cue.")
