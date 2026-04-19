@@ -195,7 +195,7 @@ func get_line(resource: DialogueResource, key: String, extra_game_states: Array)
 
 	# If next_id is an expression we need to resolve it.
 	if data.has(&"next_id_expression"):
-		data.next_id = await _resolve(data.next_id_expression, extra_game_states)
+		data.next_id = await _resolve(data.next_id_expression.duplicate(true), extra_game_states)
 
 	# This title key points to another title key so we should jump there instead
 	if data.type == DMConstants.TYPE_TITLE and data.next_id in resource.titles.values():
