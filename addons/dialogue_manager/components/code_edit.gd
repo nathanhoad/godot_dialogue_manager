@@ -333,12 +333,11 @@ func _add_mutation_completions(current_line: String, cursor: Vector2i) -> void:
 
 	# Add true/false
 	if prompt.length() > 1:
-		var icon: Texture2D = _get_icon_for_type("keyword")
-		var color: Color = theme_overrides.conditions_color
+		var icon: Texture2D = _get_icon_for_type("bool")
 		if "true".contains(prompt):
-			add_code_completion_option(CodeEdit.KIND_CONSTANT, "true", "true".substr(prompt.length()), color, icon)
+			add_code_completion_option(CodeEdit.KIND_CONSTANT, "true", "true".substr(prompt.length()), Color.WHITE, icon)
 		if "false".contains(prompt):
-			add_code_completion_option(CodeEdit.KIND_CONSTANT, "false", "false".substr(prompt.length()), color, icon)
+			add_code_completion_option(CodeEdit.KIND_CONSTANT, "false", "false".substr(prompt.length()), Color.WHITE, icon)
 
 	# Remove duplicates
 	var unique_auto_completes: PackedStringArray = []
@@ -419,6 +418,8 @@ func _get_icon_for_type(type: String) -> Texture2D:
 	match type:
 		"context":
 			return load("uid://c22t5famre1yo")
+		"bool":
+			return get_theme_icon("bool", "EditorIcons")
 		"keyword":
 			return get_theme_icon("CodeHighlighter", "EditorIcons")
 		"script":
