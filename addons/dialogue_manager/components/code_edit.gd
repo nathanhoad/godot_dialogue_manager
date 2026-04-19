@@ -418,7 +418,7 @@ func _get_member_completions(segments: PackedStringArray) -> Array[Dictionary]:
 func _get_icon_for_type(type: String) -> Texture2D:
 	match type:
 		"context":
-			return load("res://addons/dialogue_manager/assets/state_context.svg")
+			return load("uid://c22t5famre1yo")
 		"keyword":
 			return get_theme_icon("CodeHighlighter", "EditorIcons")
 		"script":
@@ -819,7 +819,7 @@ func _resolve_mutation_symbol_at_position(line_text: String, column: int) -> Dic
 	var segments: PackedStringArray = full_chain.split(".")
 
 	# Check if it starts with an autoload
-	if not segments[0] in _autoloads.keys():
+	if not segments[0] in _autoloads.keys() and not segments[0] in _context_cache.keys():
 		var shortcut: String = _find_shortcut_with_member(segments[0])
 		if shortcut.is_empty():
 			return {}
@@ -839,6 +839,12 @@ func _resolve_mutation_symbol_at_position(line_text: String, column: int) -> Dic
 			target = node.get_script()
 			node.free()
 		target_script = target if target is Script else target.get_script()
+	elif segments.size() == 1 and _context_cache.has(segments[0]):
+		return {
+			"script": _context_cache.get(segments[0]),
+			"member_name": "class_name",
+			"symbol": symbol
+		}
 	else:
 		var object_segments: PackedStringArray = segments.slice(0, segments.size() - 1)
 		target_script = _resolve_script_for_property_chain(object_segments)
@@ -1030,25 +1036,27 @@ func _is_in_mutation_context(line: String, cursor_x: int) -> bool:
 func _resolve_script_for_property_chain(segments: PackedStringArray) -> Variant:
 	if segments.size() == 0: return null
 
-	var autoload: Variant = null
+	var thing: Variant = null
 
 	if segments[0].begins_with("uid://") or segments[0].begins_with("res://"):
-		autoload = load(segments[0])
+		thing = load(segments[0])
 	elif _autoloads.has(segments[0]):
-		autoload = load(_autoloads.get(segments[0]))
+		thing = load(_autoloads.get(segments[0]))
+	elif _context_cache.has(segments[0]):
+		thing = _context_cache.get(segments[0])
 	else:
 		return null
 
-	if autoload is PackedScene:
-		var node: Node = autoload.instantiate()
-		autoload = node.get_script()
+	if thing is PackedScene:
+		var node: Node = thing.instantiate()
+		thing = node.get_script()
 		node.free()
-	elif autoload == null:
+	elif thing == null:
 		return null
-	elif not autoload is Script:
-		autoload = autoload.get_script()
+	elif not thing is Script:
+		thing = thing.get_script()
 
-	var current_script: Variant = autoload
+	var current_script: Variant = thing
 
 	if not is_instance_valid(current_script): return null
 	if (segments.size() == 1): return current_script
@@ -1401,8 +1409,8 @@ func _on_code_edit_symbol_validate(symbol: String) -> void:
 
 	# Check if it's a mutation line symbol
 	var symbol_info: Dictionary = _resolve_mutation_symbol_at_position(line_text, cursor.x)
-	if not symbol_info.is_empty() and symbol_info.get("symbol") == symbol:
-		var script: Script = symbol_info.get("script")
+	if not symbol_info.is_empty() and symbol_info.symbol == symbol:
+		var script: Script = symbol_info.script
 		var member_name: String = symbol_info.get("member_name")
 		if member_name == "class_name":
 			set_symbol_lookup_word_as_valid(true)
@@ -1445,9 +1453,9 @@ func _on_code_edit_symbol_lookup(symbol: String, line: int, column: int) -> void
 
 	# Check if it's a mutation line symbol
 	var symbol_info: Dictionary = _resolve_mutation_symbol_at_position(line_text, column)
-	if not symbol_info.is_empty() and symbol_info.get("symbol") == symbol:
-		var script: Script = symbol_info.get("script")
-		var member_name: String = symbol_info.get("member_name")
+	if not symbol_info.is_empty() and symbol_info.symbol == symbol:
+		var script: Script = symbol_info.script
+		var member_name: String = symbol_info.member_name
 		if member_name == "class_name":
 			EditorInterface.edit_script(script, 1, 0, true)
 			EditorInterface.set_main_screen_editor.call_deferred("Script")
