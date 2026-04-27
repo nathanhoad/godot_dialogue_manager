@@ -432,23 +432,20 @@ func _shift_markers(markers: DMResolvedLineData, removed_start: int, removed_end
 	# Calculate the offset for markers after the removed range
 	var after_offset: int = removed_end - removed_start - body_length
 
-	for key: StringName in [&"speeds", &"time"]:
-		if markers.get(key) == null: continue
-		var marker: Variant = markers.get(key)
-		var next_marker: Dictionary = {}
-		for index: int in marker:
-			if index < removed_start:
-				next_marker[index] = marker[index]
-			elif index >= removed_end:
-				next_marker[index - after_offset] = marker[index]
-			elif keep_inner:
-				# Marker is inside the conditional range and should be kept
-				# Shift it to account for the [if] tag being removed
-				next_marker[removed_start] = marker[index]
-			else:
-				# marker is inside a failed conditional, remove it
-				continue
-		markers.set(key, next_marker)
+	var next_speeds: Dictionary = {}
+	for index: int in markers.speeds:
+		if index < removed_start:
+			next_speeds[index] = markers.speeds[index]
+		elif index >= removed_end:
+			next_speeds[index - after_offset] = markers.speeds[index]
+		elif keep_inner:
+			# Marker is inside the conditional range and should be kept
+			# Shift it to account for the [if] tag being removed
+			next_speeds[removed_start] = markers.speeds[index]
+		else:
+			# marker is inside a failed conditional, remove it
+			continue
+	markers.speeds = next_speeds
 
 	var next_mutations: Array[Array] = []
 	for mutation: Array in markers.mutations:
