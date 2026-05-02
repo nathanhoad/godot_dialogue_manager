@@ -4,9 +4,11 @@ The Dialogue Manager runtime is stateless. What that means is your game is the a
 
 There are a bunch of ways to expose your game state to dialogue.
 
-- **Autoloads** - The simplest is autoloads. Any globals defined in Godot's autoloads will be available to dialogue directly.
+- **Globals** - The simplest is autoloads. Any globals defined in Godot's autoloads will be available to dialogue directly.
 - **DialogueStateContext Nodes** - Add `DialogueStateContext` nodes to a scene to make it available whenever that node exists in the current scene tree.
 - **extra_game_states** - The last resort is usually passing an array of extra nodes or dictionaries to `get_next_dialogue_line` that contain more state. This approach is the most brittle.
+
+To see which context nodes and globals are currently available at runtime, you can check in the "Dialogue" tab in the debugger. This also shows a history of each dialogue line that has been run.
 
 ## DialogueStateContext Nodes
 

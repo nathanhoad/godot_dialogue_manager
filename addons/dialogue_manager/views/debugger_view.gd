@@ -27,7 +27,7 @@ var autoloads: Dictionary = {}:
 @onready var content: HSplitContainer = %Content
 @onready var state_tree: Tree = %StateTree
 @onready var history_label: Label = %HistoryLabel
-@onready var log: RichTextLabel = %Log
+@onready var log_output: RichTextLabel = %LogOutput
 @onready var clear_button: Button = %ClearButton
 
 
@@ -44,7 +44,7 @@ func _ready() -> void:
 
 
 func start() -> void:
-	log.clear()
+	log_output.clear()
 	runtime_warning.hide()
 	content.show()
 
@@ -69,20 +69,20 @@ func add_line(id: String) -> void:
 	match line.type:
 		DMConstants.TYPE_DIALOGUE:
 			if line.has("character"):
-				log.append_text("{prefix}[b]{character}:[/b] {text}\n".format({
+				log_output.append_text("{prefix}[b]{character}:[/b] {text}\n".format({
 					prefix = prefix,
 					character = line.character,
 					text = line.text
 				}))
 			else:
-				log.append_text("{prefix}{text}".format({
+				log_output.append_text("{prefix}{text}".format({
 					prefix = prefix,
 					text = line.text
 				}))
 
 		DMConstants.TYPE_MUTATION:
 			var dialogue: String = FileAccess.get_file_as_string(resource_and_id.resource.resource_path)
-			log.append_text("{prefix}[color={color}]{mutation}[/color]\n".format({
+			log_output.append_text("{prefix}[color={color}]{mutation}[/color]\n".format({
 				prefix = prefix,
 				color = Color(DMThemeValues.get_values_from_editor().mutations_color, 0.5).to_html(),
 				mutation = dialogue.split("\n")[line.id.to_int()]
@@ -105,7 +105,7 @@ func _update_state_tree() -> void:
 	item = state_tree.create_item(root)
 	item.set_selectable(0, false)
 	item.set_icon(0, get_theme_icon("Object", "EditorIcons"))
-	item.set_text(0, DMConstants.translate("Autoloads"))
+	item.set_text(0, DMConstants.translate("Globals"))
 	create_state_items(item, autoloads)
 
 
@@ -151,7 +151,7 @@ func _on_state_tree_item_selected() -> void:
 	session.send_message("dm:select_node", [context.instance_id])
 
 
-func _on_state_tree_button_clicked(item: TreeItem, column: int, id: int, mouse_button_index: int) -> void:
+func _on_state_tree_button_clicked(item: TreeItem, _column: int, id: int, mouse_button_index: int) -> void:
 	if mouse_button_index != MOUSE_BUTTON_LEFT: return
 
 	match id:
@@ -160,7 +160,7 @@ func _on_state_tree_button_clicked(item: TreeItem, column: int, id: int, mouse_b
 
 
 func _on_clear_button_pressed() -> void:
-	log.clear()
+	log_output.clear()
 
 
 func _on_log_meta_clicked(meta: Variant) -> void:

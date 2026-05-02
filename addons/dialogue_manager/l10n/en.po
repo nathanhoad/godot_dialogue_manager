@@ -491,3 +491,24 @@ msgstr "Target cannot be null."
 
 msgid "Cannot refresh dialogue line because its ID is missing a resource UID."
 msgstr "Cannot refresh dialogue line because its ID is missing a resource UID."
+
+msgid "None"
+msgstr "None"
+
+msgid "Dialogue"
+msgstr "Dialogue"
+
+msgid "{game_name} isn't running."
+msgstr "{game_name} isn't running."
+
+msgid "History"
+msgstr "History"
+
+msgid "Clear"
+msgstr "Clear"
+
+msgid "Context Nodes"
+msgstr "Context Nodes"
+
+msgid "Globals"
+msgstr "Globals"

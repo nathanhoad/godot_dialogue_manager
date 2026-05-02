@@ -15,7 +15,7 @@ unique_name_in_owner = true
 layout_mode = 2
 size_flags_vertical = 1
 theme_override_colors/font_color = Color(0, 0, 0, 1)
-text = "Bravest Coconut isn't running."
+text = "Dialogue Manager isn't running."
 horizontal_alignment = 1
 vertical_alignment = 1
 
@@ -54,7 +54,7 @@ unique_name_in_owner = true
 layout_mode = 2
 flat = true
 
-[node name="Log" type="RichTextLabel" parent="Content/LogContainer" unique_id=149198174]
+[node name="LogOutput" type="RichTextLabel" parent="Content/LogContainer" unique_id=149198174]
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 3
@@ -69,4 +69,4 @@ drag_and_drop_selection_enabled = false
 [connection signal="button_clicked" from="Content/StateTree" to="." method="_on_state_tree_button_clicked"]
 [connection signal="item_selected" from="Content/StateTree" to="." method="_on_state_tree_item_selected"]
 [connection signal="pressed" from="Content/LogContainer/LogToolbar/ClearButton" to="." method="_on_clear_button_pressed"]
-[connection signal="meta_clicked" from="Content/LogContainer/Log" to="." method="_on_log_meta_clicked"]
+[connection signal="meta_clicked" from="Content/LogContainer/LogOutput" to="." method="_on_log_meta_clicked"]

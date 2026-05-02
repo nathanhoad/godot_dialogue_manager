@@ -481,3 +481,24 @@ msgstr ""
 
 msgid "Cannot refresh dialogue line because its ID is missing a resource UID."
 msgstr ""
+
+msgid "None"
+msgstr ""
+
+msgid "Dialogue"
+msgstr ""
+
+msgid "{game_name} isn't running."
+msgstr ""
+
+msgid "History"
+msgstr ""
+
+msgid "Clear"
+msgstr ""
+
+msgid "Context Nodes"
+msgstr ""
+
+msgid "Globals"
+msgstr ""
