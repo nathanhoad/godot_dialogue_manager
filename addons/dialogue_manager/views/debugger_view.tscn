@@ -1,0 +1,72 @@
+[gd_scene format=3 uid="uid://iq0auavinobq"]
+
+[ext_resource type="Script" uid="uid://bwbcna2qcjs3c" path="res://addons/dialogue_manager/views/debugger_view.gd" id="1_rkwgn"]
+
+[node name="DebuggerView" type="PanelContainer" unique_id=2089218636]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_rkwgn")
+
+[node name="RuntimeWarning" type="Label" parent="." unique_id=1661318654]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_vertical = 1
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+text = "Bravest Coconut isn't running."
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Content" type="HSplitContainer" parent="." unique_id=655238255]
+unique_name_in_owner = true
+layout_mode = 2
+
+[node name="StateTree" type="Tree" parent="Content" unique_id=1715443994]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+columns = 2
+allow_reselect = true
+hide_root = true
+select_mode = 1
+
+[node name="LogContainer" type="VBoxContainer" parent="Content" unique_id=1181575931]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="LogToolbar" type="HBoxContainer" parent="Content/LogContainer" unique_id=981432217]
+layout_mode = 2
+
+[node name="HistoryLabel" type="Label" parent="Content/LogContainer/LogToolbar" unique_id=901216255]
+unique_name_in_owner = true
+layout_mode = 2
+text = "History"
+
+[node name="Control" type="Control" parent="Content/LogContainer/LogToolbar" unique_id=2099645908]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="ClearButton" type="Button" parent="Content/LogContainer/LogToolbar" unique_id=202664467]
+unique_name_in_owner = true
+layout_mode = 2
+flat = true
+
+[node name="Log" type="RichTextLabel" parent="Content/LogContainer" unique_id=149198174]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+focus_mode = 2
+bbcode_enabled = true
+fit_content = true
+scroll_following = true
+selection_enabled = true
+drag_and_drop_selection_enabled = false
+
+[connection signal="button_clicked" from="Content/StateTree" to="." method="_on_state_tree_button_clicked"]
+[connection signal="item_selected" from="Content/StateTree" to="." method="_on_state_tree_item_selected"]
+[connection signal="pressed" from="Content/LogContainer/LogToolbar/ClearButton" to="." method="_on_clear_button_pressed"]
+[connection signal="meta_clicked" from="Content/LogContainer/Log" to="." method="_on_log_meta_clicked"]

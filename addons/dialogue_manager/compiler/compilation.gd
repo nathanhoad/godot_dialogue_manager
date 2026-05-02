@@ -447,7 +447,8 @@ func parse_when_line(tree_line: DMTreeLine, line: DMCompiledLine, siblings: Arra
 		result = add_error(tree_line.line_number, tree_line.indent, DMConstants.ERR_INVALID_CONDITION_INDENTATION)
 
 	# The next line after a when is the same as its parent match line
-	line.next_id_after = parent.next_id_after
+	if parent != null:
+		line.next_id_after = parent.next_id_after
 
 	# Extract the condition to match to
 	var condition: Dictionary = extract_condition(tree_line.text, false, tree_line.indent)
