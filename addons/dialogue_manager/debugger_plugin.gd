@@ -1,6 +1,12 @@
+@tool
+
 class_name DMDebuggerPlugin extends EditorDebuggerPlugin
 
 
+const DebuggerView: PackedScene = preload("./views/debugger_view.tscn")
+
+
+var debugger_view: DMDebuggerView
 var debug_info: Dictionary = {}
 
 
@@ -11,15 +17,31 @@ func _setup_session(session_id: int) -> void:
 	session.continued.connect(_on_continued)
 	session.stopped.connect(_on_stopped)
 
+	debugger_view = DebuggerView.instantiate()
+	debugger_view.name = DMConstants.translate("Dialogue")
+	debugger_view.session = session
+	session.add_session_tab(debugger_view)
+
 
 func _has_capture(capture: String) -> bool:
 	return capture == "dm"
 
 
 func _capture(message: String, data: Array, _session_id: int) -> bool:
-	if message == "dm:debug":
-		debug_info = data[0]
-		return true
+	match message:
+		"dm:debug":
+			debug_info = data[0]
+			return true
+
+		"dm:state":
+			debugger_view.contexts = data[0]
+			debugger_view.autoloads = data[1]
+			return true
+
+		"dm:get_line":
+			debugger_view.add_line(data[0])
+			return true
+
 	return false
 
 
@@ -27,6 +49,7 @@ func _capture(message: String, data: Array, _session_id: int) -> bool:
 
 
 func _on_started() -> void:
+	debugger_view.start()
 	debug_info = {}
 
 
@@ -51,5 +74,6 @@ func _on_continued() -> void:
 
 
 func _on_stopped() -> void:
+	debugger_view.stop()
 	DMPlugin.instance.main_view.code_edit.runtime_error = null
 	debug_info = {}

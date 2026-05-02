@@ -75,6 +75,26 @@ func _ready() -> void:
 
 	ignore_missing_state_values = DMSettings.get_setting(DMSettings.IGNORE_MISSING_STATE_VALUES, false)
 
+	if EngineDebugger.is_active():
+		EngineDebugger.register_message_capture("dm", _capture)
+		# If this is a debug build we can preload autoloads (otherwise this is
+		# done on the first state request.
+		_load_autoloads()
+
+
+# Receive messages from the debugger
+func _capture(message: String, data: Array) -> bool:
+	match message:
+		"select_node":
+			var payload: Array = [
+				data[0],
+				instance_from_id(data[0]).get_class(),
+				[]
+			]
+			EngineDebugger.send_message("remote_objects_selected", [payload])
+			return true
+	return false
+
 
 ## Step through lines and run any mutations until we either hit some dialogue or the end of the conversation
 func get_next_dialogue_line(resource: DialogueResource, key: String = "", extra_game_states: Array = [], mutation_behaviour: DMConstants.MutationBehaviour = DMConstants.MutationBehaviour.Wait) -> DialogueLine:
@@ -105,29 +125,29 @@ func _get_next_dialogue_line(resource: DialogueResource, key: String = "", extra
 	_inject_state("self", resource, extra_game_states)
 
 	# Get the line data
-	var dialogue: DialogueLine = await get_line(resource, key, extra_game_states)
+	var dialogue_line: DialogueLine = await get_line(resource, key, extra_game_states)
 
 	# If our dialogue is nothing then we hit the end
-	if not _is_valid(dialogue):
+	if not _is_valid(dialogue_line):
 		return null
 
 	# Run the mutation if it is one
-	if dialogue.type == DMConstants.TYPE_MUTATION:
-		var actual_next_id: String = dialogue.next_id.split("|")[0]
+	if dialogue_line.type == DMConstants.TYPE_MUTATION:
+		var actual_next_id: String = dialogue_line.next_id.split("|")[0]
 		match mutation_behaviour:
 			DMConstants.MutationBehaviour.Wait:
-				await _mutate(dialogue.mutation, dialogue.extra_game_states)
+				await _mutate(dialogue_line.mutation, dialogue_line.extra_game_states)
 			DMConstants.MutationBehaviour.DoNotWait:
-				_mutate(dialogue.mutation, dialogue.extra_game_states)
+				_mutate(dialogue_line.mutation, dialogue_line.extra_game_states)
 			DMConstants.MutationBehaviour.Skip:
 				pass
 		if actual_next_id in [DMConstants.ID_END_CONVERSATION, DMConstants.ID_NULL, null]:
 			return null
 		else:
-			return await _get_next_dialogue_line(resource, dialogue.next_id, dialogue.extra_game_states, mutation_behaviour)
+			return await _get_next_dialogue_line(resource, dialogue_line.next_id, dialogue_line.extra_game_states, mutation_behaviour)
 	else:
-		got_dialogue.emit.call_deferred(dialogue)
-		return dialogue
+		got_dialogue.emit.call_deferred(dialogue_line)
+		return dialogue_line
 
 
 ## Get a line by its ID
@@ -340,6 +360,10 @@ func get_line(resource: DialogueResource, key: String, extra_game_states: Array)
 			line.set(&"responses", await _get_responses(next_line.get(&"responses", []), resource, id_trail, extra_game_states))
 
 	line.next_id = "|".join(stack) if line.next_id == DMConstants.ID_NULL else _get_id_with_resource(resource, line.next_id) + id_trail
+
+	if EngineDebugger.is_active():
+		EngineDebugger.send_message("dm:get_line", [line.id])
+
 	return line
 
 
@@ -625,7 +649,8 @@ func show_error_for_missing_state_value(message: String, extra_game_states: Arra
 		push_error(message)
 	elif will_show:
 		# Let the debugger know before we break
-		EngineDebugger.send_message("dm:debug", [extra_game_states[0].debugger])
+		if EngineDebugger.is_active():
+			EngineDebugger.send_message("dm:debug", [extra_game_states[0].debugger])
 
 		# If you're here then you're missing a method or property in your game state. The error
 		# message down in the debugger will give you some more information.
@@ -710,15 +735,59 @@ func register_state_context(alias: String, target: Node) -> void:
 	if _registered_contexts.has(alias):
 		push_warning(DMConstants.translate("\"{alias}\" will overwrite already registered context alias.").format({ alias = alias }))
 	_registered_contexts[alias] = target
+	_send_state_to_debugger()
 
 
 ## Unregister a state context. This is handled automatically by [DialogueStateContext] nodes.
 func unregister_state_context(alias: String) -> void:
 	_registered_contexts.erase(alias)
+	_send_state_to_debugger()
+
+
+# Let the debugger know about the latest state
+func _send_state_to_debugger() -> void:
+	if not EngineDebugger.is_active(): return
+
+	var serialised_context: Dictionary = {}
+	for key: String in _registered_contexts.keys():
+		serialised_context[key] = _get_serialised_state_node(
+			key,
+			_registered_contexts.get(key)
+		)
+	var serialised_autoloads: Dictionary = {}
+	for key: String in _autoloads.keys():
+		serialised_autoloads[key] = _get_serialised_state_node(
+			key,
+			_autoloads.get(key)
+		)
+	EngineDebugger.send_message("dm:state", [serialised_context, serialised_autoloads])
+
+
+func _get_serialised_state_node(key: String, node: Node) -> Dictionary:
+	var script: Script = node.get_script()
+	return {
+		instance_id = node.get_instance_id(),
+		alias = key,
+		path = node.get_path(),
+		script = script.resource_path if script else "",
+		base_type = node.get_class(),
+		type = script.get_global_name() if node.get_script() else node.get_class(),
+	}
 
 
 # Get the current game states
 func _get_game_states(extra_game_states: Array) -> Array:
+	_load_autoloads()
+	var current_scene: Node = get_current_scene.call()
+	var unique_states: Array = []
+	for state: Variant in extra_game_states + [_registered_contexts] + [current_scene] + game_states:
+		if state != null and not unique_states.has(state):
+			unique_states.append(state)
+	return unique_states
+
+
+# Add any autoloads to known state.
+func _load_autoloads() -> void:
 	if not _has_loaded_autoloads:
 		_has_loaded_autoloads = true
 		# Add any autoloads to a generic state so we can refer to them by name
@@ -730,18 +799,14 @@ func _get_game_states(extra_game_states: Array) -> Array:
 			# Add the node to our known autoloads
 			_autoloads[child.name] = child
 		game_states = [_autoloads]
+
+		_send_state_to_debugger()
+
 		# Add any other state shortcuts from settings
 		for node_name: String in DMSettings.get_setting(DMSettings.STATE_AUTOLOAD_SHORTCUTS, ""):
 			var state: Node = Engine.get_main_loop().root.get_node_or_null(NodePath(node_name))
 			if state:
 				game_states.append(state)
-
-	var current_scene: Node = get_current_scene.call()
-	var unique_states: Array = []
-	for state: Variant in extra_game_states + [_registered_contexts] + [current_scene] + game_states:
-		if state != null and not unique_states.has(state):
-			unique_states.append(state)
-	return unique_states
 
 
 # Check if a condition is met
@@ -929,7 +994,7 @@ func _get_state_value(property: String, extra_game_states: Array) -> Variant:
 # Print warnings for top-level state name collisions.
 func _warn_about_state_name_collisions(target_key: String, extra_game_states: Array) -> void:
 	# Don't run the check if this is a release build
-	if not OS.is_debug_build(): return
+	if not EngineDebugger.is_active(): return
 	# Also don't run if the setting is off
 	if not DMSettings.get_setting(DMSettings.WARN_ABOUT_METHOD_PROPERTY_OR_SIGNAL_NAME_CONFLICTS, false): return
 
