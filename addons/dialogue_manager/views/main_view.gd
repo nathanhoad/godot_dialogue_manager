@@ -426,13 +426,12 @@ func apply_theme() -> void:
 		search_button.tooltip_text = DMConstants.translate(&"search_for_text")
 
 		insert_button.icon = get_theme_icon("RichTextEffect", "EditorIcons")
-		insert_button.text = DMConstants.translate(&"insert")
+		insert_button.tooltip_text = DMConstants.translate(&"insert")
 
 		translations_button.icon = get_theme_icon("Translation", "EditorIcons")
-		translations_button.text = DMConstants.translate(&"translations")
+		translations_button.tooltip_text = DMConstants.translate(&"translations")
 
 		support_button.icon = get_theme_icon("Heart", "EditorIcons")
-		support_button.text = DMConstants.translate(&"sponsor")
 		support_button.tooltip_text = DMConstants.translate(&"show_support")
 
 		docs_button.icon = get_theme_icon("Help", "EditorIcons")

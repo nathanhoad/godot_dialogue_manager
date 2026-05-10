@@ -154,7 +154,6 @@ layout_mode = 2
 unique_name_in_owner = true
 layout_mode = 2
 disabled = true
-text = "Insert"
 item_count = 15
 popup/item_0/text = "Wave BBCode"
 popup/item_0/icon = SubResource("ImageTexture_57eek")
@@ -205,7 +204,6 @@ popup/item_14/id = 12
 unique_name_in_owner = true
 layout_mode = 2
 disabled = true
-text = "Translations"
 item_count = 5
 popup/item_0/text = "Generate line IDs"
 popup/item_0/icon = SubResource("ImageTexture_57eek")
@@ -258,7 +256,6 @@ size_flags_horizontal = 3
 unique_name_in_owner = true
 layout_mode = 2
 tooltip_text = "Support Dialogue Manager"
-text = "Sponsor"
 flat = true
 
 [node name="Separator4" type="VSeparator" parent="Margin/Content/CodePanel/Toolbar" unique_id=321395257]
