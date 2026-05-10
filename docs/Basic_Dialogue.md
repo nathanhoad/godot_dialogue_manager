@@ -123,6 +123,10 @@ Similarly, if the name of a character is based on a variable you can provide it 
 {{SomeGlobal.some_character_name}}: My name was provided by the player.
 ```
 
+### `_to_string` and `_to_dialogue_string`
+
+By default, variables will be resolved with `str` which calls `_to_string` on the value but you can define `_to_dialogue_string() -> String` on your objects if you need a different string representation (ie. debugging non-primitives might need a different string compared to using it in dialogue).
+
 ### Local variables
 
 If you need temporary variables that only exist during a dialogue conversation, you can use locals. Locals are temporary variables that only live for the current conversation. When the conversation ends or changes dialogue files, the variables are deleted.
