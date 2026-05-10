@@ -29,7 +29,6 @@ Once you have some state hooked up you can start using conditions in branches an
 
 See [Conditions & Mutations](./Conditions_Mutations.md).
 
-
 ## Variables in dialogue
 
 To show some value of game state within a line of dialogue, wrap it in double curlies.
@@ -43,6 +42,10 @@ Similarly, if the name of a character is based on a variable you can provide it 
 ```
 {{SomeGlobal.some_character_name}}: My name was provided by the player.
 ```
+
+### `_to_string` and `_to_dialogue_string`
+
+By default, variables will be resolved with `str` which calls `_to_string` on the value but you can define `_to_dialogue_string() -> String` on your objects if you need a different string representation (ie. debugging non-primitives might need a different string compared to using it in dialogue).
 
 ### Local variables
 
@@ -73,7 +76,7 @@ Nathan: What would you like to know?
     => END
 ```
 
-2. **Passing extra game states** when starting dialogue (see [Extra Game States](./Conditions_Mutations.md#extra-game-states) for details). Variables from extra game states can be referenced directly without the `locals.` prefix.
+1. **Passing extra game states** when starting dialogue (see [Extra Game States](./Conditions_Mutations.md#extra-game-states) for details). Variables from extra game states can be referenced directly without the `locals.` prefix.
 
 ### Expression Jumps
 
