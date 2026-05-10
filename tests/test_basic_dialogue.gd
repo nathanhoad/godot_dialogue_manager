@@ -148,6 +148,16 @@ Nathan: Your name is {{StateForTests.character_name}}?")
 	assert(line.text == "Your name is changed?", "Name should have changed.")
 
 
+func test_can_resolve_custom_strings() -> void:
+	var resource: DialogueResource = create_resource("
+~ start
+Nathan: This is a {{thing}}.
+=> END")
+
+	var line: DialogueLine = await resource.get_next_dialogue_line("start", [{ thing = Thing.new() }])
+	assert(line.text == "This is a thing.", "Should resolve to simple string.")
+
+
 func test_can_parse_tags() -> void:
 	var output: DMCompilerResult = compile("Nathan: This is some dialogue [#tag1, #tag2]")
 
@@ -304,3 +314,8 @@ Nathan: Third line [ID:THIRD]")
 	var id: String = DialogueManager.static_id_to_line_id(resource, "SECOND")
 	var line: DialogueLine = await resource.get_next_dialogue_line(id)
 	assert(line.text == "Second line", "Should match second line")
+
+
+class Thing:
+	func _to_dialogue_string() -> String:
+		return "thing"

@@ -396,6 +396,8 @@ func get_resolved_line_data(data: Dictionary, extra_game_states: Array = []) -> 
 			# by special quotes while translating.
 			index = text.replace("“", "\"").replace("”", "\"").find(replacement.value_in_text)
 		if index > -1:
+			if value is Object and "_to_dialogue_string" in value:
+				value = value._to_dialogue_string()
 			text = text.substr(0, index) + str(value) + text.substr(index + replacement.value_in_text.length())
 
 	var compilation: DMCompilation = DMCompilation.new()
