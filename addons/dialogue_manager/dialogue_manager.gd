@@ -765,6 +765,7 @@ func _send_state_to_debugger() -> void:
 
 func _get_serialised_state_node(key: String, node: Node) -> Dictionary:
 	var script: Script = node.get_script()
+	@warning_ignore("incompatible_ternary")
 	return {
 		instance_id = node.get_instance_id(),
 		alias = key,
