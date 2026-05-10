@@ -57,6 +57,9 @@ func stop() -> void:
 
 func add_line(id: String) -> void:
 	var resource_and_id: Dictionary = _get_resource_and_id(id)
+
+	if resource_and_id.resource == null: return
+
 	var line: Dictionary = resource_and_id.resource.lines.get(resource_and_id.id)
 
 	var prefix: String = "[color={color}]{time} [url={url}]{file}[/url][/color] ".format({
@@ -132,11 +135,17 @@ func _open_script(path: String) -> void:
 
 func _get_resource_and_id(id: String) -> Dictionary:
 	var uid_and_id: PackedStringArray = id.split("@")
-	var resource: DialogueResource = load("uid://%s" % [uid_and_id[0]])
-	return {
-		resource = resource,
-		id = uid_and_id[1]
-	}
+	if uid_and_id[0].is_empty():
+		return {
+			resource = null,
+			id = uid_and_id[1]
+		}
+	else:
+		var resource: DialogueResource = load("uid://%s" % [uid_and_id[0]])
+		return {
+			resource = resource,
+			id = uid_and_id[1]
+		}
 
 
 #region Signals

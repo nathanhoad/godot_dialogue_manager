@@ -108,21 +108,29 @@ func find_imported_cues(text: String, path: String) -> void:
 			add_error(id, 0, DMConstants.ERR_DUPLICATE_IMPORT_NAME)
 		else:
 			# Get cues from other file and map them to the known list of cues.
-			var imported_resource: DialogueResource = ResourceLoader.load(import_data.path, "", ResourceLoader.CACHE_MODE_REPLACE)
+			var cached_file_data: Dictionary = DMCache.get_file_data(import_data.path)
 
 			# Guard against failed loads -- namely during reimport cascade.
-			if imported_resource == null:
+			if cached_file_data.is_empty():
 				# Might be worth investigating a better constant here.
 				add_error(id, 0, DMConstants.ERR_ERRORS_IN_IMPORTED_FILE)
 				continue
 
+			var external_cues: Dictionary = cached_file_data.cues
+			if external_cues.is_empty():
+				var content: PackedStringArray = FileAccess.get_file_as_string(import_data.path).split("\n")
+				for i: int in range(0, content.size()):
+					var l: String = content[i]
+					if not "/" in l and get_line_type(l) == DMConstants.TYPE_CUE:
+						external_cues[l.substr(2).strip_edges()] = str(i)
+
 			var uid: String = ResourceUID.path_to_uid(import_data.path).replace("uid://", "")
-			for cue_key: String in imported_resource.cues:
+			for cue_key: String in external_cues:
 				# Ignore any cues that are already a reference
 				if "/" in cue_key: continue
 				# Create "alias/cue" to "uid@id" mappig
 				var cue_reference: String = "%s/%s" % [import_data.prefix, cue_key]
-				cues[cue_reference] = "%s@%s" % [uid, imported_resource.cues.get(cue_key)]
+				cues[cue_reference] = "%s@%s" % [uid, external_cues.get(cue_key)]
 
 			imported_paths.append(import_data.path)
 			known_imports[import_data.path] = import_data.prefix

@@ -256,10 +256,7 @@ func _add_jump_completions(current_line: String, cursor: Vector2) -> void:
 
 	# Get all cues, including those in imports
 	for cue: String in DMCompiler.get_cues_in_text(text, main_view.current_file_path):
-		# Ignore any imported cues that aren't resolved to human readable.
-		if cue.to_int() > 0:
-			continue
-		elif "/" in cue:
+		if "/" in cue:
 			var bits: PackedStringArray = cue.split("/")
 			if _matches_prompt(prompt, cue) or _matches_prompt(prompt, bits[0]) or _matches_prompt(prompt, bits[1]):
 				add_code_completion_option(CodeEdit.KIND_CLASS, cue, cue.substr(prompt.length()), theme_overrides.text_color, get_theme_icon("CombineLines", "EditorIcons"))
