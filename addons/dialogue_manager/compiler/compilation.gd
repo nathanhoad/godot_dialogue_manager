@@ -109,20 +109,29 @@ func find_imported_titles(text: String, path: String) -> void:
 		else:
 			# Get titles from other file and map them to the known list of titles.
 			var imported_resource: DialogueResource = ResourceLoader.load(import_data.path, "", ResourceLoader.CACHE_MODE_REPLACE)
+			var cached_file_data: Dictionary = DMCache.get_file_data(import_data.path)
 
 			# Guard against failed loads -- namely during reimport cascade.
-			if imported_resource == null:
+			if cached_file_data.is_empty():
 				# Might be worth investigating a better constant here.
 				add_error(id, 0, DMConstants.ERR_ERRORS_IN_IMPORTED_FILE)
 				continue
 
+			var external_titles: Dictionary = cached_file_data.titles
+			if external_titles.is_empty():
+				var content: PackedStringArray = FileAccess.get_file_as_string(import_data.path).split("\n")
+				for i in range(0, content.size()):
+					var l: String = content[i]
+					if not "/" in l and get_line_type(l) == DMConstants.TYPE_TITLE:
+						external_titles[l.substr(2).strip_edges()] = str(i)
+
 			var uid: String = ResourceUID.id_to_text(ResourceLoader.get_resource_uid(import_data.path)).replace("uid://", "")
-			for title_key: String in imported_resource.titles:
+			for title_key: String in external_titles:
 				# Ignore any titles that are already a reference
 				if "/" in title_key: continue
 				# Create "alias/title" to "uid@id" mappig
 				var title_reference: String = "%s/%s" % [import_data.prefix, title_key]
-				titles[title_reference] = "%s@%s" % [uid, imported_resource.titles.get(title_key)]
+				titles[title_reference] = "%s@%s" % [uid, external_titles.get(title_key)]
 
 			imported_paths.append(import_data.path)
 			known_imports[import_data.path] = import_data.prefix

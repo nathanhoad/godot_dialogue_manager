@@ -5,6 +5,7 @@ class_name DMCache extends RefCounted
 # {
 # 	<dialogue file path> = {
 # 		path = <dialogue file path>,
+#		titles = {}
 # 		dependencies = [<dialogue file path>, <dialogue file path>],
 # 		errors = [<error>, <error>]
 # 	}
@@ -92,11 +93,13 @@ static func _schedule_deferred_reimport() -> void:
 static func add_file(path: String, compile_result: DMCompilerResult = null) -> void:
 	_cache[path] = {
 		path = path,
+		titles = {},
 		dependencies = [],
 		errors = []
 	}
 
 	if compile_result != null:
+		_cache[path].titles = compile_result.titles
 		_cache[path].dependencies = Array(compile_result.imported_paths).filter(func(d): return d != path)
 		_cache[path].compiled_at = Time.get_ticks_msec()
 
@@ -106,6 +109,11 @@ static func add_file(path: String, compile_result: DMCompilerResult = null) -> v
 ## Get the file paths in the cache
 static func get_files() -> PackedStringArray:
 	return _cache.keys()
+
+
+## Get the data for a file path
+static func get_file_data(key: String) -> Dictionary:
+	return _cache.get(key, {})
 
 
 ## Check if a file is known to the cache
