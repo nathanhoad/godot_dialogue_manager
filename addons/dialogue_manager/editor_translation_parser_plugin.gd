@@ -45,7 +45,7 @@ func _parse_file(path: String) -> Array[PackedStringArray]:
 		translated_lines.append(line)
 
 		var message: String = line.text.replace('"', '\"')
-		var context: String = static_id.replace('"', '\"') if static_id != line.text else ""
+		var context: String = static_id.replace('"', '\"') if static_id != line.text else "dialogue"
 		var plural: String = ""
 		var extra_details: PackedStringArray = []
 		if line.has("character"):
