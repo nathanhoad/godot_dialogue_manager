@@ -61,7 +61,6 @@ size_flags_horizontal = 3
 size_flags_vertical = 3
 focus_mode = 2
 bbcode_enabled = true
-fit_content = true
 scroll_following = true
 selection_enabled = true
 drag_and_drop_selection_enabled = false

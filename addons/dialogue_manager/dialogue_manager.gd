@@ -1662,22 +1662,41 @@ func _thing_has_property(thing: Object, property: String) -> bool:
 func _get_method_info_for(thing: Variant, method: String, args: Array) -> Dictionary:
 	# Use the thing instance id as a key for the caching dictionary.
 	var thing_instance_id: int = thing.get_instance_id()
+
 	if not _method_info_cache.has(thing_instance_id):
+		var thing_methods: Array[Dictionary] = []
+		if thing.get_script() and thing.get_script().resource_path.ends_with(".cs"):
+			thing_methods = _get_dotnet_dialogue_manager().GetMethodList(thing)
+		else:
+			thing_methods = thing.get_method_list()
+
 		var method_overloads: Dictionary = {}
-		for m: Dictionary in thing.get_method_list():
-			method_overloads["%s:%d" % [m.name, m.args.size()]] = m
+		for m: Dictionary in thing_methods:
+			method_overloads[_get_method_info_key(m.name, m.args)] = m
 			if not method_overloads.has(m.name):
 				method_overloads[m.name] = m
 		_method_info_cache[thing_instance_id] = method_overloads
 
 	var methods: Dictionary = _method_info_cache.get(thing_instance_id, {})
-	var method_key: String = "%s:%d" % [method, args.size()]
+	var method_key: String = _get_method_info_key(method, args)
 	if methods.has(method_key):
 		return methods.get(method_key)
 	elif methods.has(method):
 		return methods.get(method)
 	else:
 		return _get_method_info_for(thing.new(), method, args)
+
+
+func _get_method_info_key(method: String, args: Array) -> String:
+	return "%s:%s" % [method, ",".join(args.map(func (arg: Variant) -> String:
+		if typeof(arg) == TYPE_DICTIONARY:
+			if arg.has("class_name") and not arg.class_name.is_empty(): return arg.class_name
+			if arg.has("type") and typeof(arg.type) == TYPE_INT: return str(arg.type)
+
+			return str(TYPE_DICTIONARY)
+		else:
+			return str(typeof(arg))
+	))]
 
 
 func _resolve_thing_method(thing: Variant, method: String, args: Array) -> Variant:
@@ -1695,6 +1714,7 @@ func _resolve_thing_method(thing: Variant, method: String, args: Array) -> Varia
 		for i: int in range(0, min(method_args.size(), args.size())):
 			var m: Dictionary = method_args[i]
 			var to_type: int = typeof(args[i])
+
 			if m.type == TYPE_ARRAY:
 				match m.hint_string:
 					&"String":
@@ -1711,13 +1731,21 @@ func _resolve_thing_method(thing: Variant, method: String, args: Array) -> Varia
 						if m.hint_string != "":
 							assert(false, DMConstants.translate(&"runtime.unsupported_array_type").format({ type = m.hint_string}))
 			if typeof(args[i]) != to_type:
-				args[i] = convert(args[i], to_type)
+				args[i] = type_convert(args[i], to_type)
 
-		return await thing.callv(method, args)
+		if method_info.has("dotnet"):
+			return await callv_dotnet(thing, method, args)
+		else:
+			return await thing.callv(method, args)
 
 	# If we get here then it's probably a C# method with a Task return type
 	if thing is Script:
 		thing = thing.new()
+
+	return await callv_dotnet(thing, method, args)
+
+
+func callv_dotnet(thing: Variant, method: String, args: Array) -> Variant:
 	var dotnet_dialogue_manager: RefCounted = _get_dotnet_dialogue_manager()
 	var id: float = randf()
 	dotnet_dialogue_manager.ResolveThingMethod(id, thing, method, args)

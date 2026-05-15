@@ -450,42 +450,135 @@ namespace DialogueManagerRuntime
         }
 
 
-        public bool ThingHasMethod(GodotObject thing, string method, Array<Variant> args)
+        public Array<Dictionary> GetMethodList(GodotObject thing)
         {
-            var methodInfos = thing.GetType().GetMethods(BindingFlags.Instance | BindingFlags.Static | BindingFlags.Public | BindingFlags.DeclaredOnly);
-            foreach (var methodInfo in methodInfos)
+            var methodList = new Array<Dictionary>();
+
+            if (thing == null) return methodList;
+
+            Type type = thing.GetType();
+            MethodInfo[] methodInfos = type.GetMethods(BindingFlags.Instance | BindingFlags.Static | BindingFlags.Public);
+
+            foreach (MethodInfo method in methodInfos)
             {
-                if (methodInfo.Name == method && args.Count >= methodInfo.GetParameters().Where(p => !p.HasDefaultValue).Count())
+                if (method.IsSpecialName) continue;
+
+                var methodInfo = new Dictionary();
+                methodInfo["name"] = method.Name;
+                methodInfo["flags"] = 0;
+                methodInfo["dotnet"] = true;
+
+                var argsList = new Array<Dictionary>();
+                ParameterInfo[] parameters = method.GetParameters();
+
+                foreach (ParameterInfo parameter in parameters)
                 {
-                    return true;
+                    var paramInfo = new Dictionary() { };
+                    Variant.Type godotType = ConvertToVariantType(parameter.ParameterType);
+
+                    paramInfo["name"] = parameter.Name;
+                    paramInfo["type"] = (int)godotType;
+                    if (godotType == Variant.Type.Object)
+                    {
+                        paramInfo["class_name"] = parameter.ParameterType.Name;
+                    }
+                    else
+                    {
+                        paramInfo["class_name"] = string.Empty;
+                    }
+
+                    argsList.Add(paramInfo);
                 }
+
+                methodInfo["args"] = argsList;
+                methodList.Add(methodInfo);
             }
 
-            return false;
+            return methodList;
+        }
+
+
+        private Variant.Type ConvertToVariantType(Type type)
+        {
+            if (type == typeof(void)) return Variant.Type.Nil;
+            if (type == typeof(bool)) return Variant.Type.Bool;
+            if (type == typeof(long) || type == typeof(int) || type == typeof(short) || type == typeof(byte)) return Variant.Type.Int;
+            if (type == typeof(double) || type == typeof(float)) return Variant.Type.Float;
+            if (type == typeof(string)) return Variant.Type.String;
+
+            if (type == typeof(Vector2)) return Variant.Type.Vector2;
+            if (type == typeof(Vector2I)) return Variant.Type.Vector2I;
+            if (type == typeof(Rect2)) return Variant.Type.Rect2;
+            if (type == typeof(Rect2I)) return Variant.Type.Rect2I;
+            if (type == typeof(Vector3)) return Variant.Type.Vector3;
+            if (type == typeof(Vector3I)) return Variant.Type.Vector3I;
+            if (type == typeof(Transform2D)) return Variant.Type.Transform2D;
+            if (type == typeof(Vector4)) return Variant.Type.Vector4;
+            if (type == typeof(Vector4I)) return Variant.Type.Vector4I;
+            if (type == typeof(Plane)) return Variant.Type.Plane;
+            if (type == typeof(Quaternion)) return Variant.Type.Quaternion;
+            if (type == typeof(Aabb)) return Variant.Type.Aabb;
+            if (type == typeof(Basis)) return Variant.Type.Basis;
+            if (type == typeof(Transform3D)) return Variant.Type.Transform3D;
+            if (type == typeof(Projection)) return Variant.Type.Projection;
+
+            if (type == typeof(Color)) return Variant.Type.Color;
+            if (type == typeof(StringName)) return Variant.Type.StringName;
+            if (type == typeof(NodePath)) return Variant.Type.NodePath;
+            if (type == typeof(Rid)) return Variant.Type.Rid;
+
+            if (typeof(GodotObject).IsAssignableFrom(type)) return Variant.Type.Object;
+            if (typeof(Dictionary).IsAssignableFrom(type)) return Variant.Type.Dictionary;
+            if (typeof(Godot.Collections.Array).IsAssignableFrom(type)) return Variant.Type.Array;
+
+            if (type == typeof(byte[])) return Variant.Type.PackedByteArray;
+            if (type == typeof(int[])) return Variant.Type.PackedInt32Array;
+            if (type == typeof(long[])) return Variant.Type.PackedInt64Array;
+            if (type == typeof(float[])) return Variant.Type.PackedFloat32Array;
+            if (type == typeof(double[])) return Variant.Type.PackedFloat64Array;
+            if (type == typeof(string[])) return Variant.Type.PackedStringArray;
+            if (type == typeof(Vector2[])) return Variant.Type.PackedVector2Array;
+            if (type == typeof(Vector3[])) return Variant.Type.PackedVector3Array;
+            if (type == typeof(Color[])) return Variant.Type.PackedColorArray;
+            if (type == typeof(Vector4[])) return Variant.Type.PackedVector4Array;
+
+            return Variant.Type.Nil;
+        }
+
+        private bool IsCompatible(Type expectedType, Type providedType)
+        {
+            if (expectedType.IsAssignableFrom(providedType)) return true;
+
+            Variant.Type expectedVariant = ConvertToVariantType(expectedType);
+            Variant.Type actualVariant = ConvertToVariantType(providedType);
+
+            return expectedVariant == actualVariant && expectedVariant != Variant.Type.Nil;
+        }
+
+
+
+        public bool ThingHasMethod(GodotObject thing, string method, Array<Variant> args)
+        {
+            return GetMethodInfoFor(thing, method, args) != null;
         }
 
 
         public async void ResolveThingMethod(float id, GodotObject thing, string method, Array<Variant> args)
         {
-            MethodInfo? info = null;
-            var methodInfos = thing.GetType().GetMethods(BindingFlags.Instance | BindingFlags.Static | BindingFlags.Public | BindingFlags.DeclaredOnly);
-            foreach (var methodInfo in methodInfos)
-            {
-                if (methodInfo.Name == method && args.Count >= methodInfo.GetParameters().Count(p => !p.HasDefaultValue))
-                {
-                    info = methodInfo;
-                }
-            }
+            // Add a single frame wait in case the method returns before signals can listen
+            await ToSignal(Engine.GetMainLoop(), SceneTree.SignalName.ProcessFrame);
 
-            if (info == null)
+            var methodInfo = GetMethodInfoFor(thing, method, args);
+
+            if (methodInfo == null)
             {
-                EmitSignal(SignalName.Resolved, id);
+                EmitSignal(SignalName.Resolved, id, default);
                 return;
             }
 
 #nullable disable
             // Convert the method args to something reflection can handle
-            ParameterInfo[] argTypes = info.GetParameters();
+            ParameterInfo[] argTypes = methodInfo.GetParameters();
             object[] _args = new object[argTypes.Length];
             for (int i = 0; i < argTypes.Length; i++)
             {
@@ -508,11 +601,8 @@ namespace DialogueManagerRuntime
                 }
             }
 
-            // Add a single frame wait in case the method returns before signals can listen
-            await ToSignal(Engine.GetMainLoop(), SceneTree.SignalName.ProcessFrame);
-
             // invoke method and handle the result based on return type
-            object result = info.Invoke(thing, _args);
+            object result = methodInfo.Invoke(thing, _args);
 
             if (result is Task taskResult)
             {
@@ -524,7 +614,7 @@ namespace DialogueManagerRuntime
                 }
                 catch (Exception)
                 {
-                    EmitSignal(SignalName.Resolved, id);
+                    EmitSignal(SignalName.Resolved, id, default);
                 }
             }
             else
@@ -533,6 +623,57 @@ namespace DialogueManagerRuntime
             }
         }
 #nullable enable
+
+
+        private MethodInfo? GetMethodInfoFor(GodotObject thing, string method, Array<Variant> args)
+        {
+            return thing.GetType().GetMethods(BindingFlags.Instance | BindingFlags.Static | BindingFlags.Public).Where(m => m.Name == method).FirstOrDefault(m =>
+            {
+                ParameterInfo[] parameters = m.GetParameters();
+
+                if (args.Count > parameters.Length) return false;
+
+                for (int i = args.Count; i < parameters.Length; i++)
+                {
+                    if (!parameters[i].IsOptional) return false;
+                }
+
+                Type[] argTypes = args.Select(arg =>
+                {
+                    // If the item is boxed inside a Godot Variant, extract its actual type.
+                    if (arg is Variant godotVariant)
+                    {
+                        return godotVariant.VariantType switch
+                        {
+                            Variant.Type.Nil => typeof(object),
+                            Variant.Type.Bool => typeof(bool),
+                            Variant.Type.Int => typeof(long), // Godot ints map to C# longs
+                            Variant.Type.Float => typeof(double), // Godot floats map to C# doubles
+                            Variant.Type.String => typeof(string),
+                            Variant.Type.Object => godotVariant.AsGodotObject()?.GetType() ?? typeof(object),
+                            _ => godotVariant.Obj?.GetType() ?? typeof(object)
+                        };
+                    }
+
+                    return arg.GetType();
+                }).ToArray();
+
+                // Check each given parameter type against what the method wants.
+                for (int i = 0; i < argTypes.Length; i++)
+                {
+                    Type expectedType = parameters[i].ParameterType;
+                    Type actualType = argTypes[i];
+
+                    // If a parameter isn't compatible skip this method overload.
+                    if (!IsCompatible(expectedType, actualType))
+                    {
+                        return false;
+                    }
+                }
+
+                return true;
+            });
+        }
 
 
         public static string GetErrorMessage(int error)
