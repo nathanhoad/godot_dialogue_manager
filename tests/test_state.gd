@@ -645,6 +645,22 @@ Nathan: Done!
 	assert(line.text == "Done!", "Should finish.")
 
 
+func test_csharp_overload() -> void:
+	var resource: DialogueResource = create_resource("
+using CSharpState
+
+~ start
+Nathan: Value is {{OverloadedMethod(2)}}.
+Nathan: Value is {{OverloadedMethod(\"test\")}}
+=> END")
+
+	var line: DialogueLine = await resource.get_next_dialogue_line("start")
+	assert(line.text == "Value is 4.", "Should use int method.")
+
+	line = await resource.get_next_dialogue_line(line.next_id)
+	assert(line.text == "Value is test!", "Should use string method.")
+
+
 func test_ignore_missing_state() -> void:
 	var resource: DialogueResource = create_resource("
 ~ start

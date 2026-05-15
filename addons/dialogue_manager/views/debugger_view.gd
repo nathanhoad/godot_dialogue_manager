@@ -1,4 +1,3 @@
-
 @tool
 
 class_name DMDebuggerView extends PanelContainer
@@ -59,6 +58,7 @@ func add_line(id: String) -> void:
 	var resource_and_id: Dictionary = _get_resource_and_id(id)
 
 	if resource_and_id.resource == null: return
+	if not resource_and_id.resource.lines.has(resource_and_id.id): return
 
 	var line: Dictionary = resource_and_id.resource.lines.get(resource_and_id.id)
 
@@ -88,7 +88,7 @@ func add_line(id: String) -> void:
 			log_output.append_text("{prefix}[color={color}]{mutation}[/color]\n".format({
 				prefix = prefix,
 				color = Color(DMThemeValues.get_values_from_editor().mutations_color, 0.5).to_html(),
-				mutation = dialogue.split("\n")[line.id.to_int()]
+				mutation = dialogue.split("\n")[line.id.to_int()].strip_edges()
 			}))
 
 
