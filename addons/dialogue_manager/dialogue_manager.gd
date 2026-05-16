@@ -667,7 +667,7 @@ func translate(data: Dictionary) -> String:
 	var static_id: String = data.get(&"static_id", data.text)
 
 	if static_id == "" or static_id == data.text:
-		return tr(data.text)
+		return tr(data.text, "dialogue")
 	else:
 		return tr(data.text, StringName(static_id))
 
