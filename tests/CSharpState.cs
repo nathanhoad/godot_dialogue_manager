@@ -27,4 +27,16 @@ public partial class CSharpState : Node
   {
     await ToSignal(GetTree().CreateTimer(1.0f), Timer.SignalName.Timeout);
   }
+
+
+  public int OverloadedMethod(int someNumber)
+  {
+    return someNumber * 2;
+  }
+
+
+  public string OverloadedMethod(string someString)
+  {
+    return someString + "!";
+  }
 }
