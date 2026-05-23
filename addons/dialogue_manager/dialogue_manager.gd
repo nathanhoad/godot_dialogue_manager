@@ -39,6 +39,9 @@ var include_singletons: bool = true
 ## Allow dialogue to call static methods/properties on classes
 var include_classes: bool = true
 
+## Allow dialogue to call methods on [code]DialogueResource[/code]
+var include_dialogue_resurce: bool = true
+
 ## A runtime override for the project setting to ignore missing state values.
 var ignore_missing_state_values: bool = false
 
@@ -122,7 +125,8 @@ func _get_next_dialogue_line(resource: DialogueResource, key: String = "", extra
 			extra_game_states = [autoload] + extra_game_states
 
 	# Inject "self" into the extra game states.
-	_inject_state("self", resource, extra_game_states)
+	if include_dialogue_resurce:
+		_inject_state("self", resource, extra_game_states)
 
 	# Get the line data
 	var dialogue_line: DialogueLine = await get_line(resource, key, extra_game_states)
