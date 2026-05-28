@@ -160,13 +160,13 @@ static func export_translations_to_csv(to_path: String, text: String, dialogue_p
 	file.close()
 
 
-## Get the delimier used for an existing CSV
+## Get the delimiter used for an existing CSV
 static func get_delimiter_for_csv(path: String) -> String:
 	if FileAccess.file_exists(path):
 		var import_path: String = "%s.%s" % [path, "import"]
 		var import_file: ConfigFile = ConfigFile.new()
 		if import_file.load(import_path) == OK:
-			match import_file.get_value("params", "delimier", 0):
+			match import_file.get_value("params", "delimiter", 0):
 				0:
 					return ","
 				1:
