@@ -355,6 +355,9 @@ func get_line(resource: DialogueResource, key: String, extra_game_states: Array)
 			next_line = resource.lines.get(next_line.next_id)
 
 		if next_line != null and next_line.type == DMConstants.TYPE_RESPONSE:
+			# If we peeked the stack and it goes directly to a response type, erase trail
+			if peeked_at_stack:
+				id_trail = ""
 			# Note: For some reason C# has occasional issues with using the responses property directly
 			# so instead we use set and get here.
 			line.set(&"responses", await _get_responses(next_line.get(&"responses", []), resource, id_trail, extra_game_states))
