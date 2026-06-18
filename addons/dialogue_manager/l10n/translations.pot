@@ -125,6 +125,9 @@ msgstr ""
 msgid "save_to_csv"
 msgstr ""
 
+msgid "save_all_to_csv"
+msgstr ""
+
 msgid "import_from_csv"
 msgstr ""
 

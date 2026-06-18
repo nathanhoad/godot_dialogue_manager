@@ -11,6 +11,7 @@ const TRANSLATIONS_GENERATE_LINE_IDS_FOR_FILE = 101
 const TRANSLATIONS_SAVE_CHARACTERS_TO_CSV = 201
 const TRANSLATIONS_SAVE_TO_CSV = 202
 const TRANSLATIONS_IMPORT_FROM_CSV = 203
+const TRANSLATIONS_SAVE_ALL_TO_CSV = 204
 
 const ITEM_SAVE = 100
 const ITEM_SAVE_AS = 101
@@ -22,7 +23,8 @@ const ITEM_SHOW_IN_FILESYSTEM = 201
 
 enum TranslationSource {
 	CharacterNames,
-	Lines
+	Lines,
+	AllLines
 }
 
 
@@ -466,6 +468,7 @@ func apply_theme() -> void:
 		popup.add_separator()
 		popup.add_icon_item(get_theme_icon("FileList", "EditorIcons"), DMConstants.translate(&"save_characters_to_csv"), TRANSLATIONS_SAVE_CHARACTERS_TO_CSV)
 		popup.add_icon_item(get_theme_icon("FileList", "EditorIcons"), DMConstants.translate(&"save_to_csv"), TRANSLATIONS_SAVE_TO_CSV)
+		popup.add_icon_item(get_theme_icon("FileList", "EditorIcons"), DMConstants.translate(&"save_all_to_csv"), TRANSLATIONS_SAVE_ALL_TO_CSV)
 		popup.add_icon_item(get_theme_icon("AssetLib", "EditorIcons"), DMConstants.translate(&"import_from_csv"), TRANSLATIONS_IMPORT_FROM_CSV)
 
 		# Dialog sizes
@@ -551,6 +554,20 @@ func add_path_to_project_translations(path: String) -> void:
 # Export dialogue and responses to CSV
 func export_translations_to_csv(path: String) -> void:
 	DMTranslationUtilities.export_translations_to_csv(path, code_edit.text, current_file_path)
+
+	EditorInterface.get_resource_filesystem().scan()
+	EditorInterface.get_file_system_dock().call_deferred("navigate_to_path", path)
+
+	# Add it to the project l10n settings if it's not already there
+	var default_locale: String = DMSettings.get_setting(DMSettings.DEFAULT_CSV_LOCALE, "en")
+	var language_code: RegExMatch = RegEx.create_from_string("^[a-z]{2,3}").search(default_locale)
+	var translation_path: String = path.replace(".csv", ".%s.translation" % language_code.get_string())
+	call_deferred("add_path_to_project_translations", translation_path)
+
+
+# Export every dialogue file in the project to a single CSV
+func export_all_translations_to_csv(path: String) -> void:
+	DMTranslationUtilities.export_all_translations_to_csv(path)
 
 	EditorInterface.get_resource_filesystem().scan()
 	EditorInterface.get_file_system_dock().call_deferred("navigate_to_path", path)
@@ -705,6 +722,12 @@ func _on_translations_button_menu_id_pressed(id: int) -> void:
 			export_dialog.current_path = get_last_export_path("csv")
 			export_dialog.popup_centered()
 
+		TRANSLATIONS_SAVE_ALL_TO_CSV:
+			translation_source = TranslationSource.AllLines
+			export_dialog.filters = PackedStringArray(["*.csv ; Translation CSV"])
+			export_dialog.current_path = get_last_export_path("csv")
+			export_dialog.popup_centered()
+
 		TRANSLATIONS_IMPORT_FROM_CSV:
 			import_dialog.current_path = get_last_export_path("csv")
 			import_dialog.popup_centered()
@@ -719,6 +742,8 @@ func _on_export_dialog_file_selected(path: String) -> void:
 					export_character_names_to_csv(path)
 				TranslationSource.Lines:
 					export_translations_to_csv(path)
+				TranslationSource.AllLines:
+					export_all_translations_to_csv(path)
 
 
 func _on_import_dialog_file_selected(path: String) -> void:
