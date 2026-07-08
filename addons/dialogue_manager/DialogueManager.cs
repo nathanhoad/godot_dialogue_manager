@@ -83,6 +83,13 @@ namespace DialogueManagerRuntime
         }
 
 
+        public static bool IncludeDialogueResourceAsSelf
+        {
+            get => (bool)Instance.Get("include_dialogue_resource_as_self");
+            set => Instance.Set("include_dialogue_resource_as_self", value);
+        }
+
+
         public static TranslationSource TranslationSource
         {
             get => (TranslationSource)(int)Instance.Get("translation_source");
