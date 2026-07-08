@@ -52,7 +52,7 @@ var get_current_scene: Callable = func() -> Node:
 
 ## Used to resolve the load function used in [code]*.dialogue[/code] files.
 ## Override this if you need safer loading or custom loading logic.
-var dialogue_dsl_load: Callable = load
+var load_from_within_dialogue: Callable = load
 
 var _has_loaded_autoloads: bool = false
 var _autoloads: Dictionary = {}
@@ -1218,9 +1218,9 @@ func _resolve(tokens: Array, extra_game_states: Array) -> Variant:
 							4:
 								token.value = Color(args[0], args[1], args[2], args[3])
 						found = true
-					&"load", &"Load" when dialogue_dsl_load.is_valid():
+					&"load", &"Load" when load_from_within_dialogue.is_valid():
 						token.type = DMConstants.TOKEN_VALUE
-						token.value = dialogue_dsl_load.call(args[0])
+						token.value = load_from_within_dialogue.call(args[0])
 						found = true
 					&"roll_dice", &"RollDice":
 						token.type = DMConstants.TOKEN_VALUE
