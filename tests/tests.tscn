@@ -36,20 +36,21 @@ layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
-offset_top = 94.0
-offset_bottom = -403.0
+offset_top = -5.5
+offset_bottom = -379.5
 grow_horizontal = 2
 grow_vertical = 2
 theme_override_font_sizes/normal_font_size = 100
 bbcode_enabled = true
 text = "[wave][center]All tests passed"
+fit_content = true
 
 [node name="Label" type="Label" parent="." unique_id=1230363543]
 modulate = Color(1, 1, 1, 0.596078)
 layout_mode = 0
-offset_top = 260.0
+offset_top = 293.0
 offset_right = 1153.0
-offset_bottom = 286.0
+offset_bottom = 335.0
 theme_override_font_sizes/font_size = 30
 text = "See Output for details"
 horizontal_alignment = 1
