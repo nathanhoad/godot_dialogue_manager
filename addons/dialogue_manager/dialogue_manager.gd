@@ -787,18 +787,16 @@ func _get_serialised_state_node(key: String, node: Node) -> Dictionary:
 # Get the current game states
 func _get_game_states(extra_game_states: Array) -> Array:
 	_load_autoloads()
-	
-	# Handle Callable() here
+
 	var current_scene: Node = get_current_scene.call() if get_current_scene.is_valid() else null
-	
-	var states_to_process: Array = extra_game_states 
-	states_to_process += [_registered_contexts]
+	var possible_states: Array = extra_game_states
+	possible_states += [_registered_contexts]
 	if is_instance_valid(current_scene):
-		states_to_process += [current_scene]
-	states_to_process += game_states
-	
+		possible_states += [current_scene]
+	possible_states += game_states
+
 	var unique_states: Array = []
-	for state: Variant in states_to_process:
+	for state: Variant in possible_states:
 		if state != null and not unique_states.has(state):
 			unique_states.append(state)
 	return unique_states
@@ -1023,16 +1021,15 @@ func _warn_about_state_name_collisions(target_key: String, extra_game_states: Ar
 		if state:
 			state_shortcuts.append(state)
 
-	# Handle Callable() here
 	var current_scene: Node = get_current_scene.call() if get_current_scene.is_valid() else null
-	var states_to_process: Array = extra_game_states
+	var possible_states: Array = extra_game_states
 	if is_instance_valid(current_scene):
-		states_to_process += [current_scene]	
-	states_to_process += state_shortcuts
+		possible_states += [current_scene]
+	possible_states += state_shortcuts
 
 	# Check any top level names for a collision
 	var states_with_key: Array = []
-	for state: Variant in states_to_process:
+	for state: Variant in possible_states:
 		if typeof(state) == TYPE_DICTIONARY:
 			if state.keys().has(target_key):
 				states_with_key.append("Dictionary")
