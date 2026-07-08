@@ -39,6 +39,9 @@ var include_singletons: bool = true
 ## Allow dialogue to call static methods/properties on classes
 var include_classes: bool = true
 
+## Allow dialogue to call methods on [code]DialogueResource[/code]
+var include_dialogue_resource_as_self: bool = true
+
 ## A runtime override for the project setting to ignore missing state values.
 var ignore_missing_state_values: bool = false
 
@@ -126,7 +129,8 @@ func _get_next_dialogue_line(resource: DialogueResource, key: String = "", extra
 			extra_game_states = [autoload] + extra_game_states
 
 	# Inject "self" into the extra game states.
-	_inject_state("self", resource, extra_game_states)
+	if include_dialogue_resource_as_self:
+		_inject_state("self", resource, extra_game_states)
 
 	# Get the line data
 	var dialogue_line: DialogueLine = await get_line(resource, key, extra_game_states)
@@ -1374,7 +1378,7 @@ func _resolve(tokens: Array, extra_game_states: Array) -> Variant:
 			if str(token.value) == "null":
 				token.type = DMConstants.TOKEN_VALUE
 				token.value = null
-			elif str(token.value) == "self":
+			elif str(token.value) == "self" and extra_game_states.size() > 0 and typeof(extra_game_states[0]) == TYPE_DICTIONARY and extra_game_states[0].has("self"):
 				token.type = DMConstants.TOKEN_VALUE
 				token.value = extra_game_states[0].self
 			elif tokens[i - 1].type == DMConstants.TOKEN_DOT:
