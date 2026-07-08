@@ -588,7 +588,13 @@ func static_id_to_line_ids(resource: DialogueResource, static_id: String) -> Pac
 func _start_balloon(balloon: Node, resource: DialogueResource, cue: String, extra_game_states: Array) -> void:
 	dialogue_started.emit(resource)
 
-	get_current_scene.call().add_child(balloon)
+	assert(get_current_scene.is_valid())
+
+	var current_scene: Node = get_current_scene.call()
+
+	assert(is_instance_valid(current_scene))
+
+	current_scene.add_child(balloon)
 
 	if balloon.has_method(&"start"):
 		balloon.start(resource, cue, extra_game_states)
@@ -785,9 +791,16 @@ func _get_serialised_state_node(key: String, node: Node) -> Dictionary:
 # Get the current game states
 func _get_game_states(extra_game_states: Array) -> Array:
 	_load_autoloads()
-	var current_scene: Node = get_current_scene.call()
+
+	var current_scene: Node = get_current_scene.call() if get_current_scene.is_valid() else null
+	var possible_states: Array = extra_game_states
+	possible_states += [_registered_contexts]
+	if is_instance_valid(current_scene):
+		possible_states += [current_scene]
+	possible_states += game_states
+
 	var unique_states: Array = []
-	for state: Variant in extra_game_states + [_registered_contexts] + [current_scene] + game_states:
+	for state: Variant in possible_states:
 		if state != null and not unique_states.has(state):
 			unique_states.append(state)
 	return unique_states
@@ -1012,9 +1025,15 @@ func _warn_about_state_name_collisions(target_key: String, extra_game_states: Ar
 		if state:
 			state_shortcuts.append(state)
 
+	var current_scene: Node = get_current_scene.call() if get_current_scene.is_valid() else null
+	var possible_states: Array = extra_game_states
+	if is_instance_valid(current_scene):
+		possible_states += [current_scene]
+	possible_states += state_shortcuts
+
 	# Check any top level names for a collision
 	var states_with_key: Array = []
-	for state: Variant in extra_game_states + [get_current_scene.call()] + state_shortcuts:
+	for state: Variant in possible_states:
 		if typeof(state) == TYPE_DICTIONARY:
 			if state.keys().has(target_key):
 				states_with_key.append("Dictionary")
