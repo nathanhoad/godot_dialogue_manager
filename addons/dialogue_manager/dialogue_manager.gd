@@ -39,6 +39,9 @@ var include_singletons: bool = true
 ## Allow dialogue to call static methods/properties on classes
 var include_classes: bool = true
 
+## Allow dialogue to call methods on [code]DialogueResource[/code]
+var include_dialogue_resource_as_self: bool = true
+
 ## A runtime override for the project setting to ignore missing state values.
 var ignore_missing_state_values: bool = false
 
@@ -49,6 +52,10 @@ var get_current_scene: Callable = func() -> Node:
 		var root: Node = (Engine.get_main_loop() as SceneTree).root
 		current_scene = root.get_child(root.get_child_count() - 1)
 	return current_scene
+
+## Used to resolve the load function used in [code]*.dialogue[/code] files.
+## Override this if you need safer loading or custom loading logic.
+var load_from_within_dialogue: Callable = load
 
 var _has_loaded_autoloads: bool = false
 var _autoloads: Dictionary = {}
@@ -122,7 +129,8 @@ func _get_next_dialogue_line(resource: DialogueResource, key: String = "", extra
 			extra_game_states = [autoload] + extra_game_states
 
 	# Inject "self" into the extra game states.
-	_inject_state("self", resource, extra_game_states)
+	if include_dialogue_resource_as_self:
+		_inject_state("self", resource, extra_game_states)
 
 	# Get the line data
 	var dialogue_line: DialogueLine = await get_line(resource, key, extra_game_states)
@@ -588,7 +596,13 @@ func static_id_to_line_ids(resource: DialogueResource, static_id: String) -> Pac
 func _start_balloon(balloon: Node, resource: DialogueResource, cue: String, extra_game_states: Array) -> void:
 	dialogue_started.emit(resource)
 
-	get_current_scene.call().add_child(balloon)
+	assert(get_current_scene.is_valid())
+
+	var current_scene: Node = get_current_scene.call()
+
+	assert(is_instance_valid(current_scene))
+
+	current_scene.add_child(balloon)
 
 	if balloon.has_method(&"start"):
 		balloon.start(resource, cue, extra_game_states)
@@ -785,9 +799,16 @@ func _get_serialised_state_node(key: String, node: Node) -> Dictionary:
 # Get the current game states
 func _get_game_states(extra_game_states: Array) -> Array:
 	_load_autoloads()
-	var current_scene: Node = get_current_scene.call()
+
+	var current_scene: Node = get_current_scene.call() if get_current_scene.is_valid() else null
+	var possible_states: Array = extra_game_states
+	possible_states += [_registered_contexts]
+	if is_instance_valid(current_scene):
+		possible_states += [current_scene]
+	possible_states += game_states
+
 	var unique_states: Array = []
-	for state: Variant in extra_game_states + [_registered_contexts] + [current_scene] + game_states:
+	for state: Variant in possible_states:
 		if state != null and not unique_states.has(state):
 			unique_states.append(state)
 	return unique_states
@@ -1012,9 +1033,15 @@ func _warn_about_state_name_collisions(target_key: String, extra_game_states: Ar
 		if state:
 			state_shortcuts.append(state)
 
+	var current_scene: Node = get_current_scene.call() if get_current_scene.is_valid() else null
+	var possible_states: Array = extra_game_states
+	if is_instance_valid(current_scene):
+		possible_states += [current_scene]
+	possible_states += state_shortcuts
+
 	# Check any top level names for a collision
 	var states_with_key: Array = []
-	for state: Variant in extra_game_states + [get_current_scene.call()] + state_shortcuts:
+	for state: Variant in possible_states:
 		if typeof(state) == TYPE_DICTIONARY:
 			if state.keys().has(target_key):
 				states_with_key.append("Dictionary")
@@ -1218,9 +1245,9 @@ func _resolve(tokens: Array, extra_game_states: Array) -> Variant:
 							4:
 								token.value = Color(args[0], args[1], args[2], args[3])
 						found = true
-					&"load", &"Load":
+					&"load", &"Load" when load_from_within_dialogue.is_valid():
 						token.type = DMConstants.TOKEN_VALUE
-						token.value = load(args[0])
+						token.value = load_from_within_dialogue.call(args[0])
 						found = true
 					&"roll_dice", &"RollDice":
 						token.type = DMConstants.TOKEN_VALUE
@@ -1355,7 +1382,7 @@ func _resolve(tokens: Array, extra_game_states: Array) -> Variant:
 			if str(token.value) == "null":
 				token.type = DMConstants.TOKEN_VALUE
 				token.value = null
-			elif str(token.value) == "self":
+			elif str(token.value) == "self" and extra_game_states.size() > 0 and typeof(extra_game_states[0]) == TYPE_DICTIONARY and extra_game_states[0].has("self"):
 				token.type = DMConstants.TOKEN_VALUE
 				token.value = extra_game_states[0].self
 			elif tokens[i - 1].type == DMConstants.TOKEN_DOT:

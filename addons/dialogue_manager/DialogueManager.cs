@@ -33,32 +33,75 @@ namespace DialogueManagerRuntime
         public delegate void MutatedEventHandler(Dictionary mutation);
         public delegate void DialogueEndedEventHandler(Resource dialogueResource);
 
-        public static DialogueStartedEventHandler? DialogueStarted;
-        public static PassedCueEventHandler? PassedCue;
-        public static GotDialogueEventHandler? GotDialogue;
-        public static MutatedEventHandler? Mutated;
-        public static DialogueEndedEventHandler? DialogueEnded;
+        public static event DialogueStartedEventHandler? DialogueStarted;
+        public static event PassedCueEventHandler? PassedCue;
+        public static event GotDialogueEventHandler? GotDialogue;
+        public static event MutatedEventHandler? Mutated;
+        public static event DialogueEndedEventHandler? DialogueEnded;
 
-        [Signal] public delegate void ResolvedEventHandler(Variant value);
+        [Signal] public delegate void ResolvedEventHandler(double id, Variant value);
 
         private static Random random = new Random();
 
-        private static GodotObject? instance;
-        public static GodotObject Instance
+        private static readonly System.Collections.Generic.Dictionary<int, TaskCompletionSource<RefCounted?>> getNextLineRequests = new();
+        private static readonly System.Collections.Generic.Dictionary<int, TaskCompletionSource<RefCounted?>> getLineRequests = new();
+        private static readonly System.Collections.Generic.Dictionary<int, TaskCompletionSource<bool>> mutateRequests = new();
+
+        private static Type[]? cachedAssemblyTypes;
+        private static Type[] AssemblyTypes => cachedAssemblyTypes ??= Assembly.GetExecutingAssembly().GetTypes();
+
+        private static readonly System.Collections.Generic.Dictionary<Type, MethodInfo[]> MethodCache = new();
+        private static MethodInfo[] GetMethodsForType(Type type)
         {
-            get
+            if (!MethodCache.TryGetValue(type, out var methods))
             {
-                if (instance == null)
-                {
-                    instance = Engine.GetSingleton("DialogueManager");
-                    instance.Connect("dialogue_started", Callable.From((Resource dialogueResource) => DialogueStarted?.Invoke(dialogueResource)));
-                    instance.Connect("passed_cue", Callable.From((string cue) => PassedCue?.Invoke(cue)));
-                    instance.Connect("got_dialogue", Callable.From((RefCounted line) => GotDialogue?.Invoke(new DialogueLine(line))));
-                    instance.Connect("mutated", Callable.From((Dictionary mutation) => Mutated?.Invoke(mutation)));
-                    instance.Connect("dialogue_ended", Callable.From((Resource dialogueResource) => DialogueEnded?.Invoke(dialogueResource)));
-                }
-                return instance;
+                methods = type.GetMethods(BindingFlags.Instance | BindingFlags.Static | BindingFlags.Public);
+                MethodCache[type] = methods;
             }
+            return methods;
+        }
+
+        private static void OnBridgeGetNextDialogueLineCompleted(int callId, RefCounted? line)
+        {
+            if (getNextLineRequests.Remove(callId, out var tcs))
+            {
+                tcs.SetResult(line);
+            }
+        }
+
+        private static void OnBridgeGetLineCompleted(int callId, RefCounted? line)
+        {
+            if (getLineRequests.Remove(callId, out var tcs))
+            {
+                tcs.SetResult(line);
+            }
+        }
+
+        private static void OnBridgeMutated(int callId)
+        {
+            if (mutateRequests.Remove(callId, out var tcs))
+            {
+                tcs.SetResult(true);
+            }
+        }
+
+        private static GodotObject? instance;
+        public static GodotObject Instance => instance ??= InitializeInstance();
+
+        private static GodotObject InitializeInstance()
+        {
+            var dm = Engine.GetSingleton("DialogueManager");
+            dm.Connect("dialogue_started", Callable.From((Resource dialogueResource) => DialogueStarted?.Invoke(dialogueResource)));
+            dm.Connect("passed_cue", Callable.From((string cue) => PassedCue?.Invoke(cue)));
+            dm.Connect("got_dialogue", Callable.From((RefCounted line) => GotDialogue?.Invoke(new DialogueLine(line))));
+            dm.Connect("mutated", Callable.From((Dictionary mutation) => Mutated?.Invoke(mutation)));
+            dm.Connect("dialogue_ended", Callable.From((Resource dialogueResource) => DialogueEnded?.Invoke(dialogueResource)));
+
+            dm.Connect("bridge_get_next_dialogue_line_completed", Callable.From((int callId, RefCounted? line) => OnBridgeGetNextDialogueLineCompleted(callId, line)));
+            dm.Connect("bridge_get_line_completed", Callable.From((int callId, RefCounted? line) => OnBridgeGetLineCompleted(callId, line)));
+            dm.Connect("bridge_mutated", Callable.From((int callId) => OnBridgeMutated(callId)));
+
+            return dm;
         }
 
 
@@ -83,6 +126,13 @@ namespace DialogueManagerRuntime
         }
 
 
+        public static bool IncludeDialogueResourceAsSelf
+        {
+            get => (bool)Instance.Get("include_dialogue_resource_as_self");
+            set => Instance.Set("include_dialogue_resource_as_self", value);
+        }
+
+
         public static TranslationSource TranslationSource
         {
             get => (TranslationSource)(int)Instance.Get("translation_source");
@@ -103,29 +153,25 @@ namespace DialogueManagerRuntime
         public static async Task<DialogueLine?> GetNextDialogueLine(Resource dialogueResource, string key = "", Array<Variant>? extraGameStates = null, MutationBehaviour mutation_behaviour = MutationBehaviour.Wait)
         {
             int id = random.Next();
+            var tcs = new TaskCompletionSource<RefCounted?>();
+            getNextLineRequests[id] = tcs;
+
             Instance.Call("_bridge_get_next_dialogue_line", id, dialogueResource, key, extraGameStates ?? new Array<Variant>(), (int)mutation_behaviour);
-            while (true)
-            {
-                var result = await Instance.ToSignal(Instance, "bridge_get_next_dialogue_line_completed");
-                if ((int)result[0] == id)
-                {
-                    return ((RefCounted)result[1] == null) ? null : new DialogueLine((RefCounted)result[1]);
-                }
-            }
+
+            var line = await tcs.Task;
+            return line == null ? null : new DialogueLine(line);
         }
 
         public static async Task<DialogueLine?> GetLine(Resource dialogueResource, string key = "", Array<Variant>? extraGameStates = null)
         {
             int id = random.Next();
+            var tcs = new TaskCompletionSource<RefCounted?>();
+            getLineRequests[id] = tcs;
+
             Instance.Call("_bridge_get_line", id, dialogueResource, key, extraGameStates ?? new Array<Variant>());
-            while (true)
-            {
-                var result = await Instance.ToSignal(Instance, "bridge_get_line_completed");
-                if ((int)result[0] == id)
-                {
-                    return ((RefCounted)result[0] == null) ? null : new DialogueLine((RefCounted)result[0]);
-                }
-            }
+
+            var line = await tcs.Task;
+            return line == null ? null : new DialogueLine(line);
         }
 
 
@@ -169,26 +215,25 @@ namespace DialogueManagerRuntime
         }
 
 
-        public static async void Mutate(Dictionary mutation, Array<Variant>? extraGameStates = null, bool isInlineMutation = false)
+        public static async Task Mutate(Dictionary mutation, Array<Variant>? extraGameStates = null, bool isInlineMutation = false)
         {
             int id = random.Next();
+            var tcs = new TaskCompletionSource<bool>();
+            mutateRequests[id] = tcs;
+
             Instance.Call("_bridge_mutate", id, mutation, extraGameStates ?? new Array<Variant>(), isInlineMutation);
-            while (true)
-            {
-                var result = await Instance.ToSignal(Instance, "bridge_mutated");
-                if ((int)result[0] == id)
-                {
-                    return;
-                }
-            }
+
+            await tcs.Task;
         }
 
 
         public static Array<Dictionary> GetMembersForScript(Script script)
         {
             string typeName = script.ResourcePath.GetFile().GetBaseName();
-            var matchingType = Assembly.GetExecutingAssembly().GetTypes().FirstOrDefault(t => t.Name == typeName);
+            var matchingType = AssemblyTypes.FirstOrDefault(t => t.Name == typeName);
+
             if (matchingType == null) return new Array<Dictionary>();
+
             return GetMembersForType(matchingType);
         }
 
@@ -196,7 +241,8 @@ namespace DialogueManagerRuntime
         public static Array<Dictionary> GetMembersForPropertyChain(Script script, Array<string> chain)
         {
             string typeName = script.ResourcePath.GetFile().GetBaseName();
-            var currentType = Assembly.GetExecutingAssembly().GetTypes().FirstOrDefault(t => t.Name == typeName);
+            var currentType = AssemblyTypes.FirstOrDefault(t => t.Name == typeName);
+
             if (currentType == null) return new Array<Dictionary>();
 
             foreach (var segment in chain)
@@ -212,7 +258,7 @@ namespace DialogueManagerRuntime
         public static Dictionary GetMethodInfoForPropertyChain(Script script, Array<string> chain, string methodName)
         {
             string typeName = script.ResourcePath.GetFile().GetBaseName();
-            var currentType = Assembly.GetExecutingAssembly().GetTypes().FirstOrDefault(t => t.Name == typeName);
+            var currentType = AssemblyTypes.FirstOrDefault(t => t.Name == typeName);
 
             if (currentType == null) return new Dictionary();
 
@@ -311,7 +357,7 @@ namespace DialogueManagerRuntime
             foreach (var param in methodInfo.GetParameters())
             {
                 args.Add(new Dictionary() {
-                    { "name", param.Name },
+                    { "name", param.Name ?? "" },
                     { "type", (int)Variant.Type.Nil },
                     { "class_name", GetFriendlyTypeName(param.ParameterType) }
                 });
@@ -372,29 +418,24 @@ namespace DialogueManagerRuntime
                 {
                     try
                     {
-                        switch (memberInfo.MemberType)
+                        switch (memberInfo)
                         {
-                            case MemberTypes.Field:
-                                return ConvertValueToVariant((memberInfo as FieldInfo).GetValue(thing));
+                            case FieldInfo fieldInfo:
+                                return ConvertValueToVariant(fieldInfo.GetValue(thing));
 
-                            case MemberTypes.Property:
-                                return ConvertValueToVariant((memberInfo as PropertyInfo).GetValue(thing));
+                            case PropertyInfo propInfo:
+                                return ConvertValueToVariant(propInfo.GetValue(thing));
 
-                            case MemberTypes.NestedType:
-                                var type = thing.GetType().GetNestedType(property);
-                                if (type.IsEnum)
-                                {
-                                    return GetEnumAsDictionary(type);
-                                }
-                                break;
+                            case Type nestedType when nestedType.IsEnum:
+                                return GetEnumAsDictionary(nestedType);
 
                             default:
-                                continue;
+                                break;
                         }
                     }
                     catch (Exception e)
                     {
-                        throw new Exception($"{property} is not supported by Variant.");
+                        throw new Exception($"{property} is not supported by Variant.", e);
                     }
                 }
             }
@@ -418,15 +459,14 @@ namespace DialogueManagerRuntime
         }
 
 
-        Variant ConvertValueToVariant(object value)
+        Variant ConvertValueToVariant(object? value)
         {
             if (value == null) return default;
 
             Type rawType = value.GetType();
             if (rawType.IsEnum)
             {
-                var values = GetEnumAsDictionary(rawType);
-                value = values[value.ToString()];
+                value = Convert.ChangeType(value, Enum.GetUnderlyingType(rawType));
             }
 
             return value switch
@@ -444,9 +484,30 @@ namespace DialogueManagerRuntime
                 float v => Variant.From((double)v),
                 double v => Variant.From(v),
                 string v => Variant.From(v),
+                Godot.Collections.Array v => v,
+                Godot.Collections.Dictionary v => v,
                 GodotObject godotObj => Variant.From(godotObj),
-                _ => default
+                _ => ConvertOtherValueToVariant(value, rawType)
             };
+        }
+
+
+        // Anything Variant supports that isn't covered by the fast paths above (typed collections like Array<T> and Dictionary<TKey, TValue>, packed arrays,
+        // Vector2/3/4, Color, etc) is boxed through the generic marshaller so it survives the trip into GDScript instead of silently becoming null.
+        Variant ConvertOtherValueToVariant(object value, Type rawType)
+        {
+            try
+            {
+                MethodInfo from = typeof(Variant)
+                    .GetMethods(BindingFlags.Public | BindingFlags.Static)
+                    .First(m => m.Name == nameof(Variant.From) && m.IsGenericMethodDefinition)
+                    .MakeGenericMethod(rawType);
+                return (Variant)from.Invoke(null, new[] { value })!;
+            }
+            catch (Exception)
+            {
+                return default;
+            }
         }
 
 
@@ -457,7 +518,7 @@ namespace DialogueManagerRuntime
             if (thing == null) return methodList;
 
             Type type = thing.GetType();
-            MethodInfo[] methodInfos = type.GetMethods(BindingFlags.Instance | BindingFlags.Static | BindingFlags.Public);
+            MethodInfo[] methodInfos = GetMethodsForType(type);
 
             foreach (MethodInfo method in methodInfos)
             {
@@ -476,7 +537,7 @@ namespace DialogueManagerRuntime
                     var paramInfo = new Dictionary() { };
                     Variant.Type godotType = ConvertToVariantType(parameter.ParameterType);
 
-                    paramInfo["name"] = parameter.Name;
+                    paramInfo["name"] = parameter.Name ?? "";
                     paramInfo["type"] = (int)godotType;
                     if (godotType == Variant.Type.Object)
                     {
@@ -627,7 +688,7 @@ namespace DialogueManagerRuntime
 
         private MethodInfo? GetMethodInfoFor(GodotObject thing, string method, Array<Variant> args)
         {
-            return thing.GetType().GetMethods(BindingFlags.Instance | BindingFlags.Static | BindingFlags.Public).Where(m => m.Name == method).FirstOrDefault(m =>
+            return GetMethodsForType(thing.GetType()).Where(m => m.Name == method).FirstOrDefault(m =>
             {
                 ParameterInfo[] parameters = m.GetParameters();
 
@@ -685,133 +746,70 @@ namespace DialogueManagerRuntime
 
     public partial class DialogueLine : RefCounted
     {
-        private string id = "";
-        public string Id
-        {
-            get => id;
-            set => id = value;
-        }
-
-        private string type = "dialogue";
-        public string Type
-        {
-            get => type;
-            set => type = value;
-        }
-
-        private string next_id = "";
-        public string NextId
-        {
-            get => next_id;
-            set => next_id = value;
-        }
-
-        private string character = "";
-        public string Character
-        {
-            get => character;
-            set => character = value;
-        }
-
-        private string text = "";
-        public string Text
-        {
-            get => text;
-            set => text = value;
-        }
-
-        private string static_id = "";
-        public string StaticId
-        {
-            get => static_id;
-            set => static_id = value;
-        }
-
-        private Array<DialogueResponse> responses = new Array<DialogueResponse>();
-        public Array<DialogueResponse> Responses
-        {
-            get => responses;
-        }
-
-        private string? time = null;
-        public string? Time
-        {
-            get => time;
-        }
-
-        private Dictionary speeds = new Dictionary();
-        public Dictionary Speeds
-        {
-            get => speeds;
-        }
-
-        private Array<Godot.Collections.Array> inline_mutations = new Array<Godot.Collections.Array>();
-        public Array<Godot.Collections.Array> InlineMutations
-        {
-            get => inline_mutations;
-        }
-
-        private Array<DialogueLine> concurrent_lines = new Array<DialogueLine>();
-        public Array<DialogueLine> ConcurrentLines
-        {
-            get => concurrent_lines;
-        }
-
-        private Array<Variant> extra_game_states = new Array<Variant>();
-        public Array<Variant> ExtraGameStates
-        {
-            get => extra_game_states;
-        }
-
-        private Array<string> tags = new Array<string>();
-        public Array<string> Tags
-        {
-            get => tags;
-        }
+        public string Id { get; set; } = "";
+        public string Type { get; set; } = "dialogue";
+        public string NextId { get; set; } = "";
+        public string Character { get; set; } = "";
+        public string Text { get; set; } = "";
+        public string StaticId { get; set; } = "";
+        public Array<DialogueResponse> Responses { get; } = new Array<DialogueResponse>();
+        public string? Time { get; private set; }
+        public Dictionary Speeds { get; private set; } = new Dictionary();
+        public Array<Godot.Collections.Array> InlineMutations { get; private set; } = new Array<Godot.Collections.Array>();
+        public Array<DialogueLine> ConcurrentLines { get; } = new Array<DialogueLine>();
+        public Array<Variant> ExtraGameStates { get; } = new Array<Variant>();
+        public Array<string> Tags { get; private set; } = new Array<string>();
 
         public DialogueLine(RefCounted data)
         {
-            id = (string)data.Get("id");
-            type = (string)data.Get("type");
-            next_id = (string)data.Get("next_id");
-            character = (string)data.Get("character");
-            text = (string)data.Get("text");
-            static_id = (string)data.Get("static_id");
-            speeds = (Dictionary)data.Get("speeds");
-            inline_mutations = (Array<Godot.Collections.Array>)data.Get("inline_mutations");
-            time = (string)data.Get("time");
-            tags = (Array<string>)data.Get("tags");
+            Id = (string)data.Get("id");
+            Type = (string)data.Get("type");
+            NextId = (string)data.Get("next_id");
+            Character = (string)data.Get("character");
+            Text = (string)data.Get("text");
+            StaticId = (string)data.Get("static_id");
+            Speeds = (Dictionary)data.Get("speeds");
+            InlineMutations = (Array<Godot.Collections.Array>)data.Get("inline_mutations");
+            Time = (string)data.Get("time");
+            Tags = (Array<string>)data.Get("tags");
 
             foreach (var concurrent_line_data in (Array<RefCounted>)data.Get("concurrent_lines"))
             {
-                concurrent_lines.Add(new DialogueLine(concurrent_line_data));
+                ConcurrentLines.Add(new DialogueLine(concurrent_line_data));
             }
 
             foreach (var response in (Array<RefCounted>)data.Get("responses"))
             {
-                responses.Add(new DialogueResponse(response));
+                Responses.Add(new DialogueResponse(response));
             }
         }
 
 
         public bool HasTag(string tagName)
         {
-            string wrapped = $"{tagName}=";
-            foreach (var tag in tags)
+            if (Tags.Contains(tagName))
             {
-                if (tag.StartsWith(wrapped))
-                {
-                    return true;
-                }
+                return true;
             }
-            return false;
+            else
+            {
+                string wrapped = $"{tagName}=";
+                foreach (var tag in Tags)
+                {
+                    if (tag.StartsWith(wrapped))
+                    {
+                        return true;
+                    }
+                }
+                return false;
+            }
         }
 
 
         public string GetTagValue(string tagName)
         {
             string wrapped = $"{tagName}=";
-            foreach (var tag in tags)
+            foreach (var tag in Tags)
             {
                 if (tag.StartsWith(wrapped))
                 {
@@ -823,10 +821,10 @@ namespace DialogueManagerRuntime
 
         public override string ToString()
         {
-            switch (type)
+            switch (Type)
             {
                 case "dialogue":
-                    return $"<DialogueLine character=\"{character}\" text=\"{text}\">";
+                    return $"<DialogueLine character=\"{Character}\" text=\"{Text}\">";
                 case "mutation":
                     return "<DialogueLine mutation>";
                 default:
@@ -838,60 +836,46 @@ namespace DialogueManagerRuntime
 
     public partial class DialogueResponse : RefCounted
     {
-        private string next_id = "";
-        public string NextId
-        {
-            get => next_id;
-            set => next_id = value;
-        }
-
-        private bool is_allowed = true;
-        public bool IsAllowed
-        {
-            get => is_allowed;
-            set => is_allowed = value;
-        }
-
-        private string condition_as_text = "";
-        public string ConditionAsText
-        {
-            get => condition_as_text;
-            set => condition_as_text = value;
-        }
-
-        private string text = "";
-        public string Text
-        {
-            get => text;
-            set => text = value;
-        }
-
-        private string static_id = "";
-        public string TranslationKey
-        {
-            get => static_id;
-            set => static_id = value;
-        }
-
-        private Array<string> tags = new Array<string>();
-        public Array<string> Tags
-        {
-            get => tags;
-        }
+        public string NextId { get; set; } = "";
+        public bool IsAllowed { get; set; } = true;
+        public string ConditionAsText { get; set; } = "";
+        public string Text { get; set; } = "";
+        public string TranslationKey { get; set; } = "";
+        public Array<string> Tags { get; private set; } = new Array<string>();
 
         public DialogueResponse(RefCounted data)
         {
-            next_id = (string)data.Get("next_id");
-            is_allowed = (bool)data.Get("is_allowed");
-            text = (string)data.Get("text");
-            static_id = (string)data.Get("static_id");
-            tags = (Array<string>)data.Get("tags");
+            NextId = (string)data.Get("next_id");
+            IsAllowed = (bool)data.Get("is_allowed");
+            Text = (string)data.Get("text");
+            TranslationKey = (string)data.Get("static_id");
+            Tags = (Array<string>)data.Get("tags");
+        }
+
+        public bool HasTag(string tagName)
+        {
+            if (Tags.Contains(tagName))
+            {
+                return true;
+            }
+            else
+            {
+                string wrapped = $"{tagName}=";
+                foreach (var tag in Tags)
+                {
+                    if (tag.StartsWith(wrapped))
+                    {
+                        return true;
+                    }
+                }
+                return false;
+            }
         }
 
         public string GetTagValue(string tagName)
         {
             string wrapped = $"{tagName}=";
-            foreach (var tag in tags)
+            foreach (var tag in Tags)
             {
                 if (tag.StartsWith(wrapped))
                 {
@@ -903,7 +887,7 @@ namespace DialogueManagerRuntime
 
         public override string ToString()
         {
-            return $"<DialogueResponse text=\"{text}\"";
+            return $"<DialogueResponse text=\"{Text}\"";
         }
     }
 }

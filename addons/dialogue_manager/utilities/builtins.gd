@@ -51,8 +51,33 @@ static func is_supported(thing: Variant, with_method: String = "") -> bool:
 static func resolve_property(builtin: Variant, property: String) -> Variant:
 	match typeof(builtin):
 		TYPE_DICTIONARY:
+			if not builtin.has(property):
+				match property:
+					"Count", "Length":
+						return builtin.size()
+					"IsEmpty":
+						return builtin.is_empty()
 			return builtin.get(property)
-		TYPE_ARRAY, TYPE_PACKED_STRING_ARRAY, TYPE_QUATERNION, TYPE_STRING, TYPE_STRING_NAME:
+
+		TYPE_ARRAY, TYPE_PACKED_STRING_ARRAY:
+			match property:
+				"Count", "Length":
+					return builtin.size()
+				"IsEmpty":
+					return builtin.is_empty()
+				_:
+					return builtin[property]
+
+		TYPE_STRING:
+			match property:
+				"Length", "Count":
+					return builtin.length()
+				"IsEmpty":
+					return builtin.is_empty()
+				_:
+					return builtin[property]
+
+		TYPE_STRING_NAME, TYPE_QUATERNION:
 			return builtin[property]
 
 		# Some types have constants that we need to manually resolve
