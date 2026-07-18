@@ -135,6 +135,9 @@ msgstr "Save character names to CSV..."
 msgid "save_to_csv"
 msgstr "Save lines to CSV..."
 
+msgid "save_all_to_csv"
+msgstr "Save all lines to single CSV..."
+
 msgid "import_from_csv"
 msgstr "Import line changes from CSV..."
 
