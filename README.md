@@ -24,7 +24,7 @@ You can install it via the Asset Library or [downloading a copy](https://github.
 - [Translations](docs/Translations.md)
 - [API](docs/API.md)
 - [C# wrapper](docs/CSharp.md)
-- [Upgrading from v3 to v4](docs/3to4.md)
+- [Upgrading from v3 to v4](docs/Upgrading_Version.md)
 
 ## Example Projects
 
