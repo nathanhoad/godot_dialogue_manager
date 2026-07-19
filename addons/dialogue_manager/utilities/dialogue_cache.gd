@@ -207,7 +207,9 @@ static func _get_dialogue_files_in_filesystem(path: String = "res://") -> Packed
 
 
 static func _on_dependency_timer_timeout() -> void:
-	_update_dependency_timer.stop()
+	if is_instance_valid(_update_dependency_timer):
+		_update_dependency_timer.stop()
+
 	var import_regex: RegEx = RegEx.create_from_string("import \"(?<path>.*?)\"")
 	var file: FileAccess
 	var found_imports: Array[RegExMatch]
