@@ -14,6 +14,12 @@ signal got_dialogue(line: DialogueLine)
 ## Emitted when a mutation is encountered.
 signal mutated(mutation: Dictionary)
 
+## Emitted when waiting for input.
+signal waiting_for_input()
+
+## Emitted when waiting for input received input.
+signal waited_for_input()
+
 ## Emitted when some dialogue has reached the end.
 signal dialogue_ended(resource: DialogueResource)
 
@@ -962,7 +968,11 @@ func _mutate(mutation: Dictionary, extra_game_states: Array, is_inline_mutation:
 func _wait_for(actions: PackedStringArray) -> void:
 	var waiter: DMWaiter = DMWaiter.new(actions)
 	add_child(waiter)
+
+	waiting_for_input.emit()
 	await waiter.waited
+	waited_for_input.emit()
+
 	waiter.queue_free()
 
 
