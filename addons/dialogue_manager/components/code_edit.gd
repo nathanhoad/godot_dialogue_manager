@@ -271,7 +271,8 @@ func _add_character_name_completions(current_line: String) -> void:
 		if current_line.strip_edges().begins_with(prefix):
 			return
 
-	var name_so_far: String = WEIGHTED_RANDOM_PREFIX.sub(current_line.strip_edges(), "")
+	var text_before_cursor: String = current_line.substr(0, get_caret_column(0))
+	var name_so_far: String = WEIGHTED_RANDOM_PREFIX.sub(text_before_cursor.strip_edges(), "")
 	if name_so_far == "":
 		return
 
