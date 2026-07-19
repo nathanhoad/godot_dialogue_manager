@@ -67,8 +67,12 @@ var _dotnet_dialogue_manager: RefCounted
 
 var _expression_parser: DMExpressionParser = DMExpressionParser.new()
 
+var _rng: RandomNumberGenerator = RandomNumberGenerator.new()
+
 
 func _ready() -> void:
+	reseed_randomizer(hash(ProjectSettings.get_setting("application/config/name")))
+
 	# Cache the known Node2D properties
 	_node_properties = ["Script Variables"]
 	var temp_node: Node2D = Node2D.new()
@@ -87,6 +91,11 @@ func _ready() -> void:
 		# If this is a debug build we can preload autoloads (otherwise this is
 		# done on the first state request.
 		_load_autoloads()
+
+
+## Set a random seed.
+func reseed_randomizer(next_seed: int) -> void:
+	_rng.seed = next_seed
 
 
 # Receive messages from the debugger
@@ -253,7 +262,7 @@ func get_line(resource: DialogueResource, key: String, extra_game_states: Array)
 		if successful_siblings.size() == 0:
 			return await get_line(resource, data.next_id + id_trail, extra_game_states)
 		# Otherwise, pick a random one.
-		var target_weight: float = randf_range(0, successful_siblings.reduce(func(total: float, sibling: Dictionary) -> float: return total + sibling.weight, 0))
+		var target_weight: float = _rng.randf_range(0, successful_siblings.reduce(func(total: float, sibling: Dictionary) -> float: return total + sibling.weight, 0))
 		var cummulative_weight: float = 0
 		for sibling: Dictionary in successful_siblings:
 			if target_weight < cummulative_weight + sibling.weight:
@@ -417,7 +426,7 @@ func get_resolved_line_data(data: Dictionary, extra_game_states: Array = []) -> 
 	# Resolve random groups
 	for found: RegExMatch in compilation.regex.INLINE_RANDOM_REGEX.search_all(text):
 		var options: PackedStringArray = found.get_string(&"options").split(&"|")
-		text = text.replace(&"[[%s]]" % found.get_string(&"options"), options[randi_range(0, options.size() - 1)])
+		text = text.replace(&"[[%s]]" % found.get_string(&"options"), options[_rng.randi_range(0, options.size() - 1)])
 
 	# Do a pass on the markers to find any conditionals
 	var markers: DMResolvedLineData = DMResolvedLineData.new(text)
@@ -518,7 +527,7 @@ func get_resolved_character(data: Dictionary, extra_game_states: Array = []) -> 
 	random_regex.compile("\\[\\[(?<options>.*?)\\]\\]")
 	for found: RegExMatch in random_regex.search_all(character):
 		var options: PackedStringArray = found.get_string(&"options").split("|")
-		character = character.replace("[[%s]]" % found.get_string(&"options"), options[randi_range(0, options.size() - 1)])
+		character = character.replace("[[%s]]" % found.get_string(&"options"), options[_rng.randi_range(0, options.size() - 1)])
 
 	return character
 
@@ -1251,7 +1260,7 @@ func _resolve(tokens: Array, extra_game_states: Array) -> Variant:
 						found = true
 					&"roll_dice", &"RollDice":
 						token.type = DMConstants.TOKEN_VALUE
-						token.value = randi_range(1, args[0])
+						token.value = _rng.randi_range(1, args[0])
 						found = true
 					_:
 						# Check for top level name conflicts
@@ -1778,7 +1787,7 @@ func _resolve_thing_method(thing: Variant, method: String, args: Array) -> Varia
 
 func callv_dotnet(thing: Variant, method: String, args: Array) -> Variant:
 	var dotnet_dialogue_manager: RefCounted = _get_dotnet_dialogue_manager()
-	var id: float = randf()
+	var id: float = _rng.randf()
 	dotnet_dialogue_manager.ResolveThingMethod(id, thing, method, args)
 	var x: int = 0
 	while x < 1000:
