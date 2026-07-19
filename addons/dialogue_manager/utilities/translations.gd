@@ -36,7 +36,7 @@ static func generate_static_line_ids_for_text(text: String, file_path: String) -
 		if l.begins_with("- "):
 			translatable_text = DMCompiler.extract_translatable_string(l)
 		else:
-			translatable_text = l.substr(l.find(":") + 1)
+			translatable_text = Array(l.replace("\\:", "!ESCAPED_COLON!").split(":")).back().replace("!ESCAPED_COLON!", "\\:")
 
 		var key: String = _generate_id(file_path)
 		while key in DMCache.known_static_ids:
