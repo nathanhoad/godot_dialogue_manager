@@ -269,7 +269,7 @@ namespace DialogueManagerRuntime
             }
 
             var methodInfo = currentType
-                .GetMethods(BindingFlags.Instance | BindingFlags.Static | BindingFlags.Public | BindingFlags.DeclaredOnly)
+                .GetMethods(BindingFlags.Instance | BindingFlags.Static | BindingFlags.Public)
                 .FirstOrDefault(m => m.Name == methodName && !m.IsSpecialName);
             if (methodInfo == null) return new Dictionary();
 
@@ -293,7 +293,7 @@ namespace DialogueManagerRuntime
                 return members;
             }
 
-            var memberInfos = type.GetMembers(BindingFlags.Instance | BindingFlags.Static | BindingFlags.Public | BindingFlags.DeclaredOnly);
+            var memberInfos = type.GetMembers(BindingFlags.Instance | BindingFlags.Static | BindingFlags.Public);
             foreach (var memberInfo in memberInfos)
             {
                 switch (memberInfo.MemberType)
@@ -372,10 +372,10 @@ namespace DialogueManagerRuntime
 
         private static Type? ResolvePropertyType(Type type, string memberName)
         {
-            var field = type.GetField(memberName, BindingFlags.Instance | BindingFlags.Static | BindingFlags.Public | BindingFlags.DeclaredOnly);
+            var field = type.GetField(memberName, BindingFlags.Instance | BindingFlags.Static | BindingFlags.Public);
             if (field != null) return field.FieldType;
 
-            var prop = type.GetProperty(memberName, BindingFlags.Instance | BindingFlags.Static | BindingFlags.Public | BindingFlags.DeclaredOnly);
+            var prop = type.GetProperty(memberName, BindingFlags.Instance | BindingFlags.Static | BindingFlags.Public);
             if (prop != null) return prop.PropertyType;
 
             var nested = type.GetNestedType(memberName, BindingFlags.Public);
@@ -404,14 +404,14 @@ namespace DialogueManagerRuntime
 
         public bool ThingHasConstant(GodotObject thing, string property)
         {
-            var memberInfos = thing.GetType().GetMember(property, BindingFlags.Instance | BindingFlags.Static | BindingFlags.Public | BindingFlags.DeclaredOnly);
+            var memberInfos = thing.GetType().GetMember(property, BindingFlags.Instance | BindingFlags.Static | BindingFlags.Public);
             return memberInfos.Length > 0;
         }
 
 
         public Variant ResolveThingConstant(GodotObject thing, string property)
         {
-            var memberInfos = thing.GetType().GetMember(property, BindingFlags.Instance | BindingFlags.Static | BindingFlags.Public | BindingFlags.DeclaredOnly);
+            var memberInfos = thing.GetType().GetMember(property, BindingFlags.Instance | BindingFlags.Static | BindingFlags.Public);
             foreach (var memberInfo in memberInfos)
             {
                 if (memberInfo != null)
