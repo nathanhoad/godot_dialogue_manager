@@ -116,7 +116,13 @@ func _apply_responses() -> void:
 	# Add new items
 	if responses.size() > 0:
 		for response: Variant in responses:
-			if hide_failed_responses and not response.is_allowed: continue
+			if hide_failed_responses and not response.is_allowed \
+				# The response might be tagged with "show_if"
+				and (not response.has_method("get_tag_value") or response.get_tag_value("show_if") != "true"):
+					continue
+
+			if response.has_method("get_tag_value") and response.get_tag_value("hide_if") == "true":
+				continue
 
 			var item: Control
 			if is_instance_valid(response_template):

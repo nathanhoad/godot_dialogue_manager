@@ -400,26 +400,14 @@ func _inject_state(key: String, value: Variant, extra_game_states: Array) -> voi
 func get_resolved_line_data(data: Dictionary, extra_game_states: Array = []) -> DMResolvedLineData:
 	var text: String = translate(data)
 
-	# Resolve variables
+	# Resolve variables in the text
 	var text_replacements: Array[Dictionary] = data.get(&"text_replacements", [] as Array[Dictionary])
-	if text_replacements.size() == 0 and "{{" in text:
-		# This line is translated but has expressions that didn't exist in the base text.
-		text_replacements = _expression_parser.extract_replacements(text, 0)
+	text = await _resolve_variables_in_text(text, text_replacements, extra_game_states)
 
-	for replacement: Dictionary in text_replacements:
-		if replacement.has("error"):
-			assert(false, "%s \"%s\"" % [DMConstants.get_error_message(replacement.get("error")), text])
-
-		var value: Variant = await _resolve(replacement.expression.duplicate(true), extra_game_states)
-		var index: int = text.find(replacement.value_in_text)
-		if index == -1:
-			# The replacement wasn't found but maybe the regular quotes have been replaced
-			# by special quotes while translating.
-			index = text.replace("“", "\"").replace("”", "\"").find(replacement.value_in_text)
-		if index > -1:
-			if value is Object and "_to_dialogue_string" in value:
-				value = value._to_dialogue_string()
-			text = text.substr(0, index) + str(value) + text.substr(index + replacement.value_in_text.length())
+	# Resolve variables in tags
+	if data.has("tags"):
+		for i: int in data.tags.size():
+			data.tags[i] = await _resolve_variables_in_text(data.tags[i], [] , extra_game_states)
 
 	var compilation: DMCompilation = DMCompilation.new()
 
@@ -473,6 +461,29 @@ func get_resolved_line_data(data: Dictionary, extra_game_states: Array = []) -> 
 		markers.text = resolved_text
 
 	return markers
+
+
+# Resolve any variables found in a string.
+func _resolve_variables_in_text(text: String, text_replacements: Array[Dictionary], extra_game_states: Array = []) -> String:
+	if text_replacements.size() == 0 and "{{" in text:
+		text_replacements = _expression_parser.extract_replacements(text, 0)
+
+	for replacement: Dictionary in text_replacements:
+		if replacement.has("error"):
+			assert(false, "%s \"%s\"" % [DMConstants.get_error_message(replacement.get("error")), text])
+
+		var value: Variant = await _resolve(replacement.expression.duplicate(true), extra_game_states)
+		var index: int = text.find(replacement.value_in_text)
+		if index == -1:
+			# The replacement wasn't found but maybe the regular quotes have been replaced
+			# by special quotes while translating.
+			index = text.replace("“", "\"").replace("”", "\"").find(replacement.value_in_text)
+		if index > -1:
+			if value is Object and "_to_dialogue_string" in value:
+				value = value._to_dialogue_string()
+			text = text.substr(0, index) + str(value) + text.substr(index + replacement.value_in_text.length())
+
+	return text
 
 
 func _shift_markers(markers: DMResolvedLineData, removed_start: int, removed_end: int, body_length: int, keep_inner: bool = true) -> void:
