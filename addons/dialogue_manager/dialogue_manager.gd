@@ -970,8 +970,9 @@ func _wait_for(actions: PackedStringArray) -> void:
 	add_child(waiter)
 
 	waiting_for_input.emit()
-	await waiter.waited
-	waited_for_input.emit()
+	var action: String = await waiter.waited
+	if is_instance_valid(action):
+		waited_for_input.emit()
 
 	waiter.queue_free()
 
