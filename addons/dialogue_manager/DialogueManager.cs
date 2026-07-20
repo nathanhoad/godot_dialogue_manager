@@ -188,6 +188,8 @@ namespace DialogueManagerRuntime
         {
             Array<Dictionary> members = new Array<Dictionary>();
 
+            var godotProperties = script.GetScriptPropertyList().Select(p => p["name"].ToString()).ToHashSet();
+
             string typeName = script.ResourcePath.GetFile().GetBaseName();
             var matchingTypes = Assembly.GetExecutingAssembly().GetTypes().Where(t => t.Name == typeName);
             foreach (var matchingType in matchingTypes)
@@ -215,6 +217,8 @@ namespace DialogueManagerRuntime
                             }
                             break;
                         case MemberTypes.Method:
+                            if ((memberInfo.Name.StartsWith("get_") || memberInfo.Name.StartsWith("set_")) && godotProperties.Contains(memberInfo.Name.Substring(4))) continue;
+
                             type = "method";
                             break;
 
@@ -358,7 +362,8 @@ namespace DialogueManagerRuntime
                 }
             }
 
-            if (info == null) {
+            if (info == null)
+            {
                 EmitSignal(SignalName.Resolved, id);
                 return;
             }
