@@ -145,6 +145,20 @@ namespace DialogueManagerRuntime
             set => Instance.Set("get_current_scene", Callable.From(value));
         }
 
+
+        /// <summary>
+        /// Set a filter hook for member access on GodotObject things. The delegate is
+        /// stored on the GDScript-side <c>resolve_member_access</c> Callable property
+        /// and is invoked whenever a thing's property, method, or string-keyed index is
+        /// about to be accessed at runtime. Return <c>""</c> to allow, or a non-empty
+        /// error string to deny.
+        /// <paramref name="kind"/> is one of: "property", "property_set", "method", "index".
+        /// </summary>
+        public static Func<Variant, StringName, StringName, string> ResolveMemberAccess
+        {
+            set => Instance.Set("resolve_member_access", Callable.From(value));
+        }
+
         public static Resource CreateResourceFromText(string text)
         {
             return (Resource)Instance.Call("create_resource_from_text", text);

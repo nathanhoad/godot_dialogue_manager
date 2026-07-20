@@ -63,6 +63,24 @@ var get_current_scene: Callable = func() -> Node:
 ## Override this if you need safer loading or custom loading logic.
 var load_from_within_dialogue: Callable = load
 
+## A filter hook: assign a [Callable] to restrict member access on objects at runtime.
+## [br][br]
+## The Callable is invoked whenever a thing's property, method, or string-keyed index is
+## about to be accessed. It should return [code]""[/code] to allow, or a non-empty error
+## string to deny. The error string is surfaced via [code]assert(false, err)[/code] (in
+## inner resolvers) or [code]show_error_for_missing_state_value(err, extra_game_states)[/code]
+## (where the game states are available).
+## [br][br]
+## It blocks 4 cases of code: [br]
+## 1. [code]thing.property[/code] [br]
+## 2. [code]thing.method()[/code] [br]
+## 3. assignment which is supported by DialogueManager [br]
+## 4. [code](thing as Variant)[lb]'property_name'[rb][/code] for non dictionary values, not only for [code]Object.get[/code] [br]
+##     - This is the equivalent to cpp's [code]Variant::get[/code] in gdscript. [br]
+## The default Callable allows everything.
+var validate_member_access: Callable = func(_thing: Variant, _member: StringName, _member_kind: StringName) -> String:
+	return ""
+
 var _has_loaded_autoloads: bool = false
 var _autoloads: Dictionary = {}
 
@@ -695,7 +713,7 @@ func show_error_for_missing_state_value(message: String, extra_game_states: Arra
 		push_error(message)
 	elif will_show:
 		# Let the debugger know before we break
-		if EngineDebugger.is_active():
+		if EngineDebugger.is_active() and extra_game_states.size() > 0:
 			EngineDebugger.send_message("dm:debug", [extra_game_states[0].debugger])
 
 		# If you're here then you're missing a method or property in your game state. The error
@@ -1024,10 +1042,19 @@ func _get_state_value(property: String, extra_game_states: Array) -> Variant:
 			if state.has(property):
 				return state.get(property)
 		else:
+			var is_dotnet_constant: bool = false
+			if state.get_script() and state.get_script().resource_path.ends_with(".cs"):
+				is_dotnet_constant = _get_dotnet_dialogue_manager().ThingHasConstant(state, property)
+
+			# Only consult the access filter if this identifier is actually a member of this state.
+			if is_dotnet_constant or _thing_has_property(state, property, false):
+				var access_err: Variant = validate_member_access.call(state, StringName(property), &"property")
+				if access_err is String and access_err != "":
+					show_error_for_missing_state_value(access_err as String, extra_game_states)
+					return null
+
 			# Try for a C# constant first
-			if state.get_script() \
-			and state.get_script().resource_path.ends_with(".cs") \
-			and _get_dotnet_dialogue_manager().ThingHasConstant(state, property):
+			if is_dotnet_constant:
 				return _get_dotnet_dialogue_manager().ResolveThingConstant(state, property)
 
 			# Otherwise just let Godot try and resolve it.
@@ -1108,6 +1135,10 @@ func _set_state_value(property: String, value: Variant, extra_game_states: Array
 				state[property] = value
 				return
 		elif _thing_has_property(state, property):
+			var access_err: Variant = validate_member_access.call(state, StringName(property), &"property_set")
+			if access_err is String and access_err != "":
+				show_error_for_missing_state_value(access_err as String, extra_game_states)
+				return
 			state.set(property, value)
 			return
 
@@ -1260,7 +1291,16 @@ func _resolve(tokens: Array, extra_game_states: Array) -> Variant:
 							1:
 								token.value = Callable(args[0])
 							2:
-								token.value = Callable(args[0], args[1])
+								# Building a Callable to a method is method access by another name so it goes through the filter (otherwise
+								# something like `Callable(thing, "denied").call()` would sidestep it entirely.
+								var access_err: Variant = ""
+								if is_instance_valid(args[0]) and (args[1] is String or args[1] is StringName):
+									access_err = validate_member_access.call(args[0], StringName(args[1]), &"method")
+								if access_err is String and access_err != "":
+									show_error_for_missing_state_value(access_err as String, extra_game_states)
+									token.value = Callable()
+								else:
+									token.value = Callable(args[0], args[1])
 						found = true
 					&"Color":
 						token.type = DMConstants.TOKEN_VALUE
@@ -1302,11 +1342,24 @@ func _resolve(tokens: Array, extra_game_states: Array) -> Variant:
 
 		elif token.type == DMConstants.TOKEN_DICTIONARY_REFERENCE:
 			var value: Variant
+			var was_denied: bool = false
 			if i > 0 and tokens[i - 1].type == DMConstants.TOKEN_DOT:
 				# If we are deep referencing then we need to get the parent object.
 				# `parent.value` is the actual object and `token.variable` is the name of
 				# the property within it.
-				value = tokens[i - 2].value[token.variable]
+				var parent_value: Variant = tokens[i - 2].value
+				# Only treat `parent[key]` as member access when `parent` is not a Dictionary
+				# AND `key` is a String/StringName (not an int index).
+				var access_err: Variant = null
+				if typeof(parent_value) != TYPE_DICTIONARY \
+						and (token.variable is String or token.variable is StringName):
+					access_err = validate_member_access.call(parent_value, StringName(token.variable), &"index")
+				if access_err is String and access_err != "":
+					show_error_for_missing_state_value(access_err as String, extra_game_states)
+					was_denied = true
+					value = null
+				else:
+					value = parent_value[token.variable]
 				# Clean up the previous tokens
 				token.erase("variable")
 				tokens.remove_at(i - 1)
@@ -1317,7 +1370,11 @@ func _resolve(tokens: Array, extra_game_states: Array) -> Variant:
 				value = _get_state_value(token.variable, extra_game_states)
 
 			var index: Variant = await _resolve(token.value, extra_game_states)
-			if typeof(value) == TYPE_DICTIONARY:
+			if was_denied:
+				# Access to the parent was denied so collapse to null.
+				token.type = DMConstants.TOKEN_VALUE
+				token.value = null
+			elif typeof(value) == TYPE_DICTIONARY:
 				if tokens.size() > i + 1 and tokens[i + 1].type == DMConstants.TOKEN_ASSIGNMENT:
 					# If the next token is an assignment then we need to leave this as a reference
 					# so that it can be resolved once everything ahead of it has been resolved
@@ -1392,6 +1449,15 @@ func _resolve(tokens: Array, extra_game_states: Array) -> Variant:
 							DMConstants.translate(&"runtime.array_index_out_of_bounds").format({ index = index, array = value }),
 							extra_game_states
 						)
+			elif (index is String or index is StringName) and is_instance_valid(value):
+				var access_err: Variant = validate_member_access.call(value, StringName(index), &"index")
+				if access_err is String and access_err != "":
+					show_error_for_missing_state_value(access_err as String, extra_game_states)
+					dictionary.value = null
+				else:
+					dictionary.value = value.get(index)
+				tokens.remove_at(i)
+				i -= 1
 
 		elif token.type == DMConstants.TOKEN_ARRAY:
 			token.type = DMConstants.TOKEN_VALUE
@@ -1548,11 +1614,16 @@ func _resolve(tokens: Array, extra_game_states: Array) -> Variant:
 					value = _apply_operation(token.value, _get_state_value(lhs.value, extra_game_states), tokens[i + 1].value)
 					_set_state_value(lhs.value, value, extra_game_states)
 				&"property":
-					value = _apply_operation(token.value, lhs.value.get(lhs.property), tokens[i + 1].value)
-					if typeof(lhs.value) == TYPE_DICTIONARY:
-						lhs.value[lhs.property] = value
+					var access_err: Variant = validate_member_access.call(lhs.value, StringName(lhs.property), &"property_set")
+					if access_err is String and access_err != "":
+						show_error_for_missing_state_value(access_err as String, extra_game_states)
+						value = null
 					else:
-						lhs.value.set(lhs.property, value)
+						value = _apply_operation(token.value, lhs.value.get(lhs.property), tokens[i + 1].value)
+						if typeof(lhs.value) == TYPE_DICTIONARY:
+							lhs.value[lhs.property] = value
+						else:
+							lhs.value.set(lhs.property, value)
 				&"dictionary":
 					value = _apply_operation(token.value, lhs.value.get(lhs.key, null), tokens[i + 1].value)
 					lhs.value[lhs.key] = value
@@ -1703,12 +1774,12 @@ func _thing_has_method(thing: Variant, method: String, args: Array) -> bool:
 
 
 # Check if a given property exists
-func _thing_has_property(thing: Object, property: String) -> bool:
+func _thing_has_property(thing: Object, property: String, ignore_node_properties: bool = true) -> bool:
 	if thing == null:
 		return false
 
 	for p: Dictionary in thing.get_property_list():
-		if _node_properties.has(p.name):
+		if ignore_node_properties and _node_properties.has(p.name):
 			# Ignore any properties on the base Node
 			continue
 		if p.name == property:
@@ -1762,6 +1833,12 @@ func _get_method_info_key(method: String, args: Array) -> String:
 
 
 func _resolve_thing_method(thing: Variant, method: String, args: Array) -> Variant:
+	if is_instance_valid(thing):
+		var access_err: Variant = validate_member_access.call(thing, StringName(method), &"method")
+		if access_err is String and access_err != "":
+			show_error_for_missing_state_value(access_err as String, [])
+			return null
+
 	if DMBuiltins.is_supported(thing):
 		var result: Variant = await DMBuiltins.resolve_method(thing, method, args)
 		if not DMBuiltins.has_resolve_method_failed():
@@ -1824,6 +1901,11 @@ func callv_dotnet(thing: Variant, method: String, args: Array) -> Variant:
 func _resolve_thing_property(thing: Object, property: String) -> Variant:
 	if thing == null:
 		return false
+
+	var access_err: Variant = validate_member_access.call(thing, StringName(property), &"property")
+	if access_err is String and access_err != "":
+		show_error_for_missing_state_value(access_err as String, [])
+		return null
 
 	if thing.get_script() and thing.get_script().resource_path.ends_with(".cs"):
 		# If we get this far then the property might be a C# constant.
