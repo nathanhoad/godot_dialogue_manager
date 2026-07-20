@@ -291,6 +291,11 @@ func parse_line_tree(root: DMTreeLine, parent: DMCompiledLine = null) -> Array[D
 func parse_title_line(tree_line: DMTreeLine, line: DMCompiledLine, siblings: Array[DMTreeLine], sibling_index: int, parent: DMCompiledLine) -> Error:
 	var result: Error = OK
 
+	# Titles should never have child lines
+	if tree_line.children.size() > 0:
+		for invalid_child: DMTreeLine in tree_line.children:
+			add_error(invalid_child.line_number, invalid_child.indent, DMConstants.ERR_INVALID_INDENTATION)
+
 	line.text = tree_line.text.substr(tree_line.text.find("~ ") + 2).strip_edges()
 
 	# Titles can't have numbers as the first letter
