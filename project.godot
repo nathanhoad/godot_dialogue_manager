@@ -14,10 +14,10 @@ compatibility/default_parent_skeleton_in_mesh_instance_3d=true
 
 [application]
 
-config/name="Dialogue Manager"
+config/name="Dialogue Manager 3"
 config/tags=PackedStringArray("addon")
 run/main_scene="res://tests/tests.tscn"
-config/features=PackedStringArray("4.6", "C#")
+config/features=PackedStringArray("4.7", "C#")
 config/icon="res://icon.svg"
 
 [autoload]
@@ -66,7 +66,7 @@ ui_accept={
 [internationalization]
 
 locale/translation_remaps={}
-locale/translations_pot_files=PackedStringArray("res://tests/main.dialogue", "res://tests/snippets.dialogue")
+locale/translations_pot_files=PackedStringArray("res://tests/snippets.dialogue", "res://tests/main.dialogue")
 locale/language_filter=["de", "en"]
 locale/locale_filter_mode=1
 
