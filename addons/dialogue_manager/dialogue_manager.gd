@@ -115,6 +115,11 @@ func _ready() -> void:
 		# If this is a debug build we can preload autoloads (otherwise this is
 		# done on the first state request.
 		_load_autoloads()
+		# If this is a debug build then we need to know when the scene changes.
+		get_tree().scene_changed.connect(func() -> void:
+			_send_current_scene_to_debugger()
+		)
+		_send_current_scene_to_debugger()
 
 
 ## Set a random seed.
@@ -808,6 +813,23 @@ func unregister_state_context(alias: String) -> void:
 	_send_state_to_debugger()
 
 
+# Let the debugger know about the current scene
+func _send_current_scene_to_debugger(current_scene: Node = null) -> void:
+	if not EngineDebugger.is_active(): return
+	
+	if not is_instance_valid(current_scene):
+		current_scene = get_current_scene.call() if get_current_scene.is_valid() else null
+	
+	var serialized_current_scene: Dictionary = {}
+	if is_instance_valid(current_scene): 
+		serialized_current_scene[current_scene.name] = _get_serialised_state_node(
+			current_scene.name, 
+			current_scene
+		)
+		
+	EngineDebugger.send_message("dm:current_scene", [serialized_current_scene])
+	
+	
 # Let the debugger know about the latest state
 func _send_state_to_debugger() -> void:
 	if not EngineDebugger.is_active(): return
@@ -845,6 +867,8 @@ func _get_game_states(extra_game_states: Array) -> Array:
 	_load_autoloads()
 
 	var current_scene: Node = get_current_scene.call() if get_current_scene.is_valid() else null
+	_send_current_scene_to_debugger(current_scene)
+	
 	var possible_states: Array = extra_game_states
 	possible_states += [_registered_contexts]
 	if is_instance_valid(current_scene):
