@@ -8,6 +8,13 @@ const CONTEXT_ICON: Texture2D = preload("../nodes/context/dialogue_state_context
 
 var session: EditorDebuggerSession
 
+var current_scene: Dictionary = {}:
+	set(value):
+		current_scene = value
+		_update_state_tree()
+	get:
+		return current_scene
+
 var contexts: Dictionary = {}:
 	set(value):
 		contexts = value
@@ -99,12 +106,21 @@ func _update_state_tree() -> void:
 
 	state_tree.columns = 2
 
+	# Current scene
 	var item: TreeItem = state_tree.create_item(root)
+	item.set_selectable(0, false)
+	item.set_icon(0, get_theme_icon("PackedScene", "EditorIcons"))
+	item.set_text(0, DMConstants.translate("Current scene"))
+	create_state_items(item, current_scene)
+	
+	# Context
+	item = state_tree.create_item(root)
 	item.set_selectable(0, false)
 	item.set_icon(0, CONTEXT_ICON)
 	item.set_text(0, DMConstants.translate("Context Nodes"))
 	create_state_items(item, contexts)
 
+	# Globals
 	item = state_tree.create_item(root)
 	item.set_selectable(0, false)
 	item.set_icon(0, get_theme_icon("Object", "EditorIcons"))
@@ -125,7 +141,8 @@ func create_state_items(parent_item: TreeItem, state_data_list: Dictionary) -> v
 				item.set_icon(0, get_theme_icon(data.base_type, "EditorIcons"))
 			item.set_text(0, data.alias)
 			item.set_text(1, data.path)
-			item.add_button(1, get_theme_icon("Script", "EditorIcons"), 0)
+			if not data.script.is_empty():
+				item.add_button(1, get_theme_icon("Script", "EditorIcons"), 0)
 
 
 func _open_script(path: String) -> void:

@@ -32,6 +32,10 @@ func _capture(message: String, data: Array, _session_id: int) -> bool:
 		"dm:debug":
 			debug_info = data[0]
 			return true
+			
+		"dm:current_scene":
+			debugger_view.current_scene = data[0]
+			return true
 
 		"dm:state":
 			debugger_view.contexts = data[0]
