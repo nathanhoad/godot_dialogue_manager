@@ -33,9 +33,8 @@ signal dialogue_ended()
 ## The dialogue balloon that was last used by calling [code]action()[/code] (if there was one).
 var dialogue_balloon: Node
 
-## The method used to start dialogue action [code]action()[/code] is called. Override if you need
-## different logic.
-static var start_dialogue: Callable = func(with_dialogue_resource: DialogueResource, from_cue: String, extra_game_states: Array) -> Node2D:
+## The method used to start dialogue action [code]action()[/code] is called. Override if you need different logic.
+static var start_dialogue: Callable = func(with_dialogue_resource: DialogueResource, from_cue: String, extra_game_states: Array) -> Node:
 	return DialogueManager.show_dialogue_balloon(with_dialogue_resource, from_cue, extra_game_states)
 
 
