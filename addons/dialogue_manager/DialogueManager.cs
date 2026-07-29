@@ -30,13 +30,49 @@ namespace DialogueManagerRuntime
         public delegate void DialogueStartedEventHandler(Resource dialogueResource);
         public delegate void PassedCueEventHandler(string cue);
         public delegate void GotDialogueEventHandler(DialogueLine dialogueLine);
+        public delegate void WaitingForInputEventHandler();
+        public delegate void WaitedForInputEventHandler();
         public delegate void MutatedEventHandler(Dictionary mutation);
+
+        /// <summary>
+        /// Emitted when some dialogue has reached the end.
+        /// </summary>
+        /// <param name="dialogueResource">The calling dialogue resource.</param>
         public delegate void DialogueEndedEventHandler(Resource dialogueResource);
 
+        /// <summary>
+        /// Emitted when a dialogue balloon is created and dialogue starts.
+        /// </summary>
         public static event DialogueStartedEventHandler? DialogueStarted;
+
+        /// <summary>
+        /// Emitted when a cue is encountered while traversing dialogue, usually when jumping from a goto line.
+        /// </summary>
         public static event PassedCueEventHandler? PassedCue;
+
+        /// <summary>
+        /// Emitted when a line of dialogue is encountered.
+        /// </summary>
         public static event GotDialogueEventHandler? GotDialogue;
+
+        /// <summary>
+        /// Emitted when a mutation is encountered.
+        /// </summary>
         public static event MutatedEventHandler? Mutated;
+
+        /// <summary>
+        /// Emitted when waiting for input.
+        /// </summary>
+        public static event WaitingForInputEventHandler? WaitingForInput;
+
+        /// <summary>
+        /// Emitted when waiting for input received input.
+        /// </summary>
+        public static event WaitedForInputEventHandler? WaitedForInput;
+
+        /// <summary>
+        /// Emitted when some dialogue has reached the end.
+        /// </summary>
         public static event DialogueEndedEventHandler? DialogueEnded;
 
         [Signal] public delegate void ResolvedEventHandler(double id, Variant value);
@@ -95,6 +131,8 @@ namespace DialogueManagerRuntime
             dm.Connect("passed_cue", Callable.From((string cue) => PassedCue?.Invoke(cue)));
             dm.Connect("got_dialogue", Callable.From((RefCounted line) => GotDialogue?.Invoke(new DialogueLine(line))));
             dm.Connect("mutated", Callable.From((Dictionary mutation) => Mutated?.Invoke(mutation)));
+            dm.Connect("waiting_for_input", Callable.From(() => WaitingForInput?.Invoke()));
+            dm.Connect("waited_for_input", Callable.From(() => WaitedForInput?.Invoke()));
             dm.Connect("dialogue_ended", Callable.From((Resource dialogueResource) => DialogueEnded?.Invoke(dialogueResource)));
 
             dm.Connect("bridge_get_next_dialogue_line_completed", Callable.From((int callId, RefCounted? line) => OnBridgeGetNextDialogueLineCompleted(callId, line)));
@@ -104,21 +142,27 @@ namespace DialogueManagerRuntime
             return dm;
         }
 
-
+        /// <summary>
+        /// The list of globals that dialogue can query.
+        /// </summary>
         public static Godot.Collections.Array GameStates
         {
             get => (Godot.Collections.Array)Instance.Get("game_states");
             set => Instance.Set("game_states", value);
         }
 
-
+        /// <summary>
+        /// Allow dialogue to call singletons.
+        /// </summary>
         public static bool IncludeSingletons
         {
             get => (bool)Instance.Get("include_singletons");
             set => Instance.Set("include_singletons", value);
         }
 
-
+        /// <summary>
+        /// Allow dialogue to call static methods/properties on classes
+        /// </summary>
         public static bool IncludeClasses
         {
             get => (bool)Instance.Get("include_classes");
@@ -126,44 +170,68 @@ namespace DialogueManagerRuntime
         }
 
 
+        /// <summary>
+        /// Allow dialogue to call methods on the dialogue resource.
+        /// </summary>
         public static bool IncludeDialogueResourceAsSelf
         {
             get => (bool)Instance.Get("include_dialogue_resource_as_self");
             set => Instance.Set("include_dialogue_resource_as_self", value);
         }
 
-
-        public static TranslationSource TranslationSource
+        /// <summary>
+        /// A runtime override for the project setting to ignore missing state values.
+        /// </summary>
+        public static bool IgnoreMissingStateValues
         {
-            get => (TranslationSource)(int)Instance.Get("translation_source");
-            set => Instance.Set("translation_source", (int)value);
+            get => (bool)Instance.Get("ignore_missing_state_values");
+            set => Instance.Set("ignore_missing_state_values", value);
         }
 
-
+        /// <summary>
+        /// Used to resolve the current scene. Override if your game manages the current scene itself.
+        /// </summary>
         public static Func<Node> GetCurrentScene
         {
             set => Instance.Set("get_current_scene", Callable.From(value));
         }
 
+        /// <summary>
+        /// Used to resolve the load function used in <c>*.dialogue</c> files. Override this if you need safer loading or custom loading logic.
+        /// </summary>
+        public static Func<string, GodotObject> LoadFromWithinDialogue = GD.Load;
 
         /// <summary>
         /// Set a filter hook for member access on GodotObject things. The delegate is
-        /// stored on the GDScript-side <c>resolve_member_access</c> Callable property
+        /// stored on the GDScript-side <c>validate_member_access</c> Callable property
         /// and is invoked whenever a thing's property, method, or string-keyed index is
         /// about to be accessed at runtime. Return <c>""</c> to allow, or a non-empty
         /// error string to deny.
         /// <paramref name="kind"/> is one of: "property", "property_set", "method", "index".
         /// </summary>
-        public static Func<Variant, StringName, StringName, string> ResolveMemberAccess
+        public static Func<Variant, StringName, StringName, string> ValidateMemberAccess
         {
-            set => Instance.Set("resolve_member_access", Callable.From(value));
+            set => Instance.Set("validate_member_access", Callable.From(value));
         }
 
-        public static Resource CreateResourceFromText(string text)
+        /// <summary>
+        /// Set a random seed.
+        /// </summary>
+        /// <param name="nextSeed"></param>
+        public static void ReseedRandomizer(int nextSeed)
         {
-            return (Resource)Instance.Call("create_resource_from_text", text);
+            Instance.Call("reseed_randomizer", nextSeed);
         }
 
+
+        /// <summary>
+        /// Step through lines and run any mutations until we either hit some dialogue or the end of the conversation.
+        /// </summary>
+        /// <param name="dialogueResource"></param>
+        /// <param name="key"></param>
+        /// <param name="extraGameStates">Array of extra nodes to expose as state to the dialogue</param>
+        /// <param name="mutation_behaviour"></param>
+        /// <returns>The next dialogue line</returns>
         public static async Task<DialogueLine?> GetNextDialogueLine(Resource dialogueResource, string key = "", Array<Variant>? extraGameStates = null, MutationBehaviour mutation_behaviour = MutationBehaviour.Wait)
         {
             int id = random.Next();
@@ -176,6 +244,14 @@ namespace DialogueManagerRuntime
             return line == null ? null : new DialogueLine(line);
         }
 
+
+        /// <summary>
+        /// Get a line by its ID
+        /// </summary>
+        /// <param name="dialogueResource"></param>
+        /// <param name="key"></param>
+        /// <param name="extraGameStates">Array of extra nodes to expose as state to the dialogue</param>
+        /// <returns></returns>
         public static async Task<DialogueLine?> GetLine(Resource dialogueResource, string key = "", Array<Variant>? extraGameStates = null)
         {
             int id = random.Next();
@@ -189,43 +265,104 @@ namespace DialogueManagerRuntime
         }
 
 
+        /// <summary>
+        /// Generate a dialogue resource on the fly from some text
+        /// </summary>
+        /// <param name="text"></param>
+        /// <returns></returns>
+        public static Resource CreateResourceFromText(string text)
+        {
+            return (Resource)Instance.Call("create_resource_from_text", text);
+        }
+
+
+        /// <summary>
+        /// Show the example balloon
+        /// </summary>
+        /// <param name="dialogueResource"></param>
+        /// <param name="key"></param>
+        /// <param name="extraGameStates"></param>
+        /// <returns></returns>
         public static CanvasLayer ShowExampleDialogueBalloon(Resource dialogueResource, string key = "", Array<Variant>? extraGameStates = null)
         {
             return (CanvasLayer)Instance.Call("show_example_dialogue_balloon", dialogueResource, key, extraGameStates ?? new Array<Variant>());
         }
 
 
-        public static Node ShowDialogueBalloonScene(string balloonScene, Resource dialogueResource, string key = "", Array<Variant>? extraGameStates = null)
-        {
-            return (Node)Instance.Call("show_dialogue_balloon_scene", balloonScene, dialogueResource, key, extraGameStates ?? new Array<Variant>());
-        }
-
-        public static Node ShowDialogueBalloonScene(PackedScene balloonScene, Resource dialogueResource, string key = "", Array<Variant>? extraGameStates = null)
-        {
-            return (Node)Instance.Call("show_dialogue_balloon_scene", balloonScene, dialogueResource, key, extraGameStates ?? new Array<Variant>());
-        }
-
-        public static Node ShowDialogueBalloonScene(Node balloonScene, Resource dialogueResource, string key = "", Array<Variant>? extraGameStates = null)
-        {
-            return (Node)Instance.Call("show_dialogue_balloon_scene", balloonScene, dialogueResource, key, extraGameStates ?? new Array<Variant>());
-        }
-
-
+        /// <summary>
+        /// Show the configured dialogue balloon
+        /// </summary>
+        /// <param name="dialogueResource"></param>
+        /// <param name="key"></param>
+        /// <param name="extraGameStates"></param>
+        /// <returns></returns>
         public static Node ShowDialogueBalloon(Resource dialogueResource, string key = "", Array<Variant>? extraGameStates = null)
         {
             return (Node)Instance.Call("show_dialogue_balloon", dialogueResource, key, extraGameStates ?? new Array<Variant>());
         }
 
 
-        public static Array<string> StaticIdToLineIds(Resource dialogueResource, string staticId)
+        /// <summary>
+        /// Show a given balloon scene
+        /// </summary>
+        /// <param name="balloonScene"></param>
+        /// <param name="dialogueResource"></param>
+        /// <param name="key"></param>
+        /// <param name="extraGameStates"></param>
+        /// <returns></returns>
+        public static Node ShowDialogueBalloonScene(string balloonScene, Resource dialogueResource, string key = "", Array<Variant>? extraGameStates = null)
         {
-            return (Array<string>)Instance.Call("static_id_to_line_ids", dialogueResource, staticId);
+            return (Node)Instance.Call("show_dialogue_balloon_scene", balloonScene, dialogueResource, key, extraGameStates ?? new Array<Variant>());
+        }
+
+        /// <summary>
+        /// Show a given balloon scene
+        /// </summary>
+        /// <param name="balloonScene"></param>
+        /// <param name="dialogueResource"></param>
+        /// <param name="key"></param>
+        /// <param name="extraGameStates"></param>
+        /// <returns></returns>
+        public static Node ShowDialogueBalloonScene(PackedScene balloonScene, Resource dialogueResource, string key = "", Array<Variant>? extraGameStates = null)
+        {
+            return (Node)Instance.Call("show_dialogue_balloon_scene", balloonScene, dialogueResource, key, extraGameStates ?? new Array<Variant>());
+        }
+
+        /// <summary>
+        /// Show a given balloon scene
+        /// </summary>
+        /// <param name="balloonScene"></param>
+        /// <param name="dialogueResource"></param>
+        /// <param name="key"></param>
+        /// <param name="extraGameStates"></param>
+        /// <returns></returns>
+        public static Node ShowDialogueBalloonScene(Node balloonScene, Resource dialogueResource, string key = "", Array<Variant>? extraGameStates = null)
+        {
+            return (Node)Instance.Call("show_dialogue_balloon_scene", balloonScene, dialogueResource, key, extraGameStates ?? new Array<Variant>());
         }
 
 
+        /// <summary>
+        /// Resolve a static line ID to an actual line ID
+        /// </summary>
+        /// <param name="dialogueResource"></param>
+        /// <param name="staticId"></param>
+        /// <returns></returns>
         public static string StaticIdToLineId(Resource dialogueResource, string staticId)
         {
             return (string)Instance.Call("static_id_to_line_id", dialogueResource, staticId);
+        }
+
+
+        /// <summary>
+        /// Resolve a static line ID to any actual line IDs that match
+        /// </summary>
+        /// <param name="dialogueResource"></param>
+        /// <param name="staticId"></param>
+        /// <returns></returns>
+        public static Array<string> StaticIdToLineIds(Resource dialogueResource, string staticId)
+        {
+            return (Array<string>)Instance.Call("static_id_to_line_ids", dialogueResource, staticId);
         }
 
 
@@ -760,19 +897,71 @@ namespace DialogueManagerRuntime
 
     public partial class DialogueLine : RefCounted
     {
+        /// <summary>
+        /// The ID of this line
+        /// </summary>
         public string Id { get; set; } = "";
+
+        /// <summary>
+        /// The internal type of this dialogue object.
+        /// </summary>
         public string Type { get; set; } = "dialogue";
+
+        /// <summary>
+        /// The next line ID after this line.
+        /// </summary>
         public string NextId { get; set; } = "";
+
+        /// <summary>
+        /// The character name that is saying this line.
+        /// </summary>
         public string Character { get; set; } = "";
+
+        /// <summary>
+        /// The dialogue being spoken.
+        /// </summary>
         public string Text { get; set; } = "";
+
+        /// <summary>
+        /// The key to use for translating this line.
+        /// </summary>
         public string StaticId { get; set; } = "";
+
+        /// <summary>
+        /// A list of responses attached to this line of dialogue.
+        /// </summary>
         public Array<DialogueResponse> Responses { get; } = new Array<DialogueResponse>();
+
+        /// <summary>
+        /// How long to show this line before advancing to the next. Either a float of seconds (as a string), <c>"auto"</c>, or empty string.
+        /// </summary>
         public string? Time { get; private set; }
+
+        /// <summary>
+        /// A map for speed changes when typing out the dialogue text.
+        /// </summary>
         public Dictionary Speeds { get; private set; } = new Dictionary();
+
+        /// <summary>
+        /// A map of any mutations to run while typing out the dialogue text.
+        /// </summary>
         public Array<Godot.Collections.Array> InlineMutations { get; private set; } = new Array<Godot.Collections.Array>();
+
+        /// <summary>
+        /// A list of lines that are spoken simultaneously with this one.
+        /// </summary>
         public Array<DialogueLine> ConcurrentLines { get; } = new Array<DialogueLine>();
+
+        /// <summary>
+        /// A list of any extra game states to check when resolving variables and mutations.
+        /// </summary>
         public Array<Variant> ExtraGameStates { get; } = new Array<Variant>();
+
+        /// <summary>
+        /// Any #tags that were included in the line
+        /// </summary>
         public Array<string> Tags { get; private set; } = new Array<string>();
+
 
         public DialogueLine(RefCounted data)
         {
@@ -799,6 +988,11 @@ namespace DialogueManagerRuntime
         }
 
 
+        /// <summary>
+        /// Check if a dialogue line has a given tag.
+        /// </summary>
+        /// <param name="tagName"></param>
+        /// <returns></returns>
         public bool HasTag(string tagName)
         {
             if (Tags.Contains(tagName))
@@ -820,6 +1014,11 @@ namespace DialogueManagerRuntime
         }
 
 
+        /// <summary>
+        /// Get the value of a tag if the tag is in the form of <c>tag=value</c>
+        /// </summary>
+        /// <param name="tagName"></param>
+        /// <returns></returns>
         public string GetTagValue(string tagName)
         {
             string wrapped = $"{tagName}=";
@@ -832,6 +1031,7 @@ namespace DialogueManagerRuntime
             }
             return "";
         }
+
 
         public override string ToString()
         {
@@ -850,22 +1050,52 @@ namespace DialogueManagerRuntime
 
     public partial class DialogueResponse : RefCounted
     {
+        /// <summary>
+        /// The ID of this response
+        /// </summary>
         public string NextId { get; set; } = "";
+
+        /// <summary>
+        /// <c>true</c> if the condition of this line was met.
+        /// </summary>
         public bool IsAllowed { get; set; } = true;
+
+        /// <summary>
+        /// The original condition text.
+        /// </summary>
         public string ConditionAsText { get; set; } = "";
+
+        /// <summary>
+        /// The prompt for this response.
+        /// </summary>
         public string Text { get; set; } = "";
-        public string TranslationKey { get; set; } = "";
+
+        /// <summary>
+        /// The key to use for translating the text.
+        /// </summary>
+        public string StaticId { get; set; } = "";
+
+        /// <summary>
+        /// Any #tags
+        /// </summary>
         public Array<string> Tags { get; private set; } = new Array<string>();
+
 
         public DialogueResponse(RefCounted data)
         {
             NextId = (string)data.Get("next_id");
             IsAllowed = (bool)data.Get("is_allowed");
             Text = (string)data.Get("text");
-            TranslationKey = (string)data.Get("static_id");
+            StaticId = (string)data.Get("static_id");
             Tags = (Array<string>)data.Get("tags");
         }
 
+
+        /// <summary>
+        /// Check if a dialogue line has a given tag.
+        /// </summary>
+        /// <param name="tagName"></param>
+        /// <returns></returns>
         public bool HasTag(string tagName)
         {
             if (Tags.Contains(tagName))
@@ -886,6 +1116,12 @@ namespace DialogueManagerRuntime
             }
         }
 
+
+        /// <summary>
+        /// Get the value of a tag if the tag is in the form of <c>tag=value</c>
+        /// </summary>
+        /// <param name="tagName"></param>
+        /// <returns></returns>
         public string GetTagValue(string tagName)
         {
             string wrapped = $"{tagName}=";
@@ -898,6 +1134,7 @@ namespace DialogueManagerRuntime
             }
             return "";
         }
+
 
         public override string ToString()
         {

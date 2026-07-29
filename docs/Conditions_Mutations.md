@@ -87,7 +87,7 @@ Nathan: Now, we can move on.
 
 ## Mutations
 
-You can affect state with either a "set" or a "do" line.
+You can affect state with a line starting with `$>` (`set` and `do` are also supported but are considered deprecated).
 
 ```
 if SomeGlobal.has_met_nathan == false

@@ -41,7 +41,7 @@ var concurrent_lines: Array[DialogueLine] = []
 ## A list of any extra game states to check when resolving variables and mutations.
 var extra_game_states: Array = []
 
-## How long to show this line before advancing to the next. Either a float (of seconds), [code]"auto"[/code], or [code]null[/code].
+## How long to show this line before advancing to the next. Either a float of seconds (as a string), [code]"auto"[/code], or empty string.
 var time: String = ""
 
 ## Any #tags that were included in the line

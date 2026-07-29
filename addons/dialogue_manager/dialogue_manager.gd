@@ -664,7 +664,11 @@ func _start_balloon(balloon: Node, resource: DialogueResource, cue: String, extr
 # Get the path to the example balloon
 func _get_example_balloon_path() -> String:
 	var is_small_window: bool = ProjectSettings.get_setting("display/window/size/viewport_width") < 400
-	var balloon_path: String = "/example_balloon/small_example_balloon.tscn" if is_small_window else "/example_balloon/example_balloon.tscn"
+	var balloon_path: String
+	if DMSettings.check_for_dotnet_solution():
+		balloon_path = "/example_balloon/SmallExampleBalloon.tscn" if is_small_window else "/example_balloon/ExampleBalloon.tscn"
+	else:
+		balloon_path = "/example_balloon/small_example_balloon.tscn" if is_small_window else "/example_balloon/example_balloon.tscn"
 	return get_script().resource_path.get_base_dir() + balloon_path
 
 
@@ -816,20 +820,20 @@ func unregister_state_context(alias: String) -> void:
 # Let the debugger know about the current scene
 func _send_current_scene_to_debugger(current_scene: Node = null) -> void:
 	if not EngineDebugger.is_active(): return
-	
+
 	if not is_instance_valid(current_scene):
 		current_scene = get_current_scene.call() if get_current_scene.is_valid() else null
-	
+
 	var serialized_current_scene: Dictionary = {}
-	if is_instance_valid(current_scene): 
+	if is_instance_valid(current_scene):
 		serialized_current_scene[current_scene.name] = _get_serialised_state_node(
-			current_scene.name, 
+			current_scene.name,
 			current_scene
 		)
-		
+
 	EngineDebugger.send_message("dm:current_scene", [serialized_current_scene])
-	
-	
+
+
 # Let the debugger know about the latest state
 func _send_state_to_debugger() -> void:
 	if not EngineDebugger.is_active(): return
@@ -868,7 +872,7 @@ func _get_game_states(extra_game_states: Array) -> Array:
 
 	var current_scene: Node = get_current_scene.call() if get_current_scene.is_valid() else null
 	_send_current_scene_to_debugger(current_scene)
-	
+
 	var possible_states: Array = extra_game_states
 	possible_states += [_registered_contexts]
 	if is_instance_valid(current_scene):
