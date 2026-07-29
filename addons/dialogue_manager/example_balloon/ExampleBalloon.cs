@@ -14,8 +14,8 @@ namespace DialogueManagerRuntime
 
     Control balloon;
     RichTextLabel characterLabel;
-    RichTextLabel dialogueLabel;
-    VBoxContainer responsesMenu;
+    DialogueLabel dialogueLabel;
+    DialogueResponsesMenu responsesMenu;
     Polygon2D progress;
 
     Array<Variant> temporaryGameStates = new Array<Variant>();
@@ -54,22 +54,22 @@ namespace DialogueManagerRuntime
     {
       balloon = GetNode<Control>("%Balloon");
       characterLabel = GetNode<RichTextLabel>("%CharacterLabel");
-      dialogueLabel = GetNode<RichTextLabel>("%DialogueLabel");
-      responsesMenu = GetNode<VBoxContainer>("%ResponsesMenu");
+      dialogueLabel = GetNode<DialogueLabel>("%DialogueLabel");
+      responsesMenu = GetNode<DialogueResponsesMenu>("%ResponsesMenu");
       progress = GetNode<Polygon2D>("%Progress");
 
       balloon.Hide();
 
       balloon.GuiInput += (@event) =>
       {
-        if ((bool)dialogueLabel.Get("is_typing"))
+        if (dialogueLabel.IsTyping)
         {
           bool mouseWasClicked = @event is InputEventMouseButton && (@event as InputEventMouseButton).ButtonIndex == MouseButton.Left && @event.IsPressed();
           bool skipButtonWasPressed = @event.IsActionPressed(SkipAction);
           if (mouseWasClicked || skipButtonWasPressed)
           {
             GetViewport().SetInputAsHandled();
-            dialogueLabel.Call("skip_typing");
+            dialogueLabel.SkipTyping();
             return;
           }
         }
@@ -89,14 +89,14 @@ namespace DialogueManagerRuntime
         }
       };
 
-      if (string.IsNullOrEmpty((string)responsesMenu.Get("next_action")))
+      if (string.IsNullOrEmpty(responsesMenu.NextAction))
       {
-        responsesMenu.Set("next_action", NextAction);
+        responsesMenu.NextAction = NextAction;
       }
-      responsesMenu.Connect("response_selected", Callable.From((DialogueResponse response) =>
+      responsesMenu.ResponseSelected += (response) =>
       {
-        Next(response.NextId);
-      }));
+        Next(((DialogueResponse)response.Obj).NextId);
+      };
 
 
       // Hide the balloon when a mutation is running
@@ -145,7 +145,7 @@ namespace DialogueManagerRuntime
         DialogueLine = await DialogueManager.GetNextDialogueLine(DialogueResource, DialogueLine.Id, temporaryGameStates);
         if (visibleRatio < 1.0f)
         {
-          dialogueLabel.Call("skip_typing");
+          dialogueLabel.SkipTyping();
         }
       }
     }
@@ -157,7 +157,7 @@ namespace DialogueManagerRuntime
 
       if (IsInstanceValid(dialogueLine))
       {
-        progress.Visible = !(bool)dialogueLabel.Get("is_typing") && dialogueLine.Responses.Count == 0 && !dialogueLine.HasTag("voice");
+        progress.Visible = !dialogueLabel.IsTyping && dialogueLine.Responses.Count == 0 && !dialogueLine.HasTag("voice");
       }
     }
 
@@ -204,11 +204,16 @@ namespace DialogueManagerRuntime
 
       // Set up the dialogue
       dialogueLabel.Hide();
-      dialogueLabel.Set("dialogue_line", dialogueLine);
+      dialogueLabel.DialogueLine = dialogueLine;
 
       // Set up the responses
       responsesMenu.Hide();
-      responsesMenu.Set("responses", dialogueLine.Responses);
+      var responses = new Array();
+      foreach (var response in dialogueLine.Responses)
+      {
+        responses.Add(response);
+      }
+      responsesMenu.Responses = responses;
 
       // Type out the text
       balloon.Show();
@@ -216,8 +221,8 @@ namespace DialogueManagerRuntime
       dialogueLabel.Show();
       if (!string.IsNullOrEmpty(dialogueLine.Text))
       {
-        dialogueLabel.Call("type_out");
-        await ToSignal(dialogueLabel, "finished_typing");
+        dialogueLabel.TypeOut();
+        await ToSignal(dialogueLabel, DialogueLabel.SignalName.FinishedTyping);
       }
 
       // Wait for input

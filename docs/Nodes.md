@@ -2,6 +2,9 @@
 
 Dialogue Manager provides a few nodes to make things easier to use dialogue in your game.
 
+> [!NOTE]
+> There are also native C# versions of each of these. The nodes in the "Create New Node" picker are the GDScript ones. If you need the C# nodes then you'll have to attach the scripts manually to nodes in your tree (other than the DialogueLabel which can be added to a scene via its scene file).
+
 ## `Actionable2D` and `Actionable3D`
 
 These are extensions of `Area2D` and `Area3D` that help initiate dialogue.

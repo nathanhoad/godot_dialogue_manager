@@ -59,7 +59,7 @@ You would need to declare that `PlayerName` property like this:
 Then, in your dialogue you would call the mutation like this:
 
 ```
-do AskForName()
+$> $AskForName()
 Nathan: Hello {{PlayerName}}!
 ```
 
@@ -118,6 +118,10 @@ responsesMenu.Connect("response_selected", Callable.From((DialogueResponse respo
   // ...
 }));
 ```
+
+## Nodes
+
+There are native C# versions of `Actionable2D`, `Actionable3D`, `DialogueStateContext`, `DialogueLabel` (`DialogueLabel.tscn` + `DialogueLabel.cs`), `DialogueMarker2D`, `DialogueMarker3D`, and `DialogueResponsesMenu`. The nodes that show up in the "Create New Node" picker are the GDScript ones (to avoid class name clashes) so if you need the native C# ones you'll have to attach the scripts manually to nodes in your tree (other than DialogueLabel which can be added to a scene via its scene file).
 
 ## Generating Dialogue Resources at runtime
 

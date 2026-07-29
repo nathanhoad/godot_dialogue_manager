@@ -28,7 +28,6 @@ func _init() -> void:
 
 func _enable_plugin() -> void:
 	add_autoload_singleton("DialogueManager", get_plugin_path() + "/dialogue_manager.gd")
-	_housekeeping()
 
 
 func _disable_plugin() -> void:
@@ -431,10 +430,14 @@ func _create_dialogue_balloon() -> void:
 
 		# Copy the balloon scene file and change the script reference
 		var is_small_window: bool = ProjectSettings.get_setting("display/window/size/viewport_width") < 400
-		var example_balloon_file_name: String = "small_example_balloon.tscn" if is_small_window else "example_balloon.tscn"
+		var example_balloon_file_name: String
+		if is_dotnet:
+			example_balloon_file_name = "SmallExampleBalloon.tscn" if is_small_window else "ExampleBalloon.tscn"
+		else:
+			example_balloon_file_name = "small_example_balloon.tscn" if is_small_window else "example_balloon.tscn"
 		var example_balloon_path: String = plugin_path + "/example_balloon/" + example_balloon_file_name
 		var example_balloon_script_file_name: String = "ExampleBalloon.cs" if is_dotnet else "example_balloon.gd"
-		var example_balloon_script_uid: String = ResourceUID.id_to_text(ResourceLoader.get_resource_uid(plugin_path + "/example_balloon/example_balloon.gd"))
+		var example_balloon_script_uid: String = ResourceUID.id_to_text(ResourceLoader.get_resource_uid(plugin_path + "/example_balloon/" + example_balloon_script_file_name))
 		var example_balloon_uid: String = ResourceUID.id_to_text(ResourceLoader.get_resource_uid(example_balloon_path))
 
 		# Copy the script file
@@ -472,64 +475,6 @@ func _create_dialogue_balloon() -> void:
 	)
 	EditorInterface.get_base_control().add_child(directory_dialog)
 	directory_dialog.popup_centered()
-
-
-# Tidy up some things that may have gotten messy between versions.
-func _housekeeping() -> void:
-	# Automatically swap the script on the example balloon depending on if dotnet is being used.
-	if not FileAccess.file_exists("res://tests/test_basic_dialogue.gd"):
-		var plugin_path: String = get_plugin_path()
-		var balloon_file_names: PackedStringArray = ["example_balloon.tscn", "small_example_balloon.tscn"]
-		for balloon_file_name: String in balloon_file_names:
-			var target_balloon_path: String = plugin_path + "/example_balloon/" + balloon_file_name
-			var balloon_content: String = FileAccess.get_file_as_string(target_balloon_path)
-			if "example_balloon.gd" in balloon_content and DMSettings.check_for_dotnet_solution():
-				balloon_content = balloon_content \
-					# Replace script path with the C# one
-					.replace("example_balloon.gd", "ExampleBalloon.cs") \
-					# Replace script UID with the C# one
-					.replace(ResourceUID.id_to_text(ResourceLoader.get_resource_uid(plugin_path + "/example_balloon/example_balloon.gd")), ResourceUID.id_to_text(ResourceLoader.get_resource_uid(plugin_path + "/example_balloon/ExampleBalloon.cs")))
-				var balloon_file: FileAccess = FileAccess.open(target_balloon_path, FileAccess.WRITE)
-				balloon_file.store_string(balloon_content)
-				balloon_file.close()
-			elif "ExampleBalloon.cs" in balloon_content and not DMSettings.check_for_dotnet_solution():
-				balloon_content = balloon_content \
-					# Replace script path with the GDScript one
-					.replace("ExampleBalloon.cs", "example_balloon.gd") \
-					# Replace script UID with the GDScript one
-					.replace(ResourceUID.id_to_text(ResourceLoader.get_resource_uid(plugin_path + "/example_balloon/ExampleBalloon.cs")), ResourceUID.id_to_text(ResourceLoader.get_resource_uid(plugin_path + "/example_balloon/example_balloon.gd")))
-				var balloon_file: FileAccess = FileAccess.open(target_balloon_path, FileAccess.WRITE)
-				balloon_file.store_string(balloon_content)
-				balloon_file.close()
-
-	# Automatically make any changes to the known custom balloon if there is one.
-	var balloon_path: String = DMSettings.get_setting(DMSettings.BALLOON_PATH, "")
-	if balloon_path != "" and FileAccess.file_exists(balloon_path):
-		var is_small_window: bool = ProjectSettings.get_setting("display/window/size/viewport_width") < 400
-		var example_balloon_file_name: String = "small_example_balloon.tscn" if is_small_window else "example_balloon.tscn"
-		var example_balloon_path: String = get_plugin_path() + "/example_balloon/" + example_balloon_file_name
-
-		var contents: String = FileAccess.get_file_as_string(balloon_path)
-		var has_changed: bool = false
-
-		# Make sure the current balloon has a UID unique from the example balloon's
-		var example_balloon_uid: String = ResourceUID.id_to_text(ResourceLoader.get_resource_uid(example_balloon_path))
-		var balloon_uid: String = ResourceUID.id_to_text(ResourceLoader.get_resource_uid(balloon_path))
-		if example_balloon_uid == balloon_uid:
-			var new_balloon_uid: String = ResourceUID.id_to_text(ResourceUID.create_id())
-			contents = contents.replace(example_balloon_uid, new_balloon_uid)
-			has_changed = true
-
-		# Make sure the example balloon copy has the correct renaming of the responses menu
-		if "reponses" in contents:
-			contents = contents.replace("reponses", "responses")
-			has_changed = true
-
-		# Save any changes
-		if has_changed:
-			var balloon_file: FileAccess = FileAccess.open(balloon_path, FileAccess.WRITE)
-			balloon_file.store_string(contents)
-			balloon_file.close()
 
 
 #endregion
