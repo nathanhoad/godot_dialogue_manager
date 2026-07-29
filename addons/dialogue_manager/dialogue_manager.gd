@@ -56,7 +56,7 @@ var translation_source: DMConstants.TranslationSource = DMConstants.TranslationS
 ## Used to resolve the current scene. Override if your game manages the current scene itself.
 var get_current_scene: Callable = func():
 	var current_scene: Node = Engine.get_main_loop().current_scene
-	if current_scene == null and current_scene is Node:
+	if not is_instance_valid(current_scene):
 		current_scene = Engine.get_main_loop().root.get_child(Engine.get_main_loop().root.get_child_count() - 1)
 	return current_scene
 
