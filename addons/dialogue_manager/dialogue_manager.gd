@@ -54,7 +54,7 @@ var ignore_missing_state_values: bool = false
 ## Used to resolve the current scene. Override if your game manages the current scene itself.
 var get_current_scene: Callable = func() -> Node:
 	var current_scene: Node = Engine.get_main_loop().current_scene
-	if current_scene == null:
+	if not is_instance_valid(current_scene):
 		var root: Node = (Engine.get_main_loop() as SceneTree).root
 		current_scene = root.get_child(root.get_child_count() - 1)
 	return current_scene
@@ -892,6 +892,8 @@ func _load_autoloads() -> void:
 		_has_loaded_autoloads = true
 		# Add any autoloads to a generic state so we can refer to them by name
 		for child: Node in (Engine.get_main_loop() as SceneTree).root.get_children():
+			# Ignore invalid nodes
+			if child is not Node: continue
 			# Ignore the dialogue manager
 			if child.name == &"DialogueManager": continue
 			# Ignore the current main scene
