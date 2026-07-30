@@ -1353,6 +1353,23 @@ func move_line(offset: int) -> void:
 	scroll_vertical = starting_scroll + offset
 
 
+## Open a given script.
+func open_script(script: Script, line_number: int) -> void:
+	var settings: EditorSettings = EditorInterface.get_editor_settings()
+	var will_open_externally: bool = false
+
+	if script.resource_path.get_extension().to_lower() == "cs":
+		will_open_externally = settings.get_setting("dotnet/editor/external_editor") > 0
+	else:
+		var use_external: bool = settings.get_setting("text_editor/external/use_external_editor")
+		var exec_path: String = settings.get_setting("text_editor/external/exec_path")
+		will_open_externally = use_external and not exec_path.is_empty()
+
+	EditorInterface.edit_script(script, line_number, 0, true)
+
+	if not will_open_externally:
+		EditorInterface.set_main_screen_editor.call_deferred("Script")
+
 #endregion
 
 #region Signals
@@ -1456,15 +1473,11 @@ func _on_code_edit_symbol_lookup(symbol: String, line: int, column: int) -> void
 		var script: Script = symbol_info.script
 		var member_name: String = symbol_info.member_name
 		if member_name == "class_name":
-			EditorInterface.edit_script(script, 1, 0, true)
-			EditorInterface.set_main_screen_editor.call_deferred("Script")
+			open_script(script, 1)
 		else:
 			var definition: Dictionary = _find_definition_in_script(script, member_name)
 			if definition.line_number > -1:
-				# Open the script in the editor
-				EditorInterface.edit_script(definition.script, definition.line_number, 0, true)
-				EditorInterface.set_main_screen_editor.call_deferred("Script")
-				return
+				open_script(definition.script, definition.line_number)
 
 
 func _on_code_edit_text_changed() -> void:
