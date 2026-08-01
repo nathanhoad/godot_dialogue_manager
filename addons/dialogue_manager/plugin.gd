@@ -447,6 +447,16 @@ func _create_dialogue_balloon() -> void:
 			file_contents = file_contents.replace("class ExampleBalloon", "class DialogueBalloon")
 		else:
 			file_contents = file_contents.replace("class_name DialogueManagerExampleBalloon ", "")
+		# Remove the example warning
+		var lines: PackedStringArray = file_contents.split("\n")
+		var updated_lines: PackedStringArray = []
+		var ignore_line: bool = false
+		for line: String in lines:
+			if line.contains("EXAMPLE MESSAGE"):
+				ignore_line = not ignore_line
+			elif not ignore_line:
+				updated_lines.append(line)
+		file_contents = "\n".join(updated_lines)
 		file = FileAccess.open(balloon_script_path, FileAccess.WRITE)
 		file.store_string(file_contents)
 		file.close()

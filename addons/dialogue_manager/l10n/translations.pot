@@ -502,3 +502,6 @@ msgstr ""
 
 msgid "Globals"
 msgstr ""
+
+msgid "This is an example balloon. Create your own balloon in 'Project > Tools > Dialogue > Create Balloon...'"
+msgstr ""
