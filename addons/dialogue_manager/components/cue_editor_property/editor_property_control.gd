@@ -40,21 +40,20 @@ func _ready() -> void:
 
 
 func _update() -> void:
-	var has_valid_dialogue_resource: bool = is_instance_valid(actionable) and "dialogue_resource" in actionable and is_instance_valid(actionable.dialogue_resource)
+	var resource: DialogueResource = _get_resource()
 
 	var cues: PackedStringArray = []
-	if has_valid_dialogue_resource:
-		var resource: DialogueResource = ResourceLoader.load(actionable.dialogue_resource.resource_path, "", ResourceLoader.CACHE_MODE_REPLACE)
+	if is_instance_valid(resource):
 		cues = Array(resource.get_cues()).filter(func(l: String) -> bool: return not l.contains("/"))
 
-	link_button.disabled = not has_valid_dialogue_resource
+	link_button.disabled = not is_instance_valid(resource)
 
 	var popup: PopupMenu = button.get_popup()
 	popup.clear()
 
 	var cue_icon: Texture2D = DMThemeValues.get_icon_with_color(CUE_ICON, DMThemeValues.get_values_from_editor().cues_color)
 
-	if cues.is_empty() or not has_valid_dialogue_resource:
+	if cues.is_empty() or not is_instance_valid(resource):
 		popup.add_item(DMConstants.translate("<empty>"))
 		popup.set_item_disabled(0, true)
 	else:
@@ -80,9 +79,23 @@ func _update() -> void:
 
 
 func show_cue_in_editor(next_cue: String) -> void:
-	var resource: DialogueResource = actionable.dialogue_resource
+	var resource: DialogueResource = _get_resource()
 	if is_instance_valid(resource):
 		DMPlugin.open_file_at_cue(resource, next_cue, true)
+
+
+func _get_resource() -> DialogueResource:
+	if not is_instance_valid(actionable): return null
+
+	var resource: DialogueResource
+	for property: Dictionary in actionable.get_property_list():
+		if "dialogue_resource" in property.name or "DialogueResource" in property.name or (property.class_name == "Resource" and actionable.get(property.name) is DialogueResource):
+			resource = actionable.get(property.name)
+
+		if is_instance_valid(resource):
+			return ResourceLoader.load(resource.resource_path, "", ResourceLoader.CACHE_MODE_REPLACE)
+
+	return null
 
 
 #region Signals
