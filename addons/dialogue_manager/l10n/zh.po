@@ -20,6 +20,9 @@ msgstr "打开已有文件"
 msgid "open.open"
 msgstr "打开……"
 
+msgid "open.quick_open"
+msgstr "快速打开"
+
 msgid "open.no_recent_files"
 msgstr "无历史记录"
 
@@ -34,6 +37,9 @@ msgstr "在文件中查找"
 
 msgid "test_dialogue"
 msgstr "测试对话"
+
+msgid "test_dialogue_from_line"
+msgstr "从当前行开始测试对话"
 
 msgid "search_for_text"
 msgstr "查找……"
