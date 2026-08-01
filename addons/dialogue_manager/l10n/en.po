@@ -512,3 +512,6 @@ msgstr "Context Nodes"
 
 msgid "Globals"
 msgstr "Globals"
+
+msgid "This is an example balloon. Create your own balloon in 'Project > Tools > Dialogue > Create Balloon...'"
+msgstr "This is an example balloon. Create your own balloon in 'Project > Tools > Dialogue > Create Balloon...'"

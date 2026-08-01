@@ -709,6 +709,10 @@ func _bridge_get_error_message(error: int) -> String:
 	return DMConstants.get_error_message(error)
 
 
+func _bridge_translate(string: String) -> String:
+	return DMConstants.translate(string)
+
+
 #endregion
 
 #region Internal helpers

@@ -892,6 +892,12 @@ namespace DialogueManagerRuntime
         {
             return (string)Instance.Call("_bridge_get_error_message", error);
         }
+
+
+        public static string Translate(string s)
+        {
+            return (string)Instance.Call("_bridge_translate", s);
+        }
     }
 
 

@@ -120,6 +120,17 @@ namespace DialogueManagerRuntime
         }
         Start();
       }
+
+      // EXAMPLE MESSAGE
+      var warning = new Button
+      {
+        Text = DialogueManager.Translate("This is an example balloon. Create your own balloon in 'Project > Tools > Dialogue > Create Balloon...'"),
+        Disabled = true
+      };
+      warning.SetAnchorsAndOffsetsPreset(Control.LayoutPreset.TopWide);
+      balloon.AddChild(warning);
+      balloon.MoveChild(warning, 0);
+      // END EXAMPLE MESSAGE
     }
 
 
