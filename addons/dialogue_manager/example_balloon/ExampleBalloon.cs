@@ -95,7 +95,7 @@ namespace DialogueManagerRuntime
       }
       responsesMenu.ResponseSelected += (response) =>
       {
-        Next(((DialogueResponse)response.Obj).NextId);
+        Next(response.NextId);
       };
 
 
@@ -219,12 +219,7 @@ namespace DialogueManagerRuntime
 
       // Set up the responses
       responsesMenu.Hide();
-      var responses = new Array();
-      foreach (var response in dialogueLine.Responses)
-      {
-        responses.Add(response);
-      }
-      responsesMenu.Responses = responses;
+      responsesMenu.Responses = dialogueLine.Responses;
 
       // Type out the text
       balloon.Show();
@@ -249,7 +244,7 @@ namespace DialogueManagerRuntime
         {
           time = dialogueLine.Text.Length * 0.02f;
         }
-        await ToSignal(GetTree().CreateTimer(time), "timeout");
+        await ToSignal(GetTree().CreateTimer(time), Timer.SignalName.Timeout);
         Next(dialogueLine.NextId);
       }
       else

@@ -16,7 +16,7 @@ namespace DialogueManagerRuntime
         /// <summary>
         /// Emitted when a response is selected.
         /// </summary>
-        [Signal] public delegate void ResponseSelectedEventHandler(Variant response);
+        [Signal] public delegate void ResponseSelectedEventHandler(DialogueResponse response);
 
 
         /// <summary>
@@ -44,12 +44,12 @@ namespace DialogueManagerRuntime
         /// </summary>
         [Export] public bool HideFailedResponses = false;
 
-        private Godot.Collections.Array responses = new();
+        private Godot.Collections.Array<DialogueResponse> responses = new();
 
         /// <summary>
         /// The list of dialogue responses.
         /// </summary>
-        public Godot.Collections.Array Responses
+        public Godot.Collections.Array<DialogueResponse> Responses
         {
             get => responses;
             set
@@ -151,7 +151,7 @@ namespace DialogueManagerRuntime
                     item.FocusNext = items[i + 1].GetPath();
                 }
 
-                Variant response = item.GetMeta("response");
+                DialogueResponse response = (DialogueResponse)item.GetMeta("response");
                 item.MouseEntered += () => OnResponseMouseEntered(item);
                 item.GuiInput += (@event) => OnResponseGuiInput(@event, item, response);
             }
@@ -185,15 +185,15 @@ namespace DialogueManagerRuntime
             // Add new items
             if (responses.Count > 0)
             {
-                foreach (Variant response in responses)
+                foreach (DialogueResponse response in responses)
                 {
                     // The response might be tagged with "show_if"
-                    if (HideFailedResponses && !GetResponseIsAllowed(response) && GetResponseTagValue(response, "show_if") != "true")
+                    if (HideFailedResponses && !response.IsAllowed && response.GetTagValue("show_if") != "true")
                     {
                         continue;
                     }
 
-                    if (GetResponseTagValue(response, "hide_if") == "true")
+                    if (response.GetTagValue("hide_if") == "true")
                     {
                         continue;
                     }
@@ -209,7 +209,7 @@ namespace DialogueManagerRuntime
                         item = new Button();
                     }
                     item.Name = $"Response{GetChildCount()}";
-                    if (!GetResponseIsAllowed(response))
+                    if (!response.IsAllowed)
                     {
                         item.Name = $"{item.Name}Disallowed";
                         item.Set("disabled", true);
@@ -224,7 +224,7 @@ namespace DialogueManagerRuntime
                     // Otherwise assume we can just set the text
                     else
                     {
-                        item.Set("text", GetResponseText(response));
+                        item.Set("text", response.Text);
                     }
 
                     item.SetMeta("response", response);
@@ -237,40 +237,6 @@ namespace DialogueManagerRuntime
                     ConfigureFocus();
                 }
             }
-        }
-
-
-        // Responses are usually DialogueResponse objects but might be custom GDScript or C# objects.
-        private static bool GetResponseIsAllowed(Variant response)
-        {
-            return response.Obj switch
-            {
-                DialogueResponse dialogueResponse => dialogueResponse.IsAllowed,
-                GodotObject obj => (bool)obj.Get("is_allowed"),
-                _ => true
-            };
-        }
-
-
-        private static string GetResponseText(Variant response)
-        {
-            return response.Obj switch
-            {
-                DialogueResponse dialogueResponse => dialogueResponse.Text,
-                GodotObject obj => (string)obj.Get("text"),
-                _ => ""
-            };
-        }
-
-
-        private static string GetResponseTagValue(Variant response, string tagName)
-        {
-            return response.Obj switch
-            {
-                DialogueResponse dialogueResponse => dialogueResponse.GetTagValue(tagName),
-                GodotObject obj when obj.HasMethod("get_tag_value") => (string)obj.Call("get_tag_value", tagName),
-                _ => ""
-            };
         }
 
 
@@ -315,7 +281,7 @@ namespace DialogueManagerRuntime
         }
 
 
-        private void OnResponseGuiInput(InputEvent @event, Control item, Variant response)
+        private void OnResponseGuiInput(InputEvent @event, Control item, DialogueResponse response)
         {
             if (item.Name.ToString().Contains("Disallowed")) return;
 
