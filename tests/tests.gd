@@ -1,8 +1,8 @@
 extends Control
 
-@onready var tests_count_label: Label = $TestsCount
-@onready var assertions_count_label: Label = $AssertionsCount
-@onready var seconds_count_label: Label = $SecondsCount
+@onready var tests_count_label: Label = %TestsCount
+@onready var assertions_count_label: Label = %AssertionsCount
+@onready var seconds_count_label: Label = %SecondsCount
 
 var started_at: float = 0
 var tests_count: int = 0
