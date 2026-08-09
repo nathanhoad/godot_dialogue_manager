@@ -1,7 +1,7 @@
 [gd_scene format=3 uid="uid://s41qxl30184y"]
 
-[ext_resource type="Texture2D" uid="uid://6cyw7qf0r4rb" path="res://icon.svg" id="1_1fvcd"]
 [ext_resource type="Script" uid="uid://e3wa7g2toi2t" path="res://addons/dialogue_manager/components/blank_slate.gd" id="1_l3w2g"]
+[ext_resource type="Texture2D" uid="uid://cjl44xi6ekrqt" path="res://addons/dialogue_manager/assets/logo.svg" id="2_l3w2g"]
 
 [node name="BlankSlate" type="CenterContainer" unique_id=267921584]
 anchors_preset = 15
@@ -22,7 +22,7 @@ custom_minimum_size = Vector2(300, 200)
 layout_mode = 2
 mouse_filter = 0
 mouse_default_cursor_shape = 2
-texture = ExtResource("1_1fvcd")
+texture = ExtResource("2_l3w2g")
 expand_mode = 1
 stretch_mode = 5
 
