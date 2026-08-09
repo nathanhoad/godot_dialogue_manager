@@ -17,6 +17,7 @@ layout_mode = 2
 theme_override_constants/separation = 5
 
 [node name="BannerImage" type="TextureRect" parent="PanelContainer" unique_id=1351355759]
+unique_name_in_owner = true
 custom_minimum_size = Vector2(300, 200)
 layout_mode = 2
 mouse_filter = 0

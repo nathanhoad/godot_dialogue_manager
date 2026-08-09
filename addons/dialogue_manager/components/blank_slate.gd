@@ -7,6 +7,7 @@ signal new_button_pressed
 signal quick_open_button_pressed
 
 
+@onready var banner_image: TextureRect = %BannerImage
 @onready var new_button: Button = %NewButton
 @onready var quick_open: Button = %QuickOpen
 @onready var examples: Button = %Examples
@@ -14,6 +15,9 @@ signal quick_open_button_pressed
 
 
 func apply_theme() -> void:
+	var theme_values: DMThemeValues = DMThemeValues.get_values_from_editor()
+	banner_image.custom_minimum_size = Vector2(300, 200) * theme_values.scale
+
 	new_button.icon = get_theme_icon("New", "EditorIcons")
 	new_button.text = DMConstants.translate(&"start_a_new_file")
 	quick_open.icon = get_theme_icon("Load", "EditorIcons")
