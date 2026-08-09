@@ -13,7 +13,7 @@ msgstr ""
 "X-Generator: Poedit 3.2.2\n"
 
 msgid "start_a_new_file"
-msgstr "Start a new file"
+msgstr "Start a new file..."
 
 msgid "open_a_file"
 msgstr "Open a file"
@@ -515,3 +515,9 @@ msgstr "Globals"
 
 msgid "This is an example balloon. Create your own balloon in 'Project > Tools > Dialogue > Create Balloon...'"
 msgstr "This is an example balloon. Create your own balloon in 'Project > Tools > Dialogue > Create Balloon...'"
+
+msgid "Get example projects..."
+msgstr "Get example projects..."
+
+msgid "Buy my game..."
+msgstr "Buy my game..."

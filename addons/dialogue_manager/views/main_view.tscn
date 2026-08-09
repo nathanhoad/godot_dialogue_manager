@@ -8,7 +8,7 @@
 [ext_resource type="PackedScene" uid="uid://gr8nakpbrhby" path="res://addons/dialogue_manager/components/search_and_replace.tscn" id="6_ylh0t"]
 [ext_resource type="PackedScene" uid="uid://cs8pwrxr5vxix" path="res://addons/dialogue_manager/components/errors_panel.tscn" id="7_5cvl4"]
 [ext_resource type="Script" uid="uid://klpiq4tk3t7a" path="res://addons/dialogue_manager/components/code_edit_syntax_highlighter.gd" id="7_necsa"]
-[ext_resource type="Texture2D" uid="uid://cnm67htuohhlo" path="res://addons/dialogue_manager/assets/banner.png" id="9_y6rqu"]
+[ext_resource type="PackedScene" uid="uid://s41qxl30184y" path="res://addons/dialogue_manager/components/blank_slate.tscn" id="9_faxki"]
 
 [sub_resource type="Image" id="Image_faxki"]
 data = {
@@ -296,50 +296,9 @@ syntax_highlighter = SubResource("SyntaxHighlighter_mpdoc")
 unique_name_in_owner = true
 layout_mode = 2
 
-[node name="Banner" type="CenterContainer" parent="." unique_id=1848328987]
+[node name="BlankSlate" parent="." unique_id=267921584 instance=ExtResource("9_faxki")]
 unique_name_in_owner = true
 layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-offset_top = 34.0
-grow_horizontal = 2
-grow_vertical = 2
-mouse_filter = 2
-
-[node name="PanelContainer" type="VBoxContainer" parent="Banner" unique_id=1211498578]
-layout_mode = 2
-theme_override_constants/separation = 5
-
-[node name="BannerImage" type="TextureRect" parent="Banner/PanelContainer" unique_id=899616034]
-custom_minimum_size = Vector2(600, 200)
-layout_mode = 2
-mouse_filter = 0
-mouse_default_cursor_shape = 2
-texture = ExtResource("9_y6rqu")
-expand_mode = 3
-
-[node name="HBoxContainer" type="HBoxContainer" parent="Banner/PanelContainer" unique_id=874356896]
-layout_mode = 2
-theme_override_constants/separation = 5
-
-[node name="BannerNewButton" type="Button" parent="Banner/PanelContainer/HBoxContainer" unique_id=1034773049]
-unique_name_in_owner = true
-layout_mode = 2
-size_flags_horizontal = 3
-text = "New Dialogue..."
-
-[node name="BannerQuickOpen" type="Button" parent="Banner/PanelContainer/HBoxContainer" unique_id=1614953837]
-unique_name_in_owner = true
-layout_mode = 2
-size_flags_horizontal = 3
-text = "Quick open..."
-
-[node name="BannerExamples" type="Button" parent="Banner/PanelContainer/HBoxContainer" unique_id=1066745213]
-unique_name_in_owner = true
-layout_mode = 2
-size_flags_horizontal = 3
-text = "Example projects..."
 
 [node name="NewDialog" type="FileDialog" parent="." unique_id=458925087]
 size = Vector2i(900, 750)
@@ -416,10 +375,8 @@ dialog_text = "You're now up to date!"
 [connection signal="external_file_requested" from="Margin/Content/CodePanel/CodeEdit" to="." method="_on_code_edit_external_file_requested"]
 [connection signal="text_changed" from="Margin/Content/CodePanel/CodeEdit" to="." method="_on_code_edit_text_changed"]
 [connection signal="error_pressed" from="Margin/Content/CodePanel/ErrorsPanel" to="." method="_on_errors_panel_error_pressed"]
-[connection signal="gui_input" from="Banner/PanelContainer/BannerImage" to="." method="_on_banner_image_gui_input"]
-[connection signal="pressed" from="Banner/PanelContainer/HBoxContainer/BannerNewButton" to="." method="_on_banner_new_button_pressed"]
-[connection signal="pressed" from="Banner/PanelContainer/HBoxContainer/BannerQuickOpen" to="." method="_on_banner_quick_open_pressed"]
-[connection signal="pressed" from="Banner/PanelContainer/HBoxContainer/BannerExamples" to="." method="_on_banner_examples_pressed"]
+[connection signal="new_button_pressed" from="BlankSlate" to="." method="_on_blank_slate_new_button_pressed"]
+[connection signal="quick_open_button_pressed" from="BlankSlate" to="." method="_on_blank_slate_quick_open_button_pressed"]
 [connection signal="confirmed" from="NewDialog" to="." method="_on_new_dialog_confirmed"]
 [connection signal="file_selected" from="NewDialog" to="." method="_on_new_dialog_file_selected"]
 [connection signal="file_selected" from="SaveDialog" to="." method="_on_save_dialog_file_selected"]
