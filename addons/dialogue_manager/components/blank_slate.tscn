@@ -1,0 +1,64 @@
+[gd_scene format=3 uid="uid://s41qxl30184y"]
+
+[ext_resource type="Texture2D" uid="uid://6cyw7qf0r4rb" path="res://icon.svg" id="1_1fvcd"]
+[ext_resource type="Script" uid="uid://e3wa7g2toi2t" path="res://addons/dialogue_manager/components/blank_slate.gd" id="1_l3w2g"]
+
+[node name="BlankSlate" type="CenterContainer" unique_id=267921584]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+script = ExtResource("1_l3w2g")
+
+[node name="PanelContainer" type="VBoxContainer" parent="." unique_id=1637606585]
+layout_mode = 2
+theme_override_constants/separation = 5
+
+[node name="BannerImage" type="TextureRect" parent="PanelContainer" unique_id=1351355759]
+custom_minimum_size = Vector2(300, 200)
+layout_mode = 2
+mouse_filter = 0
+mouse_default_cursor_shape = 2
+texture = ExtResource("1_1fvcd")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Spacer" type="Control" parent="PanelContainer" unique_id=847267783]
+custom_minimum_size = Vector2(0, 10)
+layout_mode = 2
+
+[node name="NewButton" type="Button" parent="PanelContainer" unique_id=1627079156]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+text = "New Dialogue..."
+
+[node name="QuickOpen" type="Button" parent="PanelContainer" unique_id=1046857903]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Quick open..."
+
+[node name="Spacer2" type="Control" parent="PanelContainer" unique_id=1403149639]
+custom_minimum_size = Vector2(0, 10)
+layout_mode = 2
+
+[node name="Examples" type="Button" parent="PanelContainer" unique_id=2130533078]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Example projects..."
+
+[node name="BuyMyGame" type="Button" parent="PanelContainer" unique_id=555819308]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Buy my game..."
+
+[connection signal="gui_input" from="PanelContainer/BannerImage" to="." method="_on_banner_image_gui_input"]
+[connection signal="pressed" from="PanelContainer/NewButton" to="." method="_on_new_button_pressed"]
+[connection signal="pressed" from="PanelContainer/QuickOpen" to="." method="_on_quick_open_pressed"]
+[connection signal="pressed" from="PanelContainer/Examples" to="." method="_on_examples_pressed"]
+[connection signal="pressed" from="PanelContainer/BuyMyGame" to="." method="_on_buy_my_game_pressed"]

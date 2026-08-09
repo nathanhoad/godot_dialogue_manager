@@ -20,11 +20,8 @@ signal confirmation_closed()
 
 @onready var parse_timer: Timer = $ParseTimer
 
-# Banner
-@onready var banner: CenterContainer = %Banner
-@onready var banner_new_button: Button = %BannerNewButton
-@onready var banner_quick_open: Button = %BannerQuickOpen
-@onready var banner_examples: Button = %BannerExamples
+# Blank slate banner
+@onready var blank_slate: CenterContainer = %BlankSlate
 
 # Dialogs
 @onready var new_dialog: FileDialog = $NewDialog
@@ -80,7 +77,7 @@ var current_file_path: String = "":
 			code_edit.hide()
 			errors_panel.hide()
 			search_and_replace.hide()
-			banner.show()
+			blank_slate.show()
 		else:
 			file_name_label.text = current_file_path.get_file()
 			test_button.disabled = false
@@ -91,7 +88,7 @@ var current_file_path: String = "":
 			files_list.show()
 			cue_list.show()
 			code_edit.show()
-			banner.hide()
+			blank_slate.hide()
 
 			var cursor: Vector2 = DMSettings.get_caret(current_file_path)
 			var scroll_vertical: float = DMSettings.get_scroll(current_file_path)
@@ -358,9 +355,6 @@ func apply_theme() -> void:
 
 		code_edit.theme_overrides = theme_values
 
-		banner_new_button.icon = get_theme_icon("New", "EditorIcons")
-		banner_quick_open.icon = get_theme_icon("Load", "EditorIcons")
-
 		new_button.icon = get_theme_icon("New", "EditorIcons")
 		new_button.tooltip_text = DMConstants.translate(&"start_a_new_file")
 
@@ -391,6 +385,7 @@ func apply_theme() -> void:
 		docs_button.icon = get_theme_icon("Help", "EditorIcons")
 		docs_button.text = DMConstants.translate(&"docs")
 
+		blank_slate.apply_theme()
 		update_button.apply_theme()
 
 		# Set up the effect menu
@@ -813,26 +808,17 @@ func _on_find_in_files_result_selected(path: String, cursor: Vector2i, length: i
 	code_edit.set_line_as_center_visible(cursor.y)
 
 
-func _on_banner_image_gui_input(event:  InputEvent) -> void:
-	if event.is_pressed():
-		OS.shell_open("https://bravestcoconut.com/wishlist")
+func _on_filename_label_pressed() -> void:
+	EditorInterface.get_file_system_dock().navigate_to_path(current_file_path)
 
 
-func _on_banner_new_button_pressed() -> void:
+func _on_blank_slate_new_button_pressed() -> void:
 	new_dialog.current_file = "untitled"
 	new_dialog.popup_centered()
 
 
-func _on_banner_quick_open_pressed() -> void:
+func _on_blank_slate_quick_open_button_pressed() -> void:
 	quick_open()
-
-
-func _on_banner_examples_pressed() -> void:
-	OS.shell_open("https://itch.io/c/5226650/godot-dialogue-manager-example-projects")
-
-
-func _on_filename_label_pressed() -> void:
-	EditorInterface.get_file_system_dock().navigate_to_path(current_file_path)
 
 
 #endregion

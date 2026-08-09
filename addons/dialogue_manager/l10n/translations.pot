@@ -505,3 +505,9 @@ msgstr ""
 
 msgid "This is an example balloon. Create your own balloon in 'Project > Tools > Dialogue > Create Balloon...'"
 msgstr ""
+
+msgid "Get example projects..."
+msgstr ""
+
+msgid "Buy my game..."
+msgstr ""
