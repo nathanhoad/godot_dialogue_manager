@@ -9,7 +9,7 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Generator: Poedit 3.4\n"
+"X-Generator: Poedit 3.9\n"
 
 msgid "start_a_new_file"
 msgstr "创建新文件"
@@ -20,6 +20,9 @@ msgstr "打开已有文件"
 msgid "open.open"
 msgstr "打开……"
 
+msgid "open.quick_open"
+msgstr "快速打开"
+
 msgid "open.no_recent_files"
 msgstr "无历史记录"
 
@@ -29,11 +32,17 @@ msgstr "清空历史记录"
 msgid "save_all_files"
 msgstr "保存所有文件"
 
+msgid "all"
+msgstr ""
+
 msgid "find_in_files"
 msgstr "在文件中查找"
 
 msgid "test_dialogue"
 msgstr "测试对话"
+
+msgid "test_dialogue_from_line"
+msgstr "从当前行开始测试对话"
 
 msgid "search_for_text"
 msgstr "查找……"
@@ -43,6 +52,9 @@ msgstr "插入"
 
 msgid "translations"
 msgstr "翻译"
+
+msgid "sponsor"
+msgstr "赞助"
 
 msgid "show_support"
 msgstr "支持 Dialogue Manager"
@@ -95,6 +107,15 @@ msgstr "结束对话"
 msgid "generate_line_ids"
 msgstr "生成行 ID"
 
+msgid "generate_ids.warning_title"
+msgstr ""
+
+msgid "generate_ids.warning_text"
+msgstr ""
+
+msgid "generate_ids.ok_button"
+msgstr ""
+
 msgid "use_uuid_only_for_ids"
 msgstr "仅使用UUID作为ID"
 
@@ -103,9 +124,6 @@ msgstr "设置ID前缀长度"
 
 msgid "id_prefix_length"
 msgstr "ID前缀长度："
-
-msgid "save_characters_to_csv"
-msgstr "保存角色到 CSV"
 
 msgid "save_to_csv"
 msgstr "生成 CSV"
@@ -121,6 +139,9 @@ msgstr "保存"
 
 msgid "confirm_close.discard"
 msgstr "不保存"
+
+msgid "confirm_n_unsaved_files"
+msgstr ""
 
 msgid "buffer.save"
 msgstr "保存"
@@ -145,6 +166,9 @@ msgstr "在 Godot 侧边栏中显示"
 
 msgid "n_of_n"
 msgstr "第{index}个，共{total}个"
+
+msgid "search.find_in_dialogue"
+msgstr ""
 
 msgid "search.find"
 msgstr "查找:"
@@ -192,7 +216,7 @@ msgid "errors.key_not_found"
 msgstr "键“{key}”未找到"
 
 msgid "errors.line_and_message"
-msgstr "第{line}行第{colume}列发生错误：{message}"
+msgstr "第{line}行第{column}列发生错误：{message}"
 
 msgid "errors_in_script"
 msgstr "你的脚本中存在错误。请修复错误，然后重试。"
@@ -208,6 +232,9 @@ msgstr "文件已被导入。"
 
 msgid "errors.duplicate_import"
 msgstr "导入名不能重复。"
+
+msgid "errors.unknown_using"
+msgstr ""
 
 msgid "errors.empty_cue"
 msgstr "标题名不能为空。"
@@ -302,6 +329,30 @@ msgstr "索引无效。"
 msgid "errors.unexpected_assignment"
 msgstr "不应在条件判断中使用 = ，应使用 == 。"
 
+msgid "errors.expected_when_or_else"
+msgstr ""
+
+msgid "errors.only_one_else_allowed"
+msgstr ""
+
+msgid "errors.when_must_belong_to_match"
+msgstr ""
+
+msgid "errors.concurrent_line_without_origin"
+msgstr ""
+
+msgid "errors.goto_not_allowed_on_concurrect_lines"
+msgstr ""
+
+msgid "errors.unexpected_syntax_on_nested_dialogue_line"
+msgstr ""
+
+msgid "errors.err_nested_dialogue_invalid_jump"
+msgstr ""
+
+msgid "errors.missing_resource_for_autostart"
+msgstr ""
+
 msgid "errors.unknown"
 msgstr "语法错误。"
 
@@ -345,10 +396,10 @@ msgid "runtime.no_content"
 msgstr "资源“{file_path}”为空。"
 
 msgid "runtime.errors"
-msgstr "文件中存在{errrors}个错误。"
+msgstr "文件中存在{count}个错误。"
 
 msgid "runtime.error_detail"
-msgstr "第{index}行：{message}"
+msgstr "第{line}行：{message}"
 
 msgid "runtime.errors_see_details"
 msgstr "文件中存在{errrors}个错误。请查看调试输出。"
@@ -369,13 +420,15 @@ msgid "runtime.property_not_found"
 msgstr "“{property}”不存在。（全局变量：{states}）"
 
 msgid "runtime.property_not_found_missing_export"
-msgstr "“{property}”不存在。（全局变量：{states}）你可能需要添加一个修饰词 [Export]。"
+msgstr ""
+"“{property}”不存在。（全局变量：{states}）你可能需要添加一个修饰词 "
+"[Export]。"
 
 msgid "runtime.method_not_found"
 msgstr "“{method}”不存在。（全局变量：{states}）"
 
 msgid "runtime.signal_not_found"
-msgstr "“{sighal_name}”不存在。（全局变量：{states}）"
+msgstr "“{signal_name}”不存在。（全局变量：{states}）"
 
 msgid "runtime.method_not_callable"
 msgstr "{method}不是对象“{object}”上的函数。"
@@ -383,5 +436,85 @@ msgstr "{method}不是对象“{object}”上的函数。"
 msgid "runtime.unknown_operator"
 msgstr "未知操作符。"
 
+msgid "runtime.unknown_autoload"
+msgstr ""
+
 msgid "runtime.something_went_wrong"
 msgstr "有什么出错了。"
+
+msgid "runtime.expected_n_got_n_args"
+msgstr ""
+
+msgid "runtime.unsupported_array_type"
+msgstr ""
+
+msgid "runtime.dialogue_balloon_missing_start_method"
+msgstr ""
+
+msgid "runtime.top_level_states_share_name"
+msgstr ""
+
+msgid "translation_plugin.character_name"
+msgstr ""
+
+msgid "Regions & Cues"
+msgstr ""
+
+msgid "Regions"
+msgstr ""
+
+msgid "Cues"
+msgstr ""
+
+msgid "Auto"
+msgstr ""
+
+msgid "<empty>"
+msgstr ""
+
+msgid "Cue:"
+msgstr ""
+
+msgid "Static IDs can't be on a line with no other content."
+msgstr ""
+
+msgid "\"{alias}\" will overwrite already registered context alias."
+msgstr ""
+
+msgid "Alias cannot be empty."
+msgstr ""
+
+msgid "Target cannot be null."
+msgstr ""
+
+msgid "Cannot refresh dialogue line because its ID is missing a resource UID."
+msgstr ""
+
+msgid "None"
+msgstr ""
+
+msgid "Dialogue"
+msgstr ""
+
+msgid "{game_name} isn't running."
+msgstr ""
+
+msgid "History"
+msgstr ""
+
+msgid "Clear"
+msgstr ""
+
+msgid "Context Nodes"
+msgstr ""
+
+msgid "Globals"
+msgstr ""
+
+msgid ""
+"This is an example balloon. Create your own balloon in 'Project > Tools > "
+"Dialogue > Create Balloon...'"
+msgstr ""
+
+#~ msgid "save_characters_to_csv"
+#~ msgstr "保存角色到 CSV"
