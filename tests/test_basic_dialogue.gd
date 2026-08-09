@@ -46,6 +46,20 @@ func test_can_parse_basic_dialogue() -> void:
 	assert(not output.lines.values()[1].has("character"), "Second line should not have a character.")
 
 
+func test_can_parse_otherwise_empty_lines() -> void:
+	var output: DMCompilerResult = compile("
+~ start
+Nathan: [#just_a_tag]
+=> END")
+
+	var line: Dictionary = output.lines["2"]
+
+	assert(line.character == "Nathan", "Character should just be name.")
+	assert(line.text == "", "Text should be empty.")
+	assert(line.tags.size() == 1, "Should have 1 tag.")
+	assert(line.tags[0] == "just_a_tag", "Tag should match given tag.")
+
+
 func test_can_parse_dialogue_with_static_ids() -> void:
 	var output: DMCompilerResult = compile("
 ~ start
