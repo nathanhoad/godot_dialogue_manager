@@ -20,6 +20,9 @@ msgstr "打开已有文件"
 msgid "open.open"
 msgstr "打开……"
 
+msgid "open.quick_open"
+msgstr "快速打开"
+
 msgid "open.no_recent_files"
 msgstr "无历史记录"
 
@@ -35,6 +38,9 @@ msgstr "在文件中查找"
 msgid "test_dialogue"
 msgstr "测试对话"
 
+msgid "test_dialogue_from_line"
+msgstr "从当前行开始测试对话"
+
 msgid "search_for_text"
 msgstr "查找……"
 
@@ -43,6 +49,9 @@ msgstr "插入"
 
 msgid "translations"
 msgstr "翻译"
+
+msgid "sponsor"
+msgstr "赞助"
 
 msgid "show_support"
 msgstr "支持 Dialogue Manager"
@@ -92,8 +101,11 @@ msgstr "标题间跳转"
 msgid "insert.end_dialogue"
 msgstr "结束对话"
 
-msgid "generate_line_ids"
-msgstr "生成行 ID"
+msgid "generate_line_ids_for_project"
+msgstr "为项目所有文件生成行 ID"
+
+msgid "generate_line_ids_for_file"
+msgstr "为当前文件生成行 ID"
 
 msgid "use_uuid_only_for_ids"
 msgstr "仅使用UUID作为ID"
