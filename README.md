@@ -34,9 +34,9 @@ You can install it via the Asset Library or [downloading a copy](https://github.
 [![Example project featuring speech balloons](docs/media/example-speech-balloons.png)](https://nathanhoad.itch.io/speech-balloons-godot-dialogue-example-project)
 [![Example project featuring endless scroll & text input](docs/media/example-endless-scroll.png)](https://nathanhoad.itch.io/endless-scroll-text-input-godot-dialogue-example-project)
 
-## Wishlist my game
+## Buy my game
 
-[![Wishlist Bravest Coconut on Steam](docs/media/bravest-coconut.png)](https://bravestcoconut.com/wishlist)
+[![Buy Bravest Coconut on Steam](docs/media/bravest-coconut.png)](https://bravestcoconut.com/wishlist)
 
 ## Video Guides
 

@@ -10,7 +10,7 @@ If you run into something that you think might be a bug, you can [open an issue]
 
 There are a few ways you can support the development of Dialogue Manager. You can [become a patron on Patreon](https://patreon.com/nathanhoad) or [sponsor me on GitHub](https://github.com/sponsors/nathanhoad).
 
-If you're not in a position to do either of those things, you can just [give me a sub or like on YouTube](https://youtube.com/@nathan_hoad) or [wishlist Bravest Coconut](https://bravestcoconut.com/wishlist).
+If you're not in a position to do either of those things, you can just [give me a sub or like on YouTube](https://youtube.com/@nathan_hoad) or [spread the word about Bravest Coconut](https://bravestcoconut.com/wishlist).
 
 ## How do I stop my player from moving while dialogue is showing?
 
@@ -39,6 +39,10 @@ If you want to also credit it specifically, you can include something like "Dial
 ## Why isn't something like Dialogue Manager built into Godot?
 
 The short answer is that not all games need to have any kind of dialogue, let alone branching dialogue trees, so it would just be introducing bloat into the engine for little benefit. Another good reason to have it as an addon means I can iterate on it much faster than having to wait for engine releases.
+
+## Why is there no graph view for dialogue?
+
+Personally, I prefer writing dialogue more like a stage-play script. It's much faster and feels less cluttered. I understand that's not how everybody likes to work and there are a bunch of other dialogue plugins for Godot that are built around graph editing.
 
 ## How do I get you to add my great idea for a feature?
 
