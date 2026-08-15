@@ -2,16 +2,13 @@
 
 # Dialogue Manager 4 _for Godot 4.6+_
 
-> [!IMPORTANT]
-> Until Dialogue Manager 4 is officially released, you should probably use [version 3](https://github.com/nathanhoad/godot_dialogue_manager/tree/v3.x).
-
 Dialogue Manager 4 is an addon for [Godot 4.6+](https://godotengine.org/) that provides a stateless branching dialogue editor and runtime. Write your dialogue in a script-like way and easily integrate it into your game.
 
-You can install it via the Asset Library or [downloading a copy](https://github.com/nathanhoad/godot_dialogue_manager/archive/refs/heads/main.zip) from GitHub.
+You can install it via the Asset Store or [downloading a copy](https://github.com/nathanhoad/godot_dialogue_manager/archive/refs/heads/main.zip) from GitHub.
 
 [![Patreon](https://img.shields.io/badge/Patreon-Support%20this%20Project-%23f1465a?style=for-the-badge)](https://www.patreon.com/nathanhoad) [![Discord](https://img.shields.io/discord/945920743915524176?label=discord&logo=discord&logoColor=%23fff&style=for-the-badge)](https://discord.gg/zwBVQdJchX)
 
-![Screenshot](docs/media/screenshot.jpg)
+![Screenshot](docs/media/screenshot.avif)
 
 ## Documentation
 
@@ -22,6 +19,7 @@ You can install it via the Asset Library or [downloading a copy](https://github.
 - [Using dialogue in your game](docs/Using_Dialogue.md)
 - [Dialogue balloons](docs/Dialogue_Balloons.md)
 - [Translations](docs/Translations.md)
+- [Nodes](docs/Nodes.md)
 - [API](docs/API.md)
 - [C# wrapper](docs/CSharp.md)
 - [Upgrading from v3 to v4](docs/Upgrading_Version.md)
