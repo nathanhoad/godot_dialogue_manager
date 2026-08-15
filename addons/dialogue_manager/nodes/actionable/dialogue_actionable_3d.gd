@@ -1,19 +1,19 @@
 @tool
 
-@icon("./actionable_3d.svg")
+@icon("uid://dppsuhlvbcbjc")
 
 ## A special [Area3D] node to hold information about starting dialogue.
 ##
 ## Assuming [code]dialogue_resource[/code] and [code]cue[/code] have been configured you can
 ## call [code]action()[/code] on this node at runtime to start dialogue.
-class_name Actionable3D extends Area3D
+class_name DialogueActionable3D extends Area3D
 
 
-## Emitted when this [Actionable3D] has [code]action()[/code] called on it.
+## Emitted when this [DialogueActionable3D] has [code]action()[/code] called on it.
 signal actioned()
 
-## Emitted when the [DialogueResource] associated with this [Actionable2D] ends. [b]NOTE:[/b] The
-## signal is also emitted if the same resource is used for multiple [Actionable2D] nodes in the tree.
+## Emitted when the [DialogueResource] associated with this [DialogueActionable2D] ends. [b]NOTE:[/b] The
+## signal is also emitted if the same resource is used for multiple [DialogueActionable2D] nodes in the tree.
 signal dialogue_ended()
 
 
@@ -47,7 +47,7 @@ func _ready() -> void:
 #region Public
 
 
-## Action this [Actionable3D]. If a [DialogueResource] and cue have been set on this node then
+## Action this [DialogueActionable3D]. If a [DialogueResource] and cue have been set on this node then
 ## it will start dialogue.
 func action() -> void:
 	if is_instance_valid(dialogue_resource) and not dialogue_cue.is_empty():
@@ -55,12 +55,12 @@ func action() -> void:
 	actioned.emit()
 
 
-## Find the nearest [Actionable3D] to a given position.
-static func get_nearest_actionable_to(target_position: Vector3) -> Actionable3D:
+## Find the nearest [DialogueActionable3D] to a given position.
+static func get_nearest_actionable_to(target_position: Vector3) -> DialogueActionable3D:
 	var nearest_distance: float = INF
-	var nearest_actionable: Actionable3D = null
+	var nearest_actionable: DialogueActionable3D = null
 	var actionables: Array[Node] = (Engine.get_main_loop() as SceneTree).get_nodes_in_group("dialogue_actionables")
-	for actionable: Actionable3D in actionables:
+	for actionable: DialogueActionable3D in actionables:
 		var distance: float = actionable.global_position.distance_squared_to(target_position)
 		if distance < nearest_distance:
 			nearest_distance = distance
