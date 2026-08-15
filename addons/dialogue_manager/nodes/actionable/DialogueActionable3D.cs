@@ -10,17 +10,17 @@ namespace DialogueManagerRuntime
     /// Assuming <c>DialogueResource</c> and <c>DialogueCue</c> have been configured you can
     /// call <c>Action()</c> on this node at runtime to start dialogue.
     /// </summary>
-    [Tool, Icon("./actionable_3d.svg")]
-    public partial class Actionable3D : Area3D
+    [Tool, Icon("uid://dppsuhlvbcbjc")]
+    public partial class DialogueActionable3D : Area3D
     {
         /// <summary>
-        /// Emitted when this <see cref="Actionable3D"/> has <c>Action()</c> called on it.
+        /// Emitted when this <see cref="DialogueActionable3D"/> has <c>Action()</c> called on it.
         /// </summary>
         [Signal] public delegate void ActionedEventHandler();
 
         /// <summary>
-        /// Emitted when the dialogue resource associated with this <see cref="Actionable3D"/> ends. NOTE: The
-        /// signal is also emitted if the same resource is used for multiple <see cref="Actionable3D"/> nodes in the tree.
+        /// Emitted when the dialogue resource associated with this <see cref="DialogueActionable3D"/> ends. NOTE: The
+        /// signal is also emitted if the same resource is used for multiple <see cref="DialogueActionable3D"/> nodes in the tree.
         /// </summary>
         [Signal] public delegate void DialogueEndedEventHandler();
 
@@ -87,7 +87,7 @@ namespace DialogueManagerRuntime
 
 
         /// <summary>
-        /// Action this <see cref="Actionable3D"/>. If a dialogue resource and cue have been set on this node then it will start dialogue.
+        /// Action this <see cref="DialogueActionable3D"/>. If a dialogue resource and cue have been set on this node then it will start dialogue.
         /// </summary>
         public void Action()
         {
@@ -100,15 +100,15 @@ namespace DialogueManagerRuntime
 
 
         /// <summary>
-        /// Find the nearest <see cref="Actionable3D"/> to a given position.
+        /// Find the nearest <see cref="DialogueActionable3D"/> to a given position.
         /// </summary>
-        public static Actionable3D GetNearestActionableTo(Vector3 targetPosition)
+        public static DialogueActionable3D GetNearestActionableTo(Vector3 targetPosition)
         {
             float nearestDistance = float.PositiveInfinity;
-            Actionable3D nearestActionable = null;
+            DialogueActionable3D nearestActionable = null;
             foreach (Node node in ((SceneTree)Engine.GetMainLoop()).GetNodesInGroup("dialogue_actionables"))
             {
-                if (node is not Actionable3D actionable) continue;
+                if (node is not DialogueActionable3D actionable) continue;
 
                 float distance = actionable.GlobalPosition.DistanceSquaredTo(targetPosition);
                 if (distance < nearestDistance)

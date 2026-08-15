@@ -10,17 +10,17 @@ namespace DialogueManagerRuntime
     /// Assuming <c>DialogueResource</c> and <c>DialogueCue</c> have been configured you can
     /// call <c>Action()</c> on this node at runtime to start dialogue.
     /// </summary>
-    [Tool, Icon("./actionable_2d.svg")]
-    public partial class Actionable2D : Area2D
+    [Tool, Icon("uid://ja67jst5iqyy")]
+    public partial class DialogueActionable2D : Area2D
     {
         /// <summary>
-        /// Emitted when this <see cref="Actionable2D"/> has <c>Action()</c> called on it.
+        /// Emitted when this <see cref="DialogueActionable2D"/> has <c>Action()</c> called on it.
         /// </summary>
         [Signal] public delegate void ActionedEventHandler();
 
         /// <summary>
-        /// Emitted when the dialogue resource associated with this <see cref="Actionable2D"/> ends. NOTE: The
-        /// signal is also emitted if the same resource is used for multiple <see cref="Actionable2D"/> nodes in the tree.
+        /// Emitted when the dialogue resource associated with this <see cref="DialogueActionable2D"/> ends. NOTE: The
+        /// signal is also emitted if the same resource is used for multiple <see cref="DialogueActionable2D"/> nodes in the tree.
         /// </summary>
         [Signal] public delegate void DialogueEndedEventHandler();
 
@@ -87,7 +87,7 @@ namespace DialogueManagerRuntime
 
 
         /// <summary>
-        /// Action this <see cref="Actionable2D"/>. If a dialogue resource and cue have been set on this node then it will start dialogue.
+        /// Action this <see cref="DialogueActionable2D"/>. If a dialogue resource and cue have been set on this node then it will start dialogue.
         /// </summary>
         public void Action()
         {
@@ -100,15 +100,15 @@ namespace DialogueManagerRuntime
 
 
         /// <summary>
-        /// Find the nearest <see cref="Actionable2D"/> to a given position.
+        /// Find the nearest <see cref="DialogueActionable2D"/> to a given position.
         /// </summary>
-        public static Actionable2D GetNearestActionableTo(Vector2 targetPosition)
+        public static DialogueActionable2D GetNearestActionableTo(Vector2 targetPosition)
         {
             float nearestDistance = float.PositiveInfinity;
-            Actionable2D nearestActionable = null;
+            DialogueActionable2D nearestActionable = null;
             foreach (Node node in ((SceneTree)Engine.GetMainLoop()).GetNodesInGroup("dialogue_actionables"))
             {
-                if (node is not Actionable2D actionable) continue;
+                if (node is not DialogueActionable2D actionable) continue;
 
                 float distance = actionable.GlobalPosition.DistanceSquaredTo(targetPosition);
                 if (distance < nearestDistance)
