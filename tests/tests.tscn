@@ -14,7 +14,7 @@ offsets = PackedFloat32Array(0, 0.212454, 0.498168, 0.772894, 1)
 colors = PackedColorArray(0, 1, 0, 1, 0.877526, 0.403399, 0, 1, 1, 0, 0.670991, 1, 1, 0.840899, 0, 1, 0.990476, 1, 0.950589, 1)
 
 [sub_resource type="LabelSettings" id="LabelSettings_272v2"]
-font_size = 70
+font_size = 100
 font_color = Color(1, 0.823529, 0, 1)
 outline_size = 2
 outline_color = Color(0.67451, 0.419608, 0, 1)
@@ -32,11 +32,11 @@ color = Color(0.0705882, 0.423529, 0.2, 1)
 script = ExtResource("1_ds4fl")
 
 [node name="CPUParticles2D" type="CPUParticles2D" parent="." unique_id=141230541]
-position = Vector2(596, -18)
+position = Vector2(960, -18)
 amount = 13
 preprocess = 10.0
 emission_shape = 3
-emission_rect_extents = Vector2(500, 1)
+emission_rect_extents = Vector2(900, 1)
 direction = Vector2(0, 1)
 spread = 114.75
 initial_velocity_max = 293.75
@@ -44,7 +44,7 @@ scale_amount_min = 4.0
 scale_amount_max = 10.0
 color_ramp = SubResource("Gradient_0kudq")
 
-[node name="VBoxContainer" type="VBoxContainer" parent="." unique_id=291344021]
+[node name="CenterContainer" type="CenterContainer" parent="." unique_id=1878815628]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -52,34 +52,42 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 
-[node name="AllPassing" type="RichTextLabel" parent="VBoxContainer" unique_id=456647872]
+[node name="VBoxContainer" type="VBoxContainer" parent="CenterContainer" unique_id=291344021]
 layout_mode = 2
-theme_override_font_sizes/normal_font_size = 100
+
+[node name="AllPassing" type="RichTextLabel" parent="CenterContainer/VBoxContainer" unique_id=456647872]
+custom_minimum_size = Vector2(1400, 0)
+layout_mode = 2
+theme_override_font_sizes/normal_font_size = 140
 bbcode_enabled = true
 text = "[wave amp=30 freq=15][center]All tests passed"
 fit_content = true
 
-[node name="Label" type="Label" parent="VBoxContainer" unique_id=1230363543]
+[node name="Spacer" type="Control" parent="CenterContainer/VBoxContainer" unique_id=837871167]
+custom_minimum_size = Vector2(0, 40)
+layout_mode = 2
+
+[node name="Label" type="Label" parent="CenterContainer/VBoxContainer" unique_id=1230363543]
 modulate = Color(1, 1, 1, 0.596078)
 layout_mode = 2
-theme_override_font_sizes/font_size = 30
+theme_override_font_sizes/font_size = 50
 text = "See Output for details"
 horizontal_alignment = 1
 
-[node name="Control" type="Control" parent="VBoxContainer" unique_id=488027096]
-custom_minimum_size = Vector2(0, 50)
+[node name="Spacer2" type="Control" parent="CenterContainer/VBoxContainer" unique_id=488027096]
+custom_minimum_size = Vector2(0, 40)
 layout_mode = 2
 
-[node name="CenterContainer" type="CenterContainer" parent="VBoxContainer" unique_id=1439703056]
+[node name="CenterContainer" type="CenterContainer" parent="CenterContainer/VBoxContainer" unique_id=1439703056]
 layout_mode = 2
 
-[node name="Stats" type="HBoxContainer" parent="VBoxContainer/CenterContainer" unique_id=1771124679]
+[node name="Stats" type="HBoxContainer" parent="CenterContainer/VBoxContainer/CenterContainer" unique_id=1771124679]
 layout_mode = 2
 
-[node name="TestsVBox" type="VBoxContainer" parent="VBoxContainer/CenterContainer/Stats" unique_id=1237175691]
+[node name="TestsVBox" type="VBoxContainer" parent="CenterContainer/VBoxContainer/CenterContainer/Stats" unique_id=1237175691]
 layout_mode = 2
 
-[node name="TestsCount" type="Label" parent="VBoxContainer/CenterContainer/Stats/TestsVBox" unique_id=2040063859]
+[node name="TestsCount" type="Label" parent="CenterContainer/VBoxContainer/CenterContainer/Stats/TestsVBox" unique_id=2040063859]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(250, 0)
 layout_mode = 2
@@ -87,16 +95,16 @@ text = "1"
 label_settings = SubResource("LabelSettings_272v2")
 horizontal_alignment = 1
 
-[node name="Label" type="Label" parent="VBoxContainer/CenterContainer/Stats/TestsVBox" unique_id=1790924787]
+[node name="Label" type="Label" parent="CenterContainer/VBoxContainer/CenterContainer/Stats/TestsVBox" unique_id=1790924787]
 layout_mode = 2
 theme_override_font_sizes/font_size = 30
 text = "Tests"
 horizontal_alignment = 1
 
-[node name="AssertionsVBox" type="VBoxContainer" parent="VBoxContainer/CenterContainer/Stats" unique_id=1655912226]
+[node name="AssertionsVBox" type="VBoxContainer" parent="CenterContainer/VBoxContainer/CenterContainer/Stats" unique_id=1655912226]
 layout_mode = 2
 
-[node name="AssertionsCount" type="Label" parent="VBoxContainer/CenterContainer/Stats/AssertionsVBox" unique_id=1065288134]
+[node name="AssertionsCount" type="Label" parent="CenterContainer/VBoxContainer/CenterContainer/Stats/AssertionsVBox" unique_id=1065288134]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(250, 0)
 layout_mode = 2
@@ -104,16 +112,16 @@ text = "1"
 label_settings = SubResource("LabelSettings_272v2")
 horizontal_alignment = 1
 
-[node name="Label" type="Label" parent="VBoxContainer/CenterContainer/Stats/AssertionsVBox" unique_id=1139420831]
+[node name="Label" type="Label" parent="CenterContainer/VBoxContainer/CenterContainer/Stats/AssertionsVBox" unique_id=1139420831]
 layout_mode = 2
 theme_override_font_sizes/font_size = 30
 text = "Assertions"
 horizontal_alignment = 1
 
-[node name="SecondsVBox" type="VBoxContainer" parent="VBoxContainer/CenterContainer/Stats" unique_id=932158456]
+[node name="SecondsVBox" type="VBoxContainer" parent="CenterContainer/VBoxContainer/CenterContainer/Stats" unique_id=932158456]
 layout_mode = 2
 
-[node name="SecondsCount" type="Label" parent="VBoxContainer/CenterContainer/Stats/SecondsVBox" unique_id=1435907716]
+[node name="SecondsCount" type="Label" parent="CenterContainer/VBoxContainer/CenterContainer/Stats/SecondsVBox" unique_id=1435907716]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(250, 0)
 layout_mode = 2
@@ -121,7 +129,7 @@ text = "0"
 label_settings = SubResource("LabelSettings_272v2")
 horizontal_alignment = 1
 
-[node name="Label" type="Label" parent="VBoxContainer/CenterContainer/Stats/SecondsVBox" unique_id=612091933]
+[node name="Label" type="Label" parent="CenterContainer/VBoxContainer/CenterContainer/Stats/SecondsVBox" unique_id=612091933]
 layout_mode = 2
 theme_override_font_sizes/font_size = 30
 text = "Seconds"
