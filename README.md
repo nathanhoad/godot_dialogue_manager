@@ -38,7 +38,7 @@ You can install it via the Asset Store or [downloading a copy](https://github.co
 
 ## Video Guides
 
-[![Dialogue in Godot 4](docs/media/dialogue-in-godot.png)](https://youtu.be/UhPFk8FSbd8)
+[![Dialogue in Godot 4](docs/media/dialogue-in-godot.png)](https://youtu.be/G48CuExqNGM)
 [![Making cut-scenes](docs/media/cutscenes.png)](https://youtu.be/G_TN8jz4v9o)
 [![Making dialogue balloons](docs/media/video-examples.png)](https://youtu.be/Rd4bZEX2RCg)
 
