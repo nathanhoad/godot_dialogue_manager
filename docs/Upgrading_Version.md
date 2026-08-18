@@ -13,6 +13,7 @@ Godot 4.6 is now the minimum Godot version supported.
 - "Titles" are now called "Cues" to better reflect how they are used.
 - Response Conditions are now self-closing (eg. `- Text [if some_condition]` is now `- Text [if some_condition /]`).
 - The `translation_key` property of `DialogueLine`s is now `static_id` to better reflect that it's not just for translations.
+- When exporting translation templates from Godot, the line's `static_id` will be used as the translation key if it has one (previously, they'd be used as context but context is now always just "dialogue").
 
 ### Possible gotchas
 
