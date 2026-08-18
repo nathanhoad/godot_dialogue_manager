@@ -739,7 +739,7 @@ func translate(data: Dictionary) -> String:
 	if TranslationServer.get_loaded_locales().size() == 0:
 		return data.text
 
-	return tr(data.get(&"static_id", data.text), "diaogue")
+	return tr(data.get(&"static_id", data.text), "dialogue")
 
 
 # Create a line of dialogue
