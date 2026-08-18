@@ -35,13 +35,13 @@ var dialogue_balloon: Node
 
 ## The method used to start dialogue action [code]action()[/code] is called. Override if you need different logic.
 static var start_dialogue: Callable = func(with_dialogue_resource: DialogueResource, from_cue: String, extra_game_states: Array) -> Node:
-	return DialogueManager.show_dialogue_balloon(with_dialogue_resource, from_cue, extra_game_states)
+	return Engine.get_singleton("DialogueManager").show_dialogue_balloon(with_dialogue_resource, from_cue, extra_game_states)
 
 
 func _ready() -> void:
 	if not Engine.is_editor_hint():
 		add_to_group("dialogue_actionables")
-		DialogueManager.dialogue_ended.connect(_on_dialogue_ended)
+		Engine.get_singleton("DialogueManager").dialogue_ended.connect(_on_dialogue_ended)
 
 
 #region Public
