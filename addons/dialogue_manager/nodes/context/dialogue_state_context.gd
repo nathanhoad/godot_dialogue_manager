@@ -25,12 +25,12 @@ class_name DialogueStateContext extends Node
 
 func _enter_tree() -> void:
 	if not Engine.is_editor_hint():
-		DialogueManager.register_state_context(alias, target)
+		Engine.get_singleton("DialogueManager").register_state_context(alias, target)
 
 
 func _exit_tree() -> void:
 	if not Engine.is_editor_hint():
-		DialogueManager.unregister_state_context(alias)
+		Engine.get_singleton("DialogueManager").unregister_state_context(alias)
 
 
 func _get_configuration_warnings() -> PackedStringArray:
