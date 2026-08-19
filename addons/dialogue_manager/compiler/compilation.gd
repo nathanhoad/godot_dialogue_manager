@@ -102,13 +102,18 @@ func find_imported_cues(text: String, path: String) -> void:
 
 		if import_data.size() == 0 or not import_data.has("path"): continue
 
+		# If a UID is given then convert it to a path
+		var import_data_path: String = import_data.path
+		if import_data_path.begins_with("uid://"):
+			import_data_path = ResourceUID.get_id_path(ResourceUID.text_to_id(import_data_path))
+
 		if known_imports.has(import_data.path):
 			add_error(id, 0, DMConstants.ERR_FILE_ALREADY_IMPORTED)
 		elif known_imports.values().has(import_data.prefix):
 			add_error(id, 0, DMConstants.ERR_DUPLICATE_IMPORT_NAME)
 		else:
 			# Get cues from other file and map them to the known list of cues.
-			var cached_file_data: Dictionary = DMCache.get_file_data(import_data.path)
+			var cached_file_data: Dictionary = DMCache.get_file_data(import_data_path)
 
 			# Guard against failed loads -- namely during reimport cascade.
 			if cached_file_data.is_empty():
@@ -118,13 +123,13 @@ func find_imported_cues(text: String, path: String) -> void:
 
 			var external_cues: Dictionary = cached_file_data.cues
 			if external_cues.is_empty():
-				var content: PackedStringArray = FileAccess.get_file_as_string(import_data.path).split("\n")
+				var content: PackedStringArray = FileAccess.get_file_as_string(import_data_path).split("\n")
 				for i: int in range(0, content.size()):
 					var l: String = content[i]
 					if not "/" in l and get_line_type(l) == DMConstants.TYPE_CUE:
 						external_cues[l.substr(2).strip_edges()] = str(i)
 
-			var uid: String = ResourceUID.path_to_uid(import_data.path).replace("uid://", "")
+			var uid: String = ResourceUID.path_to_uid(import_data_path).replace("uid://", "")
 			for cue_key: String in external_cues:
 				# Ignore any cues that are already a reference
 				if "/" in cue_key: continue
