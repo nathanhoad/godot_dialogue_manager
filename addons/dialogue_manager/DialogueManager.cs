@@ -276,6 +276,18 @@ namespace DialogueManagerRuntime
         }
 
 
+
+        /// <summary>
+        /// Set the default balloon to use at runtime.
+        /// </summary>
+        /// <param name="balloonScene"></param>
+        /// <returns></returns>
+        public static Error SetDefaultBalloon(Variant balloonScene)
+        {
+            return (Error)(int)Instance.Call("set_default_balloon", balloonScene);
+        }
+
+
         /// <summary>
         /// Show the example balloon
         /// </summary>
