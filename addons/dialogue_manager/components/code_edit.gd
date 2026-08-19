@@ -162,6 +162,11 @@ func _drop_data(at_position: Vector2, data: Variant) -> void:
 						alias =  "_".join(bits.slice(0, end))
 						if not alias in known_aliases:
 							break
+
+					# convert the file path to a uid
+					if EditorInterface.get_editor_settings().get("text_editor/behavior/files/drop_preload_resources_as_uid"):
+						file = ResourceUID.path_to_uid(file)
+
 					insert_line_at(i, "import \"%s\" as %s\n" % [file, alias])
 					set_caret_line(i)
 					break
