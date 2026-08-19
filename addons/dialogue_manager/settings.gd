@@ -77,6 +77,7 @@ static var SETTINGS_CONFIGURATION: Dictionary = {
 		value = preload("./test_scene.tscn").resource_path,
 		type = TYPE_STRING,
 		hint = PROPERTY_HINT_FILE,
+		hint_string = "*.tscn,*.scn",
 		is_advanced = true
 	},
 	EXTRA_AUTO_COMPLETE_SCRIPT_SOURCES: {
@@ -91,6 +92,7 @@ static var SETTINGS_CONFIGURATION: Dictionary = {
 		value = "",
 		type = TYPE_STRING,
 		hint = PROPERTY_HINT_FILE,
+		hint_string = "*.tscn,*.scn",
 	},
 	STATE_AUTOLOAD_SHORTCUTS: {
 		value = [],
