@@ -56,7 +56,6 @@ var font_size: int:
 		return font_size
 
 var WEIGHTED_RANDOM_PREFIX: RegEx = RegEx.create_from_string("^\\%[\\d.]+\\s")
-var STATIC_REGEX: RegEx = RegEx.create_from_string("^static var (?<property>[a-zA-Z_0-9]+)(:\\s?(?<type>[a-zA-Z_0-9]+))?")
 var STATIC_CONTENT_REGEX: RegEx = RegEx.create_from_string("static (var|func)")
 
 var compiler_regex: DMCompilerRegEx = DMCompilerRegEx.new()
@@ -597,13 +596,14 @@ func _get_members_for_script(script: Variant) -> Array[Dictionary]:
 				type = "constant"
 			})
 
-		# Check for static properties
-		for line: String in script.source_code.split("\n"):
-			var matching: RegExMatch = STATIC_REGEX.search(line)
-			if matching:
+		# Check for static properties. NOTE: Godot doesn't include static properties in the script property list but
+		# they are listed on the script itself.
+		for m: Dictionary in script.get_property_list():
+			if m.usage & PROPERTY_USAGE_SCRIPT_VARIABLE:
 				members.append({
-					name = matching.strings[matching.names.property],
-					type = "property"
+					name = m.name,
+					type = "property",
+					"class_name" = m.get("class_name", "")
 				})
 	elif script.resource_path.ends_with(".cs"):
 		var dotnet: RefCounted = load(DMPlugin.get_plugin_path() + "/DialogueManager.cs").new()
@@ -734,8 +734,8 @@ func _find_definition_in_script(script: Script, member_name: String) -> Dictiona
 
 	if script is GDScript:
 		# Try to find the line in a GDScript file.
-		var method_regex: RegEx = RegEx.create_from_string("^\\s*func\\s+" + member_name + "\\s*\\(")
-		var property_regex: RegEx = RegEx.create_from_string("^(@.*\\s)?\\s*var\\s+" + member_name + "\\s*[:\\s=]")
+		var method_regex: RegEx = RegEx.create_from_string("^(\\s*static )?\\s*func\\s+" + member_name + "\\s*\\(")
+		var property_regex: RegEx = RegEx.create_from_string("^(\\s*static )?(@.*\\s)?\\s*var\\s+" + member_name + "\\s*[:\\s=]?")
 		var signal_regex: RegEx = RegEx.create_from_string("^\\s*signal\\s+" + member_name + "\\s*[\\(\\s]")
 		var const_regex: RegEx = RegEx.create_from_string("^\\s*const\\s+" + member_name + "\\s*[:\\s=]")
 		var enum_regex: RegEx = RegEx.create_from_string("^\\s*enum\\s+" + member_name + "[\\s$]")
@@ -1103,21 +1103,20 @@ func _resolve_script_for_property_chain(segments: PackedStringArray) -> Variant:
 						# Constant isn't an enum or an inner class
 						return null
 
-		# Static properties. NOTE: Godot doesn't programatically find static properties
-		# so we have to manually find them.
-		if not found_property and current_script is Script and current_script.source_code.contains("static var"):
-			for line: String in current_script.source_code.split("\n"):
-				var matched: RegExMatch = STATIC_REGEX.search(line)
-				if matched and matched.strings[matched.names.property] == property_name:
-					if matched.names.has("type"):
-						var type: String = matched.strings[matched.names.type]
-						current_script = _get_script_for_class_name(type)
-						if current_script == null:
-							return null
-						found_property = true
-						break
-					else:
+		# Static properties. NOTE: Godot doesn't include static properties in the script property list but
+		# they are listed on the script itself.
+		if not found_property and current_script is Script:
+			for property_info: Dictionary in current_script.get_property_list():
+				if property_info.usage & PROPERTY_USAGE_SCRIPT_VARIABLE and property_info.name == property_name:
+					var prop_class_name: String = property_info.get("class_name", "")
+					if prop_class_name == "":
+						# Property doesn't have a class type, can't go deeper
 						return null
+					current_script = _get_script_for_class_name(prop_class_name)
+					if current_script == null:
+						return null
+					found_property = true
+					break
 
 		if not found_property:
 			return null
