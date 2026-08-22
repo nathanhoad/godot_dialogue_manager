@@ -389,7 +389,7 @@ func _create_translations_tool_menu_item() -> PopupMenu:
 	tool_menu.add_icon_item(_get_plugin_icon(), "Create balloon...", 0)
 	tool_menu.add_separator()
 	tool_menu.add_icon_item(main_view.get_theme_icon("Translation", "EditorIcons"), DMConstants.translate("generate_line_ids"), 1)
-	tool_menu.add_icon_item(main_view.get_theme_icon("Translation", "EditorIcons"), DMConstants.translate("Simple CSV export..."), 2)
+	tool_menu.add_icon_item(main_view.get_theme_icon("DirAccess", "EditorIcons"), DMConstants.translate("Simple CSV export..."), 2)
 	tool_menu.id_pressed.connect(func(id: int) -> void:
 		match id:
 			0: # create balloon
