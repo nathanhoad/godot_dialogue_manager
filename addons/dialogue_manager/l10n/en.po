@@ -521,3 +521,36 @@ msgstr "Get example projects..."
 
 msgid "Buy my game..."
 msgstr "Buy my game..."
+
+msgid "Simple CSV export..."
+msgstr "Simple CSV export..."
+
+msgid "Auto"
+msgstr "Auto"
+
+msgid "Comma"
+msgstr "Comma"
+
+msgid "Semicolon"
+msgstr "Semicolon"
+
+msgid "Tab"
+msgstr "Tab"
+
+msgid "CSV path"
+msgstr "CSV path"
+
+msgid "Default locale"
+msgstr "Default locale"
+
+msgid "Default delimiter"
+msgstr "Default delimiter"
+
+msgid "Include character name column"
+msgstr "Include character name column"
+
+msgid "Include notes coloumn"
+msgstr "Include notes coloumn"
+
+msgid "Export simple CSV"
+msgstr "Export simple CSV"

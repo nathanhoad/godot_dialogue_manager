@@ -511,3 +511,30 @@ msgstr ""
 
 msgid "Buy my game..."
 msgstr ""
+
+msgid "Simple CSV export..."
+msgstr ""
+
+msgid "Auto"
+msgstr ""
+
+msgid "Comma"
+msgstr ""
+
+msgid "Semicolon"
+msgstr ""
+
+msgid "Tab"
+msgstr ""
+
+msgid "CSV path"
+msgstr ""
+
+msgid "Default locale"
+msgstr ""
+
+msgid "Default delimiter"
+msgstr ""
+
+msgid "Export simple CSV"
+msgstr ""

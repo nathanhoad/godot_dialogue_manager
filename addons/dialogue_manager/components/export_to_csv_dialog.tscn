@@ -1,0 +1,93 @@
+[gd_scene format=3 uid="uid://lde7jsbv6f24"]
+
+[ext_resource type="Script" uid="uid://cnqjxwe5nbejq" path="res://addons/dialogue_manager/components/export_to_csv_dialog.gd" id="1_k3ych"]
+
+[node name="ExportToCsvDialog" type="ConfirmationDialog" unique_id=1024741315]
+oversampling_override = 1.0
+position = Vector2i(0, 36)
+size = Vector2i(331, 333)
+visible = true
+script = ExtResource("1_k3ych")
+
+[node name="VBoxContainer" type="VBoxContainer" parent="." unique_id=1863046707]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 8.0
+offset_top = 8.0
+offset_right = -8.0
+offset_bottom = -49.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/separation = 10
+
+[node name="Path" type="VBoxContainer" parent="VBoxContainer" unique_id=2103397162]
+layout_mode = 2
+
+[node name="PathLabel" type="Label" parent="VBoxContainer/Path" unique_id=357180185]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+text = "CSV path"
+
+[node name="CsvPath" type="HBoxContainer" parent="VBoxContainer/Path" unique_id=1360380745]
+layout_mode = 2
+
+[node name="PathEdit" type="LineEdit" parent="VBoxContainer/Path/CsvPath" unique_id=10294760]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="PathButton" type="Button" parent="VBoxContainer/Path/CsvPath" unique_id=1307396272]
+unique_name_in_owner = true
+layout_mode = 2
+text = "..."
+
+[node name="Locale" type="VBoxContainer" parent="VBoxContainer" unique_id=2082649931]
+layout_mode = 2
+
+[node name="LocaleLabel" type="Label" parent="VBoxContainer/Locale" unique_id=130476924]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Default locale "
+
+[node name="LocaleEdit" type="LineEdit" parent="VBoxContainer/Locale" unique_id=1329469690]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(200, 0)
+layout_mode = 2
+placeholder_text = "en"
+
+[node name="Delimiter" type="VBoxContainer" parent="VBoxContainer" unique_id=1277602714]
+layout_mode = 2
+
+[node name="DelimiterLabel" type="Label" parent="VBoxContainer/Delimiter" unique_id=2104070692]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Default delimiter "
+
+[node name="DelimiterMenu" type="OptionButton" parent="VBoxContainer/Delimiter" unique_id=537449544]
+unique_name_in_owner = true
+layout_mode = 2
+
+[node name="IncludeCharacterNamesButton" type="CheckBox" parent="VBoxContainer" unique_id=714454400]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Include character names"
+
+[node name="IncludeNotesButton" type="CheckBox" parent="VBoxContainer" unique_id=1875570652]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Include notes"
+
+[node name="FileDialog" type="FileDialog" parent="." unique_id=1143071127]
+unique_name_in_owner = true
+filters = PackedStringArray("*.csv")
+
+[connection signal="confirmed" from="." to="." method="_on_confirmed"]
+[connection signal="text_changed" from="VBoxContainer/Path/CsvPath/PathEdit" to="." method="_on_path_edit_text_changed"]
+[connection signal="pressed" from="VBoxContainer/Path/CsvPath/PathButton" to="." method="_on_path_button_pressed"]
+[connection signal="focus_exited" from="VBoxContainer/Locale/LocaleEdit" to="." method="_on_default_locale_edit_focus_exited"]
+[connection signal="confirmed" from="FileDialog" to="." method="_on_file_dialog_confirmed"]
+[connection signal="file_selected" from="FileDialog" to="." method="_on_file_dialog_file_selected"]

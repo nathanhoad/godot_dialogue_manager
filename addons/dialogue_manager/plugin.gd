@@ -386,12 +386,15 @@ func _update_localization() -> void:
 
 func _create_translations_tool_menu_item() -> PopupMenu:
 	var tool_menu: PopupMenu = PopupMenu.new()
-	tool_menu.add_icon_item(_get_plugin_icon(), "Create balloon...")
-	tool_menu.add_icon_item(main_view.get_theme_icon("Translation", "EditorIcons"), DMConstants.translate("generate_line_ids"))
-	tool_menu.index_pressed.connect(func(index: int) -> void:
-		match index:
+	tool_menu.add_icon_item(_get_plugin_icon(), "Create balloon...", 0)
+	tool_menu.add_separator()
+	tool_menu.add_icon_item(main_view.get_theme_icon("Translation", "EditorIcons"), DMConstants.translate("generate_line_ids"), 1)
+	tool_menu.add_icon_item(main_view.get_theme_icon("Translation", "EditorIcons"), DMConstants.translate("Simple CSV export..."), 2)
+	tool_menu.id_pressed.connect(func(id: int) -> void:
+		match id:
 			0: # create balloon
 				_create_dialogue_balloon()
+
 			1: # generate IDs
 				var confirm: ConfirmationDialog = ConfirmationDialog.new()
 				confirm.title = DMConstants.translate("generate_ids.warning_title")
@@ -406,6 +409,11 @@ func _create_translations_tool_menu_item() -> PopupMenu:
 				)
 				add_child(confirm)
 				confirm.popup_centered()
+
+			2: # Simple CSV export
+				var csv_dialog: ConfirmationDialog = load(get_plugin_path() + "/components/export_to_csv_dialog.tscn").instantiate()
+				add_child(csv_dialog)
+				csv_dialog.popup_centered()
 	)
 	return tool_menu
 
