@@ -45,7 +45,10 @@ namespace DialogueManagerRuntime
         {
             if (!Engine.IsEditorHint())
             {
-                DialogueManager.Instance.Call("register_state_context", Alias, Target);
+                Callable.From(() =>
+                {
+                    DialogueManager.Instance.Call("register_state_context", Alias, Target);
+                }).CallDeferred();
             }
         }
 
