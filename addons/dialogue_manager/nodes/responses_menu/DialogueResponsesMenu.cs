@@ -120,7 +120,7 @@ namespace DialogueManagerRuntime
             {
                 Control item = items[i];
 
-                item.FocusMode = FocusModeEnum.All;
+                item.FocusMode = Control.FocusModeEnum.All;
 
                 item.FocusNeighborLeft = item.GetPath();
                 item.FocusNeighborRight = item.GetPath();
