@@ -860,14 +860,14 @@ func _send_state_to_debugger() -> void:
 
 	var serialised_context: Dictionary = {}
 	for key: String in _registered_contexts.keys():
-		if (_registered_contexts.get(key) as Node).is_inside_tree():
+		if is_instance_valid(_registered_contexts.get(key)):
 			serialised_context[key] = _get_serialised_state_node(
 				key,
 				_registered_contexts.get(key)
 			)
 	var serialised_autoloads: Dictionary = {}
 	for key: String in _autoloads.keys():
-		if (_autoloads.get(key) as Node).is_inside_tree():
+		if is_instance_valid(_autoloads.get(key)):
 			serialised_autoloads[key] = _get_serialised_state_node(
 				key,
 				_autoloads.get(key)
