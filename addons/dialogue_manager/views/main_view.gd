@@ -178,7 +178,7 @@ func _exit_tree() -> void:
 	DMSettings.set_user_value("most_recent_reopen_file", self.current_file_path)
 
 
-func _unhandled_input(event: InputEvent) -> void:
+func _input(event: InputEvent) -> void:
 	if not visible: return
 
 	if event is InputEventKey and event.is_pressed():

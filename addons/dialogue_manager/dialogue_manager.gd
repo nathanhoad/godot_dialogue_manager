@@ -860,16 +860,18 @@ func _send_state_to_debugger() -> void:
 
 	var serialised_context: Dictionary = {}
 	for key: String in _registered_contexts.keys():
-		serialised_context[key] = _get_serialised_state_node(
-			key,
-			_registered_contexts.get(key)
-		)
+		if (_registered_contexts.get(key) as Node).is_inside_tree():
+			serialised_context[key] = _get_serialised_state_node(
+				key,
+				_registered_contexts.get(key)
+			)
 	var serialised_autoloads: Dictionary = {}
 	for key: String in _autoloads.keys():
-		serialised_autoloads[key] = _get_serialised_state_node(
-			key,
-			_autoloads.get(key)
-		)
+		if (_autoloads.get(key) as Node).is_inside_tree():
+			serialised_autoloads[key] = _get_serialised_state_node(
+				key,
+				_autoloads.get(key)
+			)
 	EngineDebugger.send_message("dm:state", [serialised_context, serialised_autoloads])
 
 
