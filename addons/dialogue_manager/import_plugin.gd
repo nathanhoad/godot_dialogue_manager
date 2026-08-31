@@ -99,6 +99,9 @@ func _import(source_file: String, save_path: String, _options: Dictionary, _plat
 	resource.character_names = result.character_names
 	resource.lines = result.lines
 
+	if DMSettings.get_setting(DMSettings.INCLUDE_RAW_TEXT_IN_DIALOGUE_RESOURCE_META_DATA, false):
+		resource.set_meta("raw_text", raw_text)
+
 	# Clear errors and possibly trigger any cascade recompiles
 	DMCache.add_file(source_file, result)
 

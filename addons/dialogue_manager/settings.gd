@@ -35,6 +35,9 @@ const WARN_ABOUT_METHOD_PROPERTY_OR_SIGNAL_NAME_CONFLICTS: StringName = &"runtim
 
 ## Bypass any missing state when running dialogue.
 const IGNORE_MISSING_STATE_VALUES: StringName = &"runtime/advanced/ignore_missing_state_values"
+## Keep a copy of the raw text in a [DialogueResource] meta data
+const INCLUDE_RAW_TEXT_IN_DIALOGUE_RESOURCE_META_DATA: StringName = &"runtime/advanced/include_raw_text_in_dialogue_resource_meta_data"
+
 ## Whether or not the project is utilising dotnet.
 const USES_DOTNET: StringName = &"runtime/advanced/uses_dotnet"
 
@@ -111,6 +114,12 @@ static var SETTINGS_CONFIGURATION: Dictionary = {
 		type = TYPE_BOOL,
 		is_advanced = true
 	},
+	INCLUDE_RAW_TEXT_IN_DIALOGUE_RESOURCE_META_DATA: {
+		value = false,
+		type = TYPE_BOOL,
+		is_advanced = true
+	},
+
 	USES_DOTNET: {
 		value = false,
 		type = TYPE_BOOL,
