@@ -993,6 +993,7 @@ namespace DialogueManagerRuntime
             InlineMutations = (Array<Godot.Collections.Array>)data.Get("inline_mutations");
             Time = (string)data.Get("time");
             Tags = (Array<string>)data.Get("tags");
+            ExtraGameStates = (Array<Variant>)data.Get("extra_game_states");
 
             foreach (var concurrent_line_data in (Array<RefCounted>)data.Get("concurrent_lines"))
             {
