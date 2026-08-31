@@ -36,6 +36,10 @@ Dialogue Manager settings are found in Project Settings at the bottom of the Gen
 
   Suppress errors when properties or mutations are missing from state.
 
+- **Include Raw Text in Dialogue Resource Meta Data** (Advanced)
+
+  Include the original raw dialogue text as `"raw_text"` as meta data in dialogue resources.
+
 ## Editor
 
 - **Wrap Long Lines**
