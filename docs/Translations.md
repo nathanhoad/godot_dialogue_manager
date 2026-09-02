@@ -31,7 +31,7 @@ All `.dialogue` files are automatically added to the Template Generation list in
 ![Adding dialogue files to the template generation list](media/translations.png)
 
 > [!NOTE]
-> If static line IDs are present in lines of dialogue that key will be used as POT context for that line, and the dialogue itself will be the actual POT key._
+> If static line IDs are present in lines of dialogue that key will be used as the POT item msgid for that line, and the dialogue itself will be in the translators notes. This can be changed in **Project Settings > Dialogue Manager > Editor > Use Static IDs as Translation Keys**._
 
 From here you can export as either a PO Template for gettext or as a CSV. 
 

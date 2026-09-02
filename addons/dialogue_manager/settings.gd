@@ -11,6 +11,7 @@ const WRAP_LONG_LINES: StringName = &"editor/wrap_long_lines"
 ## The template to start new dialogue files with.
 const NEW_FILE_TEMPLATE: StringName = &"editor/new_file_template"
 
+const USE_STATIC_IDS_AS_TRANSLATION_KEYS: StringName = &"editor/translations/use_static_ids_as_translation_keys"
 ## Show lines without statis IDs as errors.
 const MISSING_TRANSLATIONS_ARE_ERRORS: StringName = &"editor/translations/missing_translations_are_errors"
 ## Include character names in the list of translatable strings.
@@ -53,6 +54,10 @@ static var SETTINGS_CONFIGURATION: Dictionary = {
 		hint = PROPERTY_HINT_MULTILINE_TEXT,
 	},
 
+	USE_STATIC_IDS_AS_TRANSLATION_KEYS: {
+		value = true,
+		type = TYPE_BOOL,
+	},
 	MISSING_TRANSLATIONS_ARE_ERRORS: {
 		value = false,
 		type = TYPE_BOOL,

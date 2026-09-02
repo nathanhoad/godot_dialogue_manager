@@ -50,6 +50,10 @@ Dialogue Manager settings are found in Project Settings at the bottom of the Gen
 
   Start new dialogue files with this content by default.
 
+- **Use Static IDs as Translation Keys**
+
+  When enabled, this will use a line's static ID as the translation key when exporting a localisation template from Godot. Usually you'd want this enabled when using CSV translations and disabled when using Gettext translations.
+
 - **Missing Translations Are Errors**
 
   Any lines that don't have a static ID will be treated as erroneous.
