@@ -51,7 +51,7 @@ func _parse_file(path: String) -> Array[PackedStringArray]:
 		var extra_details: PackedStringArray = []
 		if line.has("character"):
 			extra_details.append("Character: %s" % line.get("character", ""))
-		if has_static_id and not use_static_id_as_key and not line.text.is_empty():
+		if has_static_id and use_static_id_as_key and not line.text.is_empty():
 			extra_details.append("Line: %s" % line.text)
 		if line.has("notes"):
 			extra_details.append("Notes: %s" % line.get("notes", ""))
@@ -59,16 +59,16 @@ func _parse_file(path: String) -> Array[PackedStringArray]:
 
 		if use_static_id_as_key:
 			msgs.append(PackedStringArray([
-				line.text,
-				static_id if static_id != line.text else "",
+				static_id.replace('"', '\"') if has_static_id else line.text,
+				"dialogue",
 				plural,
 				notes,
 				key
 			]))
 		else:
 			msgs.append(PackedStringArray([
-				static_id,
-				"dialogue",
+				line.text,
+				static_id if has_static_id else "",
 				plural,
 				notes,
 				key

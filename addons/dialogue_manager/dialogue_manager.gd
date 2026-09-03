@@ -763,7 +763,10 @@ func translate(data: Dictionary) -> String:
 		else:
 			return tr(static_id, "dialogue")
 	else:
-		return tr(data.text, static_id)
+		if static_id.is_empty() or static_id == data.text:
+			return tr(data.text)
+		else:
+			return tr(data.text, static_id)
 
 
 # Create a line of dialogue
