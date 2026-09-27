@@ -138,7 +138,7 @@ static func export_all_translations_to_csv(to_path: String, default_locale: Stri
 
 			line_to_save[default_locale_column] = line.text
 			if character_column > -1:
-				line_to_save[character_column] = "(response)" if line.type == DMConstants.TYPE_RESPONSE else line.character
+				line_to_save[character_column] = "(response)" if line.type == DMConstants.TYPE_RESPONSE else line.get("character", "")
 			if notes_column > -1:
 				line_to_save[notes_column] = line.get("notes", "")
 
