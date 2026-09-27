@@ -179,7 +179,7 @@ func _exit_tree() -> void:
 
 
 func _input(event: InputEvent) -> void:
-	if not visible: return
+	if not is_visible_in_tree(): return
 
 	if event is InputEventKey and event.is_pressed():
 		var shortcut: String = DMPlugin.get_editor_shortcut(event)
