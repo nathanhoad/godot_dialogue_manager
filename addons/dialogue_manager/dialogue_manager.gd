@@ -834,7 +834,7 @@ func create_response(data: Dictionary, extra_game_states: Array) -> DialogueResp
 
 ## Register a state context. This is handled automatically by [DialogueStateContext] nodes.
 func register_state_context(alias: String, target: Node) -> void:
-	if _registered_contexts.has(alias):
+	if _registered_contexts.has(alias) and DMSettings.get_setting(DMSettings.WARN_ABOUT_CONTEXT_ALIAS_ALREADY_REGISTERED, true):
 		push_warning(DMConstants.translate("\"{alias}\" will overwrite already registered context alias.").format({ alias = alias }))
 	_registered_contexts[alias] = target
 	_send_state_to_debugger()
