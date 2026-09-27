@@ -33,6 +33,8 @@ const BALLOON_PATH: StringName = &"runtime/balloon_path"
 const STATE_AUTOLOAD_SHORTCUTS: StringName = &"runtime/state_autoload_shortcuts"
 ## Check for possible naming conflicts in state shortcuts.
 const WARN_ABOUT_METHOD_PROPERTY_OR_SIGNAL_NAME_CONFLICTS: StringName = &"runtime/warn_about_method_property_or_signal_name_conflicts"
+## Check for context alias collisions
+const WARN_ABOUT_CONTEXT_ALIAS_ALREADY_REGISTERED: StringName = &"runtime/warn_about_context_alias_already_registered"
 
 ## Bypass any missing state when running dialogue.
 const IGNORE_MISSING_STATE_VALUES: StringName = &"runtime/advanced/ignore_missing_state_values"
@@ -110,6 +112,11 @@ static var SETTINGS_CONFIGURATION: Dictionary = {
 	},
 	WARN_ABOUT_METHOD_PROPERTY_OR_SIGNAL_NAME_CONFLICTS: {
 		value = false,
+		type = TYPE_BOOL,
+		is_advanced = true
+	},
+	WARN_ABOUT_CONTEXT_ALIAS_ALREADY_REGISTERED: {
+		value = true,
 		type = TYPE_BOOL,
 		is_advanced = true
 	},
