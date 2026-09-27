@@ -1,9 +1,9 @@
-using Godot;
-using Godot.Collections;
 using System;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
+using Godot;
+using Godot.Collections;
 
 #nullable enable
 
@@ -77,16 +77,16 @@ namespace DialogueManagerRuntime
 
         [Signal] public delegate void ResolvedEventHandler(double id, Variant value);
 
-        private static Random random = new Random();
+        private static readonly Random random = new();
 
-        private static readonly System.Collections.Generic.Dictionary<int, TaskCompletionSource<RefCounted?>> getNextLineRequests = new();
-        private static readonly System.Collections.Generic.Dictionary<int, TaskCompletionSource<RefCounted?>> getLineRequests = new();
-        private static readonly System.Collections.Generic.Dictionary<int, TaskCompletionSource<bool>> mutateRequests = new();
+        private static readonly System.Collections.Generic.Dictionary<int, TaskCompletionSource<RefCounted?>> getNextLineRequests = [];
+        private static readonly System.Collections.Generic.Dictionary<int, TaskCompletionSource<RefCounted?>> getLineRequests = [];
+        private static readonly System.Collections.Generic.Dictionary<int, TaskCompletionSource<bool>> mutateRequests = [];
 
         private static Type[]? cachedAssemblyTypes;
         private static Type[] AssemblyTypes => cachedAssemblyTypes ??= Assembly.GetExecutingAssembly().GetTypes();
 
-        private static readonly System.Collections.Generic.Dictionary<Type, MethodInfo[]> MethodCache = new();
+        private static readonly System.Collections.Generic.Dictionary<Type, MethodInfo[]> MethodCache = [];
         private static MethodInfo[] GetMethodsForType(Type type)
         {
             if (!MethodCache.TryGetValue(type, out var methods))
@@ -238,7 +238,7 @@ namespace DialogueManagerRuntime
             var tcs = new TaskCompletionSource<RefCounted?>();
             getNextLineRequests[id] = tcs;
 
-            Instance.Call("_bridge_get_next_dialogue_line", id, dialogueResource, key, extraGameStates ?? new Array<Variant>(), (int)mutation_behaviour);
+            Instance.Call("_bridge_get_next_dialogue_line", id, dialogueResource, key, extraGameStates ?? [], (int)mutation_behaviour);
 
             var line = await tcs.Task;
             return line == null ? null : new DialogueLine(line);
@@ -258,7 +258,7 @@ namespace DialogueManagerRuntime
             var tcs = new TaskCompletionSource<RefCounted?>();
             getLineRequests[id] = tcs;
 
-            Instance.Call("_bridge_get_line", id, dialogueResource, key, extraGameStates ?? new Array<Variant>());
+            Instance.Call("_bridge_get_line", id, dialogueResource, key, extraGameStates ?? []);
 
             var line = await tcs.Task;
             return line == null ? null : new DialogueLine(line);
@@ -272,7 +272,7 @@ namespace DialogueManagerRuntime
         /// <returns></returns>
         public static Resource CreateResourceFromText(string text)
         {
-            return (Resource)Instance.Call("create_resource_from_text", text);
+            return (Resource)(GodotObject)Instance.Call("create_resource_from_text", text);
         }
 
 
@@ -297,7 +297,7 @@ namespace DialogueManagerRuntime
         /// <returns></returns>
         public static CanvasLayer ShowExampleDialogueBalloon(Resource dialogueResource, string key = "", Array<Variant>? extraGameStates = null)
         {
-            return (CanvasLayer)Instance.Call("show_example_dialogue_balloon", dialogueResource, key, extraGameStates ?? new Array<Variant>());
+            return (CanvasLayer)(GodotObject)Instance.Call("show_example_dialogue_balloon", dialogueResource, key, extraGameStates ?? new Array<Variant>());
         }
 
 
@@ -310,7 +310,7 @@ namespace DialogueManagerRuntime
         /// <returns></returns>
         public static Node ShowDialogueBalloon(Resource dialogueResource, string key = "", Array<Variant>? extraGameStates = null)
         {
-            return (Node)Instance.Call("show_dialogue_balloon", dialogueResource, key, extraGameStates ?? new Array<Variant>());
+            return (Node)(GodotObject)Instance.Call("show_dialogue_balloon", dialogueResource, key, extraGameStates ?? new Array<Variant>());
         }
 
 
@@ -324,7 +324,7 @@ namespace DialogueManagerRuntime
         /// <returns></returns>
         public static Node ShowDialogueBalloonScene(string balloonScene, Resource dialogueResource, string key = "", Array<Variant>? extraGameStates = null)
         {
-            return (Node)Instance.Call("show_dialogue_balloon_scene", balloonScene, dialogueResource, key, extraGameStates ?? new Array<Variant>());
+            return (Node)(GodotObject)Instance.Call("show_dialogue_balloon_scene", balloonScene, dialogueResource, key, extraGameStates ?? new Array<Variant>());
         }
 
         /// <summary>
@@ -337,7 +337,7 @@ namespace DialogueManagerRuntime
         /// <returns></returns>
         public static Node ShowDialogueBalloonScene(PackedScene balloonScene, Resource dialogueResource, string key = "", Array<Variant>? extraGameStates = null)
         {
-            return (Node)Instance.Call("show_dialogue_balloon_scene", balloonScene, dialogueResource, key, extraGameStates ?? new Array<Variant>());
+            return (Node)(GodotObject)Instance.Call("show_dialogue_balloon_scene", balloonScene, dialogueResource, key, extraGameStates ?? new Array<Variant>());
         }
 
         /// <summary>
@@ -350,7 +350,7 @@ namespace DialogueManagerRuntime
         /// <returns></returns>
         public static Node ShowDialogueBalloonScene(Node balloonScene, Resource dialogueResource, string key = "", Array<Variant>? extraGameStates = null)
         {
-            return (Node)Instance.Call("show_dialogue_balloon_scene", balloonScene, dialogueResource, key, extraGameStates ?? new Array<Variant>());
+            return (Node)(GodotObject)Instance.Call("show_dialogue_balloon_scene", balloonScene, dialogueResource, key, extraGameStates ?? new Array<Variant>());
         }
 
 
@@ -395,7 +395,7 @@ namespace DialogueManagerRuntime
             string typeName = script.ResourcePath.GetFile().GetBaseName();
             var matchingType = AssemblyTypes.FirstOrDefault(t => t.Name == typeName);
 
-            if (matchingType == null) return new Array<Dictionary>();
+            if (matchingType == null) return [];
 
             return GetMembersForType(matchingType);
         }
@@ -406,12 +406,12 @@ namespace DialogueManagerRuntime
             string typeName = script.ResourcePath.GetFile().GetBaseName();
             var currentType = AssemblyTypes.FirstOrDefault(t => t.Name == typeName);
 
-            if (currentType == null) return new Array<Dictionary>();
+            if (currentType == null) return [];
 
             foreach (var segment in chain)
             {
                 currentType = ResolvePropertyType(currentType, segment);
-                if (currentType == null) return new Array<Dictionary>();
+                if (currentType == null) return [];
             }
 
             return GetMembersForType(currentType);
@@ -423,18 +423,18 @@ namespace DialogueManagerRuntime
             string typeName = script.ResourcePath.GetFile().GetBaseName();
             var currentType = AssemblyTypes.FirstOrDefault(t => t.Name == typeName);
 
-            if (currentType == null) return new Dictionary();
+            if (currentType == null) return [];
 
             foreach (var segment in chain)
             {
                 currentType = ResolvePropertyType(currentType, segment);
-                if (currentType == null) return new Dictionary();
+                if (currentType == null) return [];
             }
 
             var methodInfo = currentType
                 .GetMethods(BindingFlags.Instance | BindingFlags.Static | BindingFlags.Public)
                 .FirstOrDefault(m => m.Name == methodName && !m.IsSpecialName);
-            if (methodInfo == null) return new Dictionary();
+            if (methodInfo == null) return [];
 
             return BuildMethodDictionary(methodInfo);
         }
@@ -442,7 +442,7 @@ namespace DialogueManagerRuntime
 
         private static Array<Dictionary> GetMembersForType(Type type)
         {
-            Array<Dictionary> members = new Array<Dictionary>();
+            Array<Dictionary> members = [];
 
             if (type.IsEnum)
             {
@@ -565,41 +565,91 @@ namespace DialogueManagerRuntime
         }
 
 
+        private static readonly System.Collections.Generic.Dictionary<string, Type?> ScriptTypeCache = new();
+
+        // Instances can just be asked for their type but when dialogue refers to a class by name we are handed the script itself so we need to find the 
+        // type that script defines in order to reflect on its static members.
+        private static Type? GetTypeForThing(GodotObject thing)
+        {
+            if (thing is not Script script) return thing.GetType();
+
+            string path = script.ResourcePath;
+            if (ScriptTypeCache.TryGetValue(path, out Type? cachedType)) return cachedType;
+
+            Type? type = AppDomain.CurrentDomain.GetAssemblies()
+                .Where(assembly => assembly.IsDefined(typeof(AssemblyHasScriptsAttribute), false))
+                .SelectMany(assembly => assembly.GetTypes())
+                .FirstOrDefault(t => t.GetCustomAttribute<ScriptPathAttribute>()?.Path == path);
+
+            // Godot requires that a script's class name matches its file name so fall back to that if the attribute lookup fails.
+            type ??= AssemblyTypes.FirstOrDefault(t => t.Name == path.GetFile().GetBaseName());
+
+            ScriptTypeCache[path] = type;
+            return type;
+        }
+
+
+        private static bool IsStaticMember(MemberInfo memberInfo)
+        {
+            return memberInfo switch
+            {
+                FieldInfo fieldInfo => fieldInfo.IsStatic,
+                PropertyInfo propInfo => (propInfo.GetMethod ?? propInfo.SetMethod)?.IsStatic ?? false,
+                MethodInfo methodInfo => methodInfo.IsStatic,
+                _ => true
+            };
+        }
+
+
         public bool ThingHasConstant(GodotObject thing, string property)
         {
-            var memberInfos = thing.GetType().GetMember(property, BindingFlags.Instance | BindingFlags.Static | BindingFlags.Public);
+            Type? type = GetTypeForThing(thing);
+            if (type == null) return false;
+
+            var memberInfos = type.GetMember(property, BindingFlags.Instance | BindingFlags.Static | BindingFlags.Public);
             return memberInfos.Length > 0;
         }
 
 
         public Variant ResolveThingConstant(GodotObject thing, string property)
         {
-            var memberInfos = thing.GetType().GetMember(property, BindingFlags.Instance | BindingFlags.Static | BindingFlags.Public);
+            Type? type = GetTypeForThing(thing);
+            if (type == null) throw new Exception($"{thing} is not a C# object or class.");
+
+            // A class referenced by name has no instance to read from so only its static members are available.
+            GodotObject? target = thing is Script ? null : thing;
+
+            var memberInfos = type.GetMember(property, BindingFlags.Instance | BindingFlags.Static | BindingFlags.Public);
             foreach (var memberInfo in memberInfos)
             {
-                if (memberInfo != null)
+                if (memberInfo == null) continue;
+
+                bool isStatic = IsStaticMember(memberInfo);
+                if (target == null && !isStatic)
                 {
-                    try
+                    throw new Exception($"{property} is not static so it can't be accessed by class name on {type.Name}.");
+                }
+
+                try
+                {
+                    switch (memberInfo)
                     {
-                        switch (memberInfo)
-                        {
-                            case FieldInfo fieldInfo:
-                                return ConvertValueToVariant(fieldInfo.GetValue(thing));
+                        case FieldInfo fieldInfo:
+                            return ConvertValueToVariant(fieldInfo.GetValue(isStatic ? null : target));
 
-                            case PropertyInfo propInfo:
-                                return ConvertValueToVariant(propInfo.GetValue(thing));
+                        case PropertyInfo propInfo:
+                            return ConvertValueToVariant(propInfo.GetValue(isStatic ? null : target));
 
-                            case Type nestedType when nestedType.IsEnum:
-                                return GetEnumAsDictionary(nestedType);
+                        case Type nestedType when nestedType.IsEnum:
+                            return GetEnumAsDictionary(nestedType);
 
-                            default:
-                                break;
-                        }
+                        default:
+                            break;
                     }
-                    catch (Exception e)
-                    {
-                        throw new Exception($"{property} is not supported by Variant.", e);
-                    }
+                }
+                catch (Exception e)
+                {
+                    throw new Exception($"{property} is not supported by Variant.", e);
                 }
             }
 
@@ -607,9 +657,56 @@ namespace DialogueManagerRuntime
         }
 
 
+        public bool SetThingConstant(GodotObject thing, string property, Variant value)
+        {
+            Type? type = GetTypeForThing(thing);
+
+            if (type == null) return false;
+
+            // A class referenced by name has no instance to write to so only its static members are available.
+            GodotObject? target = thing is Script ? null : thing;
+
+            var memberInfos = type.GetMember(property, BindingFlags.Instance | BindingFlags.Static | BindingFlags.Public);
+            foreach (var memberInfo in memberInfos)
+            {
+                if (memberInfo == null) continue;
+
+                bool isStatic = IsStaticMember(memberInfo);
+                if (target == null && !isStatic)
+                {
+                    throw new Exception($"{property} is not static so it can't be assigned by class name on {type.Name}.");
+                }
+
+                switch (memberInfo)
+                {
+                    case FieldInfo fieldInfo:
+                        if (fieldInfo.IsLiteral || fieldInfo.IsInitOnly)
+                        {
+                            throw new Exception($"{property} is read-only on {type.Name}.");
+                        }
+                        fieldInfo.SetValue(isStatic ? null : target, ConvertVariantToValue(value, fieldInfo.FieldType));
+                        return true;
+
+                    case PropertyInfo propInfo:
+                        if (!propInfo.CanWrite)
+                        {
+                            throw new Exception($"{property} is read-only on {type.Name}.");
+                        }
+                        propInfo.SetValue(isStatic ? null : target, ConvertVariantToValue(value, propInfo.PropertyType));
+                        return true;
+
+                    default:
+                        break;
+                }
+            }
+
+            return false;
+        }
+
+
         Dictionary GetEnumAsDictionary(Type enumType)
         {
-            Dictionary dictionary = new Dictionary();
+            Dictionary dictionary = [];
             foreach (var value in enumType.GetEnumValuesAsUnderlyingType())
             {
                 var key = enumType.GetEnumName(value);
@@ -619,6 +716,35 @@ namespace DialogueManagerRuntime
                 }
             }
             return dictionary;
+        }
+
+
+        // The reverse of ConvertValueToVariant (unbox a Variant into something that can be assigned to a member of the given type).
+        private static object? ConvertVariantToValue(Variant value, Type targetType)
+        {
+            object? raw = value.Obj;
+
+            if (raw == null) return null;
+
+            Type type = Nullable.GetUnderlyingType(targetType) ?? targetType;
+
+            if (type.IsInstanceOfType(raw)) return raw;
+            if (type.IsEnum) return Enum.ToObject(type, Convert.ChangeType(raw, Enum.GetUnderlyingType(type)));
+            if (type.IsPrimitive || type == typeof(string) || type == typeof(decimal)) return Convert.ChangeType(raw, type);
+
+            // Anything else (typed collections, StringName, etc) goes through the generic marshaller.
+            try
+            {
+                MethodInfo asMethod = typeof(Variant)
+                    .GetMethods(BindingFlags.Public | BindingFlags.Instance)
+                    .First(m => m.Name == nameof(Variant.As) && m.IsGenericMethodDefinition)
+                    .MakeGenericMethod(type);
+                return asMethod.Invoke(value, null);
+            }
+            catch (Exception)
+            {
+                return raw;
+            }
         }
 
 
@@ -665,7 +791,7 @@ namespace DialogueManagerRuntime
                     .GetMethods(BindingFlags.Public | BindingFlags.Static)
                     .First(m => m.Name == nameof(Variant.From) && m.IsGenericMethodDefinition)
                     .MakeGenericMethod(rawType);
-                return (Variant)from.Invoke(null, new[] { value })!;
+                return (Variant)from.Invoke(null, [value])!;
             }
             catch (Exception)
             {
@@ -687,10 +813,12 @@ namespace DialogueManagerRuntime
             {
                 if (method.IsSpecialName) continue;
 
-                var methodInfo = new Dictionary();
-                methodInfo["name"] = method.Name;
-                methodInfo["flags"] = 0;
-                methodInfo["dotnet"] = true;
+                var methodInfo = new Dictionary
+                {
+                    ["name"] = method.Name,
+                    ["flags"] = 0,
+                    ["dotnet"] = true
+                };
 
                 var argsList = new Array<Dictionary>();
                 ParameterInfo[] parameters = method.GetParameters();
@@ -722,7 +850,7 @@ namespace DialogueManagerRuntime
         }
 
 
-        private Variant.Type ConvertToVariantType(Type type)
+        private static Variant.Type ConvertToVariantType(Type type)
         {
             if (type == typeof(void)) return Variant.Type.Nil;
             if (type == typeof(bool)) return Variant.Type.Bool;
@@ -769,7 +897,7 @@ namespace DialogueManagerRuntime
             return Variant.Type.Nil;
         }
 
-        private bool IsCompatible(Type expectedType, Type providedType)
+        private static bool IsCompatible(Type expectedType, Type providedType)
         {
             if (expectedType.IsAssignableFrom(providedType)) return true;
 
@@ -781,7 +909,7 @@ namespace DialogueManagerRuntime
 
 
 
-        public bool ThingHasMethod(GodotObject thing, string method, Array<Variant> args)
+        public static bool ThingHasMethod(GodotObject thing, string method, Array<Variant> args)
         {
             return GetMethodInfoFor(thing, method, args) != null;
         }
@@ -849,7 +977,7 @@ namespace DialogueManagerRuntime
 #nullable enable
 
 
-        private MethodInfo? GetMethodInfoFor(GodotObject thing, string method, Array<Variant> args)
+        private static MethodInfo? GetMethodInfoFor(GodotObject thing, string method, Array<Variant> args)
         {
             return GetMethodsForType(thing.GetType()).Where(m => m.Name == method).FirstOrDefault(m =>
             {
@@ -862,7 +990,7 @@ namespace DialogueManagerRuntime
                     if (!parameters[i].IsOptional) return false;
                 }
 
-                Type[] argTypes = args.Select(arg =>
+                Type[] argTypes = [.. args.Select(arg =>
                 {
                     // If the item is boxed inside a Godot Variant, extract its actual type.
                     if (arg is Variant godotVariant)
@@ -880,7 +1008,7 @@ namespace DialogueManagerRuntime
                     }
 
                     return arg.GetType();
-                }).ToArray();
+                })];
 
                 // Check each given parameter type against what the method wants.
                 for (int i = 0; i < argTypes.Length; i++)
@@ -948,7 +1076,7 @@ namespace DialogueManagerRuntime
         /// <summary>
         /// A list of responses attached to this line of dialogue.
         /// </summary>
-        public Array<DialogueResponse> Responses { get; } = new Array<DialogueResponse>();
+        public Array<DialogueResponse> Responses { get; } = [];
 
         /// <summary>
         /// How long to show this line before advancing to the next. Either a float of seconds (as a string), <c>"auto"</c>, or empty string.
@@ -958,27 +1086,27 @@ namespace DialogueManagerRuntime
         /// <summary>
         /// A map for speed changes when typing out the dialogue text.
         /// </summary>
-        public Dictionary Speeds { get; private set; } = new Dictionary();
+        public Dictionary Speeds { get; private set; } = [];
 
         /// <summary>
         /// A map of any mutations to run while typing out the dialogue text.
         /// </summary>
-        public Array<Godot.Collections.Array> InlineMutations { get; private set; } = new Array<Godot.Collections.Array>();
+        public Array<Godot.Collections.Array> InlineMutations { get; private set; } = [];
 
         /// <summary>
         /// A list of lines that are spoken simultaneously with this one.
         /// </summary>
-        public Array<DialogueLine> ConcurrentLines { get; } = new Array<DialogueLine>();
+        public Array<DialogueLine> ConcurrentLines { get; } = [];
 
         /// <summary>
         /// A list of any extra game states to check when resolving variables and mutations.
         /// </summary>
-        public Array<Variant> ExtraGameStates { get; } = new Array<Variant>();
+        public Array<Variant> ExtraGameStates { get; } = [];
 
         /// <summary>
         /// Any #tags that were included in the line
         /// </summary>
-        public Array<string> Tags { get; private set; } = new Array<string>();
+        public Array<string> Tags { get; private set; } = [];
 
 
         public DialogueLine(RefCounted data)
@@ -1045,7 +1173,7 @@ namespace DialogueManagerRuntime
             {
                 if (tag.StartsWith(wrapped))
                 {
-                    return tag.Substring(wrapped.Length);
+                    return tag[wrapped.Length..];
                 }
             }
             return "";
@@ -1054,30 +1182,27 @@ namespace DialogueManagerRuntime
 
         public override string ToString()
         {
-            switch (Type)
+            return Type switch
             {
-                case "dialogue":
-                    return $"<DialogueLine character=\"{Character}\" text=\"{Text}\">";
-                case "mutation":
-                    return "<DialogueLine mutation>";
-                default:
-                    return "";
-            }
+                "dialogue" => $"<DialogueLine character=\"{Character}\" text=\"{Text}\">",
+                "mutation" => "<DialogueLine mutation>",
+                _ => "",
+            };
         }
     }
 
 
-    public partial class DialogueResponse : RefCounted
+    public partial class DialogueResponse(RefCounted data) : RefCounted
     {
         /// <summary>
         /// The ID of this response
         /// </summary>
-        public string NextId { get; set; } = "";
+        public string NextId { get; set; } = (string)data.Get("next_id");
 
         /// <summary>
         /// <c>true</c> if the condition of this line was met.
         /// </summary>
-        public bool IsAllowed { get; set; } = true;
+        public bool IsAllowed { get; set; } = (bool)data.Get("is_allowed");
 
         /// <summary>
         /// The original condition text.
@@ -1087,27 +1212,17 @@ namespace DialogueManagerRuntime
         /// <summary>
         /// The prompt for this response.
         /// </summary>
-        public string Text { get; set; } = "";
+        public string Text { get; set; } = (string)data.Get("text");
 
         /// <summary>
         /// The key to use for translating the text.
         /// </summary>
-        public string StaticId { get; set; } = "";
+        public string StaticId { get; set; } = (string)data.Get("static_id");
 
         /// <summary>
         /// Any #tags
         /// </summary>
-        public Array<string> Tags { get; private set; } = new Array<string>();
-
-
-        public DialogueResponse(RefCounted data)
-        {
-            NextId = (string)data.Get("next_id");
-            IsAllowed = (bool)data.Get("is_allowed");
-            Text = (string)data.Get("text");
-            StaticId = (string)data.Get("static_id");
-            Tags = (Array<string>)data.Get("tags");
-        }
+        public Array<string> Tags { get; private set; } = (Array<string>)data.Get("tags");
 
 
         /// <summary>
@@ -1148,7 +1263,7 @@ namespace DialogueManagerRuntime
             {
                 if (tag.StartsWith(wrapped))
                 {
-                    return tag.Substring(wrapped.Length);
+                    return tag[wrapped.Length..];
                 }
             }
             return "";

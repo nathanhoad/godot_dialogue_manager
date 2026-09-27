@@ -661,6 +661,45 @@ Nathan: Value is {{OverloadedMethod(\"test\")}}
 	assert(line.text == "Value is test!", "Should use string method.")
 
 
+func test_csharp_static_members_by_class_name() -> void:
+	var resource: DialogueResource = create_resource("
+~ start
+Nathan: Field is {{CSharpStaticState.StaticField}}, property is {{CSharpStaticState.StaticProperty}}, constant is {{CSharpStaticState.STATIC_CONSTANT}}, method is {{CSharpStaticState.StaticMethod()}}.
+$> CSharpStaticState.StaticField = 100
+$> CSharpStaticState.StaticProperty = \"changed\"
+Nathan: Field is now {{CSharpStaticState.StaticField}} and property is now {{CSharpStaticState.StaticProperty}}.
+$> CSharpStaticState.StaticField += 1
+Nathan: Field is now {{CSharpStaticState.StaticField}}.
+=> END")
+
+	var line: DialogueLine = await resource.get_next_dialogue_line("start")
+	assert(line.text == "Field is 42, property is static, constant is 3, method is 7.", "Should read static members by class name.")
+
+	line = await resource.get_next_dialogue_line(line.next_id)
+	assert(line.text == "Field is now 100 and property is now changed.", "Should assign static members by class name.")
+
+	line = await resource.get_next_dialogue_line(line.next_id)
+	assert(line.text == "Field is now 101.", "Should apply operators to static members by class name.")
+
+
+func test_csharp_static_members_via_instance() -> void:
+	var resource: DialogueResource = create_resource("
+~ start
+$> StaticField = 5
+Nathan: Field is {{StaticField}} and instance value is {{InstanceValue}}.
+$> state.StaticField = 6
+Nathan: Field is {{state.StaticField}}.
+=> END")
+
+	var state: Object = load("res://tests/CSharpStaticState.cs").new()
+	var states: Array = [state, { "state": state }]
+	var line: DialogueLine = await resource.get_next_dialogue_line("start", states)
+	assert(line.text == "Field is 5 and instance value is 1.", "Should read and write static members via an instance.")
+
+	line = await resource.get_next_dialogue_line(line.next_id, states)
+	assert(line.text == "Field is 6.", "Should read and write static members via a dotted instance.")
+
+
 func test_ignore_missing_state() -> void:
 	var resource: DialogueResource = create_resource("
 ~ start

@@ -1200,7 +1200,7 @@ func _set_state_value(property: String, value: Variant, extra_game_states: Array
 			if access_err is String and access_err != "":
 				show_error_for_missing_state_value(access_err as String, extra_game_states)
 				return
-			state.set(property, value)
+			_set_thing_property(state, property, value)
 			return
 
 	if property.to_snake_case() != property:
@@ -1680,11 +1680,12 @@ func _resolve(tokens: Array, extra_game_states: Array) -> Variant:
 						show_error_for_missing_state_value(access_err as String, extra_game_states)
 						value = null
 					else:
-						value = _apply_operation(token.value, lhs.value.get(lhs.property), tokens[i + 1].value)
 						if typeof(lhs.value) == TYPE_DICTIONARY:
+							value = _apply_operation(token.value, lhs.value.get(lhs.property), tokens[i + 1].value)
 							lhs.value[lhs.property] = value
 						else:
-							lhs.value.set(lhs.property, value)
+							value = _apply_operation(token.value, _get_thing_property(lhs.value, lhs.property), tokens[i + 1].value)
+							_set_thing_property(lhs.value, lhs.property, value)
 				&"dictionary":
 					value = _apply_operation(token.value, lhs.value.get(lhs.key, null), tokens[i + 1].value)
 					lhs.value[lhs.key] = value
@@ -1968,11 +1969,34 @@ func _resolve_thing_property(thing: Object, property: String) -> Variant:
 		show_error_for_missing_state_value(access_err as String, [])
 		return null
 
-	if thing.get_script() and thing.get_script().resource_path.ends_with(".cs"):
-		# If we get this far then the property might be a C# constant.
+	return _get_thing_property(thing, property)
+
+
+# Get a property value from a thing. C# things (including classes referenced by name) may have constants or static members
+# that Godot doesn't know about so those go via the dotnet bridge.
+func _get_thing_property(thing: Object, property: String) -> Variant:
+	if _is_dotnet_thing(thing) and _get_dotnet_dialogue_manager().ThingHasConstant(thing, property):
 		return _get_dotnet_dialogue_manager().ResolveThingConstant(thing, property)
 
 	return thing.get(property)
+
+
+# Set a property value on a thing. C# things (including classes referenced by name) may have static members
+# that Godot doesn't know about so those go via the dotnet bridge.
+func _set_thing_property(thing: Object, property: String, value: Variant) -> void:
+	if _is_dotnet_thing(thing) and _get_dotnet_dialogue_manager().SetThingConstant(thing, property, value):
+		return
+
+	thing.set(property, value)
+
+
+# Check if a thing is a C# script or an instance of one.
+func _is_dotnet_thing(thing: Variant) -> bool:
+	if thing is Script:
+		return thing.resource_path.ends_with(".cs")
+	elif is_instance_valid(thing) and thing.get_script() != null:
+		return thing.get_script().resource_path.ends_with(".cs")
+	return false
 
 
 func _get_resource_uid(resource: DialogueResource) -> String:
