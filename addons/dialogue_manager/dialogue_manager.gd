@@ -1890,7 +1890,11 @@ func _get_method_info_key(method: String, args: Array) -> String:
 
 			return str(TYPE_DICTIONARY)
 		else:
-			return str(typeof(arg))
+			if typeof(arg) == TYPE_OBJECT:
+				var script: Script = arg.get_script()
+				return script.get_global_name() if is_instance_valid(script) else arg.get_class()
+			else:
+				return str(typeof(arg))
 	))]
 
 
