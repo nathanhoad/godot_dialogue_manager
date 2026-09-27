@@ -18,7 +18,7 @@ namespace DialogueManagerRuntime
     DialogueResponsesMenu responsesMenu;
     Polygon2D progress;
 
-    Array<Variant> temporaryGameStates = new Array<Variant>();
+    Array<Variant> temporaryGameStates = [];
     bool isWaitingForInput = false;
     bool willHideBalloon = false;
 
@@ -47,7 +47,7 @@ namespace DialogueManagerRuntime
       }
     }
 
-    Timer MutationCooldown = new Timer();
+    Timer MutationCooldown = new();
 
 
     public override void _Ready()
@@ -175,7 +175,7 @@ namespace DialogueManagerRuntime
 
     public async void Start(Resource dialogueResource = null, string label = "", Array<Variant> extraGameStates = null)
     {
-      temporaryGameStates = new Array<Variant> { this } + (extraGameStates ?? new Array<Variant>());
+      temporaryGameStates = new Array<Variant> { this } + (extraGameStates ?? []);
       isWaitingForInput = false;
 
       if (IsInstanceValid(dialogueResource))
@@ -236,11 +236,11 @@ namespace DialogueManagerRuntime
       {
         balloon.FocusMode = Control.FocusModeEnum.None;
         responsesMenu.Show();
+        responsesMenu.FocusFirstItem();
       }
       else if (!string.IsNullOrEmpty(dialogueLine.Time))
       {
-        float time = 0f;
-        if (!float.TryParse(dialogueLine.Time, out time))
+        if (!float.TryParse(dialogueLine.Time, out float time))
         {
           time = dialogueLine.Text.Length * 0.02f;
         }

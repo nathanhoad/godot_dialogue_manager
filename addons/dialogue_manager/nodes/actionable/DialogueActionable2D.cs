@@ -93,7 +93,7 @@ namespace DialogueManagerRuntime
         {
             if (IsInstanceValid(DialogueResource) && !string.IsNullOrEmpty(DialogueCue))
             {
-                DialogueBalloon = StartDialogue(DialogueResource, DialogueCue, new Array<Variant> { new Dictionary { { "actionable", this } }, Owner });
+                DialogueBalloon = StartDialogue(DialogueResource, DialogueCue, [new Dictionary { { "actionable", this } }, Owner]);
             }
             EmitSignal(SignalName.Actioned);
         }

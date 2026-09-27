@@ -76,7 +76,7 @@ namespace DialogueManagerRuntime
                 warnings.Add("Target cannot be null.");
             }
 
-            return warnings.ToArray();
+            return [.. warnings];
         }
     }
 }

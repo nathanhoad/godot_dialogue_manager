@@ -56,14 +56,14 @@ namespace DialogueManagerRuntime
         /// Abbreviations are limited to 5 characters in length.
         /// Does not support multi-period abbreviations (ex. "p.m.")
         /// </summary>
-        [Export] public string[] SkipPauseAtAbbreviations = { "Mr", "Mrs", "Ms", "Dr", "etc", "eg", "ex" };
+        [Export] public string[] SkipPauseAtAbbreviations = ["Mr", "Mrs", "Ms", "Dr", "etc", "eg", "ex"];
 
         /// <summary>
         /// The amount of time to pause when exposing a character present in <c>PauseAtCharacters</c>.
         /// </summary>
         [Export] public float SecondsPerPauseStep = 0.3f;
 
-        private readonly System.Collections.Generic.List<int> alreadyMutatedIndices = new();
+        private readonly System.Collections.Generic.List<int> alreadyMutatedIndices = [];
 
 
         private DialogueLine dialogueLine = null;
