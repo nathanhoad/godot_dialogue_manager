@@ -195,6 +195,7 @@ theme_override_constants/separation = 2
 alignment = 1
 script = ExtResource("3_72ixx")
 response_template = NodePath("ResponseExample")
+auto_focus_first_item = false
 
 [node name="ResponseExample" type="Button" parent="Balloon/CenterContainer/ResponsesMenu" unique_id=1446810977]
 layout_mode = 2

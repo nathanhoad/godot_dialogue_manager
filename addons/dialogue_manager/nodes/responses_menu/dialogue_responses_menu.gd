@@ -39,6 +39,9 @@ var _previously_focused_item: Control = null
 
 
 func _ready() -> void:
+	if is_instance_valid(response_template):
+		response_template.get_parent().remove_child(response_template)
+
 	visibility_changed.connect(func() -> void:
 		if auto_focus_first_item and visible and get_menu_items().size() > 0:
 			var first_item: Control = get_menu_items()[0]
@@ -46,10 +49,12 @@ func _ready() -> void:
 				first_item.grab_focus()
 	)
 
-	if is_instance_valid(response_template):
-		response_template.hide()
-
 	get_viewport().gui_focus_changed.connect(_on_focus_changed)
+
+
+func _exit_tree() -> void:
+	if is_instance_valid(response_template):
+		response_template.queue_free()
 
 
 ## Get the selectable items in the menu.
@@ -98,7 +103,15 @@ func configure_focus() -> void:
 	_previously_focused_item = items[0]
 
 	if auto_focus_first_item:
-		items[0].grab_focus()
+		focus_first_item()
+
+
+func focus_first_item() -> void:
+	var items: Array = get_menu_items()
+
+	if items.size() == 0: return
+
+	items[0].grab_focus()
 
 
 #region Internal

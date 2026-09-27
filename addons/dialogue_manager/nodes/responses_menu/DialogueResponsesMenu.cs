@@ -65,6 +65,12 @@ namespace DialogueManagerRuntime
 
         public override void _Ready()
         {
+            if (IsInstanceValid(ResponseTemplate))
+            {
+                ResponseTemplate.GetParent().RemoveChild(ResponseTemplate);
+            }
+
+
             VisibilityChanged += () =>
             {
                 if (AutoFocusFirstItem && Visible && GetMenuItems().Count > 0)
@@ -77,17 +83,16 @@ namespace DialogueManagerRuntime
                 }
             };
 
-            if (IsInstanceValid(ResponseTemplate))
-            {
-                ResponseTemplate.Hide();
-            }
-
             GetViewport().GuiFocusChanged += OnFocusChanged;
         }
 
 
         public override void _ExitTree()
         {
+            if (IsInstanceValid(ResponseTemplate))
+            {
+                ResponseTemplate.QueueFree();
+            }
             GetViewport().GuiFocusChanged -= OnFocusChanged;
         }
 
@@ -162,8 +167,18 @@ namespace DialogueManagerRuntime
 
             if (AutoFocusFirstItem)
             {
-                items[0].GrabFocus();
+                FocusFirstItem();
             }
+        }
+
+
+        public void FocusFirstItem()
+        {
+            var items = GetMenuItems();
+
+            if (items.Count == 0) return;
+
+            items[0].GrabFocus();
         }
 
 
