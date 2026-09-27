@@ -561,6 +561,8 @@ func get_resolved_character(data: Dictionary, extra_game_states: Array = []) -> 
 		var value: Variant = await _resolve(replacement.expression.duplicate(true), extra_game_states)
 		var index: int = character.find(replacement.value_in_text)
 		if index > -1:
+			if value is Object and "_to_dialogue_string" in value:
+				value = value._to_dialogue_string()
 			character = character.substr(0, index) + str(value) + character.substr(index + replacement.value_in_text.length())
 
 	# Resolve random groups
