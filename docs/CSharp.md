@@ -34,6 +34,28 @@ The returned line is a `DialogueLine` and will have mostly the same properties t
 
 When looking for state, the Dialogue Manager will search in the current scene (i.e. the scene returned from `GetTree().CurrentScene`), any autoloads, as well as anything passed in to the `extraGameStates` array in `GetNextDialogueLine(resource, key, extraGameStates)`. In order for a property to be visible to the Dialogue Manager, it needs to have the `[Export]` decorator applied.
 
+Static members can also be referenced by class name as long as the class is registered with Godot via the `[GlobalClass]` attribute (so it needs to extend a Godot type like `Node`, `Resource`, or `RefCounted` rather than being a `static class`). Static fields, properties, constants, and methods are all available this way:
+
+```csharp
+[GlobalClass]
+public partial class GameSettings : RefCounted
+{
+  public const int MAX_LIVES = 3;
+  public static int Difficulty = 1;
+  public static bool IsHardMode() => Difficulty > 1;
+}
+```
+
+...and then in dialogue:
+
+```
+if GameSettings.IsHardMode()
+  Nathan: You only get {{GameSettings.MAX_LIVES}} lives.
+$> GameSettings.Difficulty = 2
+```
+
+This relies on `DialogueManager.IncludeClasses` being enabled (which it is by default).
+
 ## Mutations
 
 When writing mutations in C#, you'll generally want an `async` method that returns a `Task`. Here is an example method for asking for a player's name and storing it in a property called `PlayerName`:
