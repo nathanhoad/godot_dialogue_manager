@@ -350,6 +350,7 @@ func get_line(resource: DialogueResource, key: String, extra_game_states: Array)
 			data.id = key
 
 	# Set up a line object.
+	data = data.duplicate() # avoid circular reference
 	data.resource = resource
 	var line: DialogueLine = await create_dialogue_line(data, extra_game_states)
 
