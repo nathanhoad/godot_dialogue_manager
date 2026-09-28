@@ -565,7 +565,7 @@ namespace DialogueManagerRuntime
         }
 
 
-        private static readonly System.Collections.Generic.Dictionary<string, Type?> ScriptTypeCache = new();
+        private static readonly System.Collections.Generic.Dictionary<string, Type?> ScriptTypeCache = [];
 
         // Instances can just be asked for their type but when dialogue refers to a class by name we are handed the script itself so we need to find the 
         // type that script defines in order to reflect on its static members.
@@ -601,7 +601,7 @@ namespace DialogueManagerRuntime
         }
 
 
-        public bool ThingHasConstant(GodotObject thing, string property)
+        public static bool ThingHasConstant(GodotObject thing, string property)
         {
             Type? type = GetTypeForThing(thing);
             if (type == null) return false;
@@ -613,8 +613,7 @@ namespace DialogueManagerRuntime
 
         public Variant ResolveThingConstant(GodotObject thing, string property)
         {
-            Type? type = GetTypeForThing(thing);
-            if (type == null) throw new Exception($"{thing} is not a C# object or class.");
+            Type? type = GetTypeForThing(thing) ?? throw new Exception($"{thing} is not a C# object or class.");
 
             // A class referenced by name has no instance to read from so only its static members are available.
             GodotObject? target = thing is Script ? null : thing;
@@ -657,7 +656,7 @@ namespace DialogueManagerRuntime
         }
 
 
-        public bool SetThingConstant(GodotObject thing, string property, Variant value)
+        public static bool SetThingConstant(GodotObject thing, string property, Variant value)
         {
             Type? type = GetTypeForThing(thing);
 
@@ -800,53 +799,39 @@ namespace DialogueManagerRuntime
         }
 
 
-        public Array<Dictionary> GetMethodList(GodotObject thing)
+        // Find the overload of a method that best fits the given args (taking inheritance into account) and describe it in the same shape 
+        // as Object.get_method_list(). If no overload is compatible then just use the first method with that name.
+        public static Dictionary GetMethodInfo(GodotObject thing, string method, Array<Variant> args)
         {
-            var methodList = new Array<Dictionary>();
+            if (thing == null) return [];
 
-            if (thing == null) return methodList;
+            MethodInfo? methodInfo = GetMethodInfoFor(thing, method, args) ?? GetMethodsForType(thing.GetType()).FirstOrDefault(m => m.Name == method && !m.IsSpecialName);
 
-            Type type = thing.GetType();
-            MethodInfo[] methodInfos = GetMethodsForType(type);
+            if (methodInfo == null) return [];
 
-            foreach (MethodInfo method in methodInfos)
+            var dictionary = new Dictionary
             {
-                if (method.IsSpecialName) continue;
+                ["name"] = methodInfo.Name,
+                ["flags"] = 0,
+                ["dotnet"] = true
+            };
 
-                var methodInfo = new Dictionary
-                {
-                    ["name"] = method.Name,
-                    ["flags"] = 0,
-                    ["dotnet"] = true
-                };
+            var argsList = new Array<Dictionary>();
+            foreach (ParameterInfo parameter in methodInfo.GetParameters())
+            {
+                var paramInfo = new Dictionary();
+                Variant.Type godotType = ConvertToVariantType(parameter.ParameterType);
 
-                var argsList = new Array<Dictionary>();
-                ParameterInfo[] parameters = method.GetParameters();
+                paramInfo["name"] = parameter.Name ?? "";
+                paramInfo["type"] = (int)godotType;
+                paramInfo["class_name"] = godotType == Variant.Type.Object ? parameter.ParameterType.Name : string.Empty;
+                paramInfo["hint_string"] = string.Empty;
 
-                foreach (ParameterInfo parameter in parameters)
-                {
-                    var paramInfo = new Dictionary() { };
-                    Variant.Type godotType = ConvertToVariantType(parameter.ParameterType);
-
-                    paramInfo["name"] = parameter.Name ?? "";
-                    paramInfo["type"] = (int)godotType;
-                    if (godotType == Variant.Type.Object)
-                    {
-                        paramInfo["class_name"] = parameter.ParameterType.Name;
-                    }
-                    else
-                    {
-                        paramInfo["class_name"] = string.Empty;
-                    }
-
-                    argsList.Add(paramInfo);
-                }
-
-                methodInfo["args"] = argsList;
-                methodList.Add(methodInfo);
+                argsList.Add(paramInfo);
             }
 
-            return methodList;
+            dictionary["args"] = argsList;
+            return dictionary;
         }
 
 

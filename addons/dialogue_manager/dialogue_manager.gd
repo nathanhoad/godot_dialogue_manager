@@ -1855,46 +1855,43 @@ func _thing_has_property(thing: Object, property: String, ignore_node_properties
 
 
 func _get_method_info_for(thing: Variant, method: String, args: Array) -> Dictionary:
-	# Use the thing instance id as a key for the caching dictionary.
+	# Resolved methods are cached by the thing's instance id and then by the method name and the types of the args.
 	var thing_instance_id: int = thing.get_instance_id()
-
 	if not _method_info_cache.has(thing_instance_id):
-		var thing_methods: Array[Dictionary] = []
-		if thing.get_script() and thing.get_script().resource_path.ends_with(".cs"):
-			thing_methods = _get_dotnet_dialogue_manager().GetMethodList(thing)
-		else:
-			thing_methods = thing.get_method_list()
+		_method_info_cache[thing_instance_id] = {}
+	var methods: Dictionary = _method_info_cache.get(thing_instance_id)
 
-		var method_overloads: Dictionary = {}
-		for m: Dictionary in thing_methods:
-			method_overloads[_get_method_info_key(m.name, m.args)] = m
-			if not method_overloads.has(m.name):
-				method_overloads[m.name] = m
-		_method_info_cache[thing_instance_id] = method_overloads
-
-	var methods: Dictionary = _method_info_cache.get(thing_instance_id, {})
 	var method_key: String = _get_method_info_key(method, args)
 	if methods.has(method_key):
 		return methods.get(method_key)
-	elif methods.has(method):
-		return methods.get(method)
+
+	var method_info: Dictionary = {}
+	if thing.get_script() and thing.get_script().resource_path.ends_with(".cs"):
+		# C# methods can be overloaded so let dotnet pick the overload that fits the args (including inherited types).
+		method_info = _get_dotnet_dialogue_manager().GetMethodInfo(thing, method, args)
 	else:
-		return _get_method_info_for(thing.new(), method, args)
+		for m: Dictionary in thing.get_method_list():
+			if m.name == method:
+				method_info = m
+				break
+
+	if method_info.is_empty() and thing is Script:
+		method_info = _get_method_info_for(thing.new(), method, args)
+
+	methods[method_key] = method_info
+	return method_info
 
 
+# Build a cache key from a method name and the types of the args that are being passed to it.
 func _get_method_info_key(method: String, args: Array) -> String:
 	return "%s:%s" % [method, ",".join(args.map(func (arg: Variant) -> String:
-		if typeof(arg) == TYPE_DICTIONARY:
-			if arg.has("class_name") and not arg.class_name.is_empty(): return arg.class_name
-			if arg.has("type") and typeof(arg.type) == TYPE_INT: return str(arg.type)
-
-			return str(TYPE_DICTIONARY)
-		else:
-			if typeof(arg) == TYPE_OBJECT:
-				var script: Script = arg.get_script()
-				return script.get_global_name() if is_instance_valid(script) else arg.get_class()
-			else:
-				return str(typeof(arg))
+		if typeof(arg) == TYPE_OBJECT and is_instance_valid(arg):
+			var script: Script = arg.get_script()
+			if is_instance_valid(script):
+				var global_name: String = script.get_global_name()
+				return global_name if not global_name.is_empty() else script.resource_path
+			return arg.get_class()
+		return str(typeof(arg))
 	))]
 
 

@@ -661,6 +661,26 @@ Nathan: Value is {{OverloadedMethod(\"test\")}}
 	assert(line.text == "Value is test!", "Should use string method.")
 
 
+func test_csharp_overload_with_inherited_type() -> void:
+	var resource: DialogueResource = create_resource("
+using CSharpState
+
+~ start
+Nathan: Value is {{OverloadedMethod(some_node)}}.
+Nathan: Value is {{OverloadedMethod(some_node, 3)}}.
+=> END")
+
+	var some_node: Node2D = Node2D.new()
+	some_node.name = "SomeNode"
+	var states: Array = [{ "some_node": some_node }]
+	var line: DialogueLine = await resource.get_next_dialogue_line("start", states)
+	assert(line.text == "Value is Node:SomeNode.", "Should use the Node method for a Node2D.")
+
+	line = await resource.get_next_dialogue_line(line.next_id, states)
+	assert(line.text == "Value is Node:SomeNodex3.", "Should use the Node and int method for a Node2D and an int.")
+	some_node.free()
+
+
 func test_csharp_static_members_by_class_name() -> void:
 	var resource: DialogueResource = create_resource("
 ~ start
