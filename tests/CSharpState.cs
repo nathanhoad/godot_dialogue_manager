@@ -39,4 +39,16 @@ public partial class CSharpState : Node
   {
     return someString + "!";
   }
+
+
+  public string OverloadedMethod(Node someNode)
+  {
+    return "Node:" + someNode.Name;
+  }
+
+
+  public string OverloadedMethod(Node someNode, int count)
+  {
+    return "Node:" + someNode.Name + "x" + count;
+  }
 }
