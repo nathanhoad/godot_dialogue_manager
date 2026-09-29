@@ -18,7 +18,7 @@ var inspector_plugin: DMInspectorPlugin
 var translation_parser_plugin: DMTranslationParserPlugin
 var debugger_plugin: DMDebuggerPlugin
 var main_view: Control
-var find_in_dialogue_view: Control
+var find_in_dialogue_view: EditorDock
 var preview_generator: DMPreviewGenerator
 
 
@@ -91,7 +91,9 @@ func _exit_tree() -> void:
 	if is_instance_valid(main_view):
 		main_view.queue_free()
 
-	_hide_find_in_dialogue()
+	if is_instance_valid(find_in_dialogue_view):
+		remove_dock(find_in_dialogue_view)
+		find_in_dialogue_view.queue_free()
 
 	EditorInterface.get_file_system_dock().files_moved.disconnect(_on_files_moved)
 	EditorInterface.get_file_system_dock().file_removed.disconnect(_on_file_removed)
@@ -210,16 +212,17 @@ func _show_find_in_dialogue() -> void:
 		find_in_dialogue_view = FindInDialogueView.instantiate()
 		find_in_dialogue_view.main_view = main_view
 		find_in_dialogue_view.result_selected.connect(main_view._on_find_in_files_result_selected)
-		add_control_to_bottom_panel(find_in_dialogue_view, DMConstants.translate(&"search.find_in_dialogue"))
-	make_bottom_panel_item_visible(find_in_dialogue_view)
+		find_in_dialogue_view.title = DMConstants.translate(&"search.find_in_dialogue")
+		find_in_dialogue_view.default_slot = EditorDock.DOCK_SLOT_BOTTOM
+		add_dock(find_in_dialogue_view)
 	find_in_dialogue_view.prepare()
+	find_in_dialogue_view.open()
+	find_in_dialogue_view.make_visible()
 
 
 func _hide_find_in_dialogue() -> void:
 	if is_instance_valid(find_in_dialogue_view):
-		remove_control_from_bottom_panel(find_in_dialogue_view)
-		find_in_dialogue_view.queue_free()
-
+		find_in_dialogue_view.close()
 
 ## Get the shortcuts used by the plugin
 static func get_editor_shortcuts() -> Dictionary:

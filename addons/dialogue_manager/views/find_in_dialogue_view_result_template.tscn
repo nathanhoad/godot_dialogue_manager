@@ -1,0 +1,25 @@
+[gd_scene format=3 uid="uid://g0cc1n0ipok"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_hugey"]
+bg_color = Color(0.266667, 0.278431, 0.352941, 0.243137)
+corner_detail = 1
+
+[node name="FindInDialogueViewResultTemplate" type="HBoxContainer" unique_id=1226016867]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="CheckBox" type="CheckBox" parent="." unique_id=241813514]
+layout_mode = 2
+
+[node name="Label" type="RichTextLabel" parent="." unique_id=357337699]
+layout_mode = 2
+size_flags_horizontal = 3
+focus_mode = 2
+theme_override_styles/focus = SubResource("StyleBoxFlat_hugey")
+bbcode_enabled = true
+text = "Result"
+fit_content = true
+scroll_active = false
