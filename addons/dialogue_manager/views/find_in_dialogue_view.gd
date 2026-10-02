@@ -1,5 +1,5 @@
 @tool
-extends PanelContainer
+extends EditorDock
 
 signal result_selected(path: String, cursor: Vector2, length: int)
 
@@ -15,7 +15,7 @@ var main_view: Control
 @onready var replace_selected_button: Button = %ReplaceSelectedButton
 @onready var replace_all_button: Button = %ReplaceAllButton
 @onready var results_container: VBoxContainer = %ResultsContainer
-@onready var result_template: HBoxContainer = %ResultTemplate
+@onready var result_template: HBoxContainer = preload("find_in_dialogue_view_result_template.tscn").instantiate()
 
 var current_results: Dictionary = {}:
 	set(value):
@@ -32,15 +32,6 @@ var current_results: Dictionary = {}:
 
 var selections: PackedStringArray = []
 
-
-func _ready() -> void:
-	remove_child(result_template)
-
-
-func _exit_tree() -> void:
-	result_template.queue_free()
-
-
 func prepare() -> void:
 	if not is_node_ready():
 		await ready
@@ -54,13 +45,13 @@ func prepare() -> void:
 	replace_toggle.set_pressed_no_signal(false)
 	replace_container.hide()
 
-	$VBoxContainer/HBoxContainer/FindContainer/Label.text = DMConstants.translate(&"search.find")
+	$PanelContainer/VBoxContainer/HBoxContainer/FindContainer/Label.text = DMConstants.translate(&"search.find")
 	input.placeholder_text = DMConstants.translate(&"search.placeholder")
 	input.text = ""
 	search_button.text = DMConstants.translate(&"search.find_all")
 	match_case_button.text = DMConstants.translate(&"search.match_case")
 	replace_toggle.text = DMConstants.translate(&"search.toggle_replace")
-	$VBoxContainer/HBoxContainer/ReplaceContainer/ReplaceLabel.text = DMConstants.translate(&"search.replace_with")
+	$PanelContainer/VBoxContainer/HBoxContainer/ReplaceContainer/ReplaceLabel.text = DMConstants.translate(&"search.replace_with")
 	replace_input.placeholder_text = DMConstants.translate(&"search.replace_placeholder")
 	replace_input.text = ""
 	replace_all_button.text = DMConstants.translate(&"search.replace_all")
