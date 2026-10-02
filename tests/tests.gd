@@ -11,6 +11,7 @@ var assertions_count: int = 0
 
 func _ready() -> void:
 	TranslationServer.set_locale("en")
+	DialogueManager.reseed_randomizer(hash(ProjectSettings.get_setting("application/config/name")))
 
 	visible = false
 

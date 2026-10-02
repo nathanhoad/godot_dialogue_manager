@@ -95,7 +95,7 @@ var _rng: RandomNumberGenerator = RandomNumberGenerator.new()
 
 
 func _ready() -> void:
-	reseed_randomizer(hash(ProjectSettings.get_setting("application/config/name")))
+	reseed_randomizer(int(Time.get_unix_time_from_system()))
 
 	# Cache the known Node2D properties
 	_node_properties = ["Script Variables"]
