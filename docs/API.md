@@ -5,20 +5,20 @@
 ### Signals
 
 - `dialogue_started(resource: DialogueResource)` - emitted when a dialogue balloon is created by `DialogueManager` and dialogue begins.
-- `passed_Cue(Cue: String)` - emitted when a Cue marker is passed through.
+- `passed_cue(cue: String)` - emitted when a cue marker is passed through.
 - `got_dialogue(line: DialogueLine)` - emitted when a dialogue line is found.
 - `mutated(mutation: Dictionary)` - emitted when a mutation line is about to be run (not including `set` lines).
 - `dialogue_ended(resource: DialogueResource)` - emitted when the next line of dialogue is empty and provides the calling resource.
 
 ### Methods
 
-#### `func show_dialogue_balloon(resource: DialogueResource, Cue: String = "", extra_game_states: Array = []) -> Node`
+#### `func show_dialogue_balloon(resource: DialogueResource, cue: String = "", extra_game_states: Array = []) -> Node`
 
 Opens the dialogue balloon configured in settings (or the example balloon if none has been set).
 
 Returns the balloon's base node in case you want to `queue_free()` it yourself.
 
-#### `func show_dialogue_balloon_scene(balloon_scene: Node | String, resource: DialogueResource, Cue: String = "", extra_game_states: Array = []) -> Node`
+#### `func show_dialogue_balloon_scene(balloon_scene: Node | String, resource: DialogueResource, cue: String = "", extra_game_states: Array = []) -> Node`
 
 Opens a dialogue balloon given in `balloon_scene`.
 
@@ -29,7 +29,7 @@ Returns the balloon's base node in case you want to `queue_free()` it yourself.
 > [!IMPORTANT]
 > Must be used with `await`.
 
-Given a resource and Cue/key, it will find the next printable line of dialogue (running mutations along the way unless `mutation_behaviour` is overriden).
+Given a resource and cue/key, it will find the next printable line of dialogue (running mutations along the way unless `mutation_behaviour` is overriden).
 
 Returns a `DialogueLine` or `null`.
 
@@ -40,7 +40,7 @@ You can specify `mutation_behaviour` to be one of the values provided in the `Di
 > [!NOTE]
 > The example balloon only supports `Wait`.
 
-#### `func show_example_dialogue_balloon(resource: DialogueResource, Cue: String = "", extra_game_states: Array = []) -> CanvasLayer`
+#### `func show_example_dialogue_balloon(resource: DialogueResource, cue: String = "", extra_game_states: Array = []) -> CanvasLayer`
 
 Opens the example balloon.
 
