@@ -475,8 +475,9 @@ Nathan: {{Vector2.UP}} == {{Vector2(0, -1)}}")
 func test_can_use_deep_values() -> void:
 	var resource: DialogueResource = create_resource("
 ~ start
-$> StateForTests.dictionary = { array = [ \"first\", \"second\" ]}
 Nathan: The value is {{StateForTests.dictionary[\"array\"][1]}}")
+
+	StateForTests.dictionary = { array = ["first", "second"] }
 
 	var line: DialogueLine = await resource.get_next_dialogue_line("start")
 	assert(line.text == "The value is second", "Should match second array value.")
