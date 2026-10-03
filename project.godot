@@ -71,7 +71,7 @@ ui_accept={
 [internationalization]
 
 locale/translation_remaps={}
-locale/translations=PackedStringArray("res://tests/translation-vs-mutations.po")
+locale/translations=PackedStringArray("res://tests/translation_vs_mutations-test.po")
 locale/translations_pot_files=PackedStringArray("res://tests/snippets.dialogue", "res://tests/main.dialogue", "res://tests/test.dialogue")
 locale/language_filter=["de", "en"]
 locale/locale_filter_mode=1
