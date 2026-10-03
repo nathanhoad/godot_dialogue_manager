@@ -1,0 +1,6 @@
+msgid ""
+msgstr ""
+"Language: en\n"
+
+msgid "DIALOGUETEST"
+msgstr "This has static id with Next BBCode thingimingy[next]"
