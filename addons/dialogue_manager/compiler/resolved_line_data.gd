@@ -12,7 +12,7 @@ var time: String = ""
 
 
 func _init(line: String) -> void:
-	text = line
+	text = tr(line)
 	speeds = {}
 	mutations = []
 	time = ""
