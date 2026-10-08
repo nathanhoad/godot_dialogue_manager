@@ -173,7 +173,7 @@ func _build_token_tree(tokens: Array[Dictionary], line_type: String, expected_cl
 					return [_build_token_tree_error(tree, sub_tree[0][0].value, sub_tree[0][0].i), tokens]
 
 				var type: StringName = DMConstants.TOKEN_ARRAY
-				var value: Array[Array] = _tokens_to_list(sub_tree[0])
+				var value: Array = _tokens_to_list(sub_tree[0])
 
 				# See if this is referencing a nested dictionary value
 				if tree.size() > 0:
