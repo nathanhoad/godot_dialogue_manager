@@ -116,21 +116,22 @@ func _get_line_syntax_highlighting(line: int) -> Dictionary:
 			for bbcode: Dictionary in bbcodes:
 				var tag: String = bbcode.code
 				var code: String = bbcode.raw_args
+				var tag_color: Color = theme.comments_color if code.begins_with("ID:") else theme.tags_color
 				if code.begins_with("["):
-					colors[index + bbcode.start] = { color = theme.tags_color }
+					colors[index + bbcode.start] = { color = tag_color }
 					colors[index + bbcode.start + 2] = { color = theme.text_color }
 					var pipe_cursor: int = code.find("|")
 					while pipe_cursor > -1:
-						colors[index + bbcode.start + pipe_cursor + 1] = { color = theme.tags_color }
+						colors[index + bbcode.start + pipe_cursor + 1] = { color = tag_color }
 						colors[index + bbcode.start + pipe_cursor + 2] = { color = theme.text_color }
 						pipe_cursor = code.find("|", pipe_cursor + 1)
-					colors[index + bbcode.end - 1] = { color = theme.tags_color }
+					colors[index + bbcode.end - 1] = { color = tag_color }
 					colors[index + bbcode.end + 1] = { color = theme.text_color }
 				else:
-					colors[index + bbcode.start] = { color = theme.tags_color }
-					colors[index + bbcode.end] = { color = theme.tags_color }
+					colors[index + bbcode.start] = { color = tag_color }
+					colors[index + bbcode.end] = { color = tag_color }
 					if bbcode.bbcode.ends_with(" /]"):
-						colors[index + bbcode.end - 1] = { color = theme.tags_color }
+						colors[index + bbcode.end - 1] = { color = tag_color }
 						colors[index + bbcode.end + 1] = { color = theme.text_color }
 					else:
 						colors[index + bbcode.end + 1] = { color = theme.text_color }
