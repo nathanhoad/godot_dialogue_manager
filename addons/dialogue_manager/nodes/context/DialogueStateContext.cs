@@ -43,11 +43,21 @@ namespace DialogueManagerRuntime
 
         public override void _EnterTree()
         {
-            if (!Engine.IsEditorHint())
+            if (Engine.IsEditorHint()) return;
+
+            GodotObject dialogueManager = GetDialogueManager();
+            if (dialogueManager is not null)
             {
+                // Register straight away in case some dialogue starts on this same frame.
+                dialogueManager.Call("register_state_context", Alias, Target);
+            }
+            else
+            {
+                // The DialogueManager autoload isn't in the tree yet (this node is probably inside
+                // an autoload that comes before it) so register as soon as it is.
                 Callable.From(() =>
                 {
-                    DialogueManager.Instance.Call("register_state_context", Alias, Target);
+                    GetDialogueManager()?.Call("register_state_context", Alias, Target);
                 }).CallDeferred();
             }
         }
@@ -55,10 +65,9 @@ namespace DialogueManagerRuntime
 
         public override void _ExitTree()
         {
-            if (!Engine.IsEditorHint())
-            {
-                DialogueManager.Instance.Call("unregister_state_context", Alias);
-            }
+            if (Engine.IsEditorHint()) return;
+
+            GetDialogueManager()?.Call("unregister_state_context", Alias);
         }
 
 
@@ -77,6 +86,18 @@ namespace DialogueManagerRuntime
             }
 
             return [.. warnings];
+        }
+
+
+        /// <summary>
+        /// Find the DialogueManager autoload. It registers itself as a singleton in its "_ready" so
+        /// it might need to be fetched out of the scene tree if it hasn't gotten there yet.
+        /// </summary>
+        private static GodotObject GetDialogueManager()
+        {
+            if (Engine.HasSingleton("DialogueManager")) return DialogueManager.Instance;
+
+            return (Engine.GetMainLoop() as SceneTree)?.Root.GetNodeOrNull("DialogueManager");
         }
     }
 }
