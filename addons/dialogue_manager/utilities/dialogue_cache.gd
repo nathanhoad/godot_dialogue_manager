@@ -15,6 +15,7 @@ static var _update_dependency_timer: Timer
 static var _update_dependency_paths: PackedStringArray = []
 
 static var _files_marked_for_reimport: PackedStringArray = []
+static var _is_reimport_scheduled: bool = false
 
 ## Keep track of used static IDs
 ## {
@@ -61,38 +62,46 @@ static func reimport_all_files() -> void:
 
 ## Attempt to reimport any files marked for reimporting.
 static func reimport_files(and_files: PackedStringArray = []) -> void:
-	for file: String in and_files:
-		if not _files_marked_for_reimport.has(file):
-			_files_marked_for_reimport.append(file)
+	mark_files_for_reimport(and_files)
 
 	if _files_marked_for_reimport.is_empty(): return
 
-	# Guard against recursive reimport calls. Don't mark for reimport unless attempted once.
-	var filesystem: Object = Engine.get_singleton("EditorInterface").get_resource_filesystem()
-	if filesystem.is_scanning():
-		# Defer the reimport to the next idle frame.
-		_schedule_deferred_reimport.call_deferred()
+	# Something is already waiting for the file system, so it will pick these files up too.
+	if _is_reimport_scheduled: return
+
+	if _is_file_system_busy():
+		_reimport_when_file_system_is_free()
 		return
 
-	# Attempt reimport immediately if not busy.
-	Engine.get_singleton("EditorInterface").get_resource_filesystem().reimport_files(_files_marked_for_reimport)
-	_files_marked_for_reimport.clear()
+	_reimport_marked_files()
 
 
-## Helper to try and resolve recursive import crashes while importer is busy.
-static func _schedule_deferred_reimport() -> void:
-	# Wait before trying again.
-	if _files_marked_for_reimport.is_empty(): return
-
-	var filesystem: Object = Engine.get_singleton("EditorInterface").get_resource_filesystem()
-	if filesystem.is_scanning():
-		# Still working on it. Try again later.
+# Wait for the file system to finish whatever it is doing and then reimport.
+static func _reimport_when_file_system_is_free() -> void:
+	_is_reimport_scheduled = true
+	while _is_file_system_busy():
 		await Engine.get_main_loop().create_timer(0.1).timeout
-		_schedule_deferred_reimport()
-		return
+	_is_reimport_scheduled = false
 
-	filesystem.reimport_files(_files_marked_for_reimport)
+	_reimport_marked_files()
+
+
+# Hand any marked files over to the editor's import system.
+static func _reimport_marked_files() -> void:
+	if _files_marked_for_reimport.is_empty(): return
+
+	# Importing can mark more files for reimport (eg. dependencies) so take the files we know about
+	# now and clear the queue before importing them.
+	var files: PackedStringArray = _files_marked_for_reimport.duplicate()
 	_files_marked_for_reimport.clear()
+
+	Engine.get_singleton("EditorInterface").get_resource_filesystem().reimport_files(files)
+
+
+# Check if the file system is mid-scan or mid-import.
+static func _is_file_system_busy() -> bool:
+	var file_system: Object = Engine.get_singleton("EditorInterface").get_resource_filesystem()
+	return file_system.is_scanning() or file_system.is_importing()
 
 
 ## Add a dialogue file to the cache.
