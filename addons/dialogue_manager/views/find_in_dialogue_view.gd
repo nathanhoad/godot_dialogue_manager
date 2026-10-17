@@ -4,6 +4,9 @@ extends EditorDock
 signal result_selected(path: String, cursor: Vector2, length: int)
 
 
+const ResultTemplate: PackedScene = preload("find_in_dialogue_view_result_template.tscn")
+
+
 var main_view: Control
 
 @onready var input: LineEdit = %Input
@@ -15,7 +18,6 @@ var main_view: Control
 @onready var replace_selected_button: Button = %ReplaceSelectedButton
 @onready var replace_all_button: Button = %ReplaceAllButton
 @onready var results_container: VBoxContainer = %ResultsContainer
-@onready var result_template: HBoxContainer = preload("find_in_dialogue_view_result_template.tscn").instantiate()
 
 var current_results: Dictionary = {}:
 	set(value):
@@ -32,15 +34,12 @@ var current_results: Dictionary = {}:
 
 var selections: PackedStringArray = []
 
+
 func prepare() -> void:
 	if not is_node_ready():
 		await ready
 
 	input.grab_focus()
-
-	var template_label: RichTextLabel = result_template.get_node("Label")
-	template_label.get_theme_stylebox(&"focus").bg_color = main_view.code_edit.theme_overrides.current_line_color
-	template_label.add_theme_font_override(&"normal_font", main_view.code_edit.get_theme_font(&"font"))
 
 	replace_toggle.set_pressed_no_signal(false)
 	replace_container.hide()
@@ -76,7 +75,7 @@ func update_results_view() -> void:
 			path_label.text += "(*)"
 		results_container.add_child(path_label)
 		for path_result: Dictionary in current_results.get(path):
-			var result_item: HBoxContainer = result_template.duplicate()
+			var result_item: HBoxContainer = ResultTemplate.instantiate()
 
 			var checkbox: CheckBox = result_item.get_node("CheckBox") as CheckBox
 			var key: String = get_selection_key(path, path_result)
@@ -93,6 +92,9 @@ func update_results_view() -> void:
 
 			var result_label: RichTextLabel = result_item.get_node("Label") as RichTextLabel
 			var colors: DMThemeValues = main_view.code_edit.theme_overrides
+			result_label.get_theme_stylebox(&"focus").bg_color = colors.current_line_color
+			result_label.add_theme_font_override(&"normal_font", main_view.code_edit.get_theme_font(&"font"))
+
 			var highlight: String = ""
 			if replace_toggle.button_pressed:
 				var matched_word: String = "[bgcolor=" + Color(colors.critical_color, 0.5).to_html() + "][color=" + colors.text_color.to_html() + "]" + path_result.matched_text + "[/color][/bgcolor]"
