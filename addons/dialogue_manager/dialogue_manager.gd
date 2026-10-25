@@ -378,16 +378,17 @@ func get_line(resource: DialogueResource, key: String, extra_game_states: Array)
 
 		# If the next line is an end and we have an ID trail then see if it points to responses
 		var peeked_at_stack: bool = false
+		# The resource that next_line belongs to (which might be a different file if we peeked at the stack).
+		var next_line_resource: DialogueResource = resource
 		if next_line.next_id == DMConstants.ID_END and stack.size() > 0:
 			peeked_at_stack = true
-			var return_to_resource: DialogueResource = resource
 			var return_to_id: String = stack.front()
 			if "@" in return_to_id:
 				var bits: PackedStringArray = return_to_id.split("@")
 				if bits[0] != _get_resource_uid(resource):
-					return_to_resource = load("uid://" + bits[0])
+					next_line_resource = load("uid://" + bits[0])
 				return_to_id = bits[1]
-			next_line = return_to_resource.lines.get(return_to_id)
+			next_line = next_line_resource.lines.get(return_to_id)
 
 		# If the response line is marked as a cue then make sure to emit the passed_cue signal.
 		if line.next_id in resource.cues.values():
@@ -398,8 +399,8 @@ func get_line(resource: DialogueResource, key: String, extra_game_states: Array)
 			id_trail = "|" + _get_id_with_resource(resource, next_line.next_id_after) + id_trail
 
 		# If the next line is a cue then check where it points to see if that is a set of responses.
-		while [DMConstants.TYPE_CUE, DMConstants.TYPE_GOTO].has(next_line.type) and resource.lines.has(next_line.next_id):
-			next_line = resource.lines.get(next_line.next_id)
+		while [DMConstants.TYPE_CUE, DMConstants.TYPE_GOTO].has(next_line.type) and next_line_resource.lines.has(next_line.next_id):
+			next_line = next_line_resource.lines.get(next_line.next_id)
 
 		if next_line != null and next_line.type == DMConstants.TYPE_RESPONSE:
 			# If we peeked the stack and it goes directly to a response type then we've consumed the front
@@ -408,7 +409,7 @@ func get_line(resource: DialogueResource, key: String, extra_game_states: Array)
 				id_trail = "" if stack.size() <= 1 else "|" + "|".join(stack.slice(1))
 			# Note: For some reason C# has occasional issues with using the responses property directly
 			# so instead we use set and get here.
-			line.set(&"responses", await _get_responses(next_line.get(&"responses", []), resource, id_trail, extra_game_states))
+			line.set(&"responses", await _get_responses(next_line.get(&"responses", []), next_line_resource, id_trail, extra_game_states))
 
 	line.next_id = "|".join(stack) if line.next_id == DMConstants.ID_NULL else _get_id_with_resource(resource, line.next_id) + id_trail
 
