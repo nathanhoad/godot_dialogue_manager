@@ -43,10 +43,27 @@ Nathan: Inside snippet.
 	line = await resource.get_next_dialogue_line(line.responses[0].next_id)
 
 
+func test_can_return_from_imported_snippet_to_responses() -> void:
+	# Like the above but the snippet lives in an imported file, so the responses must be looked up in
+	# the calling file rather than the snippet's file.
+	var resource: DialogueResource = load("res://tests/main.dialogue")
+
+	var line: DialogueLine = await resource.get_next_dialogue_line("snippet_to_responses")
+	assert(line.text == "This is a snippet.", "Should show the imported snippet's final line.")
+	assert(line.responses.size() == 2, "Returned to responses should be attached.")
+	assert(line.responses[1].text == "Second", "Responses should come from the calling file.")
+
+	line = await resource.get_next_dialogue_line(line.responses[1].next_id)
+	assert(line.text == "You picked second.", "Choosing a response should follow it.")
+
+	line = await resource.get_next_dialogue_line(line.next_id)
+	assert(line.text == "After responses.", "Should continue in the calling file.")
+
+
 func test_can_return_from_nested_snippet_to_responses() -> void:
-	# Like the above but nested: an inner snippet returns to an outer snippet that
-	# only has responses, which in turn must return to the outermost caller. The
-	# deeper return address must survive being grafted onto the inner snippet's line.
+	# Like the above but nested. An inner snippet returns to an outer snippet that only has responses,
+	# which in turn must return to the outermost caller.
+	# The deeper return address must survive being grafted onto the inner snippet's line.
 	var resource: DialogueResource = create_resource("
 ~ start
 Nathan: Start.

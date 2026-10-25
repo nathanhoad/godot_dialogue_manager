@@ -9,3 +9,16 @@ Nathan: ...and back again.
 => END
 
 #endregion
+
+#region Returning to responses
+
+~ snippet_to_responses
+=>< snippets/snippet
+- First
+	Nathan: You picked first.
+- Second
+	Nathan: You picked second.
+Nathan: After responses.
+=> END
+
+#endregion
