@@ -111,7 +111,7 @@ Inline mutations that use `await` in their implementation will pause typing of d
 
 ### Extra Game States
 
-You can pass an array of nodes/objects/dictionaries as the `extra_game_states` parameter when [requesting a line of dialogue](API.md#func-get_next_dialogue_lineresource-resource-key-string--0-extra_game_states-array-----dictionary) which will also be checked for possible mutation methods. Classes should be instantiated, even if their contents are static. Objects are iterated through in the order provided looking for a matching property. Here is an example:
+You can pass an array of nodes/objects/dictionaries as the `extra_game_states` parameter when [requesting a line of dialogue](API.md#func-get_next_dialogue_lineresource-dialogueresource-key-string---extra_game_states-array---mutation_behaviour-mutationbehaviour--mutationbehaviourwait---dialogueline) which will also be checked for possible mutation methods. Classes should be instantiated, even if their contents are static. Objects are iterated through in the order provided looking for a matching property. Here is an example:
 ```
 func pirate():
     print("yarrr")

@@ -1,6 +1,6 @@
 # Using dialogue in your game
 
-The simplest way to show dialogue in your game is to call [`DialogueManager.show_dialogue_balloon(resource, cue)`](./API.md#func-show_dialogue_balloonresource-dialogueresource-cue-string--0-extra_game_states-array-----node) with a dialogue resource and a cue to start from. This will show the example balloon by default but you can configure it in [Settings](./Settings.md) to show your custom balloon.
+The simplest way to show dialogue in your game is to call [`DialogueManager.show_dialogue_balloon(resource, cue)`](./API.md#func-show_dialogue_balloonresource-dialogueresource-cue-string---extra_game_states-array-----node) with a dialogue resource and a cue to start from. This will show the example balloon by default but you can configure it in [Settings](./Settings.md) to show your custom balloon.
 
 It's up to you to implement/customise any dialogue rendering and input control to match your game. There are a few example projects available on [my Itch.io page](https://nathanhoad.itch.io) to get you started though.
 
