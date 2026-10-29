@@ -36,6 +36,8 @@ const WARN_ABOUT_METHOD_PROPERTY_OR_SIGNAL_NAME_CONFLICTS: StringName = &"runtim
 ## Check for context alias collisions
 const WARN_ABOUT_CONTEXT_ALIAS_ALREADY_REGISTERED: StringName = &"runtime/warn_about_context_alias_already_registered"
 
+## Macros to add to the insert menu
+const INSERT_MACROS: StringName = &"editor/advanced/insert_macros"
 ## Bypass any missing state when running dialogue.
 const IGNORE_MISSING_STATE_VALUES: StringName = &"runtime/advanced/ignore_missing_state_values"
 ## Keep a copy of the raw text in a [DialogueResource] meta data
@@ -118,6 +120,13 @@ static var SETTINGS_CONFIGURATION: Dictionary = {
 	WARN_ABOUT_CONTEXT_ALIAS_ALREADY_REGISTERED: {
 		value = true,
 		type = TYPE_BOOL,
+		is_advanced = true
+	},
+
+	INSERT_MACROS: {
+		value = "",
+		type = TYPE_STRING,
+		hint = PROPERTY_HINT_MULTILINE_TEXT,
 		is_advanced = true
 	},
 
