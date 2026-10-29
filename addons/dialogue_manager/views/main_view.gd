@@ -140,6 +140,7 @@ func _ready() -> void:
 	search_and_replace.code_edit = code_edit
 
 	# Connect menu buttons
+	insert_button.get_popup().about_to_popup.connect(_on_insert_button_about_to_popup)
 	insert_button.get_popup().id_pressed.connect(_on_insert_button_menu_id_pressed)
 
 	code_edit.main_view = self
@@ -388,27 +389,6 @@ func apply_theme() -> void:
 		blank_slate.apply_theme()
 		update_button.apply_theme()
 
-		# Set up the effect menu
-		var popup: PopupMenu = insert_button.get_popup()
-		popup.clear()
-		popup.add_icon_item(get_theme_icon("RichTextEffect", "EditorIcons"), DMConstants.translate(&"insert.wave_bbcode"), 0)
-		popup.add_icon_item(get_theme_icon("RichTextEffect", "EditorIcons"), DMConstants.translate(&"insert.shake_bbcode"), 1)
-		popup.add_separator()
-		popup.add_icon_item(get_theme_icon("Time", "EditorIcons"), DMConstants.translate(&"insert.typing_pause"), 3)
-		popup.add_icon_item(get_theme_icon("ViewportSpeed", "EditorIcons"), DMConstants.translate(&"insert.typing_speed_change"), 4)
-		popup.add_icon_item(get_theme_icon("DebugNext", "EditorIcons"), DMConstants.translate(&"insert.auto_advance"), 5)
-		popup.add_separator()
-		popup.add_icon_item(get_theme_icon("RichTextEffect", "EditorIcons"), DMConstants.translate(&"insert.cue"), 6)
-		popup.add_icon_item(get_theme_icon("RichTextEffect", "EditorIcons"), DMConstants.translate(&"insert.dialogue"), 7)
-		popup.add_icon_item(get_theme_icon("RichTextEffect", "EditorIcons"), DMConstants.translate(&"insert.response"), 8)
-		popup.add_icon_item(get_theme_icon("RichTextEffect", "EditorIcons"), DMConstants.translate(&"insert.random_lines"), 9)
-		popup.add_icon_item(get_theme_icon("RichTextEffect", "EditorIcons"), DMConstants.translate(&"insert.random_text"), 10)
-		popup.add_separator()
-		popup.add_icon_item(get_theme_icon("RichTextEffect", "EditorIcons"), DMConstants.translate(&"insert.jump"), 11)
-		popup.add_icon_item(get_theme_icon("RichTextEffect", "EditorIcons"), DMConstants.translate(&"insert.end_dialogue"), 12)
-		popup.add_separator()
-		popup.add_icon_item(get_theme_icon("Translation", "EditorIcons"), DMConstants.translate(&"generate_line_ids"), 13)
-
 		# Dialog sizes
 		new_dialog.min_size = Vector2(600, 500) * theme_values.scale
 		save_dialog.min_size = Vector2(600, 500) * theme_values.scale
@@ -548,6 +528,37 @@ func _on_files_list_file_selected(file_path: String) -> void:
 	self.current_file_path = file_path
 
 
+func _on_insert_button_about_to_popup() -> void:
+	var popup: PopupMenu = insert_button.get_popup()
+	popup.clear()
+	popup.add_icon_item(get_theme_icon("RichTextEffect", "EditorIcons"), DMConstants.translate(&"insert.wave_bbcode"), 0)
+	popup.add_icon_item(get_theme_icon("RichTextEffect", "EditorIcons"), DMConstants.translate(&"insert.shake_bbcode"), 1)
+	popup.add_separator()
+	popup.add_icon_item(get_theme_icon("Time", "EditorIcons"), DMConstants.translate(&"insert.typing_pause"), 3)
+	popup.add_icon_item(get_theme_icon("ViewportSpeed", "EditorIcons"), DMConstants.translate(&"insert.typing_speed_change"), 4)
+	popup.add_icon_item(get_theme_icon("DebugNext", "EditorIcons"), DMConstants.translate(&"insert.auto_advance"), 5)
+	popup.add_separator()
+	popup.add_icon_item(get_theme_icon("RichTextEffect", "EditorIcons"), DMConstants.translate(&"insert.cue"), 6)
+	popup.add_icon_item(get_theme_icon("RichTextEffect", "EditorIcons"), DMConstants.translate(&"insert.dialogue"), 7)
+	popup.add_icon_item(get_theme_icon("RichTextEffect", "EditorIcons"), DMConstants.translate(&"insert.response"), 8)
+	popup.add_icon_item(get_theme_icon("RichTextEffect", "EditorIcons"), DMConstants.translate(&"insert.random_lines"), 9)
+	popup.add_icon_item(get_theme_icon("RichTextEffect", "EditorIcons"), DMConstants.translate(&"insert.random_text"), 10)
+	popup.add_separator()
+	popup.add_icon_item(get_theme_icon("RichTextEffect", "EditorIcons"), DMConstants.translate(&"insert.jump"), 11)
+	popup.add_icon_item(get_theme_icon("RichTextEffect", "EditorIcons"), DMConstants.translate(&"insert.end_dialogue"), 12)
+	var macros: PackedStringArray = DMSettings.get_setting(DMSettings.INSERT_MACROS, "").split("\n")
+	if macros.size() > 0:
+		popup.add_separator()
+		for index: int in macros.size():
+			var macro: String = macros[index]
+			if macro.contains("||||"):
+				macro = macro.split("||||")[0]
+			if not macro.is_empty():
+				popup.add_icon_item(get_theme_icon("TextFile", "EditorIcons"), macro, 100 + index)
+	popup.add_separator()
+	popup.add_icon_item(get_theme_icon("Translation", "EditorIcons"), DMConstants.translate(&"generate_line_ids"), 13)
+
+
 func _on_insert_button_menu_id_pressed(id: int) -> void:
 	match id:
 		0:
@@ -581,6 +592,17 @@ func _on_insert_button_menu_id_pressed(id: int) -> void:
 			code_edit.set_cursor(cursor)
 			_on_code_edit_text_changed()
 			code_edit.set_deferred("scroll_vertical", scroll_vertical)
+		_:
+			# Insert a custom macro
+			var macros: PackedStringArray = DMSettings.get_setting(DMSettings.INSERT_MACROS, "").split("\n")
+			var macro: String = macros[id - 100]
+			if macro.contains("||||"):
+				macro = macro.split("||||")[1]
+			if macro.contains("%s"):
+				var bits: PackedStringArray = macro.split("%s")
+				code_edit.insert_bbcode(bits[0], bits[1])
+			else:
+				code_edit.insert_bbcode(macro)
 
 
 func _on_main_view_theme_changed() -> void:

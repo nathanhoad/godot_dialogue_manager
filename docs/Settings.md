@@ -62,6 +62,16 @@ Dialogue Manager settings are found in Project Settings at the bottom of the Gen
 
   Include any character names in the Template Generation export.
 
+- **Insert Macros** (advanced)
+
+  A list of strings to add to the Insert menu in the dialogue editor. Use `%s` if you need to represent the selected text.
+
+  > _eg._ `[b]%s[/b]` would wrap the selected text in bold tags (or insert empty bold tags and move the cursor to in between them).
+
+  You can specify a label for the menu item by prefixing the string with the label and then `||||`.
+
+  > _eg._ `Bold||||[b]%s[/b]` would show up in the Insert menu as just "Bold" but would wrap the current selection in `[b]` and `[/b]`.
+
 - **Dialogue Processor Path** (advanced)
   
   A path to a class that extends [`DMDialogueProcessor`](./Processing.md). Used for pre-processing raw lines and post-processing compiled lines.
