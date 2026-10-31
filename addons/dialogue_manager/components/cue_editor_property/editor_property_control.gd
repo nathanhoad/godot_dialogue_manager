@@ -89,7 +89,7 @@ func _get_resource() -> DialogueResource:
 
 	var resource: DialogueResource
 	for property: Dictionary in actionable.get_property_list():
-		if "dialogue_resource" in property.name or "DialogueResource" in property.name or (property.class_name == "Resource" and actionable.get(property.name) is DialogueResource):
+		if "dialogue_resource" in property.name or "DialogueResource" in property.name or property.hint_string == "DialogueResource" or (property.class_name == "Resource" and actionable.get(property.name) is DialogueResource):
 			resource = actionable.get(property.name)
 
 		if is_instance_valid(resource):
