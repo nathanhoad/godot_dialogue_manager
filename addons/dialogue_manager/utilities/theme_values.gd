@@ -22,6 +22,7 @@ var symbols_color: Color = Color.WHITE
 var comments_color: Color = Color.WHITE
 var jumps_color: Color = Color.WHITE
 
+var font: Font
 var font_size: int = 16
 
 
@@ -48,6 +49,7 @@ func _init(values: Dictionary) -> void:
 	comments_color = values.comments_color
 	jumps_color = values.jumps_color
 
+	font = values.font
 	font_size = values.font_size
 
 
@@ -56,6 +58,9 @@ static func get_values_from_editor() -> DMThemeValues:
 	var editor_settings: EditorSettings = EditorInterface.get_editor_settings()
 	return DMThemeValues.new({
 		scale = EditorInterface.get_editor_scale(),
+
+		font = EditorInterface.get_editor_theme().get_font("source", "EditorFonts"),
+		font_size = editor_settings.get_setting("interface/editor/fonts/code_font_size" if Engine.get_version_info().hex >= 0x040700 else "interface/editor/code_font_size"),
 
 		background_color = Color(editor_settings.get_setting("interface/theme/base_color").blend(editor_settings.get_setting("text_editor/theme/highlighting/background_color")), 1),
 		current_line_color = editor_settings.get_setting("text_editor/theme/highlighting/current_line_color"),
@@ -76,8 +81,6 @@ static func get_values_from_editor() -> DMThemeValues:
 		symbols_color = editor_settings.get_setting("text_editor/theme/highlighting/symbol_color"),
 		comments_color = editor_settings.get_setting("text_editor/theme/highlighting/comment_color"),
 		jumps_color = Color(editor_settings.get_setting("text_editor/theme/highlighting/gdscript/node_reference_color"), 0.6),
-
-		font_size = editor_settings.get_setting("interface/editor/fonts/code_font_size" if Engine.get_version_info().hex >= 0x040700 else "interface/editor/code_font_size")
 	})
 
 

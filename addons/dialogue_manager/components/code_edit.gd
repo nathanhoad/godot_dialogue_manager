@@ -24,7 +24,7 @@ var theme_overrides: DMThemeValues:
 		add_theme_color_override("font_color", theme_overrides.text_color)
 		add_theme_color_override("background_color", theme_overrides.background_color)
 		add_theme_color_override("current_line_color", theme_overrides.current_line_color)
-		add_theme_font_override("font", get_theme_font("source", "EditorFonts"))
+		add_theme_font_override("font", theme_overrides.font)
 		add_theme_font_size_override("font_size", int(theme_overrides.font_size * theme_overrides.scale))
 		font_size = round(theme_overrides.font_size)
 	get:
