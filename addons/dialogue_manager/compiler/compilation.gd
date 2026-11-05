@@ -117,9 +117,13 @@ func find_imported_cues(text: String, path: String) -> void:
 
 			# Guard against failed loads -- namely during reimport cascade.
 			if cached_file_data.is_empty():
-				# Might be worth investigating a better constant here.
-				add_error(id, 0, DMConstants.ERR_ERRORS_IN_IMPORTED_FILE)
-				continue
+				if FileAccess.file_exists(import_data_path):
+					# The cache can be empty for a file that exists so fall back to reading cues from file.
+					cached_file_data = { cues = {} }
+				else:
+					# Might be worth investigating a better constant here.
+					add_error(id, 0, DMConstants.ERR_ERRORS_IN_IMPORTED_FILE)
+					continue
 
 			var external_cues: Dictionary = cached_file_data.cues
 			if external_cues.is_empty():
