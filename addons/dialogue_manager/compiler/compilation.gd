@@ -917,7 +917,7 @@ func get_line_type(raw_line: String) -> String:
 	if text.begins_with("~ "):
 		return DMConstants.TYPE_CUE
 
-	if text.begins_with("if ") or text.begins_with("elif") or text.begins_with("else"):
+	if text.begins_with("if ") or text.begins_with("elif ") or regex.ELSE_REGEX.search(text):
 		return DMConstants.TYPE_CONDITION
 
 	if text.begins_with("while "):
