@@ -234,6 +234,9 @@ static func get_editor_shortcuts() -> Dictionary:
 		delete_line = [
 			_create_event("Ctrl+Shift+K")
 		],
+		duplicate_lines = [
+			_create_event("Ctrl+Alt+Down")
+		],
 		move_up = [
 			_create_event("Alt+Up")
 		],
@@ -273,7 +276,7 @@ static func get_editor_shortcuts() -> Dictionary:
 
 	var paths: EditorPaths = EditorInterface.get_editor_paths()
 	var settings: Resource = null
-	for version: String in ["4.5", "4.4", "4.3", "4"]:
+	for version: String in ["4.8", "4.7", "4.6"]:
 		var path: String = paths.get_config_dir() + "/editor_settings-" + version + ".tres"
 		if FileAccess.file_exists(path):
 			settings = load(path)
