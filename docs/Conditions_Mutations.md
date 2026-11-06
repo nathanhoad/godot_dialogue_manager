@@ -19,7 +19,7 @@ else
     Nathan: If neither are true, I'll say this.
 ```
 
-_Note: To escape a condition line (i.e. if you wanted to start a dialogue line with "if"), you can prefix the condition keyword with a "\"._
+_Note: To escape a condition line (i.e. if you wanted to start a dialogue line with "if"), you can prefix the condition keyword with a `\` (for example, `\if`)._
 
 Conditions can be joined with `and`/`or` and grouped with `(`,`)`. For example:
 
