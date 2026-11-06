@@ -96,6 +96,9 @@ func _gui_input(event: InputEvent) -> void:
 			"delete_line":
 				delete_current_line()
 				get_viewport().set_input_as_handled()
+			"duplicate_lines":
+				duplicate_lines()
+				get_viewport().set_input_as_handled()
 			"move_up":
 				move_line(-1)
 				get_viewport().set_input_as_handled()
