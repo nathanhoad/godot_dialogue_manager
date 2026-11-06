@@ -11,6 +11,11 @@ func _can_handle(object: Object) -> bool:
 
 
 func _parse_property(object: Object, _type: Variant, name: String, _hint_type: PropertyHint, hint_string: String, _usage_flags: int, _wide: bool) -> bool:
+	# Godot displays metadata/raw_text as one LineEdit line
+	# shaping a whole dialogue file there can crash the editor. hide it.
+	if object is DialogueResource and name == "metadata/raw_text":
+		return true
+
 	if ("dialogue_cue" in name.to_lower() or "dialoguecue" in name.to_lower()) and object.get_property_list().filter(func(p: Dictionary) -> bool: return _is_dialogue_resource_property(p.name, p.hint_string)):
 		add_property_editor(name, DMCueEditorProperty.new())
 		return true
