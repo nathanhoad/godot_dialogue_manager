@@ -117,9 +117,13 @@ func find_imported_cues(text: String, path: String) -> void:
 
 			# Guard against failed loads -- namely during reimport cascade.
 			if cached_file_data.is_empty():
-				# Might be worth investigating a better constant here.
-				add_error(id, 0, DMConstants.ERR_ERRORS_IN_IMPORTED_FILE)
-				continue
+				if FileAccess.file_exists(import_data_path):
+					# The cache can be empty for a file that exists so fall back to reading cues from file.
+					cached_file_data = { cues = {} }
+				else:
+					# Might be worth investigating a better constant here.
+					add_error(id, 0, DMConstants.ERR_ERRORS_IN_IMPORTED_FILE)
+					continue
 
 			var external_cues: Dictionary = cached_file_data.cues
 			if external_cues.is_empty():
@@ -129,7 +133,11 @@ func find_imported_cues(text: String, path: String) -> void:
 					if not "/" in l and get_line_type(l) == DMConstants.TYPE_CUE:
 						external_cues[l.substr(2).strip_edges()] = str(i)
 
-			var uid: String = ResourceUID.path_to_uid(import_data_path).replace("uid://", "")
+			var uid: String = ResourceUID.path_to_uid(import_data_path)
+			if not uid.begins_with("uid://"): # not imported yet, no uid exists
+				add_error(id, 0, DMConstants.ERR_ERRORS_IN_IMPORTED_FILE)
+				continue
+			uid = uid.replace("uid://", "")
 			for cue_key: String in external_cues:
 				# Ignore any cues that are already a reference
 				if "/" in cue_key: continue
