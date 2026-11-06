@@ -85,6 +85,9 @@ func _ready() -> void:
 func _gui_input(event: InputEvent) -> void:
 	# Handle shortcuts that come from the editor
 	if event is InputEventKey and event.is_pressed():
+		if event.is_action("ui_text_newline", true) or event.is_action("ui_text_newline_blank", true):
+			_indent_after_newline.call_deferred(get_caret_line())
+
 		var shortcut: String = DMPlugin.get_editor_shortcut(event)
 		match shortcut:
 			"toggle_comment":
@@ -437,6 +440,21 @@ func _get_icon_for_type(type: String) -> Texture2D:
 		"enum":
 			return get_theme_icon("Enum", "EditorIcons")
 	return null
+
+
+# Godot's auto-indent only looks for a trailing ":" which is optional in dialogue.
+func _indent_after_newline(from_line: int) -> void:
+	if get_caret_count() > 1 or get_caret_line() != from_line + 1: return
+
+	if not DMCompiler.get_line_type(get_line(from_line)) in [
+		DMConstants.TYPE_CONDITION,
+		DMConstants.TYPE_WHILE,
+		DMConstants.TYPE_MATCH,
+		DMConstants.TYPE_WHEN
+	]: return
+
+	if get_indent_level(from_line + 1) <= get_indent_level(from_line):
+		do_indent()
 
 
 #endregion
