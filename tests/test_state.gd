@@ -731,6 +731,79 @@ Nathan: Field is {{state.StaticField}}.
 	assert(line.text == "Field is 6.", "Should read and write static members via a dotted instance.")
 
 
+func test_csharp_static_members_with_inherited_script_classes() -> void:
+	var resource: DialogueResource = create_resource("
+~ start
+Nathan: Base constant is {{CSharpBaseState.BASE_CONSTANT}} and base field is {{CSharpBaseState.BaseStaticField}}.
+Nathan: Derived constant is {{CSharpDerivedState.DERIVED_CONSTANT}}, field is {{CSharpDerivedState.DerivedStaticField}}, property is {{CSharpDerivedState.DerivedStaticProperty}}, method is {{CSharpDerivedState.DerivedStaticMethod()}}.
+$> CSharpDerivedState.DerivedStaticField = 20
+Nathan: Derived field is now {{CSharpDerivedState.DerivedStaticField}}.
+Nathan: Unrelated constant is {{CSharpStaticState.STATIC_CONSTANT}}.
+=> END")
+
+	var line: DialogueLine = await resource.get_next_dialogue_line("start")
+	assert(line.text == "Base constant is 5 and base field is 10.", "Should read static members of a class that other script classes derive from.")
+
+	line = await resource.get_next_dialogue_line(line.next_id)
+	assert(line.text == "Derived constant is 6, field is 11, property is derived, method is 12.", "Should read static members of a class that derives from another script class.")
+
+	line = await resource.get_next_dialogue_line(line.next_id)
+	assert(line.text == "Derived field is now 20.", "Should assign static members of a class that derives from another script class.")
+
+	line = await resource.get_next_dialogue_line(line.next_id)
+	assert(line.text == "Unrelated constant is 3.", "Should read static members of other classes when derived script classes exist.")
+
+
+func test_csharp_static_members_on_class_split_across_files() -> void:
+	var resource: DialogueResource = create_resource("
+~ start
+Nathan: Constant is {{CSharpSplitState.SPLIT_CONSTANT}} and field is {{CSharpSplitState.SplitStaticField}}.
+Nathan: Unrelated constant is {{CSharpStaticState.STATIC_CONSTANT}}.
+=> END")
+
+	var line: DialogueLine = await resource.get_next_dialogue_line("start")
+	assert(line.text == "Constant is 8 and field is 9.", "Should read static members of a class that has more than one script path.")
+
+	line = await resource.get_next_dialogue_line(line.next_id)
+	assert(line.text == "Unrelated constant is 3.", "Should read static members of other classes when a class has more than one script path.")
+
+
+func test_csharp_static_members_inherited_from_base_class() -> void:
+	var resource: DialogueResource = create_resource("
+~ start
+Nathan: Constant is {{CSharpDerivedState.BASE_CONSTANT}}, field is {{CSharpDerivedState.BaseStaticField}}, property is {{CSharpDerivedState.BaseStaticProperty}}, method is {{CSharpDerivedState.BaseStaticMethod()}}, enum is {{CSharpDerivedState.BaseThings.SecondBaseThing}}.
+$> CSharpDerivedState.BaseStaticField = 30
+$> CSharpDerivedState.BaseStaticProperty = \"changed\"
+Nathan: Field is now {{CSharpBaseState.BaseStaticField}} and property is now {{CSharpBaseState.BaseStaticProperty}}.
+=> END")
+
+	var line: DialogueLine = await resource.get_next_dialogue_line("start")
+	assert(line.text == "Constant is 5, field is 10, property is base, method is 13, enum is 1.", "Should read inherited static members by derived class name.")
+
+	line = await resource.get_next_dialogue_line(line.next_id)
+	assert(line.text == "Field is now 30 and property is now changed.", "Should assign inherited static members by derived class name.")
+
+
+func test_csharp_static_members_inherited_from_base_class_via_instance() -> void:
+	var resource: DialogueResource = create_resource("
+~ start
+$> BaseStaticField = 40
+$> BaseStaticProperty = \"instance\"
+Nathan: Constant is {{BASE_CONSTANT}}, field is {{BaseStaticField}}, property is {{BaseStaticProperty}}, method is {{BaseStaticMethod()}}, enum is {{BaseThings.SecondBaseThing}}.
+$> state.BaseStaticField = 41
+Nathan: Constant is {{state.BASE_CONSTANT}}, field is {{state.BaseStaticField}}, property is {{state.BaseStaticProperty}}, method is {{state.BaseStaticMethod()}}, enum is {{state.BaseThings.SecondBaseThing}}.
+=> END")
+
+	var state: Object = load("res://tests/CSharpDerivedState.cs").new()
+	var states: Array = [state, { "state": state }]
+
+	var line: DialogueLine = await resource.get_next_dialogue_line("start", states)
+	assert(line.text == "Constant is 5, field is 40, property is instance, method is 13, enum is 1.", "Should read and write inherited static members via an instance.")
+
+	line = await resource.get_next_dialogue_line(line.next_id, states)
+	assert(line.text == "Constant is 5, field is 41, property is instance, method is 13, enum is 1.", "Should read and write inherited static members via a dotted instance.")
+
+
 func test_ignore_missing_state() -> void:
 	var resource: DialogueResource = create_resource("
 ~ start
