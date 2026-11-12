@@ -1170,19 +1170,28 @@ func _warn_about_state_name_collisions(target_key: String, extra_game_states: Ar
 			if script == null:
 				continue
 
+			# Only nodes have a name so anything else is described by its class (or script).
+			var state_name: String
+			if state is Node:
+				state_name = state.name
+			elif not script.get_global_name().is_empty():
+				state_name = script.get_global_name()
+			else:
+				state_name = script.resource_path.get_file()
+
 			for method: Dictionary in script.get_script_method_list():
-				if method.name == target_key and not states_with_key.has(state.name):
-					states_with_key.append(state.name)
+				if method.name == target_key and not states_with_key.has(state_name):
+					states_with_key.append(state_name)
 					break
 
 			for property: Dictionary in script.get_script_property_list():
-				if property.name == target_key and not states_with_key.has(state.name):
-					states_with_key.append(state.name)
+				if property.name == target_key and not states_with_key.has(state_name):
+					states_with_key.append(state_name)
 					break
 
 			for signal_info: Dictionary in script.get_script_signal_list():
-				if signal_info.name == target_key and not states_with_key.has(state.name):
-					states_with_key.append(state.name)
+				if signal_info.name == target_key and not states_with_key.has(state_name):
+					states_with_key.append(state_name)
 					break
 
 	if states_with_key.size() > 1:
