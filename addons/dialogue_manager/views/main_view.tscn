@@ -222,6 +222,20 @@ tooltip_text = "Test dialogue"
 disabled = true
 flat = true
 
+[node name="HistoryPreviousButton" type="Button" parent="Margin/Content/CodePanel/Toolbar" unique_id=1837264051]
+unique_name_in_owner = true
+layout_mode = 2
+tooltip_text = "Go to previous edit location"
+disabled = true
+flat = true
+
+[node name="HistoryNextButton" type="Button" parent="Margin/Content/CodePanel/Toolbar" unique_id=1492750386]
+unique_name_in_owner = true
+layout_mode = 2
+tooltip_text = "Go to next edit location"
+disabled = true
+flat = true
+
 [node name="Spacer2" type="Control" parent="Margin/Content/CodePanel/Toolbar" unique_id=249482575]
 layout_mode = 2
 size_flags_horizontal = 3
@@ -364,6 +378,8 @@ dialog_text = "You're now up to date!"
 [connection signal="toggled" from="Margin/Content/CodePanel/Toolbar/SearchButton" to="." method="_on_search_button_toggled"]
 [connection signal="pressed" from="Margin/Content/CodePanel/Toolbar/TestButton" to="." method="_on_test_button_pressed"]
 [connection signal="pressed" from="Margin/Content/CodePanel/Toolbar/TestLineButton" to="." method="_on_test_line_button_pressed"]
+[connection signal="pressed" from="Margin/Content/CodePanel/Toolbar/HistoryPreviousButton" to="." method="_on_history_previous_button_pressed"]
+[connection signal="pressed" from="Margin/Content/CodePanel/Toolbar/HistoryNextButton" to="." method="_on_history_next_button_pressed"]
 [connection signal="pressed" from="Margin/Content/CodePanel/Toolbar/FilenameLabel" to="." method="_on_filename_label_pressed"]
 [connection signal="pressed" from="Margin/Content/CodePanel/Toolbar/SupportButton" to="." method="_on_support_button_pressed"]
 [connection signal="pressed" from="Margin/Content/CodePanel/Toolbar/DocsButton" to="." method="_on_docs_button_pressed"]

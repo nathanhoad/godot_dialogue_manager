@@ -38,6 +38,12 @@ msgstr ""
 msgid "test_dialogue_from_line"
 msgstr ""
 
+msgid "history_previous"
+msgstr ""
+
+msgid "history_next"
+msgstr ""
+
 msgid "search_for_text"
 msgstr ""
 

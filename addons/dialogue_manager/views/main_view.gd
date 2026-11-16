@@ -14,6 +14,9 @@ const ITEM_CLOSE_OTHERS: int = 104
 const ITEM_COPY_PATH: int = 200
 const ITEM_SHOW_IN_FILESYSTEM: int = 201
 
+const HISTORY_LINE_THRESHOLD: int = 10
+const HISTORY_MAX_SIZE: int = 100
+
 
 signal confirmation_closed()
 
@@ -42,6 +45,8 @@ signal confirmation_closed()
 @onready var file_name_label: Button = %FilenameLabel
 @onready var test_button: Button = %TestButton
 @onready var test_line_button: Button = %TestLineButton
+@onready var history_previous_button: Button = %HistoryPreviousButton
+@onready var history_next_button: Button = %HistoryNextButton
 @onready var search_button: Button = %SearchButton
 @onready var insert_button: MenuButton = %InsertButton
 @onready var support_button: Button = %SupportButton
@@ -107,11 +112,18 @@ var current_file_path: String = "":
 
 			if search_and_replace.visible:
 				search_and_replace.search()
+
+			# Deferred so that opening a file and then jumping somewhere in it is only one place
+			_record_history.call_deferred()
 	get:
 		return current_file_path
 
 # A reference to the currently open files and their last saved text
 var open_buffers: Dictionary = {}
+
+# Previous places (file path and cursor) that the cursor has been.
+var history: Array[Dictionary] = []
+var history_index: int = -1
 
 
 func _ready() -> void:
@@ -159,6 +171,12 @@ func _ready() -> void:
 
 		self.current_file_path = DMSettings.get_user_value("most_recent_reopen_file", "")
 
+	# Reopening files shouldn't count as navigating
+	history.clear()
+	history_index = -1
+	_record_history()
+	_update_history_buttons()
+
 	save_all_button.disabled = true
 
 	close_confirmation_dialog.ok_button_text = DMConstants.translate(&"confirm_close.save")
@@ -197,6 +215,21 @@ func _input(event: InputEvent) -> void:
 			"run_test_scene":
 				get_viewport().set_input_as_handled()
 				_on_test_button_pressed()
+			"history_previous":
+				get_viewport().set_input_as_handled()
+				go_to_previous_history()
+			"history_next":
+				get_viewport().set_input_as_handled()
+				go_to_next_history()
+
+	elif event is InputEventMouseButton and event.is_pressed():
+		match event.button_index:
+			MOUSE_BUTTON_XBUTTON1:
+				get_viewport().set_input_as_handled()
+				go_to_previous_history()
+			MOUSE_BUTTON_XBUTTON2:
+				get_viewport().set_input_as_handled()
+				go_to_next_history()
 
 
 func apply_changes() -> void:
@@ -374,6 +407,12 @@ func apply_theme() -> void:
 		test_line_button.icon = get_theme_icon("DebugStep", "EditorIcons")
 		test_line_button.tooltip_text = DMConstants.translate(&"test_dialogue_from_line")
 
+		history_previous_button.icon = get_theme_icon("Back", "EditorIcons")
+		history_previous_button.tooltip_text = DMConstants.translate(&"history_previous")
+
+		history_next_button.icon = get_theme_icon("Forward", "EditorIcons")
+		history_next_button.tooltip_text = DMConstants.translate(&"history_next")
+
 		search_button.icon = get_theme_icon("Search", "EditorIcons")
 		search_button.tooltip_text = DMConstants.translate(&"search_for_text")
 
@@ -409,6 +448,81 @@ func go_to_cue(cue: String, create_if_none: bool = false) -> void:
 func go_to_line_number(line_number: int) -> void:
 	code_edit.go_to_line_number(line_number)
 	code_edit.grab_focus()
+
+
+# Go back to the previous place in the navigation history.
+func go_to_previous_history() -> void:
+	_go_to_history(-1)
+
+
+# Go forward to the next place in the navigation history.
+func go_to_next_history() -> void:
+	_go_to_history(1)
+
+
+# Move forward or backwards in history.
+func _go_to_history(direction: int) -> void:
+	var index: int = _find_history_index(direction)
+	if index == -1: return
+
+	var entry: Dictionary = history[index]
+	history_index = index
+
+	if entry.path != current_file_path:
+		open_file(entry.path)
+
+	var cursor: Vector2i = entry.cursor
+	cursor.y = clampi(cursor.y, 0, code_edit.get_line_count() - 1)
+	cursor.x = clampi(cursor.x, 0, code_edit.get_line(cursor.y).length())
+	entry.cursor = cursor
+
+	code_edit.deselect()
+	code_edit.set_cursor(cursor)
+	code_edit.center_viewport_to_caret.call_deferred()
+	code_edit.grab_focus()
+
+	_update_history_buttons()
+
+
+# Find the nearest history entry in a direction that can still be opened.
+func _find_history_index(direction: int) -> int:
+	var index: int = history_index + direction
+	while index >= 0 and index < history.size():
+		if FileAccess.file_exists(history[index].path):
+			return index
+		index += direction
+	return -1
+
+
+# Remember where the cursor is
+func _record_history() -> void:
+	if current_file_path == "" or not open_buffers.has(current_file_path): return
+
+	var cursor: Vector2i = code_edit.get_cursor()
+
+	if history_index >= 0:
+		var entry: Dictionary = history[history_index]
+		if entry.path == current_file_path and absi(entry.cursor.y - cursor.y) <= HISTORY_LINE_THRESHOLD:
+			entry.cursor = cursor
+			return
+
+	# Going somewhere new forgets anything we could have gone forward to.
+	history.resize(history_index + 1)
+	history.append({
+		path = current_file_path,
+		cursor = cursor
+	})
+	if history.size() > HISTORY_MAX_SIZE:
+		history.pop_front()
+	history_index = history.size() - 1
+
+	_update_history_buttons()
+
+
+# Update the back and forward buttons
+func _update_history_buttons() -> void:
+	history_previous_button.disabled = _find_history_index(-1) == -1
+	history_next_button.disabled = _find_history_index(1) == -1
 
 
 # Refresh the open menu with the latest files
@@ -485,6 +599,10 @@ func _on_files_moved(old_file: String, new_file_path: String) -> void:
 	if open_buffers.has(old_file):
 		open_buffers[new_file_path] = open_buffers[old_file]
 		open_buffers.erase(old_file)
+
+	for entry: Dictionary in history:
+		if entry.path == old_file:
+			entry.path = new_file_path
 
 
 func _on_cache_file_content_changed(path: String, new_content: String) -> void:
@@ -685,6 +803,7 @@ func _on_code_edit_active_cue_changed(cue: String) -> void:
 
 func _on_code_edit_caret_changed() -> void:
 	DMSettings.set_caret(current_file_path, code_edit.get_cursor())
+	_record_history()
 
 
 func _on_code_edit_error_clicked(line_number: int) -> void:
@@ -729,6 +848,14 @@ func _on_test_button_pressed() -> void:
 		return
 
 	run_test_scene("")
+
+
+func _on_history_previous_button_pressed() -> void:
+	go_to_previous_history()
+
+
+func _on_history_next_button_pressed() -> void:
+	go_to_next_history()
 
 
 func _on_test_line_button_pressed() -> void:
