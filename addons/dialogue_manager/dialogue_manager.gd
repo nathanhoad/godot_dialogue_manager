@@ -1838,8 +1838,8 @@ func _thing_has_method(thing: Variant, method: String, args: Array) -> bool:
 
 	if thing is Script:
 		thing = thing.new()
-	if thing.get_script() and thing.get_script().resource_path.ends_with(".cs"):
-		# If we get this far then the method might be a C# method with a Task return type
+	if _is_dotnet_thing(thing):
+		# If we get this far then the method might be a C# method with a Task return type (or a static method on a nested type)
 		return _get_dotnet_dialogue_manager().ThingHasMethod(thing, method, args)
 
 	return false
@@ -2001,10 +2001,13 @@ func _set_thing_property(thing: Object, property: String, value: Variant) -> voi
 	thing.set(property, value)
 
 
-# Check if a thing is a C# script or an instance of one.
+# Check if a thing is a C# script, an instance of one, or a reference to a nested C# type.
 func _is_dotnet_thing(thing: Variant) -> bool:
 	if thing is Script:
 		return thing.resource_path.ends_with(".cs")
+	elif is_instance_valid(thing) and thing.has_meta(&"dialogue_manager_dotnet_type"):
+		# Nested C# types have no script so the dotnet bridge hands back a "dialogue_manager_dotnet_type" tagged reference.
+		return true
 	elif is_instance_valid(thing) and thing.get_script() != null:
 		return thing.get_script().resource_path.ends_with(".cs")
 	return false
