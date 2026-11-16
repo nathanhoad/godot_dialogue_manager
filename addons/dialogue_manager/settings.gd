@@ -5,9 +5,6 @@ class_name DMSettings extends Node
 #region Editor
 
 
-
-## Wrap lines in the dialogue editor.
-const WRAP_LONG_LINES: StringName = &"editor/wrap_long_lines"
 ## The template to start new dialogue files with.
 const NEW_FILE_TEMPLATE: StringName = &"editor/new_file_template"
 
@@ -48,10 +45,6 @@ const USES_DOTNET: StringName = &"runtime/advanced/uses_dotnet"
 
 
 static var SETTINGS_CONFIGURATION: Dictionary = {
-	WRAP_LONG_LINES: {
-		value = false,
-		type = TYPE_BOOL,
-	},
 	NEW_FILE_TEMPLATE: {
 		value = "~ start\nNathan: [[Hi|Hello|Howdy]], this is some dialogue.\nNathan: Here are some choices.\n- First one\n\tNathan: You picked the first one.\n- Second one\n\tNathan: You picked the second one.\n- Start again => start\n- End the conversation => END\nNathan: For more information see the online documentation.\n=> END",
 		type = TYPE_STRING,

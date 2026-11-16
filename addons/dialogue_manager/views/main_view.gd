@@ -160,9 +160,6 @@ func _ready() -> void:
 	editor_settings.settings_changed.connect(_on_editor_settings_changed)
 	_on_editor_settings_changed()
 
-	ProjectSettings.settings_changed.connect(_on_project_settings_changed)
-	_on_project_settings_changed()
-
 	# Reopen any files that were open when Godot was closed
 	if editor_settings.get_setting("text_editor/behavior/files/restore_scripts_on_load"):
 		var reopen_files: Array = DMSettings.get_user_value("reopen_files", [])
@@ -621,10 +618,8 @@ func _on_editor_settings_changed() -> void:
 	code_edit.minimap_draw = editor_settings.get_setting("text_editor/appearance/minimap/show_minimap")
 	code_edit.minimap_width = editor_settings.get_setting("text_editor/appearance/minimap/minimap_width")
 	code_edit.scroll_smooth = editor_settings.get_setting("text_editor/behavior/navigation/smooth_scrolling")
-
-
-func _on_project_settings_changed() -> void:
-	code_edit.wrap_mode = TextEdit.LINE_WRAPPING_BOUNDARY if DMSettings.get_setting(DMSettings.WRAP_LONG_LINES, false) else TextEdit.LINE_WRAPPING_NONE
+	code_edit.wrap_mode = editor_settings.get_setting("text_editor/appearance/lines/word_wrap")
+	code_edit.autowrap_mode = editor_settings.get_setting("text_editor/appearance/lines/autowrap_mode")
 
 
 func _on_open_menu_id_pressed(id: int) -> void:
