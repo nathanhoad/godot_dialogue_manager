@@ -116,7 +116,7 @@ static func export_all_translations_to_csv(to_path: String, default_locale: Stri
 
 			if not line.type in [DMConstants.TYPE_DIALOGUE, DMConstants.TYPE_RESPONSE]: continue
 
-			var translation_key: String = line.get(&"translation_key", line.text)
+			var translation_key: String = get_csv_key_for_line(line)
 
 			if translation_key in known_keys: continue
 
@@ -144,6 +144,15 @@ static func export_all_translations_to_csv(to_path: String, default_locale: Stri
 	for line: Array in lines_to_save:
 		file.store_csv_line(line, delimiter)
 	file.close()
+
+
+## Get the key that a compiled line is looked up by at runtime.
+static func get_csv_key_for_line(line: Dictionary) -> String:
+	if not DMSettings.get_setting(DMSettings.USE_STATIC_IDS_AS_TRANSLATION_KEYS, true): return line.text
+
+	var static_id: String = line.get(&"static_id", line.text)
+
+	return line.text if static_id.is_empty() else static_id
 
 
 ## Get the delimiter used for an existing CSV
