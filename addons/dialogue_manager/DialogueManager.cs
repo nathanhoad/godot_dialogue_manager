@@ -571,6 +571,7 @@ namespace DialogueManagerRuntime
         // type that script defines in order to reflect on its static members.
         private static Type? GetTypeForThing(GodotObject thing)
         {
+            if (thing is DotnetTypeReference typeReference) return typeReference.Type;
             if (thing is not Script script) return thing.GetType();
 
             string path = script.ResourcePath;
@@ -607,6 +608,13 @@ namespace DialogueManagerRuntime
         }
 
 
+        // Classes referenced by name (and nested types) have no instance to work with so only their static members are available.
+        private static bool IsStaticOnly(GodotObject thing)
+        {
+            return thing is Script || thing is DotnetTypeReference;
+        }
+
+
         private static bool IsStaticMember(MemberInfo memberInfo)
         {
             return memberInfo switch
@@ -634,7 +642,7 @@ namespace DialogueManagerRuntime
             Type? type = GetTypeForThing(thing) ?? throw new Exception($"{thing} is not a C# object or class.");
 
             // A class referenced by name has no instance to read from so only its static members are available.
-            GodotObject? target = thing is Script ? null : thing;
+            GodotObject? target = IsStaticOnly(thing) ? null : thing;
 
             var memberInfos = GetPublicMembers(type, property);
             foreach (var memberInfo in memberInfos)
@@ -660,6 +668,10 @@ namespace DialogueManagerRuntime
                         case Type nestedType when nestedType.IsEnum:
                             return GetEnumAsDictionary(nestedType);
 
+                        // Any other nested type is handed back as a reference so that its static members can be resolved in turn.
+                        case Type nestedType:
+                            return DotnetTypeReference.For(nestedType);
+
                         default:
                             break;
                     }
@@ -681,7 +693,7 @@ namespace DialogueManagerRuntime
             if (type == null) return false;
 
             // A class referenced by name has no instance to write to so only its static members are available.
-            GodotObject? target = thing is Script ? null : thing;
+            GodotObject? target = IsStaticOnly(thing) ? null : thing;
 
             var memberInfos = GetPublicMembers(type, property);
             foreach (var memberInfo in memberInfos)
@@ -823,7 +835,7 @@ namespace DialogueManagerRuntime
         {
             if (thing == null) return [];
 
-            MethodInfo? methodInfo = GetMethodInfoFor(thing, method, args) ?? GetMethodsForType(thing.GetType()).FirstOrDefault(m => m.Name == method && !m.IsSpecialName);
+            MethodInfo? methodInfo = GetMethodInfoFor(thing, method, args) ?? GetMethodsForThing(thing).FirstOrDefault(m => m.Name == method && !m.IsSpecialName);
 
             if (methodInfo == null) return [];
 
@@ -957,7 +969,7 @@ namespace DialogueManagerRuntime
             }
 
             // invoke method and handle the result based on return type
-            object result = methodInfo.Invoke(thing, _args);
+            object result = methodInfo.Invoke(methodInfo.IsStatic ? null : thing, _args);
 
             if (result is Task taskResult)
             {
@@ -980,9 +992,21 @@ namespace DialogueManagerRuntime
 #nullable enable
 
 
+        // Get the methods that can be called on a thing. A nested type reference has no instance so only its static methods are callable.
+        private static System.Collections.Generic.IEnumerable<MethodInfo> GetMethodsForThing(GodotObject thing)
+        {
+            if (thing is DotnetTypeReference typeReference)
+            {
+                return GetMethodsForType(typeReference.Type).Where(m => m.IsStatic);
+            }
+
+            return GetMethodsForType(thing.GetType());
+        }
+
+
         private static MethodInfo? GetMethodInfoFor(GodotObject thing, string method, Array<Variant> args)
         {
-            return GetMethodsForType(thing.GetType()).Where(m => m.Name == method).FirstOrDefault(m =>
+            return GetMethodsForThing(thing).Where(m => m.Name == method).FirstOrDefault(m =>
             {
                 ParameterInfo[] parameters = m.GetParameters();
 
@@ -1040,6 +1064,38 @@ namespace DialogueManagerRuntime
         public static string Translate(string s)
         {
             return (string)Instance.Call("_bridge_translate", s);
+        }
+    }
+
+
+    /// <summary>
+    /// A handle to a C# type that has no script of its own (eg. a nested class) so that dialogue can reach its static members.
+    /// </summary>
+    public partial class DotnetTypeReference : RefCounted
+    {
+        // The GDScript side of the bridge checks for this to know that it has to go via the dotnet side.
+        public const string MetaName = "dialogue_manager_dotnet_type";
+
+        private static readonly System.Collections.Generic.Dictionary<Type, DotnetTypeReference> Cache = [];
+
+        public Type Type { get; private set; } = typeof(object);
+
+
+        public static DotnetTypeReference For(Type type)
+        {
+            if (!Cache.TryGetValue(type, out DotnetTypeReference? reference) || !IsInstanceValid(reference))
+            {
+                reference = new DotnetTypeReference { Type = type };
+                reference.SetMeta(MetaName, type.FullName ?? type.Name);
+                Cache[type] = reference;
+            }
+            return reference;
+        }
+
+
+        public override string ToString()
+        {
+            return Type.FullName?.Replace('+', '.') ?? Type.Name;
         }
     }
 

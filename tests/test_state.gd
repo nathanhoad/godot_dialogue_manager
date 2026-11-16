@@ -804,6 +804,35 @@ Nathan: Constant is {{state.BASE_CONSTANT}}, field is {{state.BaseStaticField}},
 	assert(line.text == "Constant is 5, field is 41, property is instance, method is 13, enum is 1.", "Should read and write inherited static members via a dotted instance.")
 
 
+func test_csharp_nested_types() -> void:
+	var resource: DialogueResource = create_resource("
+~ start
+Nathan: Constant is {{CSharpStaticState.Nested.NESTED_CONSTANT}}, field is {{CSharpStaticState.Nested.NestedField}}, property is {{CSharpStaticState.Nested.NestedProperty}}, method is {{CSharpStaticState.Nested.NestedMethod(4)}}.
+Nathan: Deeper constant is {{CSharpStaticState.Nested.Deeper.DEEPER_CONSTANT}} and deeper method is {{CSharpStaticState.Nested.Deeper.DeeperMethod()}}.
+$> CSharpStaticState.Nested.NestedField = 20
+$> CSharpStaticState.Nested.NestedProperty = \"changed\"
+$> CSharpStaticState.Nested.NestedField += 1
+Nathan: Field is now {{CSharpStaticState.Nested.NestedField}} and property is now {{CSharpStaticState.Nested.NestedProperty}}.
+if CSharpStaticState.Nested.NestedMethod(2) == 4
+	Nathan: Via an instance is {{Nested.NESTED_CONSTANT}} and {{state.Nested.Deeper.DeeperMethod()}}.
+=> END")
+
+	var state: Object = load("res://tests/CSharpStaticState.cs").new()
+	var states: Array = [state, { "state": state }]
+
+	var line: DialogueLine = await resource.get_next_dialogue_line("start", states)
+	assert(line.text == "Constant is 11, field is 12, property is nested, method is 8.", "Should read static members of a nested type.")
+
+	line = await resource.get_next_dialogue_line(line.next_id, states)
+	assert(line.text == "Deeper constant is deeper and deeper method is deepest.", "Should read static members of a deeply nested type.")
+
+	line = await resource.get_next_dialogue_line(line.next_id, states)
+	assert(line.text == "Field is now 21 and property is now changed.", "Should assign static members of a nested type.")
+
+	line = await resource.get_next_dialogue_line(line.next_id, states)
+	assert(line.text == "Via an instance is 11 and deepest.", "Should reach nested types via an instance.")
+
+
 func test_ignore_missing_state() -> void:
 	var resource: DialogueResource = create_resource("
 ~ start
