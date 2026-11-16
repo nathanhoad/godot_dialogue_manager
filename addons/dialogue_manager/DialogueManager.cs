@@ -91,7 +91,7 @@ namespace DialogueManagerRuntime
         {
             if (!MethodCache.TryGetValue(type, out var methods))
             {
-                methods = type.GetMethods(BindingFlags.Instance | BindingFlags.Static | BindingFlags.Public);
+                methods = type.GetMethods(BindingFlags.Instance | BindingFlags.Static | BindingFlags.Public | BindingFlags.FlattenHierarchy);
                 MethodCache[type] = methods;
             }
             return methods;
@@ -576,16 +576,34 @@ namespace DialogueManagerRuntime
             string path = script.ResourcePath;
             if (ScriptTypeCache.TryGetValue(path, out Type? cachedType)) return cachedType;
 
+            // A type can have more than one script path.
             Type? type = AppDomain.CurrentDomain.GetAssemblies()
                 .Where(assembly => assembly.IsDefined(typeof(AssemblyHasScriptsAttribute), false))
                 .SelectMany(assembly => assembly.GetTypes())
-                .FirstOrDefault(t => t.GetCustomAttribute<ScriptPathAttribute>()?.Path == path);
+                .FirstOrDefault(t => t.GetCustomAttributes<ScriptPathAttribute>(false).Any(attribute => attribute.Path == path));
 
             // Godot requires that a script's class name matches its file name so fall back to that if the attribute lookup fails.
             type ??= AssemblyTypes.FirstOrDefault(t => t.Name == path.GetFile().GetBaseName());
 
             ScriptTypeCache[path] = type;
             return type;
+        }
+
+
+        // Find the public members of a type by name, including any static members that are declared on its base classes.
+        private static MemberInfo[] GetPublicMembers(Type type, string name)
+        {
+            var memberInfos = type.GetMember(name, BindingFlags.Instance | BindingFlags.Static | BindingFlags.Public | BindingFlags.FlattenHierarchy);
+            if (memberInfos.Length > 0) return memberInfos;
+
+            // Nested types (eg. enums) aren't included when flattening the hierarchy.
+            for (Type? baseType = type.BaseType; baseType != null; baseType = baseType.BaseType)
+            {
+                Type? nestedType = baseType.GetNestedType(name, BindingFlags.Public);
+                if (nestedType != null) return [nestedType];
+            }
+
+            return memberInfos;
         }
 
 
@@ -606,7 +624,7 @@ namespace DialogueManagerRuntime
             Type? type = GetTypeForThing(thing);
             if (type == null) return false;
 
-            var memberInfos = type.GetMember(property, BindingFlags.Instance | BindingFlags.Static | BindingFlags.Public);
+            var memberInfos = GetPublicMembers(type, property);
             return memberInfos.Length > 0;
         }
 
@@ -618,7 +636,7 @@ namespace DialogueManagerRuntime
             // A class referenced by name has no instance to read from so only its static members are available.
             GodotObject? target = thing is Script ? null : thing;
 
-            var memberInfos = type.GetMember(property, BindingFlags.Instance | BindingFlags.Static | BindingFlags.Public);
+            var memberInfos = GetPublicMembers(type, property);
             foreach (var memberInfo in memberInfos)
             {
                 if (memberInfo == null) continue;
@@ -665,7 +683,7 @@ namespace DialogueManagerRuntime
             // A class referenced by name has no instance to write to so only its static members are available.
             GodotObject? target = thing is Script ? null : thing;
 
-            var memberInfos = type.GetMember(property, BindingFlags.Instance | BindingFlags.Static | BindingFlags.Public);
+            var memberInfos = GetPublicMembers(type, property);
             foreach (var memberInfo in memberInfos)
             {
                 if (memberInfo == null) continue;
