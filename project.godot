@@ -17,7 +17,7 @@ compatibility/default_parent_skeleton_in_mesh_instance_3d=true
 config/name="Dialogue Manager"
 config/tags=PackedStringArray("addon")
 run/main_scene="res://tests/tests.tscn"
-config/features=PackedStringArray("4.7", "C#")
+config/features=PackedStringArray("4.7")
 config/icon="res://icon.svg"
 
 [autoload]
@@ -33,10 +33,6 @@ gdscript/warnings/directory_rules={
 }
 gdscript/warnings/untyped_declaration=2
 gdscript/warnings/inferred_declaration=2
-
-[dialogue_manager]
-
-runtime/advanced/uses_dotnet=true
 
 [display]
 

@@ -188,7 +188,6 @@ func _ready() -> void:
 	_clear_history()
 	add_to_history(current_file_path)
 
-
 func _exit_tree() -> void:
 	DMSettings.set_user_value("reopen_files", open_buffers.keys())
 	DMSettings.set_user_value("most_recent_reopen_file", self.current_file_path)
@@ -212,6 +211,12 @@ func _input(event: InputEvent) -> void:
 			"run_test_scene":
 				get_viewport().set_input_as_handled()
 				_on_test_button_pressed()
+			"go_back":
+				get_viewport().set_input_as_handled()
+				_on_history_backward_pressed()
+			"go_forward":
+				get_viewport().set_input_as_handled()
+				_on_history_forward_pressed()
 
 
 func apply_changes() -> void:

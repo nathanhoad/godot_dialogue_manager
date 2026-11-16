@@ -271,7 +271,14 @@ static func get_editor_shortcuts() -> Dictionary:
 		],
 		make_italic = [
 			_create_event("Ctrl+Shift+i")
-		]
+		],
+
+		go_back = [
+			_create_event("Ctrl+T")
+		],
+		go_forward = [
+			_create_event("Ctrl+BracketRight")
+		],
 	}
 
 	var paths: EditorPaths = EditorInterface.get_editor_paths()
