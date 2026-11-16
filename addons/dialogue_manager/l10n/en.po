@@ -45,6 +45,12 @@ msgstr "Test dialogue from start of file"
 msgid "test_dialogue_from_line"
 msgstr "Test dialogue from current line"
 
+msgid "history_previous"
+msgstr "Go to previous edit location"
+
+msgid "history_next"
+msgstr "Go to next edit location"
+
 msgid "search_for_text"
 msgstr "Search for text"
 

@@ -252,6 +252,12 @@ static func get_editor_shortcuts() -> Dictionary:
 		find_in_files = [
 			_create_event("Ctrl+Shift+F")
 		],
+		history_previous = [
+			_create_event("Ctrl+Alt+Left" if OS.get_name() == "macOS" else "Alt+Left")
+		],
+		history_next = [
+			_create_event("Ctrl+Alt+Right" if OS.get_name() == "macOS" else "Alt+Right")
+		],
 
 		run_test_scene = [
 			_create_event("Ctrl+F5")
