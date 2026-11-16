@@ -49,6 +49,10 @@ signal confirmation_closed()
 @onready var version_label: Label = %VersionLabel
 @onready var update_button: Button = %UpdateButton
 
+@onready var history_backward: Button = %HistoryBackward
+@onready var history_forward: Button = %HistoryForward
+
+
 @onready var search_and_replace: Control = %SearchAndReplace
 
 # Code editor
@@ -107,12 +111,18 @@ var current_file_path: String = "":
 
 			if search_and_replace.visible:
 				search_and_replace.search()
+
+			add_to_history(current_file_path)
+
 	get:
 		return current_file_path
 
 # A reference to the currently open files and their last saved text
 var open_buffers: Dictionary = {}
 
+# Editor history
+var history : Array[StringName]
+var history_pos : int = -1
 
 func _ready() -> void:
 	apply_theme()
@@ -172,6 +182,11 @@ func _ready() -> void:
 	EditorInterface.get_file_system_dock().files_moved.connect(_on_files_moved)
 
 	code_edit.get_v_scroll_bar().value_changed.connect(_on_code_edit_scroll_changed)
+
+	# Initialize history
+	# since add_to_history is in current_file setter, it also adds recent opened files when the plugin starts
+	_clear_history()
+	add_to_history(current_file_path)
 
 
 func _exit_tree() -> void:
@@ -386,6 +401,9 @@ func apply_theme() -> void:
 		docs_button.icon = get_theme_icon("Help", "EditorIcons")
 		docs_button.text = DMConstants.translate(&"docs")
 
+		history_backward.icon = get_theme_icon("Back", "EditorIcons")
+		history_forward.icon = get_theme_icon("Forward", "EditorIcons")
+
 		blank_slate.apply_theme()
 		update_button.apply_theme()
 
@@ -395,6 +413,38 @@ func apply_theme() -> void:
 		open_dialog.min_size = Vector2(600, 500) * theme_values.scale
 		quick_open_dialog.min_size = Vector2(400, 600) * theme_values.scale
 
+
+# Editor History
+func add_to_history(file_path: StringName) -> void:
+	if not history.is_empty() and history[history_pos] == file_path:
+		return
+
+	# removes redos above the history position
+	var history_tip : int = history.size() 
+	while history_pos < history_tip -1:
+		history.pop_back()
+		history_tip -= 1
+
+	history.append(file_path)
+	history_pos += 1
+	_update_history_arrows()
+
+
+func _update_history_pos(new_pos : int) -> void:
+	history_pos = new_pos
+	current_file_path = history[new_pos]
+	_update_history_arrows()
+
+
+func _update_history_arrows() -> void:
+	history_backward.disabled = history_pos <= 0
+	history_forward.disabled = history_pos >= history.size() -1
+
+
+func _clear_history() -> void:
+	history.clear()
+	history_pos = -1
+	add_to_history(current_file_path)
 
 #region Helpers
 
@@ -841,6 +891,16 @@ func _on_blank_slate_new_button_pressed() -> void:
 
 func _on_blank_slate_quick_open_button_pressed() -> void:
 	quick_open()
+
+
+func _on_history_backward_pressed() -> void:
+	if history_pos > 0:
+		_update_history_pos(history_pos -1)
+
+
+func _on_history_forward_pressed() -> void:
+	if history_pos < history.size() -1:
+		_update_history_pos(history_pos +1)
 
 
 #endregion
