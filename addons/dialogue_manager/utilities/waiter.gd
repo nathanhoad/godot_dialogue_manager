@@ -12,7 +12,7 @@ var _null: String = str(null)
 
 ## Emit [code]waited[/code] on all waiting [DMWaiter]s.
 static func clear_all() -> void:
-	for waiter: DMWaiter in all_waiters:
+	for waiter: DMWaiter in all_waiters.duplicate():
 		all_waiters.erase(waiter)
 		waiter.waited.emit(null)
 

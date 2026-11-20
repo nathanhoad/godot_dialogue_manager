@@ -1050,8 +1050,8 @@ func _wait_for(actions: PackedStringArray) -> void:
 	add_child(waiter)
 
 	waiting_for_input.emit()
-	var action: String = await waiter.waited
-	if is_instance_valid(action):
+	var action: Variant = await waiter.waited
+	if action != null:
 		waited_for_input.emit()
 
 	waiter.queue_free()
