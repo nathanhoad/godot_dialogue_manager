@@ -31,9 +31,8 @@
      inkscape:window-maximized="1"
      inkscape:current-layer="svg1" />
   <path
-     fill="#fc7f7f"
      d="M 8.0000003,14 1,2.0000005 15,2 Z"
      id="path1"
      sodipodi:nodetypes="cccc"
-     style="fill:#8da5f3;fill-opacity:1" />
+     fill="#8da5f3" />
 </svg>
